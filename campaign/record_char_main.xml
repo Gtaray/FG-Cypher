@@ -329,14 +329,8 @@
 				<anchored to="recoverystatus" position="aboveleft" offset="5,5" />
 				<script>
 					function action(draginfo)
-						local node = window.getDatabaseNode();
-						local aDice = {"d6"};
-						local nMod = DB.getValue(node, "tier", 1) + DB.getValue(node, "recoveryrollmod", 0);
-
 						local rActor = ActorManager.resolveActor(window.getDatabaseNode());
-						local sDesc = "[RECOVERY]";
-						local rRoll = { sType = "recovery", sDesc = sDesc, aDice = aDice, nMod = nMod };
-						ActionsManager.performAction(draginfo, rActor, rRoll);
+						ActionRecovery.performRoll(draginfo, rActor, {});
 					end
 
 					function onButtonPress(x, y)
@@ -405,7 +399,7 @@
 				</anchored>
 				<script>
 					function action(draginfo)
-						window.actionSkill(draginfo);
+						window.action(draginfo);
 					end
 
 					function onButtonPress(x, y)
@@ -614,7 +608,8 @@
                 <anchored to="button_cancel" position="lefthigh" offset="0,0" />
             </button_dialog_ok>
 
-            <close_utilitybox3 name="button_close" />
+            <close_utilitybox3 />
+
         </sheetdata>
     </windowclass>
 </root>

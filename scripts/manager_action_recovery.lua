@@ -4,7 +4,37 @@
 --
 
 function onInit()
+	ActionsManager.registerModHandler("recovery", modRoll)
 	ActionsManager.registerResultHandler("recovery", onRoll);
+end
+
+function performRoll(draginfo, rActor, rAction)
+	local rRoll = ActionRecovery.getRoll(rActor, rAction);
+	ActionsManager.performAction(draginfo, rActor, rRoll);
+end
+
+function getRoll(rActor, rAction)
+	local rRoll = {};
+	rRoll.sType = "recovery";
+	if rAction.aDice then
+		rRoll.aDice = rAction.aDice;
+	else
+		rRoll.aDice = { "d6" };
+	end
+	rRoll.nMod = ActorManagerCypher.getTier(rActor) + ActorManagerCypher.getRecoveryRollMod(rActor) + (rAction.nModifer or 0);
+	rRoll.sDesc = "[RECOVERY]";
+	return rRoll;
+end
+
+function modRoll(rSource, rTarget, rRoll)
+	local nRecoveryEffect = EffectManager.getEffectsBonusByType(rSource, { "RECOVERY", "REC" }, { });
+
+	-- Only continue if the recovery effect is not zero
+	if nRecoveryEffect == 0 then
+		return;
+	end
+	rRoll.nMod = rRoll.nMod + nRecoveryEffect;
+	RollManager.encodeEffects(rRoll, nRecoveryEffect);
 end
 
 function onRoll(rSource, rTarget, rRoll)
@@ -37,55 +67,56 @@ function onRoll(rSource, rTarget, rRoll)
     wRecovery.recovery_remaining.setValue(ActionsManager.total(rRoll));
 end
 
-function applyRecovery(nodeActor, nMightNew, nSpeedNew, nIntellectNew, nRemainder)
-    local rActor = ActorManager.resolveActor(nodeActor);
-    local nRemoveWounded = 0;
+function applyRecovery(nodeChar, nMightNew, nSpeedNew, nIntellectNew, nRemainder)
+    local rActor = ActorManager.resolveActor(nodeChar);
+	local nWoundTrackCurrent = ActorManagerCypher.getDamageTrack(rActor);
+    local nWoundTrackAdjust = 0; -- This is tracked as a negative amount
     local rMessage = ChatManager.createBaseMessage(rActor, User.getUsername());
     rMessage.text = "[RECOVERY]";
 
-    local nMightCurrent = DB.getValue(nodeActor, "abilities.might.current", 0);    
+    local nMightCurrent = ActorManagerCypher.getStatPool(rActor, "might");
     if nMightCurrent < nMightNew then
         if nMightCurrent == 0 then
-            nRemoveWounded = nRemoveWounded + 1;
+            nWoundTrackAdjust = nWoundTrackAdjust - 1;
         end
 
-        rMessage.text = rMessage.text .. " [APPLIED " .. tostring(nMightNew - nMightCurrent) .. " to MIGHT]";
-
-        DB.setValue(nodeActor, "abilities.might.current", "number", nMightNew);
+        rMessage.text = string.format("%s [APPLIED %s to MIGHT]", rMessage.text, tostring(nMightNew - nMightCurrent));
+		ActorManagerCypher.setStatPool(rActor, "might", nMightNew);
     end
 
-    local nSpeedCurrent = DB.getValue(nodeActor, "abilities.speed.current", 0);
+    local nSpeedCurrent = ActorManagerCypher.getStatPool(rActor, "speed");
     if nSpeedCurrent < nSpeedNew then
         if nSpeedCurrent == 0 then
-            nRemoveWounded = nRemoveWounded + 1;
+            nWoundTrackAdjust = nWoundTrackAdjust - 1;
         end
 
-        rMessage.text = rMessage.text .. " [APPLIED " .. tostring(nSpeedNew - nSpeedCurrent) .. " to SPEED]";
-
-        DB.setValue(nodeActor, "abilities.speed.current", "number", nSpeedNew);
+		rMessage.text = string.format("%s [APPLIED %s to SPEED]", rMessage.text, tostring(nSpeedNew - nSpeedCurrent));
+        ActorManagerCypher.setStatPool(rActor, "speed", nSpeedNew);
     end
 
-    local nIntellectCurrent = DB.getValue(nodeActor, "abilities.intellect.current", 0);
+    local nIntellectCurrent = ActorManagerCypher.getStatPool(rActor, "intellect");
     if nIntellectCurrent < nIntellectNew then
         if nIntellectCurrent == 0 then
-            nRemoveWounded = nRemoveWounded + 1;
+			nWoundTrackAdjust = nWoundTrackAdjust - 1;
         end
 
-        rMessage.text = rMessage.text .. " [APPLIED " .. tostring(nIntellectNew - nIntellectCurrent) .. " to INTELLECT]";
-
-        DB.setValue(nodeActor, "abilities.intellect.current", "number", nIntellectNew);
+		rMessage.text = string.format("%s [APPLIED %s to INTELLECT]", rMessage.text, tostring(nIntellectNew - nIntellectCurrent));
+        ActorManagerCypher.setStatPool(rActor, "intellect", nIntellectNew);
     end
 
     if nRemainder > 0 then
-        rMessage.text = rMessage.text .. " Remainder " .. tostring(nRemainder);
+		rMessage.text = string.format("%s Remainder %s", rMessage.text, tostring(nRemainder))
     end
 
-    if nRemoveWounded > 0 then
-        local nCurrentWounded = DB.getValue(nodeActor, "wounds", 0);
-        local nNewWounded = math.max(nCurrentWounded - nRemoveWounded, 0);
-        DB.setValue(nodeActor, "wounds", "number", nNewWounded);
-
-        rMessage.text = rMessage.text .. " [DAMAGE TRACK RECOVERED BY " .. tostring(nCurrentWounded - nNewWounded) .. "]";
+	-- Get the actual amount the wound track was modified by
+	local nActualWoundTrackAdjust = math.max(math.min(math.abs(nWoundTrackAdjust), nWoundTrackCurrent), 0);
+    if nActualWoundTrackAdjust > 0 then
+		-- No need to adjust the damage track here because the setStatPool functions in the
+		-- actor manager will adjust the damage track levels as the pools are changed
+		rMessage.text = string.format(
+			"%s [DAMAGE TRACK RECOVERED BY %s]", 
+			rMessage.text, 
+			tostring(nActualWoundTrackAdjust))
     end
 
     Comm.deliverChatMessage(rMessage);

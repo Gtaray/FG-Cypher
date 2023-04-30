@@ -45,8 +45,10 @@
 			
 			<simplenumber name="encumbranceload" merge="delete" />
 			<label name="encumbrance_label" merge="delete" />
-			<number_static name="cypherload" insertbefore="coinframe">
+			<simplenumber name="cypherload" insertbefore="coinframe">
 				<anchored to="encumbranceframe" position="insidetopleft" offset="100,50" width="30" height="20" />
+				<frame name="fieldlight" offset="7,5,7,5" />
+				<readonly />
 				<script>
 					function onInit()
 						onValueChanged();
@@ -62,7 +64,7 @@
 						end
 					end
 				</script>
-			</number_static>
+			</simplenumber>
 			<label_fieldtop name="cypherload_label" insertbefore="coinframe">
 				<anchored to="cypherload" />
 				<static textres="char_label_invcyphertotal" />

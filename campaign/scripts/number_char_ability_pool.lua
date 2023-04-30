@@ -2,6 +2,29 @@
 -- Please see the license.html file included with this distribution for 
 -- attribution and copyright information.
 --
+function onInit()	
+	local nodeActor = window.getDatabaseNode();
+
+	if stat and stat[1] then
+		DB.addHandler(DB.getPath(nodeActor, "abilities", stat[1], "max"), "onUpdate", onMaxUpdated);
+		onMaxUpdated();
+	end
+end
+
+function onClose()
+	local nodeActor = window.getDatabaseNode();
+	if stat and stat[1] then
+		DB.removeHandler(DB.getPath(nodeActor, "abilities", stat[1], "max"), "onUpdate", onMaxUpdated);
+	end
+end
+
+function onMaxUpdated()
+	local nodeActor = window.getDatabaseNode();
+	if stat and stat[1] then
+		local _, nMax = ActorManagerCypher.getStatPool(nodeActor, stat[1])
+		setMaxValue(nMax);
+	end
+end
 
 function action(draginfo)
 	local sStat = stat[1];
@@ -9,21 +32,13 @@ function action(draginfo)
 		return;
 	end
 
-	local nodeActor = window.getDatabaseNode();
-	local sDesc = string.format("[POOL] %s", Interface.getString(sStat));
-	local tInfo = RollManager.buildPCRollInfo(nodeActor, sDesc, sStat);
-	if not tInfo then
-		return;
-	end
-
-	RollManager.resolveAdjustments(tInfo);
-	if not RollManager.spendPointsForRoll(nodeActor, tInfo) then
-		return;
-	end
-
-	local rActor = ActorManager.resolveActor(nodeActor);
-	local rRoll = { sType = "dice", sDesc = tInfo.sDesc, aDice = { "d20" }, nMod = tInfo.nMod, nShift = tInfo.nTotalStep };
-	ActionsManager.performAction(draginfo, rActor, rRoll);
+	local rAction = {
+		label = StringManager.capitalize(sStat),
+		sStat = sStat
+	}
+	
+	local rActor = ActorManager.resolveActor(window.getDatabaseNode())
+	ActionStat.performRoll(draginfo, rActor, rAction);
 end
 
 function onDoubleClick(x, y)
@@ -35,6 +50,9 @@ function onDragStart(button, x, y, draginfo)
 	return true;
 end
 
+---------------------------------------------
+-- HANDLE HEALING ON DROP
+---------------------------------------------
 function onDrop(x, y, draginfo)
 	if draginfo.isType("recovery") then
 		self.handleRecoveryDrop(draginfo);
@@ -48,7 +66,7 @@ function handleRecoveryDrop(draginfo)
 	end
 	local nApplied = draginfo.getNumberData();
 	local nRemainder = 0;
-    local bRemovedWound = false;
+    local bRemoveWound = false;
 
     if getValue() == 0 and nApplied > 0 then
         bRemoveWound = true;
@@ -85,5 +103,4 @@ function handleRecoveryDrop(draginfo)
         local nCurrentWound = DB.getValue(window.getDatabaseNode(), "wounds", 0);
         DB.setValue(window.getDatabaseNode(), "wounds", "number", math.max(0, nCurrentWound - 1));
     end
-
 end

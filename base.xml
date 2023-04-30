@@ -6,7 +6,7 @@
 -->
 
 <root version="3.0" release="4.1" logo="logo.png">
-	<announcement text="Cypher System ruleset (2023-04-25) for Fantasy Grounds\rCopyright 2023 Smiteworks USA, LLC" font="emotefont" icon="rulesetlogo_CoreRPG" />
+	<announcement text="Cypher System ruleset (2023-02-23) for Fantasy Grounds\rCopyright 2023 Smiteworks USA, LLC" font="emotefont" icon="rulesetlogo_CoreRPG" />
 	
 	<!-- Attributes -->
 	<description>
@@ -56,16 +56,25 @@
 	<includefile source="ct/ct_host.xml" />
 	<includefile source="ct/ct_client.xml" />
 
+	<!-- Utility windows -->
+	<includefile source="utility/prompt_defense.xml" />
+
 	<!-- High-level scripts -->
 	<script name="GameSystem" file="scripts/manager_gamesystem.lua" />
 	
 	<script name="ActorManagerCypher" file="scripts/manager_actor_cypher.lua" />
+	<script name="EffectManagerCypher" file="scripts/manager_effect_cypher.lua" />
 	<script name="CombatManager2" file="scripts/manager_combat2.lua" />
 	<script name="RollManager" file="scripts/manager_roll.lua"/>
+	<script name="PromptManager" file="scripts/manager_prompt.lua" />
 
 	<script name="ActionGeneral" file="scripts/manager_action_general.lua" />
+	<script name="ActionStat" file="scripts/manager_action_stat.lua" />
+	<script name="ActionSkill" file="scripts/manager_action_skill.lua" />
+	<script name="ActionDefense" file="scripts/manager_action_defense.lua" />
 	<script name="ActionAttack" file="scripts/manager_action_attack.lua" />
 	<script name="ActionDamage" file="scripts/manager_action_damage.lua" />
 	<script name="ActionInit" file="scripts/manager_action_init.lua" />
 	<script name="ActionRecovery" file="scripts/manager_action_recovery.lua" />
+	<script name="ActionHeal" file="scripts/manager_action_heal.lua" />
 </root>

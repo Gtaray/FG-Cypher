@@ -9,16 +9,23 @@ actions = {
 	["table"] = { },
 	["effect"] = { sIcon = "action_effect", sTargeting = "all" },
 	["init"] = { bUseModStack = "true" },
+	["stat"] = { sIcon = "action_roll", sTargeting = "each", bUseModStack = "true" },
+	["skill"] = { sIcon = "action_roll", sTargeting = "each", bUseModStack = "true" },
+	["defense"] = { sIcon = "action_roll", sTargeting = "each", bUseModStack = "true" },
 	["attack"] = { sIcon = "action_attack", sTargeting = "each", bUseModStack = "true" },
 	["damage"] = { sIcon = "action_damage", sTargeting = "each", bUseModStack = "true" },
-	["skill"] = { bUseModStack = "true" },
-	["recovery"] = { },
+	["recovery"] = { sIcon = "action_heal" },
+	["heal"] = { sIcon = "action_heal", sTargeting = "each", bUseModStack = true },
 	["depletion"] = { },
 };
 
 targetactions = {
+	"stat",
+	"skill",
+	"defense",
 	"attack",
 	"damage",
+	"heal",
 	"effect",
 };
 

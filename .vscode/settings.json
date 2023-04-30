@@ -1,0 +1,31 @@
+{
+	"Lua.diagnostics.disable": [
+		"lowercase-global",
+		"undefined-global"
+	],
+	"Lua.diagnostics.globals": [
+		"DB",
+		"self",
+		"EffectManager",
+		"ActorManager",
+		"ChatManager",
+		"Comm",
+		"Interface",
+		"ActionsManager",
+		"OptionsManager",
+		"CombatManager",
+		"CombatRecordManager",
+		"CharManager",
+		"ActorHealthManager",
+		"User",
+		"OOBManager",
+		"CharEncumbranceManagerCnC",
+		"CharEncumbranceManager",
+		"DecalManager",
+		"super",
+		"getDatabaseNode",
+		"registerMenuItem",
+		"Session",
+		"CombatManager2"
+	]
+}

@@ -7,7 +7,6 @@
 
 <root>
 	<windowclass name="charsheet_actions">
-		<script file="campaign/scripts/char_init.lua" />
 		<sheetdata>
 			<frame_char name="initframe">
 				<anchored height="60" width="135">
@@ -24,7 +23,11 @@
 				<anchored to="initlabel" position="belowleft" offset="22,3" width="20" height="20" />
 				<script>
 					function action(draginfo)
-						window.actionInit(draginfo);
+						local rActor = ActorManager.resolveActor(window.getDatabaseNode());
+						local rAction = {};
+						rAction.sStat = "speed";
+						rAction.sTraining, rAction.nAssets, rAction.nModifier = ActorManagerCypher.getInitiative(rActor);
+						ActionInit.performRoll(draginfo, rActor, rAction);
 					end
 
 					function onButtonPress(x, y)
@@ -342,6 +345,8 @@
 	<windowclass name="char_ability">
 		<margins control="0,0,0,2" />
 		<script file="campaign/scripts/char_ability.lua" />
+		<script>
+		</script>
 		<sheetdata>
 			<hs name="stat">
 				<script>
@@ -390,13 +395,15 @@
 					end
 				</script>
 			</button_roll>
-			<stringc_static name="statcostview">
+			<stringcontrol name="statcostview">
 				<anchored height="20">
 					<top offset="2" />
 					<left parent="leftanchor" anchor="right" relation="relative" offset="5" />
 				</anchored>
 				<font>sheetlabel</font>
-			</stringc_static>
+				<frame name="fieldlight" offset="7,5,7,5" />
+				<static />
+			</stringcontrol>
 			
 			<genericcontrol name="rightanchor">
 				<anchored width="0" height="0">

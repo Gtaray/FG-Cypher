@@ -20,6 +20,24 @@
 		</buttonfield>
 	</template>
 
+	<template name="base_clientct_health">
+		<genericcontrol name="healthbase">
+			<anchored to="rightanchor" width="118" height="20">
+				<top />
+				<right anchor="left" relation="relative" offset="-10" />
+			</anchored>
+			<disabled />
+		</genericcontrol>
+	</template>
+	<template name="string_clientct_status">
+		<simplestring name="status">
+			<anchored to="healthbase" position="over" />
+			<frame name="fieldlight" offset="7,5,7,5" />
+			<center />
+			<static />
+			<invisible />
+		</simplestring>
+	</template>
 	<template name="number_clientct_intellectpool">
 		<number_ct_crosslink name="intellectpool">
 			<anchored to="healthbase" width="22" height="20">

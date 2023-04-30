@@ -29,7 +29,7 @@
 		</script>
 		<sheetdata>
 			<label_ct_right name="label_status" insertbefore="label_init">
-				<anchored width="120" />
+				<anchored width="118" />
 				<static textres="ct_label_status" />
 			</label_ct_right>
 		</sheetdata>
