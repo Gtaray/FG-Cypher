@@ -41,12 +41,16 @@
 	<includefile source="campaign/record_char_inventory.xml" />
 	<includefile source="campaign/record_char_notes.xml" />
 	<includefile source="campaign/record_char_actions.xml" />
+	<includefile source="campaign/record_char_action_attack.xml" />
 	<includefile source="campaign/record_ability.xml" />
 	<script name="CharManager" file="campaign/scripts/manager_char.lua" />
 
 	<includefile source="campaign/record_item.xml" />
 	<includefile source="campaign/record_parcel.xml" />
 	<includefile source="campaign/record_npc.xml" />
+
+	<!-- Common files -->
+	<includefile source="common/template_common.xml" />
 
 	<!-- Party sheet -->
 	<includefile source="ps/ps_inventory.xml" />

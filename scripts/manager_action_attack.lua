@@ -130,7 +130,7 @@ function onRoll(rSource, rTarget, rRoll)
 	end
 	
 	-- Only process roll successes if a PC is attacking an NPC (not PC vs PC)
-	local bSuccess, bAutomaticSuccess = RollManagerCPP.processRollSuccesses(rSource, rTarget, rRoll, rMessage, aAddIcons);
+	local bSuccess, bAutomaticSuccess = RollManager.processRollSuccesses(rSource, rTarget, rRoll, rMessage, aAddIcons);
 	if rTarget and not ActorManager.isPC(rTarget) then
 		local sIcon = "";
 		if bSuccess then

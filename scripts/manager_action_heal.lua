@@ -44,8 +44,8 @@ function getRoll(rActor, rAction)
 end
 
 function modRoll(rSource, rTarget, rRoll)
-	-- local sStat = RollManagerCPP.decodeStat(rRoll, true);
-	-- local nHealBonus, nHealEffectCount = EffectManagerCPP.getEffectsBonusByType(rSource, "HEAL", { sStat }, rTarget)
+	-- local sStat = RollManager.decodeStat(rRoll, true);
+	-- local nHealBonus, nHealEffectCount = EffectManager.getEffectsBonusByType(rSource, "HEAL", { sStat }, rTarget)
 
 	-- rRoll.nMod = rRoll.nMod + nHealBonus;
 

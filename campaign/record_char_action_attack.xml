@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="char_attack">
+		<margin>0,0,0,2</margin>
+		<script file="campaign/scripts/char_attack.lua" />
+		<sheetdata>
+			<genericcontrol name="rightanchor">
+				<anchored width="0" height="0">
+					<top />
+					<right />
+				</anchored>
+				<invisible />
+			</genericcontrol>
+			<button_idelete name="idelete">
+				<anchored width="20" height="20">
+					<top offset="4" />
+					<right parent="rightanchor" anchor="left" relation="relative" offset="-2" />
+				</anchored>
+			</button_idelete>
+
+			<button_details name="activatedetail">
+				<anchored>
+					<top offset="4" />
+					<right parent="rightanchor" anchor="left" offset="-24" />
+				</anchored>
+				<script>
+					function onButtonPress()
+						window.toggleDetail();
+					end
+				</script>
+			</button_details>
+
+			<buttoncontrol name="button_attack">
+				<anchored width="20" height="20">
+					<top offset="4" />
+					<left anchor="center" offset="11" />
+				</anchored>
+				<icon normal="button_action_attack" pressed="button_action_attack_down" />
+				<script>
+					function onDragStart(button, x, y, draginfo)
+						window.actionAttack(draginfo);
+						return true;
+					end
+
+					function onButtonPress()
+						window.actionAttack();
+					end
+				</script>
+			</buttoncontrol>
+
+			<buttoncontrol name="button_damage">
+				<anchored width="20" height="20">
+					<top offset="4" />
+					<left parent="button_attack" anchor="right" offset="5" />
+				</anchored>
+				<icon normal="button_action_damage" pressed="button_action_damage_down" />
+				<script>
+					function onDragStart(button, x, y, draginfo)
+						window.actionDamage(draginfo);
+						return true;
+					end
+
+					function onButtonPress()
+						window.actionDamage();
+					end
+				</script>
+			</buttoncontrol>
+
+			<button_checkbox name="equipped">
+				<anchored position="insidetopleft" offset="0,0" width="26" height="26" />
+				<script>
+					function onButtonPress()
+						window.onEquippedChanged();
+					end
+				</script>
+			</button_checkbox>
+			
+			<string_textlistitem name="name">
+				<anchored position="insidetopleft" height="26">
+					<left offset="31" />
+					<right anchor="center" offset="5" />
+				</anchored>
+			</string_textlistitem>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="attack_editor">
+		<frame>charsheethelper</frame>
+		<placement>
+			<size width="500" height="550" />
+		</placement>
+		<sizelimits>
+			<minimum width="500" height="350" />
+			<dynamic />
+		</sizelimits>
+		<sheetdata>
+			<windowtitlebar_charsheethelper name="title" />
+			<anchor_title_charsheethelper name="contentanchor" />
+			
+			<genericcontrol name="contentframe">
+				<anchored to="contentanchor">
+					<top anchor="bottom" offset="15" />
+					<left offset="20" />
+					<right offset="-25" />
+					<bottom parent="" offset="-40" />
+				</anchored>
+				<frame name="groupbox" offset="15,10,15,10" />
+			</genericcontrol>
+
+			<subwindow_record name="main">
+				<class>pc_weapon_editor_main</class>
+				<activate />
+			</subwindow_record>
+			<scrollbar_record>
+				<target>pc_weapon_editor_main</target>
+			</scrollbar_record>
+
+			<resize_charsheethelper />
+			<close_charsheethelper />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="pc_weapon_editor_main">
+		<script>
+			function onInit()
+				onAttackTypeChanged();
+			end
+			function onAttackTypeChanged()
+				local bWeapon = DB.getValue(getDatabaseNode(), "type", "") == "";
+				weapontype_label.setVisible(bWeapon);
+				weapontype.setVisible(bWeapon);
+			end
+		</script>
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+			
+			<!-- NAME -->
+			<label_column name="name_label">
+				<static textres="power_label_name" />
+			</label_column>
+			<stringc_column name="name" />
+
+			<!-- PROPERTIES -->
+			<header_column name="header_properties">
+				<static textres="power_header_properties" />
+				<center />
+			</header_column>
+
+			<label_column name="type_label">
+				<static textres="power_label_type" />
+			</label_column>
+			<cycler_column name="type">
+				<script>
+					function onValueChanged()
+						if super and super.onValueChanged then
+							super.onValueChanged();
+						end
+						window.onAttackTypeChanged();
+					end
+				</script>
+				<anchored width="80" />
+				<parameters>
+					<labelsres>power_type_magic</labelsres>
+					<values>magic</values>
+					<defaultlabelres>power_type_weapon</defaultlabelres>
+				</parameters>
+			</cycler_column>
+
+			<label_column name="weapontype_label">
+				<static textres="power_label_weapontype" />
+			</label_column>
+			<cycler_column name="weapontype">
+				<script>
+					function onValueChanged()
+						if super and super.onValueChanged then
+							super.onValueChanged();
+						end
+						local node = window.getDatabaseNode();
+						local sWeaponType = DB.getValue(getDatabaseNode());
+						local nDmg = DB.getValue(node, "damage", 0);
+						if sWeaponType == "light" and (nDmg == 0 or nDmg == 4 or nDmg == 6) then
+							DB.setValue(node, "damage", "number", 2);
+						elseif sWeaponType == "medium" and (nDmg == 0 or nDmg == 2 or nDmg == 6) then
+							DB.setValue(node, "damage", "number", 4);
+						elseif sWeaponType == "heavy" and (nDmg == 0 or nDmg == 2 or nDmg == 4) then
+							DB.setValue(node, "damage", "number", 6);
+						end
+					end
+				</script>
+				<anchored width="80" />
+				<parameters>
+					<labelsres>power_weapontype_light|power_weapontype_medium|power_weapontype_heavy</labelsres>
+					<values>light|medium|heavy</values>
+					<defaultlabelres>dash</defaultlabelres>
+				</parameters>
+			</cycler_column>
+
+			<!-- <label_column name="ammo_label">
+				<static textres="power_label_useammunition" />
+			</label_column>
+			<cycler_column>
+				<anchored width="80" />
+				<parameters>
+					<labelsres>yes</labelsres>
+					<values>yes</values>
+					<defaultlabel>No</defaultlabel>
+				</parameters>
+			</cycler_column> -->
+
+			<!-- ATTACK -->
+			<header_column name="header_attack">
+				<static textres="power_header_attack" />
+				<center />
+			</header_column>
+
+			<genericcontrol name="leftanchor">
+				<anchored width="0" height="20">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="20" />
+					<left offset="5" />
+				</anchored>
+			</genericcontrol>
+
+			<cycler_range name="atkrange">
+				<anchored to="leftanchor" width="60" height="20">
+					<top  />
+					<left anchor="right" relation="relative" />
+				</anchored>
+			</cycler_range>
+			<label_fieldtop>
+				<anchored to="atkrange" />
+				<static textres="power_label_atkrange" />
+			</label_fieldtop>
+
+			<button_stat name="stat">
+				<anchored to="leftanchor" width="80" height="20">
+					<top  />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+			</button_stat>
+			<label_fieldtop>
+				<anchored to="stat" />
+				<static textres="power_label_stat" />
+			</label_fieldtop>
+
+			<cycler_training name="training">
+				<anchored to="leftanchor" width="80" height="20">
+					<top  />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+			</cycler_training>
+			<label_fieldtop name="training_label">
+				<anchored to="training" />
+				<static textres="power_label_training" />
+			</label_fieldtop>
+
+			<basicnumber name="asset">
+				<anchored to="leftanchor" width="25" height="20">
+					<top  />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<hideonvalue value="0" />
+			</basicnumber>
+			<label_fieldtop name="asset_label">
+				<anchored to="asset" />
+				<static textres="power_label_asset" />
+			</label_fieldtop>
+
+			<basicnumber name="modifier">
+				<anchored to="leftanchor"  width="25" height="20">
+					<top  />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<hideonvalue value="0" />
+			</basicnumber>
+			<label_fieldtop name="modifier_label">
+				<anchored to="modifier" />
+				<static textres="power_label_modifier" />
+			</label_fieldtop>
+
+			<!-- DAMAGE -->
+			<header_column name="header_damage">
+				<static textres="power_header_damage" />
+				<center />
+			</header_column>
+
+			<basicnumber name="damage">
+				<anchored width="30" height="20">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="20" />
+					<left offset="5" />
+				</anchored>
+				<min>0</min>
+			</basicnumber>
+			<label_fieldtop>
+				<anchored to="damage" />
+				<static textres="power_label_damage" />
+			</label_fieldtop>
+
+			<button_stat name="statdmg">
+				<anchored to="damage" position="righthigh" offset="10,0" width="80" height="20" />
+				<tooltip textres="power_tooltip_statdmg" />
+			</button_stat>
+			<label_fieldtop>
+				<anchored to="statdmg" />
+				<static textres="power_label_statdmg" />
+			</label_fieldtop>
+
+			<!-- <stringu_damagetype_autocomplete name="damagetype">
+				<anchored to="statdmg" height="20">
+					<top />
+					<left anchor="right" offset="10" />
+					<right parent="" offset="-10" />
+				</anchored>
+			</stringu_damagetype_autocomplete>
+			<label_fieldtop>
+				<anchored to="damagetype" />
+				<static textres="power_label_damagetype" />
+			</label_fieldtop> -->
+
+			<label_column name="pierce_label">
+				<static textres="power_label_pierce" />
+			</label_column>
+			<cycler_column name="pierce">
+				<anchored width="80" />
+				<script>
+					function onInit()
+						if super and super.onInit then
+							super.onInit();
+						end
+						onValueChanged();
+					end
+					function onValueChanged()
+						if super and super.onValueChanged then
+							super.onValueChanged()
+						end
+						window.pierceamount.setVisible(getValue() == "Yes");
+					end
+				</script>
+				<parameters>
+					<labelsres>yes</labelsres>
+					<values>yes</values>
+					<defaultlabel>No</defaultlabel>
+				</parameters>
+				<tooltip textres="power_tooltip_pierce" />
+			</cycler_column>
+			<basicnumber name="pierceamount">
+				<anchored to="pierce" position="righthigh" offset="10,0" width="30" height="20" />
+				<min>0</min>
+				<tooltip textres="power_tooltip_pierceamount" />
+			</basicnumber>
+
+			<!-- COST -->
+			<header_column name="header_cost">
+				<static textres="power_header_cost" />
+				<center />
+			</header_column>
+			<label_column name="cost_label">
+				<static textres="power_label_cost" />
+			</label_column>
+			<number_column name="cost">
+				<min>0</min>
+			</number_column>
+		</sheetdata>
+	</windowclass>
+</root>

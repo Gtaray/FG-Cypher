@@ -1,89 +1,77 @@
--- 
--- Please see the license.html file included with this distribution for 
--- attribution and copyright information.
---
-
 function onInit()
-	toggleDetail();
+	local node = getDatabaseNode();
+	DB.addHandler(DB.getPath(node, "type"), "onUpdate", onAttackTypeUpdated);
+
+	update();
+end
+
+function onClose()
+	local node = getDatabaseNode();
+	DB.removeHandler(DB.getPath(node, "type"), "onUpdate", onAttackTypeUpdated);
+end
+
+function onAttackTypeUpdated()
+	local sType = DB.getValue(getDatabaseNode(), "type", "");
+	equipped.setVisible(sType ~= "magic");
+end
+
+function update()
+	onAttackTypeUpdated();
 end
 
 function toggleDetail()
-	local bShow = (activatedetail.getValue() == 1);
-	
-	label_atkdetail.setVisible(bShow);
-	label_atkskill.setVisible(bShow);
-	training.setVisible(bShow);
-	label_atkasset.setVisible(bShow);
-	asset.setVisible(bShow);
-	label_atkmod.setVisible(bShow);
-	attack.setVisible(bShow);
-	label_atkstat.setVisible(bShow);
-	stat.setVisible(bShow);
-	label_atkcost.setVisible(bShow);
-	cost.setVisible(bShow);
-	
-	label_dmgdetail.setVisible(bShow);
-	damage.setVisible(bShow);
-	label_dmgtype.setVisible(bShow);
-	damagetype.setVisible(bShow);
-	
-	label_range.setVisible(bShow);
-	range.setVisible(bShow);
-	label_ammo.setVisible(bShow);
-	ammo.setVisible(bShow);
+	Interface.openWindow("attack_editor", getDatabaseNode());
+end
+
+function onEquippedChanged()
+	local bEquipped = equipped.getValue() == 1;
+
+	if bEquipped then
+		local nodeActor = windowlist.window.getDatabaseNode();
+		ActorManagerCypher.setEquippedWeapon(nodeActor, getDatabaseNode())
+	end
 end
 
 function actionAttack(draginfo)
+	local nodeAction = getDatabaseNode();
 	local nodeActor = windowlist.window.getDatabaseNode();
-
-	local sDesc = string.format("[ATTACK] %s", name.getValue());
-	local sStat = stat.getStringValue();
-	local tInfo = RollManager.buildPCRollInfo(nodeActor, sDesc, sStat);
-	if not tInfo then
-		return;
-	end
-	tInfo.nBaseCost = cost.getValue();
-	tInfo.nTraining = training.getValue();
-	tInfo.nAssets = asset.getValue();
-	tInfo.nMod = attack.getValue();
-
-	RollManager.resolveAdjustments(tInfo);
-	if not RollManager.spendPointsForRoll(nodeActor, tInfo) then
-		return;
-	end
-
 	local rActor = ActorManager.resolveActor(nodeActor);
-	local rRoll = { sType = "attack", sDesc = tInfo.sDesc, aDice = { "d20" }, nMod = tInfo.nMod, nShift = tInfo.nTotalStep };
-	ActionsManager.performAction(draginfo, rActor, rRoll);
+
+	local rAction = {};
+	rAction.label = DB.getValue(nodeAction, "name", "");
+	rAction.sAttackRange = DB.getValue(nodeAction, "atkrange", "");
+	rAction.sStat = RollManager.resolveStat(DB.getValue(nodeAction, "stat", ""));
+	rAction.sTraining = DB.getValue(nodeAction, "training", "");
+	rAction.nAsset = DB.getValue(nodeAction, "asset", 0);
+	rAction.nModifier = DB.getValue(nodeAction, "modifier", 0);
+	rAction.nLevel = DB.getValue(nodeAction, "level", 0);
+	rAction.nCost = DB.getValue(nodeAction, "cost", 0);
+	rAction.sCostStat = rAction.sStat; -- Might be a limitation, but right now the attack/damage all uses the same stat
+
+	-- If the attack type is set to weapon, add the weapon type
+	if DB.getValue(nodeAction, "type", "") == "" then
+		rAction.sWeaponType = DB.getValue(nodeAction, "weapontype", "");
+	end
+
+	ActionAttack.performRoll(draginfo, rActor, rAction)
 end
 
 function actionDamage(draginfo)
+	local nodeAction = getDatabaseNode();
 	local nodeActor = windowlist.window.getDatabaseNode();
-
-	local sDesc = string.format("[DAMAGE] %s", name.getValue());
-	local sStat = stat.getStringValue();
-	local sDmgType = damagetype.getValue();
-	if sDmgType ~= "" and sDmgType ~= "-" then
-		sDesc = sDesc .. " [TYPE: " .. sDmgType .. "]";
-	end
-	local tInfo = RollManager.buildPCRollInfo(nodeActor, sDesc, sStat);
-	if not tInfo then
-		return;
-	end
-	tInfo.nMod = damage.getValue();
-
-	RollManager.resolveAdjustments(tInfo);
-	if not RollManager.spendPointsForRoll(nodeActor, tInfo) then
-		return;
-	end
-
-	if tInfo.nEffort > 0 then
-		local nExtraDamage = (tInfo.nEffort * 3);
-		tInfo.nMod = tInfo.nMod + nExtraDamage;
-		tInfo.sDesc = tInfo.sDesc .. string.format(" [APPLIED %d EFFORT FOR +%d DAMAGE]", tInfo.nEffort, nExtraDamage);
-	end
-
 	local rActor = ActorManager.resolveActor(nodeActor);
-	local rRoll = { sType = "damage", sDesc = tInfo.sDesc, aDice = { }, sStat = tInfo.sStat, nMod = tInfo.nMod };
-	ActionsManager.performAction(draginfo, rActor, rRoll);
+
+	local rAction = {};
+	rAction.label = DB.getValue(nodeAction, "name", "");
+	rAction.nDamage = DB.getValue(nodeAction, "damage", 0);
+	rAction.sStat = RollManager.resolveStat(DB.getValue(nodeAction, "stat", ""));
+	rAction.sStatDamage = RollManager.resolveStat(DB.getValue(nodeAction, "statdmg", ""));
+	rAction.sDamageType = RollManager.resolveDamageType(DB.getValue(nodeAction, "damagetype", ""));
+
+	rAction.bPierce = DB.getValue(nodeAction, "pierce", "") == "yes";
+	if rAction.bPierce then
+		rAction.nPierceAmount = DB.getValue(nodeAction, "pierceamount", 0);	
+	end
+	
+	ActionDamage.performRoll(draginfo, rActor, rAction);
 end
