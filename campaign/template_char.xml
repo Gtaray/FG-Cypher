@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<template name="number_charabilitymax">
+		<basicnumber>
+			<default>10</default>
+			<min>0</min>
+			<script>
+				local nLast;
+				function onInit()
+					nLast = getValue();
+					window[target[1]].setMaxValue(nLast);
+				end
+				function onValueChanged()
+					local nNewMax = getValue();
+					window[target[1]].setMaxValue(nNewMax);
+					if window[target[1]].getValue() == nLast then
+						window[target[1]].setValue(getValue());
+					end
+					nLast = nNewMax;
+				end
+			</script>
+		</basicnumber>
+	</template>
+	<template name="number_charabilitypool">
+		<number_dropadd>
+			<font>char_pool</font>
+			<default>10</default>
+			<min>0</min>
+			<droptypes>
+				<type>number</type>
+				<type>recovery</type>
+			</droptypes>
+			<rollable />
+			<script file="campaign/scripts/number_char_ability_pool.lua" />
+		</number_dropadd>
+	</template>
+
+	<template name="button_defenseroll">
+		<button_roll>
+			<anchored width="25" height="25" />
+			<script file="campaign/scripts/button_defenseroll.lua" />
+		</button_roll>
+	</template>
+	
+	<template name="button_stat">
+		<button_stringcycler>
+			<parameters>
+				<labelsres>char_label_might|char_label_speed|char_label_intellect</labelsres>
+				<values>might|speed|intellect</values>
+				<defaultlabel>-</defaultlabel>
+			</parameters>
+			<tooltip textres="char_tooltip_stat" />
+		</button_stringcycler>
+	</template>
+
+	<template name="button_skill">
+		<buttonfield>
+			<frame name="fielddark" offset="7,5,7,5" hidereadonly="true" />
+			<stateframe>
+				<hover name="fieldfocus" offset="7,5,7,5" />
+			</stateframe>
+			<state textres="char_label_skillinability" tooltipres="char_tooltip_skillinability" />
+			<state textres="char_label_skilluntrained" tooltipres="char_tooltip_skilluntrained" />
+			<state textres="char_label_skilltrained" tooltipres="char_tooltip_skilltrained" />
+			<state textres="char_label_skillspecialized" tooltipres="char_tooltip_skillspecialized" />
+		</buttonfield>
+	</template>
+
+	<template name="button_skill_wide">
+		<buttonfield>
+			<frame name="fielddark" offset="7,5,7,5" hidereadonly="true" />
+			<stateframe>
+				<hover name="fieldfocus" offset="7,5,7,5" />
+			</stateframe>
+			<state textres="char_tooltip_skillinability" />
+			<state textres="char_tooltip_skilluntrained" />
+			<state textres="char_tooltip_skilltrained" />
+			<state textres="char_tooltip_skillspecialized" />
+		</buttonfield>
+	</template>
+
+    <template name="button_increase">
+        <button_text_sm>
+            <anchored width="20" />
+            <state text="&gt;" />
+            <script>
+                function onButtonPress()
+                    window.onIncrease(stat[1]);
+                end
+            </script>
+        </button_text_sm>
+    </template>
+
+	<template name="button_decrease">        
+        <button_text_sm>
+            <anchored width="20" />
+            <state text="&lt;" />
+            <script>
+                function onButtonPress()
+                    window.onDecrease(stat[1]);
+                end
+            </script>
+        </button_text_sm>        
+    </template>
+
+	<template name="sub_charsheet_overview">
+		<subwindow>
+			<bounds>15,20,-30,100</bounds>
+			<activate />
+			<fastinit />
+			<class>charsheet_overview</class>
+		</subwindow>
+	</template>
+	<template name="sub_charsheet">
+		<subwindow>
+			<bounds>0,100,-1,-20</bounds>
+		</subwindow>
+	</template>
+</root>

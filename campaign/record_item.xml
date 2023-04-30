@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<template name="button_itemtype">
+		<button_stringcycler name="type">
+			<anchored width="80" />
+			<parameters>
+				<defaultlabel>-</defaultlabel>
+				<labelsres>char_label_invtypecypher|char_label_invtypeartifact|char_label_invtypeoddity|char_label_invtypeweapon|char_label_invtypearmor</labelsres>
+				<values>cypher|artifact|oddity|weapon|armor</values>
+			</parameters>
+		</button_stringcycler>
+	</template>
+
+	<windowclass name="item_main">
+		<script file="campaign/scripts/item_main.lua" />
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+			
+			<label_column name="nonid_name_label">
+				<static textres="item_label_unidentified" />
+			</label_column>
+			<string_columnh name="nonid_name" />
+			
+			<label_column name="nonid_notes_label">
+				<static textres="item_label_unidentifiednotes" />
+			</label_column>
+			<string_columnh name="nonid_notes" />
+			
+			<line_column name="divider" />
+
+			<label_column name="type_label">
+				<static textres="item_label_type" />
+			</label_column>
+			<button_itemtype name="type">
+				<anchored>
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+					<left offset="97" />
+				</anchored>
+				<script>
+					function onValueChanged()
+						window.update();
+					end
+				</script>
+			</button_itemtype>
+			
+			<label_column name="subtype_label">
+				<static textres="item_label_subtype" />
+			</label_column>
+			<string_columnh name="subtype" />
+			
+			<label_column name="cost_label">
+				<static textres="item_label_cost" />
+			</label_column>
+			<string_columnh name="cost" />
+
+			<label_column name="armor_label">
+				<static textres="item_label_armor" />
+			</label_column>
+			<number_columnh name="armor" />
+			
+			<label_column name="damage_label">
+				<static textres="item_label_damage" />
+			</label_column>
+			<number_columnh name="damage" />
+			
+			<label_column name="level_label">
+				<static textres="item_label_level" />
+			</label_column>
+			<number_columnh name="level" />
+			
+			<label_column name="depletion_label">
+				<static textres="item_label_depletion" />
+			</label_column>
+			<number_columnh name="depletion">
+				<rollable />
+				<script>
+					function update(bReadOnly, bForceHide)
+						super.update(bReadOnly, bForceHide);
+						window.depletiondie.setVisible(isVisible());
+					end
+
+					function onDoubleClick(x, y)
+						window.actionDepletion();
+						return true;
+					end
+
+					function onDragStart(button, x, y, draginfo)
+						window.actionDepletion(draginfo);
+						return true;
+					end
+				</script>
+			</number_columnh>
+			<label name="depletiondie_label">
+				<anchored to="depletion" position="righthigh" offset="10,0" />
+				<static textres="item_label_depletionin" />
+			</label>
+			<button_stringcycler name="depletiondie">
+				<anchored to="depletiondie_label" position="righthigh" offset="10,0" height="20" width="40" />
+				<frame name="fielddark" offset="7,5,7,5" />
+				<stateframe>
+					<hover name="fieldfocus" offset="7,5,7,5" hidereadonly="true" />
+				</stateframe>
+				<parameters>
+					<labels>1d6|1d10|1d20|1d100</labels>
+					<values>d6|d10|d20|d100</values>
+					<defaultlabel>-</defaultlabel>
+				</parameters>
+			</button_stringcycler>
+			
+			<line_column name="divider2" />
+
+			<ft_columnh name="notes" />
+		</sheetdata>
+	</windowclass>
+</root>

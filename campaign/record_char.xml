@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="charsheet">
+		<frame>charsheet</frame>
+		<placement>
+			<size width="525" height="611" />
+		</placement>
+		<sizelimits>
+			<dynamic />
+			<minimum width="525" height="611" />
+		</sizelimits>
+		<softclose />
+		<tooltip field="name" />
+		<export>character</export>
+		<script file="campaign/scripts/char.lua" />
+		<sheetdata>
+			<sub_charsheet_overview name="overview" />
+
+			<sub_charsheet name="main">
+				<class>charsheet_main</class>
+			</sub_charsheet>
+			<sub_charsheet name="inventory">
+				<class>charsheet_inventory</class>
+			</sub_charsheet>
+			<sub_charsheet name="notes">
+				<class>charsheet_notes</class>
+			</sub_charsheet>
+			<sub_charsheet name="actions">
+				<class>charsheet_actions</class>
+			</sub_charsheet>
+
+			<tabs_charsheet name="tabs">
+				<tab>
+					<icon>tab_main</icon>
+					<subwindow>main</subwindow>
+				</tab>
+				<tab>
+					<icon>tab_inventory</icon>
+					<subwindow>inventory</subwindow>
+				</tab>
+				<tab>
+					<icon>tab_notes</icon>
+					<subwindow>notes</subwindow>
+				</tab>
+				<tab>
+					<icon>tab_actions</icon>
+					<subwindow>actions</subwindow>
+				</tab>
+				<activate>1</activate>
+			</tabs_charsheet>
+		
+			<close_charsheet />
+			<resize_charsheet />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="charsheet_overview" merge="join">
+		<sheetdata>
+			<frame_char name="overviewframe">
+				<anchored height="80" />
+			</frame_char>
+
+			<string_labeled name="chartype" source="class.type" insertbefore="name">
+				<anchored to="overviewframe" position="insidetopright" offset="15,10" width="50" height="20" />
+				<labelres>char_label_type</labelres>
+				<tabtarget next="charfocus" prev="chardescriptor" />
+			</string_labeled>
+			<string_labeled name="chardescriptor" source="class.descriptor" insertbefore="name">
+				<anchored to="chartype" position="lefthigh" offset="5,0" width="100" height="20" />
+				<labelres>char_label_descriptor</labelres>
+				<tabtarget next="chartype" prev="name" />
+			</string_labeled>
+			<label name="overview_label" insertbefore="name">
+				<anchored to="chardescriptor" position="lefthigh" offset="5,0" />
+				<static textres="char_label_main1" />
+			</label>
+			<string_labeled name="name" merge="replace">
+				<anchored to="overview_label" position="lefthigh" offset="5,0" height="20">
+					<left parent="overviewframe" anchor="left" offset="15"/>
+				</anchored>
+				<labelres>char_label_name</labelres>
+				<tabtarget next="chardescriptor" />
+			</string_labeled>
+			<label name="overview_label2">
+				<anchored to="name" position="belowleft" offset="10,10" />
+				<static textres="char_label_main2" />
+			</label>
+			<string_labeled name="charfocus" source="class.focus">
+				<anchored to="overview_label2" position="righthigh" offset="5,0" height="20">
+					<right parent="overviewframe" offset="-15" />
+				</anchored>
+				<labelres>char_label_focus</labelres>
+				<tabtarget next="main" prev="chartype" />
+			</string_labeled>
+		</sheetdata>
+	</windowclass>
+</root>

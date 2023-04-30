@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="charsheet_actions">
+		<script file="campaign/scripts/char_init.lua" />
+		<sheetdata>
+			<frame_char name="initframe">
+				<anchored height="60" width="135">
+					<left offset="15" />
+					<top />
+				</anchored>
+			</frame_char>
+			<label name="initlabel">
+				<anchored to="initframe" position="insidetop" offset="0,5"/>
+				<static textres="initiative" />
+				<center/>
+			</label>
+			<button_roll name="initroll">
+				<anchored to="initlabel" position="belowleft" offset="22,3" width="20" height="20" />
+				<script>
+					function action(draginfo)
+						window.actionInit(draginfo);
+					end
+
+					function onButtonPress(x, y)
+						action();
+						return true;
+					end
+
+					function onDragStart(button, x, y, draginfo)
+						action(draginfo);
+						return true;
+					end
+				</script>
+			</button_roll>
+			<button_skill name="inittraining">
+				<anchored to="initroll" position="right" offset="7,0" width="15" />
+				<default>1</default>
+			</button_skill>
+			<basicnumber name="initasset">
+				<anchored to="inittraining" position="right" offset="7,0" width="15" />
+				<tooltip textres="assets" />
+			</basicnumber>
+			<basicnumber name="initmod">
+				<anchored to="initasset" position="right" offset="7,0" width="15" />
+				<tooltip textres="modifier" />
+			</basicnumber>
+
+			<frame_char name="armorframe">
+				<anchored height="60">
+					<left offset="150" />
+					<top />
+					<right offset="-25" />
+				</anchored>
+			</frame_char>
+			<label name="armor_label">
+				<anchored to="armorframe" position="insidetopleft" offset="30,20" />
+				<static textres="armor" />
+			</label>
+			<basicnumber name="armor">
+				<anchored to="armor_label" position="righthigh" offset="20,-5" width="40" height="30" />
+			</basicnumber>
+			<label name="armorspeedcost_label">
+				<anchored to="armor_label" position="righthigh" offset="100,0" />
+				<static textres="char_label_armorspeedcost" />
+			</label>
+			<basicnumber name="armorspeedcost">
+				<anchored to="armorspeedcost_label" position="righthigh" offset="10,0" width="30" height="20" />
+				<min>0</min>
+			</basicnumber>
+
+			<frame_char name="attackframe">
+				<anchored>
+					<left offset="15" />
+					<top offset="60" />
+					<right offset="-25" />
+					<bottom anchor="center" />
+				</anchored>
+			</frame_char>
+			<label_frametop>
+				<anchored to="attackframe" />
+				<static textres="char_label_attacks" />
+			</label_frametop>
+			<list_text name="attacklist">
+				<anchored to="attackframe">
+					<top offset="30" />
+					<left offset="10" />
+					<right offset="-20" />
+					<bottom offset="-15" />
+				</anchored>
+				<datasource>.attacklist</datasource>
+				<class>char_attack</class>
+				<allowcreate />
+				<allowdelete />
+				<sortby><control>name</control></sortby>
+			</list_text>
+			<scrollbar>
+				<anchored to="attacklist" />
+				<target>attacklist</target>
+			</scrollbar>
+			<genericcontrol name="rightanchor">
+				<anchored to="attackframe" position="insidetopright" offset="20,10" width="0" height="20" />
+			</genericcontrol>
+			<button_iedit name="attacklist_iedit">
+				<anchored to="attacklist" position="aboveleft" offset="5,0" />
+				<target>attacklist</target>
+			</button_iedit>
+			<button_iadd name="attacklist_iadd">
+				<anchored to="rightanchor">
+					<top />
+					<right anchor="left" relation="relative" />
+				</anchored>
+				<target>attacklist</target>
+			</button_iadd>
+
+			<frame_char name="abilityframe">
+				<anchored>
+					<left offset="15" />
+					<top anchor="center" />
+					<right offset="-25" />
+					<bottom offset="-5" />
+				</anchored>
+			</frame_char>
+			<label name="ability_name_label">
+				<anchored to="abilityframe" position="insidetopleft" offset="17,10">
+					<right offset="-42" />
+				</anchored>
+				<center />
+				<static textres="char_label_abilityname" />
+			</label>
+			<list_text name="abilitylist">
+				<anchored to="abilityframe">
+					<top offset="30" />
+					<left offset="10" />
+					<right offset="-20" />
+					<bottom offset="-15" />
+				</anchored>
+				<datasource>.abilitylist</datasource>
+				<class>char_ability</class>
+				<allowcreate />
+				<allowdelete />
+				<sortby><control>name</control></sortby>
+			</list_text>
+			<scrollbar>
+				<anchored to="abilitylist" />
+				<target>abilitylist</target>
+			</scrollbar>
+			<button_iedit name="abilitylist_iedit">
+				<anchored to="abilitylist" position="aboveleft" offset="0,0" />
+				<target>abilitylist</target>
+			</button_iedit>
+			<button_iadd name="abilitylist_iadd">
+				<anchored to="abilitylist_iedit" position="righthigh" offset="0,0" />
+				<target>abilitylist</target>
+			</button_iadd>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="char_attack">
+		<margins control="0,0,0,2" />
+		<script file="campaign/scripts/char_attack.lua" />
+		<sheetdata>
+			<genericcontrol name="rightanchor">
+				<anchored width="0" height="0">
+					<top />
+					<right />
+				</anchored>
+				<invisible />
+			</genericcontrol>
+			<button_idelete name="idelete">
+				<anchored width="20" height="20">
+					<top offset="2" />
+					<right parent="rightanchor" anchor="left" relation="relative" offset="0" />
+				</anchored>
+			</button_idelete>
+
+			<buttoncontrol name="button_attack">
+				<anchored width="20" height="20">
+					<top offset="2" />
+					<left offset="5" />
+				</anchored>
+				<icon normal="button_action_attack" pressed="button_action_attack_down" />
+				<script>
+					function onDragStart(button, x, y, draginfo)
+						window.actionAttack(draginfo);
+						return true;
+					end
+
+					function onButtonPress()
+						window.actionAttack();
+					end
+				</script>
+			</buttoncontrol>
+			<buttoncontrol name="button_damage">
+				<anchored width="20" height="20">
+					<top offset="2" />
+					<left offset="30" />
+				</anchored>
+				<icon normal="button_action_damage" pressed="button_action_damage_down" />
+				<script>
+					function onDragStart(button, x, y, draginfo)
+						window.actionDamage(draginfo);
+						return true;
+					end
+
+					function onButtonPress()
+						window.actionDamage();
+					end
+				</script>
+			</buttoncontrol>
+			
+			<string_textlistitem name="name">
+				<anchored position="insidetopleft" offset="55,2" height="20">
+					<right parent="rightanchor" anchor="left" relation="current" offset="-22" />
+				</anchored>
+			</string_textlistitem>
+			<button_toggledetail name="activatedetail">
+				<anchored>
+					<top offset="2" />
+					<right parent="rightanchor" anchor="left" relation="current" offset="-2" />
+				</anchored>
+			</button_toggledetail>
+
+			<!-- Attack -->
+			<label name="label_atkdetail">
+				<anchored width="30">
+					<top parent="name" anchor="bottom" relation="relative" offset="5" />
+					<left offset="15" />
+				</anchored>
+				<static textres="char_label_atkdetail" />
+			</label>
+			<label name="label_atkskill">
+				<anchored to="label_atkdetail" position="righthigh" offset="5,0" width="20" />
+				<static textres="char_label_attackskill" />
+				<tooltip textres="char_tooltip_attackskill" />
+			</label>
+			<button_skill name="training">
+				<anchored to="label_atkskill" position="righthigh" offset="5,0" width="20" height="20" />
+				<default>1</default>
+				<tooltip textres="char_tooltip_attackskill" />
+			</button_skill>
+			<label name="label_atkasset">
+				<anchored to="training" position="righthigh" offset="10,0" width="20" />
+				<static textres="char_label_attackasset" />
+				<tooltip textres="assets" />
+			</label>
+			<basicnumber name="asset">
+				<anchored to="label_atkasset" position="righthigh" offset="5,0" width="20" height="20" />
+				<displaysign />
+				<hideonvalue>0</hideonvalue>
+				<tooltip textres="assets" />
+			</basicnumber>
+			<label name="label_atkmod">
+				<anchored to="asset" position="righthigh" offset="10,0" width="20" />
+				<static textres="char_label_attackmod" />
+				<tooltip textres="modifier" />
+			</label>
+			<basicnumber name="attack">
+				<anchored to="label_atkmod" position="righthigh" offset="5,0" width="20" height="20" />
+				<displaysign />
+				<hideonvalue>0</hideonvalue>
+				<tooltip textres="modifier" />
+			</basicnumber>
+			<label name="label_atkstat">
+				<anchored to="attack" position="righthigh" offset="10,0" width="30" />
+				<static textres="char_label_attackstat" />
+				<tooltip textres="char_tooltip_atkstat" />
+			</label>
+			<button_stat name="stat">
+				<anchored to="label_atkstat" position="righthigh" offset="5,0" width="60" />
+				<tooltip textres="char_tooltip_atkstat" />
+			</button_stat>
+			<label name="label_atkcost">
+				<anchored to="stat" position="righthigh" offset="10,0" width="60" />
+				<static textres="ability_label_cost" />
+				<tooltip textres="char_tooltip_atkcost" />
+			</label>
+			<basicnumber name="cost">
+				<anchored to="label_atkcost" position="righthigh" offset="5,0" width="20" height="20" />
+				<min>0</min>
+				<hideonvalue>0</hideonvalue>
+				<tooltip textres="char_tooltip_atkcost" />
+			</basicnumber>
+			
+			<!-- Damage -->
+			<label name="label_dmgdetail">
+				<anchored width="30">
+					<top parent="name" anchor="bottom" relation="relative" offset="5" />
+					<left offset="15" />
+				</anchored>
+				<static textres="char_label_dmgdetail" />
+				<tooltip textres="char_tooltip_dmgdetail" />
+			</label>
+			<basicnumber name="damage">
+				<anchored to="label_dmgdetail" position="righthigh" offset="30,0" width="20" height="20" />
+				<tooltip textres="char_tooltip_dmgdetail" />
+			</basicnumber>
+			<label name="label_dmgtype">
+				<anchored to="damage" position="righthigh" offset="10,0" />
+				<static textres="char_label_dmgtype" />
+				<tooltip textres="char_tooltip_dmgtype" />
+			</label>
+			<button_stat name="damagetype" source="damagetype">
+				<anchored to="label_dmgtype" position="righthigh" offset="10,0" height="20" width="60" />
+				<tooltip textres="char_tooltip_dmgtype" />
+			</button_stat>
+
+			<!-- Range -->
+			<label name="label_range">
+				<anchored width="30">
+					<top parent="name" anchor="bottom" relation="relative" offset="5" />
+					<left offset="15" />
+				</anchored>
+				<static textres="char_label_range" />
+			</label>
+			<buttonfield name="range">
+				<anchored to="label_range" position="righthigh" offset="5,0" width="35" height="20" />
+				<frame name="fielddark" offset="7,5,7,5" />
+				<stateframe>
+					<hover name="fieldfocus" offset="7,5,7,5" />
+				</stateframe>
+				<state textres="char_label_rangeimmediate" />
+				<state textres="char_label_rangeshort" />
+				<state textres="char_label_rangelong" />
+				<state textres="char_label_range200" />
+			</buttonfield>
+			<label name="label_ammo">
+				<anchored to="range" position="righthigh" offset="10,0" />
+				<static textres="char_label_ammo" />
+			</label>
+			<basicnumber name="ammo">
+				<anchored to="label_ammo" position="righthigh" offset="10,0" width="20" height="20" />
+			</basicnumber>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="char_ability">
+		<margins control="0,0,0,2" />
+		<script file="campaign/scripts/char_ability.lua" />
+		<sheetdata>
+			<hs name="stat">
+				<script>
+					function onValueChanged()
+						window.onCostChanged();
+					end
+				</script>
+			</hs>
+			<hn name="statcost">
+				<script>
+					function onValueChanged()
+						window.onCostChanged();
+					end
+				</script>
+			</hn>
+            <hn name="has_roll" />
+			<hn name="training" />
+			<hn name="asset" />
+			<hn name="modifier" />
+			
+			<genericcontrol name="leftanchor">
+				<anchored width="0" height="0">
+					<top />
+					<left />
+				</anchored>
+				<invisible />
+			</genericcontrol>
+			<button_roll name="statroll">
+				<anchored>
+					<top offset="2" />
+					<left parent="leftanchor" anchor="right" relation="relative" offset="5" />
+				</anchored>
+				<script>
+					function action(draginfo)
+						window.actionAbility(draginfo);
+					end
+
+					function onButtonPress(x, y)
+						action();
+						return true;
+					end
+
+					function onDragStart(button, x, y, draginfo)
+						action(draginfo);
+						return true;
+					end
+				</script>
+			</button_roll>
+			<stringc_static name="statcostview">
+				<anchored height="20">
+					<top offset="2" />
+					<left parent="leftanchor" anchor="right" relation="relative" offset="5" />
+				</anchored>
+				<font>sheetlabel</font>
+			</stringc_static>
+			
+			<genericcontrol name="rightanchor">
+				<anchored width="0" height="0">
+					<top />
+					<right />
+				</anchored>
+				<invisible />
+			</genericcontrol>
+			<button_idelete name="idelete">
+				<anchored width="20" height="20">
+					<top offset="2" />
+					<right parent="rightanchor" anchor="left" relation="relative" offset="0" />
+				</anchored>
+			</button_idelete>
+			<linkcontrol name="shortcut">
+				<anchored width="20" height="20">
+					<top offset="2" />
+					<right parent="rightanchor" anchor="left" relation="relative" offset="-2" />
+				</anchored>
+				<class>ability</class>
+				<readonly />
+			</linkcontrol>
+
+			<string_textlistitem name="name">
+				<anchored height="20">
+					<top offset="2" />
+					<left parent="leftanchor" anchor="right" relation="relative" offset="7" />
+					<right parent="rightanchor" anchor="left" relation="current" offset="-5" />
+				</anchored>
+			</string_textlistitem>
+		</sheetdata>
+	</windowclass>
+</root>

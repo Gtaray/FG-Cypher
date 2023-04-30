@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root version="3.0" release="4.1" logo="logo.png">
+	<announcement text="Cypher System ruleset (2023-04-25) for Fantasy Grounds\rCopyright 2023 Smiteworks USA, LLC" font="emotefont" icon="rulesetlogo_CoreRPG" />
+	
+	<!-- Attributes -->
+	<description>
+		<displayname>Cypher System</displayname>
+		<author>Monte Cook Games</author>
+		<website>https://www.montecookgames.com</website>
+	</description>
+
+	<!-- Layers -->
+	<importruleset source="CoreRPG" />
+	
+	<!-- Tabletop settings -->
+	<includefile source="gameelements.xml" />
+
+	<!-- Graphics -->
+	<includefile source="graphics/graphics_fonts.xml" />
+	<includefile source="graphics/graphics_frames.xml" />
+	<includefile source="graphics/graphics_icons.xml" />
+
+	<!-- Strings -->
+	<includefile source="strings/strings_cyphersystem.xml" />
+
+	<!-- Desktop -->
+	<includefile source="desktop/desktop_classes.xml" />
+	<includefile source="desktop/desktop_panels.xml" />
+	<script name="OptionsCypherSystem" file="scripts/data_options_cyphersystem.lua" />
+	
+	<!-- Campaign Records -->
+	<includefile source="campaign/template_char.xml" />
+	<includefile source="campaign/record_char.xml" />
+	<includefile source="campaign/record_char_main.xml" />
+	<includefile source="campaign/record_char_inventory.xml" />
+	<includefile source="campaign/record_char_notes.xml" />
+	<includefile source="campaign/record_char_actions.xml" />
+	<includefile source="campaign/record_ability.xml" />
+	<script name="CharManager" file="campaign/scripts/manager_char.lua" />
+
+	<includefile source="campaign/record_item.xml" />
+	<includefile source="campaign/record_parcel.xml" />
+	<includefile source="campaign/record_npc.xml" />
+
+	<!-- Party sheet -->
+	<includefile source="ps/ps_inventory.xml" />
+
+	<!-- Combat tracker -->
+	<includefile source="ct/template_ct.xml" />
+	<includefile source="ct/ct_host.xml" />
+	<includefile source="ct/ct_client.xml" />
+
+	<!-- High-level scripts -->
+	<script name="GameSystem" file="scripts/manager_gamesystem.lua" />
+	
+	<script name="ActorManagerCypher" file="scripts/manager_actor_cypher.lua" />
+	<script name="CombatManager2" file="scripts/manager_combat2.lua" />
+	<script name="RollManager" file="scripts/manager_roll.lua"/>
+
+	<script name="ActionGeneral" file="scripts/manager_action_general.lua" />
+	<script name="ActionAttack" file="scripts/manager_action_attack.lua" />
+	<script name="ActionDamage" file="scripts/manager_action_damage.lua" />
+	<script name="ActionInit" file="scripts/manager_action_init.lua" />
+	<script name="ActionRecovery" file="scripts/manager_action_recovery.lua" />
+</root>

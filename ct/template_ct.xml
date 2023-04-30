@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<template name="button_ct_damagetrack">
+		<buttonfield>
+			<frame name="fielddark" offset="7,5,7,5" />
+			<stateframe>
+				<hover name="fieldfocus" offset="7,5,7,5" />
+			</stateframe>
+			<state textres="ct_label_status_hale" tooltipres="status_hale" />
+			<state textres="ct_label_status_impaired" tooltipres="status_impaired" />
+			<state textres="ct_label_status_debilitated" tooltipres="status_debilitated" />
+			<state textres="ct_label_status_dead" tooltipres="status_dead" />
+			<script file="common/scripts/number_crosslink.lua" />
+		</buttonfield>
+	</template>
+
+	<template name="number_clientct_intellectpool">
+		<number_ct_crosslink name="intellectpool">
+			<anchored to="healthbase" width="22" height="20">
+				<top />
+				<right />
+			</anchored>
+			<readonly />
+		</number_ct_crosslink>
+	</template>
+	<template name="number_clientct_speedpool">
+		<number_ct_crosslink name="speedpool">
+			<anchored to="intellectpool" width="22" height="20">
+				<top />
+				<right anchor="left" offset="-10" />
+			</anchored>
+			<readonly />
+		</number_ct_crosslink>
+	</template>
+	<template name="number_clientct_mightpool">
+		<number_ct_crosslink name="mightpool">
+			<anchored to="speedpool" width="22" height="20">
+				<top />
+				<right anchor="left" offset="-10" />
+			</anchored>
+			<readonly />
+		</number_ct_crosslink>
+	</template>
+	<template name="button_clientct_damagetrack">
+		<button_ct_damagetrack name="damagetrack" source="wounds">
+			<anchored to="mightpool" width="22" height="20">
+				<top />
+				<right anchor="left" offset="-10" />
+			</anchored>
+			<readonly />
+		</button_ct_damagetrack>
+	</template>
+	<template name="number_clientct_wounds">
+		<number_ct name="wounds">
+			<anchored to="healthbase" width="54" height="20">
+				<top />
+				<right />
+			</anchored>
+			<hideonvalue value="0" />
+			<script>
+				function update()
+					window.onHealthChanged();
+				end
+			</script>
+			<readonly />
+		</number_ct>
+	</template>
+	<template name="number_clientct_hp">
+		<number_ct name="hp">
+			<anchored to="wounds" width="54" height="20">
+				<top />
+				<right anchor="left" offset="-10" />
+			</anchored>
+			<script>
+				function update()
+					window.onHealthChanged();
+				end
+			</script>
+			<readonly />
+		</number_ct>
+	</template>
+</root>

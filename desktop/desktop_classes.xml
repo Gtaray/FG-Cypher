@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="difficultyadjust">
+		<frame>imagepanel</frame>
+		<sizelimits>
+			<minimum width="150" height="52" />
+		</sizelimits>
+		<noclose />
+		<script>
+			function onInit()
+				RollManager.registerDifficultyPanel(self);
+			end
+			function onClose()
+				RollManager.registerDifficultyPanel(nil);
+			end
+		</script>
+		<sheetdata>
+			<numbercontrol name="effort">
+				<bounds>10,7,30,22</bounds>
+				<font>modcollector</font>
+				<min>0</min>
+			</numbercontrol>
+			<label_fieldtop name="label_effort">
+				<anchored to="effort" position="below" />
+				<static textres="diffadj_label_effort" />
+			</label_fieldtop>
+			<numbercontrol name="assets">
+				<bounds>50,7,30,22</bounds>
+				<font>modcollector</font>
+				<min>0</min>
+				<max>2</max>
+			</numbercontrol>
+			<label_fieldtop name="label_assets">
+				<anchored to="assets" position="below" />
+				<static textres="diffadj_label_assets" />
+			</label_fieldtop>
+			<buttoncontrol name="disableedge">
+				<bounds>95,9,40,20</bounds>
+				<state icon="button_checkon" />
+				<state icon="button_checkoff" />
+			</buttoncontrol>
+			<label_fieldtop name="label_assets">
+				<anchored to="disableedge" position="below" offset="7,1" />
+				<static textres="diffadj_label_edge" />
+			</label_fieldtop>
+		</sheetdata>
+	</windowclass>
+</root>

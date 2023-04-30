@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="npc" merge="join">
+		<placement>
+			<size width="500" height="500" />
+		</placement>
+		<sizelimits>
+			<minimum width="500" height="500" />
+			<dynamic />
+		</sizelimits>
+	</windowclass>
+	
+	<windowclass name="npc_main">
+		<margins control="0,0,0,2" />
+		<script file="campaign/scripts/npc_main.lua" />
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+			
+			<label_column name="nonid_name_label">
+				<static textres="npc_label_unidentified" />
+			</label_column>
+			<string_columnh name="nonid_name" />
+
+			<line_column name="divider" />
+
+			<label_column name="level_label">
+				<static textres="npc_label_level" />
+			</label_column>
+			<number_column name="level">
+				<script>
+					function onInit()
+						onValueChanged();
+					end
+					function onValueChanged()
+						window.tn.setValue("(" .. getValue() * 3 .. ")");
+					end
+				</script>
+			</number_column>
+			<label name="tn">
+				<anchored to="level" position="righthigh" offset="10,0" />
+			</label>
+			
+			<label_column name="hp_label">
+				<static textres="npc_label_hp" />
+			</label_column>
+			<number_column name="hp" />
+
+			<label_column name="damagestr_label">
+				<static textres="npc_label_damage" />
+			</label_column>
+			<string_column name="damagestr" />
+
+			<label_column name="armor_label">
+				<static textres="npc_label_armor" />
+			</label_column>
+			<number_columnh name="armor" />
+
+			<label_column name="move_label">
+				<static textres="npc_label_move" />
+			</label_column>
+			<string_column name="move">
+				<default textres="default_move" />
+			</string_column>
+
+			<label_column name="modifications_label">
+				<static textres="npc_label_mod" />
+			</label_column>
+			<string_columnh name="modifications" />
+
+			<label_column name="combat_label">
+				<static textres="npc_label_combat" />
+			</label_column>
+			<string_columnh name="combat" />
+
+			<label_column name="intrusion_label">
+				<static textres="npc_label_intrusion" />
+			</label_column>
+			<string_columnh name="intrusion" />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="npc_notes">
+		<margins control="0,0,0,2" />
+		<script file="campaign/scripts/npc_notes.lua" />
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+			
+			<label_column name="motive_label">
+				<static textres="npc_label_motive" />
+			</label_column>
+			<string_columnh name="motive" />
+
+			<label_column name="environment_label">
+				<static textres="npc_label_environment" />
+			</label_column>
+			<string_columnh name="environment" />
+
+			<label_column name="interaction_label">
+				<static textres="npc_label_interaction" />
+			</label_column>
+			<string_columnh name="interaction" />
+
+			<label_column name="use_label">
+				<static textres="npc_label_use" />
+			</label_column>
+			<string_columnh name="use" />
+
+			<label_column name="loot_label">
+				<static textres="npc_label_loot" />
+			</label_column>
+			<string_columnh name="loot" />
+
+			<ft_columnh name="text" />
+		</sheetdata>
+	</windowclass>
+</root>

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="charsheet_inventory" merge="join">
+		<sheetdata>
+			<genericcontrol name="carried_header" merge="delete" />
+			<label name="weight_label" merge="delete" />
+			<label name="location_label" merge="delete" />
+			<label name="level_label" insertbefore="name_label">
+				<anchored to="rightanchor" width="20">
+					<top />
+					<right anchor="left" relation="relative" offset="-10" />
+				</anchored>
+				<center />
+				<static textres="char_label_invlevel" />
+			</label>
+			<label name="type_label" insertbefore="name_label">
+				<anchored to="rightanchor" width="80">
+					<top />
+					<right anchor="left" relation="relative" offset="-10" />
+				</anchored>
+				<center />
+				<static textres="char_label_invtype" />
+			</label>
+			<label name="name_label">
+				<anchored to="rightanchor">
+					<left offset="20" />
+				</anchored>
+			</label>
+			
+			<list_charinv name="inventorylist">
+				<script file="campaign/scripts/char_invlist.lua" />
+			</list_charinv>
+			<button_iedit name="inventorylist_iedit">
+				<anchored offset="-13,10" />
+			</button_iedit>
+			<button_iadd name="inventorylist_iadd">
+				<anchored offset="10,10" />
+			</button_iadd>
+			
+			<simplenumber name="encumbranceload" merge="delete" />
+			<label name="encumbrance_label" merge="delete" />
+			<number_static name="cypherload" insertbefore="coinframe">
+				<anchored to="encumbranceframe" position="insidetopleft" offset="100,50" width="30" height="20" />
+				<script>
+					function onInit()
+						onValueChanged();
+					end
+					
+					function onValueChanged()
+						if getValue() &gt; window.cypherlimit.getValue() then
+							setColor("FF0000");
+							window.cypherload_label.setColor("FF0000");
+						else
+							setColor("000000");
+							window.cypherload_label.setColor("000000");
+						end
+					end
+				</script>
+			</number_static>
+			<label_fieldtop name="cypherload_label" insertbefore="coinframe">
+				<anchored to="cypherload" />
+				<static textres="char_label_invcyphertotal" />
+			</label_fieldtop>
+			<label name="cypherslash_label" insertbefore="coinframe">
+				<anchored to="cypherload" position="righthigh" offset="10,0" />
+				<static>/</static>
+			</label>
+			<basicnumber name="cypherlimit" insertbefore="coinframe">
+				<anchored to="cypherslash_label" position="righthigh" offset="10,0" width="30" height="20" />
+				<script>
+					function onValueChanged()
+						window.cypherload.onValueChanged();
+					end
+				</script>
+			</basicnumber>
+			<label_fieldtop name="cypherlimit_label" insertbefore="coinframe">
+				<anchored to="cypherlimit" />
+				<static textres="char_label_invcypherlimit" />
+			</label_fieldtop>
+			<label name="cypher_label" insertbefore="coinframe">
+				<anchored to="cypherload" position="lefthigh" offset="15,0" />
+				<static textres="char_label_invcypher" />
+			</label>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="char_invitem" merge="join">
+		<sheetdata>
+			<button_char_inv_carried name="carried" merge="delete" />
+			<number_charinv name="weight" merge="delete" />
+			<string_charinvloc name="location" merge="delete" />
+			<basicnumber name="level" insertbefore="name">
+				<anchored width="20" height="20">
+					<top offset="2" />
+					<right parent="rightanchor" anchor="left" relation="relative" offset="-7" />
+				</anchored>
+				<tabtarget prev="type" />
+			</basicnumber>
+			<button_itemtype name="type" insertbefore="name">
+				<anchored height="20">
+					<top offset="2" />
+					<right parent="rightanchor" anchor="left" relation="relative" offset="-7" />
+				</anchored>
+				<tabtarget prev="nonid_name" next="level" />
+			</button_itemtype>
+			
+			<string_charinvname name="name">
+				<script>
+					function onGainFocus()
+						window.windowlist.setSortLock(true);
+						super.onGainFocus();
+					end
+					
+					function onLoseFocus()
+						window.windowlist.setSortLock(false);
+					end
+				</script>
+			</string_charinvname>
+			<string_charinvname name="nonid_name">
+				<script>
+					function onGainFocus()
+						window.windowlist.setSortLock(true);
+						super.onGainFocus();
+					end
+					
+					function onLoseFocus()
+						window.windowlist.setSortLock(false);
+					end
+				</script>
+			</string_charinvname>
+		</sheetdata>
+	</windowclass>
+</root>

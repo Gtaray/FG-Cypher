@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="ps_inventory" merge="join">
+		<sheetdata>
+			<label_ps name="label_parcelitem_count" merge="delete" />
+			<label_ps name="label_parcelitem_name">
+				<anchored offset="10,7" />
+			</label_ps>
+			<label_ps name="label_parcelitem_type" insertbefore="label_parcelitem_name">
+				<anchored to="label_parcelitem_rightanchor" width="80">
+					<right anchor="left" relation="relative" offset="-5" />
+					<bottom />
+				</anchored>
+				<static textres="ps_label_invtype" />
+				<center />
+			</label_ps>
+			<label_ps name="label_parcelitem_assign">
+				<anchored width="80" />
+			</label_ps>
+		</sheetdata>
+	</windowclass>
+	
+	<windowclass name="ps_parcelitem" merge="join">
+		<sheetdata>
+			<basicstring name="assign">
+				<anchored width="80" />
+			</basicstring>
+			<number_dropadd name="count" merge="delete" />
+			<button_itemtype name="type" insertbefore="name">
+				<anchored to="rightanchor" height="20">
+					<top />
+					<right anchor="left" relation="relative" offset="-7" />
+				</anchored>
+			</button_itemtype>
+			<basicstring name="name">
+				<anchored offset="10,2" />
+			</basicstring>
+			<basicstring name="nonid_name">
+				<anchored offset="10,2" />
+			</basicstring>
+		</sheetdata>
+	</windowclass>
+</root>

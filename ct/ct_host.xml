@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="combattracker_host" merge="join">
+		<placement>
+			<size width="550" />
+		</placement>
+		<sizelimits>
+			<minimum width="550" />
+		</sizelimits>
+		<sheetdata>
+			<spacer_ct_host_header_buttons name="spacer_buttons_header_add" insertbefore="label_init">
+				<anchored width="20" />
+			</spacer_ct_host_header_buttons>
+
+			<label_ct_right name="label_level" insertbefore="label_name">
+				<static textres="lvl" />
+				<tooltip textres="level" />
+			</label_ct_right>
+			<label_ct_right name="label_health" insertbefore="label_init">
+				<anchored width="118" />
+				<static textres="ct_label_hp" />
+			</label_ct_right>
+
+			<button_ct_menu name="button_menu">
+				<script file="ct/scripts/ct_menu.lua" />
+			</button_ct_menu>
+		</sheetdata>
+	</windowclass>
+	
+	<windowclass name="ct_entry" merge="join">
+		<script file="ct/scripts/ct_entry.lua" />
+		<sheetdata>
+			<hs name="status" />
+
+			<hnx name="armor" />
+
+			<button_ct_section_active name="button_section_active" insertbefore="button_section_space" />
+
+			<number_ct_crosslink name="intellectpool" insertbefore="initresult">
+				<anchored to="rightanchor" width="22" height="20">
+					<top />
+					<right anchor="left" relation="relative" offset="-10" />
+				</anchored>
+			</number_ct_crosslink>
+			<number_ct_crosslink name="speedpool" insertbefore="initresult">
+				<anchored to="rightanchor" width="22" height="20">
+					<top />
+					<right anchor="left" relation="relative" offset="-10" />
+				</anchored>
+			</number_ct_crosslink>
+			<number_ct_crosslink name="mightpool" insertbefore="initresult">
+				<anchored to="rightanchor" width="22" height="20">
+					<top />
+					<right anchor="left" relation="relative" offset="-10" />
+				</anchored>
+			</number_ct_crosslink>
+			<button_ct_damagetrack name="damagetrack" source="wounds" insertbefore="initresult">
+				<anchored to="rightanchor" width="22" height="20">
+					<top />
+					<right anchor="left" relation="relative" offset="-10" />
+				</anchored>
+			</button_ct_damagetrack>
+
+			<number_ct name="wounds" insertbefore="initresult">
+				<anchored to="rightanchor" width="54" height="20">
+					<top />
+					<right anchor="left" relation="relative" offset="-10" />
+				</anchored>
+				<hideonvalue value="0" />
+				<script>
+					function update()
+						window.onHealthChanged();
+					end
+				</script>
+			</number_ct>
+			<number_ct name="hp" insertbefore="initresult">
+				<anchored to="rightanchor" width="54" height="20">
+					<top />
+					<right anchor="left" relation="relative" offset="-10" />
+				</anchored>
+				<script>
+					function update()
+						window.onHealthChanged();
+					end
+				</script>
+			</number_ct>
+
+			<number_ctentry_initresult name="initresult">
+				<tabtarget prev="level" />
+				<script>
+					function action(draginfo)
+						local rActor = ActorManager.resolveActor(window.getDatabaseNode());
+						local sDesc = "[INIT]";
+						local rRoll = { sType = "init", sDesc = sDesc, aDice = { "d20" }, nMod = 0 };
+						ActionsManager.performAction(draginfo, rActor, rRoll);
+					end
+					function onDoubleClick(x, y)
+						if window.isPC() then
+							action();
+							return true;
+						end
+					end
+					function onDragStart(button, x, y, draginfo)
+						if window.isPC() then
+							action(draginfo);
+							return true;
+						end
+					end
+				</script>
+			</number_ctentry_initresult>
+			<number_ct name="level" insertbefore="name">
+				<anchored to="rightanchor" width="20" height="20">
+					<top />
+					<right anchor="left" relation="relative" offset="-15" />
+				</anchored>
+				<hideonvalue>0</hideonvalue>
+				<tabtarget prev="name" next="initresult"/>
+			</number_ct>
+
+			<sub_ct_section name="sub_active" insertbefore="sub_effects" />
+		</sheetdata>
+	</windowclass>
+	<windowclass name="ct_section_active">
+		<sheetdata>
+			<icon_ct_section name="icon_section">
+				<icon>button_sword_down</icon>
+			</icon_ct_section>
+
+			<anchor_ct_section name="anchor_section" />
+
+			<label name="armor_label">
+				<anchored to="anchor_section" position="insidetopleft" offset="5,10"/>
+				<static textres="armor" />
+			</label>
+			<number_ct name="armor">
+				<anchored to="armor_label" position="righthigh" offset="10,0" />
+			</number_ct>
+			<label name="damage_label">
+				<anchored to="armor" position="righthigh" offset="10,0"/>
+				<static textres="ct_label_damage" />
+			</label>
+			<number_ct name="damage">
+				<anchored to="damage_label" position="righthigh" offset="10,0" />
+				<script>
+					function action(draginfo)
+						local rActor = ActorManager.resolveActor(window.getDatabaseNode());
+						local sDesc = "[DAMAGE]";
+						local rRoll = { sType = "damage", sDesc = sDesc, aDice = { }, nMod = getValue() };
+						ActionsManager.performAction(draginfo, rActor, rRoll);
+					end
+
+					function onDoubleClick(x, y)
+						action();
+						return true;
+					end
+
+					function onDragStart(button, x, y, draginfo)
+						action(draginfo);
+						return true;
+					end
+				</script>
+			</number_ct>
+			<label name="move_label">
+				<anchored to="damage" position="righthigh" offset="10,0"/>
+				<static textres="ct_label_move" />
+			</label>
+			<string_ct name="move">
+				<anchored to="move_label" position="righthigh" offset="5,0" height="20">
+					<right parent="anchor_section" offset="-15" />
+				</anchored>
+			</string_ct>
+
+			<genericcontrol name="spacer">
+				<anchored to="anchor_section" height="30">
+					<top anchor="bottom" relation="relative" />
+					<left />
+					<right />
+				</anchored>
+				<disabled />
+			</genericcontrol>
+			
+			<string_ct_section_labeled name="modifications" />
+			<label_ct_section name="modifications_label">
+				<anchored to="modifications" />
+				<static textres="ct_label_mod" />
+			</label_ct_section>
+			
+			<frame_ct_section name="frame_section">
+				<anchored>
+					<left parent="icon_section" anchor="right" offset="0" />
+					<bottom parent="modifications" offset="10" />
+				</anchored>
+			</frame_ct_section>
+		</sheetdata>
+	</windowclass>
+</root>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="combattracker_client" merge="join">
+		<script>
+			function onInit()
+				super.onInit();
+				OptionsManager.registerCallback("SHPC", updateHealthDisplay);
+				OptionsManager.registerCallback("SHNPC", updateHealthDisplay);
+				updateHealthDisplay();
+			end
+			
+			function onClose()
+				super.onClose();
+				OptionsManager.unregisterCallback("SHPC", updateHealthDisplay);
+				OptionsManager.unregisterCallback("SHNPC", updateHealthDisplay);
+			end
+			
+			function updateHealthDisplay()
+				for _,w in pairs(list.getWindows()) do
+					w.updateHealthDisplay();
+				end
+			end
+		</script>
+		<sheetdata>
+			<label_ct_right name="label_status" insertbefore="label_init">
+				<anchored width="120" />
+				<static textres="ct_label_status" />
+			</label_ct_right>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="client_ct_entry" merge="join">
+		<script file="ct/scripts/clientct_entry.lua" />
+		<sheetdata>
+			<base_clientct_health name="healthbase" insertbefore="initresult" />
+			<string_clientct_status name="status" insertbefore="initresult" />
+			<number_clientct_intellectpool name="intellectpool" insertbefore="initresult" />
+			<number_clientct_speedpool name="speedpool" insertbefore="initresult" />
+			<number_clientct_mightpool name="mightpool" insertbefore="initresult" />
+			<button_clientct_damagetrack name="damagetrack" insertbefore="initresult" />
+			<number_clientct_wounds name="wounds" insertbefore="initresult" />
+			<number_clientct_hp name="hp" insertbefore="initresult" />
+		</sheetdata>
+	</windowclass>
+</root>

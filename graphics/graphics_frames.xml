@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<!-- Override CoreRPG ruleset graphics -->
+	
+	<!-- Desktop -->
+	<framedef name="desktop">
+		<bitmap file="graphics/frames/desktop.png" />
+		<middle rect="0,0,512,512" />
+	</framedef>
+	<framedef name="shortcuts">
+		<bitmap file="graphics/frames/desktop.png" />
+		<right rect="512,0,10,512" />
+		<middle rect="522,0,80,512" />
+		<right rect="602,0,10,512" />
+	</framedef>
+	<framedef name="difficultyadjustpanel">
+		<bitmap file="graphics/frames/difficultyadjustpanel.png" />
+		<offset>10,10,10,16</offset>
+	</framedef>
+	
+	<!-- Hot key bar -->	
+	<framedef name="hotkeybox">
+		<bitmap file="graphics/frames/hotkeybox.png" />
+		<offset>2,5,2,2</offset>
+	</framedef>
+	<framedef name="hotkeytitlebox">
+		<bitmap file="graphics/frames/hotkeytitlebox.png" />
+		<offset>0,0,4,5</offset>
+	</framedef>
+</root>

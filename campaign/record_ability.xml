@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="ability">
+		<frame>referencepage</frame>
+		<placement>
+			<size width="400" height="350" />
+		</placement>
+		<sizelimits>
+			<dynamic />
+		</sizelimits>
+		<minimize>minimized_reference</minimize>
+		<tooltip field="name" />
+		<script file="common/scripts/record_window.lua" />
+		<sheetdata>
+			<sub_record_header name="header">
+				<class>ability_header</class>
+			</sub_record_header>
+
+			<frame_record name="contentframe">
+				<anchored>
+					<top parent="header" anchor="bottom" offset="15" />
+					<left offset="35" />
+					<right offset="-35" />
+					<bottom offset="-32" />
+				</anchored>
+				<frame offset="20,17,20,17" />
+			</frame_record>
+
+			<subwindow_record name="main">
+				<class>ability_main</class>
+				<activate />
+			</subwindow_record>
+
+			<scrollbar_record>
+				<target>main</target>
+			</scrollbar_record>
+			
+			<resize_referencepage />
+			<close_referencepage />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="ability_header">
+		<margins control="0,0,0,7" />
+		<script file="common/scripts/record_header_simple.lua" />
+		<sheetdata>
+			<link_record_header>
+				<class>ability</class>
+			</link_record_header>
+
+			<anchor_record_header_right />
+			<icon_record_locked />
+			<button_record_locked />
+
+			<string_record_name name="name" />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="ability_main">
+		<margins control="0,0,0,2" />
+		<script>
+			function onInit()
+				update();
+			end
+			function update()
+				local bReadOnly = WindowManager.getReadOnlyState(getDatabaseNode());
+				
+				statcost.setReadOnly(bReadOnly);
+				local bShowStatCost = not (bReadOnly and statcost.getValue() == 0);
+				statcost_label.setVisible(bShowStatCost);
+				statcost.setVisible(bShowStatCost);
+				
+				stat.setReadOnly(bReadOnly);
+				local bShowStat = not (bReadOnly and (not stat.getValue() or stat.getValue() == ""));
+				stat_label.setVisible(bShowStat);
+				stat.setVisible(bShowStat);
+				
+				training.setReadOnly(bReadOnly);
+				local bShowTraining = not (bReadOnly and training.getValue() == 1);
+				training_label.setVisible(bShowTraining);
+				training.setVisible(bShowTraining);
+
+				asset.setReadOnly(bReadOnly);
+				local bShowAsset = not (bReadOnly and asset.getValue() == 0);
+				asset_label.setVisible(bShowAsset);
+				asset.setVisible(bShowAsset);
+				
+				modifier.setReadOnly(bReadOnly);
+				local bShowModifier = not(bReadOnly and modifier.getValue() == 0);
+				modifier_label.setVisible(bShowModifier);
+				modifier.setVisible(bShowModifier);
+				
+				ftdesc.setReadOnly(bReadOnly);
+			end
+		</script>
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+
+			<label_column name="statcost_label">
+				<static textres="ability_label_cost" />
+			</label_column>
+			<number_column name="statcost">
+				<frame mergerule="replace" name="fielddark" offset="7,5,7,5" hidereadonly="true" />
+				<min>0</min>
+				<tabtarget next="stat" />
+			</number_column>
+            
+			<label_column name="roll_label">
+                <static textres="roll_label" />
+            </label_column>
+            <button_checkbox_column name="has_roll">
+            </button_checkbox_column>            
+            
+			<label_column name="stat_label">
+				<static textres="char_label_attackstat"/>
+			</label_column>
+			<button_stat name="stat">
+				<anchored width="70" height="20">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+					<left offset="97" />
+				</anchored>
+				<tabtarget next="training" prev="statcost"/>
+			</button_stat>
+
+			<label_column name="training_label">
+				<static textres="char_label_training" />
+			</label_column>
+			<button_skill_wide name="training">
+				<anchored width="70" height="20">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+					<left offset="97" />
+				</anchored>
+				<default>1</default>
+				<tabtarget next="asset" prev="stat" />
+			</button_skill_wide>
+
+			<label_column name="asset_label">
+				<static textres="assets"/>
+			</label_column>
+			<number_column name="asset">
+				<frame mergerule="replace" name="fielddark" offset="7,5,7,5" hidereadonly="true" />
+				<tooltip textres="assets" />
+				<tabtarget next="modifier" prev="training" />
+			</number_column>
+
+			<label_column name="modifier_label">
+				<static textres="modifier" />
+			</label_column>
+			<number_column name="modifier">
+				<frame mergerule="replace" name="fielddark" offset="7,5,7,5" hidereadonly="true" />
+				<tooltip textres="modifier" />
+				<tabtarget next="ftdesc" prev="asset" />
+			</number_column>
+
+			<line_column name="divider" />
+
+			<string_column_full name="description">
+				<readonly />
+				<invisible />
+			</string_column_full>
+
+			<basicft name="ftdesc">
+				<anchored>
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+					<left offset="5" />
+					<right offset="-5" />
+				</anchored>
+				<script>
+					function onInit()
+						local oldDesc = window.description.getValue();
+						if oldDesc == "" then
+							return;
+						end
+						
+						local aDescriptionSplit,_ = StringManager.split(oldDesc, "\n", true);
+						
+						local sFormattedString = "";
+						for _,sDescFragment in pairs(aDescriptionSplit) do
+							sFormattedString = sFormattedString .. "&lt;p&gt;" .. sDescFragment .. "&lt;/p&gt;";
+						end
+						
+						setValue(sFormattedString);
+						window.description.setValue("");
+					end
+				</script>
+				<tabtarget prev="modifier" />
+			</basicft>
+		</sheetdata>
+	</windowclass>
+</root>

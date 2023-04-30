@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<!-- Common -->
+	<string name="xp">XP</string>
+	<string name="init">Init</string>
+	<string name="initiative">Initiative</string>
+	<string name="armor">Armor</string>
+	<string name="assets">Assets</string>
+	<string name="modifier">Modifier</string>
+
+	<string name="might">Might</string>
+	<string name="speed">Speed</string>
+	<string name="intellect">Intellect</string>
+
+	<string name="status_hale">Hale</string>
+	<string name="status_impaired">Impaired</string>
+	<string name="status_debilitated">Debilitated</string>
+	<string name="status_dead">Dead</string>
+	
+	<string name="menu_rest">Rest</string>
+	<string name="menu_restovernight">Overnight Rest</string>
+	<string name="message_restovernight">Taking overnight rest.</string>
+	<string name="ct_message_restovernight">Party taking overnight rest.</string>
+
+	<string name="default_move">Short</string>
+
+	<!-- Options -->
+	<string name="option_label_INITPC">Init: PC</string>
+	<string name="option_label_INITNPC">Init: NPC</string>
+
+	<string name="option_label_HRXP">Hero Points (Intrusion XP)</string>
+
+	<!-- Combat Tracker -->
+	<string name="ct_label_hp">Health</string>
+	
+	<string name="ct_label_status_hale">H</string>
+	<string name="ct_label_status_impaired">I</string>
+	<string name="ct_label_status_debilitated">D</string>
+	<string name="ct_label_status_dead">X</string>
+
+	<string name="ct_label_armor">Armor</string>
+	<string name="ct_label_damage">Damage</string>
+	<string name="ct_label_move">Move</string>
+	<string name="ct_label_mod">Mod</string>
+	<string name="ct_tooltip_combat">Combat</string>
+	
+	<string name="menu_init">Initiative</string>
+	<string name="menu_initpc">Roll PC Initiatives</string>
+	<string name="menu_initclear">Reset Initiatives</string>
+	
+	<!-- Party Sheet -->
+	<string name="ps_label_invtype">Type</string>
+	
+	<!-- Character - Main -->
+	<string name="char_label_main1">is a</string>
+	<string name="char_label_main2">who</string>
+	<string name="char_label_descriptor">DESCRIPTOR</string>
+	<string name="char_label_type">TYPE</string>
+	<string name="char_label_focus">FOCUS</string>
+	<string name="char_label_tier">TIER</string>
+	<string name="char_label_effort">EFFORT</string>
+	<string name="char_label_hero">HERO PTS</string>
+	<string name="char_label_adv_stats">STAT</string>
+	<string name="char_label_adv_edge">EDGE</string>
+	<string name="char_label_adv_effort">EFF</string>
+	<string name="char_label_adv_skill">SKILL</string>
+	
+	<string name="char_label_might">MIGHT</string>
+	<string name="char_label_speed">SPEED</string>
+	<string name="char_label_intellect">INTELLECT</string>
+	<string name="char_label_statmax">Max</string>
+	<string name="char_label_statedge">Edge</string>
+	<string name="char_label_statdef">Def</string>
+	<string name="char_tooltip_mightdef">Might Defense</string>
+	<string name="char_tooltip_speeddef">Speed Defense</string>
+	<string name="char_tooltip_intellectdef">Intellect Defense</string>
+	<string name="char_label_skills">SKILLS</string>
+	
+	<string name="char_label_status">DAMAGE TRACK</string>
+	<string name="char_label_recovery">RECOVERY</string>
+	<string name="char_label_recovery1action">1 Action</string>
+	<string name="char_label_recovery10min">10 Minutes</string>
+	<string name="char_label_recovery1hr">1 Hour</string>
+	<string name="char_label_recovery10hr">10 Hours</string>
+	<string name="char_label_recoveryused">Used</string>
+
+	<string name="char_label_training">Training</string>
+	<string name="char_label_skillinability">In</string>
+	<string name="char_label_skilluntrained">-</string>
+	<string name="char_label_skilltrained">T</string>
+	<string name="char_label_skillspecialized">S</string>
+	<string name="char_tooltip_skillinability">Inability</string>
+	<string name="char_tooltip_skilluntrained">Untrained</string>
+	<string name="char_tooltip_skilltrained">Trained</string>
+	<string name="char_tooltip_skillspecialized">Specialized</string>
+	<string name="char_tooltip_stat">The Stat associated with this skill</string>
+	
+	<!-- Character - Actions -->
+	<string name="char_label_armorspeedcost">Speed Effort Cost</string>
+	
+	<string name="char_label_attacks">Attacks</string>
+	
+	<string name="char_label_atkdetail">Atk</string>
+	<string name="char_label_attackskill">Skl</string>
+	<string name="char_label_attackstat">Stat</string>
+	<string name="char_tooltip_atkstat">The Stat associated with this attack</string>
+	<string name="char_tooltip_atkcost">The Stat Pool cost for using this attack</string>
+	<string name="char_tooltip_attackskill">Skill</string>
+	<string name="char_label_attackasset">Ast</string>
+	<string name="char_label_attackmod">Md</string>
+	<string name="char_label_dmgdetail">Dmg</string>
+	<string name="char_tooltip_dmgdetail">The amount of damage dealt by this attack</string>
+	<string name="char_label_dmgtype">Type</string>
+	<string name="char_tooltip_dmgtype">The Stat Pool that damage will be applied to (PCs only)</string>
+	<string name="char_label_range">Rng</string>
+	<string name="char_label_rangeimmediate">-</string>
+	<string name="char_label_rangeshort">Short</string>
+	<string name="char_label_rangelong">Long</string>
+	<string name="char_label_range200">200 ft.</string>
+	<string name="char_label_ammo">Ammo</string>
+
+	<string name="char_label_abilityname">Abilities</string>
+
+	<!-- Character - Inventory -->
+	<string name="char_label_invtype">Type</string>
+	<string name="char_label_invtypearmor">Armor</string>
+	<string name="char_label_invtypeweapon">Weapon</string>
+	<string name="char_label_invtypecypher">Cypher</string>
+	<string name="char_label_invtypeartifact">Artifact</string>
+	<string name="char_label_invtypeoddity">Oddity</string>
+	
+	<string name="char_label_invlevel">Lvl</string>
+	<string name="char_label_invslots">Slots</string>
+	<string name="char_label_invcypher">Cyphers</string>
+	<string name="char_label_invcypherlimit">Limit</string>
+	<string name="char_label_invcyphertotal">Total</string>
+	
+	<!-- Character - Notes -->
+	<string name="char_label_background">Background</string>
+	
+    <!-- Character - Dialog Boxes -->
+    <string name="dialog_recovery_title">Recovery</string>
+    <string name="label_recovery_remaining">Recovery Remaining</string>
+    
+	<!-- Ability -->
+	<string name="ability_label_cost">Stat Cost</string>
+    <string name="roll_label">Roll?</string>
+    
+	<!-- NPCs -->
+	<string name="npc_label_level">Level</string>
+	<string name="npc_label_hp">Health</string>
+	<string name="npc_label_damage">Damage</string>
+	<string name="npc_label_armor">Armor</string>
+	<string name="npc_label_move">Movement</string>
+	<string name="npc_label_mod">Modifications</string>
+	<string name="npc_label_combat">Combat</string>
+	<string name="npc_label_intrusion">GM Intrusion</string>
+	
+	<string name="npc_label_motive">Motive</string>
+	<string name="npc_label_environment">Environment</string>
+	<string name="npc_label_interaction">Interaction</string>
+	<string name="npc_label_use">Use</string>
+	<string name="npc_label_loot">Loot</string>
+
+	<!-- Items -->
+	<string name="item_label_type">Type</string>
+	<string name="item_label_subtype">Subtype</string>
+	<string name="item_label_armor">Armor</string>
+	<string name="item_label_damage">Damage</string>
+	<string name="item_label_level">Level</string>
+	<string name="item_label_slots">Slots</string>
+	<string name="item_label_depletion">Depletion</string>
+	<string name="item_label_depletionin">in</string>
+	
+	<string name="depletion_tag">DEPLETION</string>
+
+	<!-- Desktop -->
+	<string name="diffadj_label_effort">Effort</string>
+	<string name="diffadj_label_assets">Assets</string>
+	<string name="diffadj_label_edge">Use Edge?</string>
+</root>

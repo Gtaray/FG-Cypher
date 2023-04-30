@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<!-- Buttons -->
+	<icon name="button_bigcheckon" file="graphics/icons/button_bigcheckon.png" />
+	<icon name="button_bigcheckoff" file="graphics/icons/button_bigcheckoff.png" />
+
+	<!-- Rolls -->
+	<icon name="roll1" file="graphics/icons/roll1.png" />
+	<icon name="roll17" file="graphics/icons/roll17.png" />
+	<icon name="roll18" file="graphics/icons/roll18.png" />
+	<icon name="roll19" file="graphics/icons/roll19.png" />
+	<icon name="roll20" file="graphics/icons/roll20.png" />
+	<icon name="task0" file="graphics/icons/task0.png" />
+	<icon name="task1" file="graphics/icons/task1.png" />
+	<icon name="task2" file="graphics/icons/task2.png" />
+	<icon name="task3" file="graphics/icons/task3.png" />
+	<icon name="task4" file="graphics/icons/task4.png" />
+	<icon name="task5" file="graphics/icons/task5.png" />
+	<icon name="task6" file="graphics/icons/task6.png" />
+	<icon name="task7" file="graphics/icons/task7.png" />
+	<icon name="task8" file="graphics/icons/task8.png" />
+	<icon name="task9" file="graphics/icons/task9.png" />
+	<icon name="task10" file="graphics/icons/task10.png" />
+
+	<!-- Override CoreRPG ruleset graphics -->
+
+	<!-- Common -->
+	<icon name="window_resize_filled" file="graphics/icons/window_resize_filled.png" />
+	
+	<!-- Chat window -->
+	<icon name="chat_wait" file="graphics/icons/chat_wait.png" />
+
+	<!-- Character list -->
+	<icon name="charlist_typing" file="graphics/icons/charlist_typing.png" />
+
+	<!-- Minimized icons -->	
+	<icon name="minimized_image" file="graphics/icons/minimized_image.png" />
+	<icon name="minimized_encounter" file="graphics/icons/minimized_encounter.png" />
+	<icon name="minimized_item" file="graphics/icons/minimized_item.png" />
+	<icon name="minimized_npc" file="graphics/icons/minimized_npc.png" />
+	<icon name="minimized_utility" file="graphics/icons/minimized_utility.png" />
+	<icon name="minimized_reference" file="graphics/icons/minimized_reference.png" />
+	<icon name="minimized_note" file="graphics/icons/minimized_note.png" />
+	<icon name="minimized_combat" file="graphics/icons/minimized_combat.png" />
+
+	<!-- Modifier stack -->
+	<icon name="modcollector" file="graphics/icons/modcollector.png" />
+	<icon name="modcollector_counter" file="graphics/icons/modcollector_counter.png" />
+</root>

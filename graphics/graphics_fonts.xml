@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<font name="char_pool">
+		<ttf file="graphics/fonts/Rokkitt-Bold.ttf" name="Rokkitt" size="30" />
+		<color value="#660000" />
+	</font>
+</root>
