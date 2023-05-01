@@ -24,15 +24,6 @@
 		</button_stat>
 	</template>
 
-	<template name="column_skill">
-		<button_skill>
-			<anchored>
-				<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
-				<left offset="97" />
-			</anchored>
-		</button_skill>
-	</template>
-
 	<template name="cycler_training">
 		<button_stringcycler>
 			<parameters>
@@ -43,6 +34,15 @@
 		</button_stringcycler>
 	</template>
 
+	<template name="column_training">
+		<cycler_training>
+			<anchored>
+				<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+				<left offset="97" />
+			</anchored>
+		</cycler_training>
+	</template>
+
 	<template name="cycler_range">
 		<button_stringcycler>
 			<parameters>
@@ -51,6 +51,15 @@
 				<values>Immediate|Short|Far|Very Far</values>
 			</parameters>
 		</button_stringcycler>
+	</template>
+
+	<template name="column_range">
+		<cycler_range>
+			<anchored>
+				<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+				<left offset="97" />
+			</anchored>
+		</cycler_range>
 	</template>
 
 	<template name="cycler_costtype">
