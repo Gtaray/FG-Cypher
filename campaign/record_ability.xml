@@ -118,7 +118,7 @@
             </button_checkbox_column>            
             
 			<label_column name="stat_label">
-				<static textres="char_label_attackstat"/>
+				<static textres="power_label_attackstat"/>
 			</label_column>
 			<button_stat name="stat">
 				<anchored width="70" height="20">
@@ -129,7 +129,7 @@
 			</button_stat>
 
 			<label_column name="training_label">
-				<static textres="char_label_training" />
+				<static textres="power_label_training" />
 			</label_column>
 			<button_skill_wide name="training">
 				<anchored width="70" height="20">

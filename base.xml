@@ -41,7 +41,9 @@
 	<includefile source="campaign/record_char_inventory.xml" />
 	<includefile source="campaign/record_char_notes.xml" />
 	<includefile source="campaign/record_char_actions.xml" />
-	<includefile source="campaign/record_char_action_attack.xml" />
+	<includefile source="campaign/record_char_actions_attack.xml" />
+	<includefile source="campaign/record_char_actions_power.xml" />
+	<includefile source="campaign/record_power_roll.xml" />
 	<includefile source="campaign/record_ability.xml" />
 	<script name="CharManager" file="campaign/scripts/manager_char.lua" />
 
@@ -70,6 +72,7 @@
 	<script name="EffectManagerCypher" file="scripts/manager_effect_cypher.lua" />
 	<script name="CombatManager2" file="scripts/manager_combat2.lua" />
 	<script name="RollManager" file="scripts/manager_roll.lua"/>
+	<script name="PowerManager" file="scripts/manager_power.lua" />
 	<script name="PromptManager" file="scripts/manager_prompt.lua" />
 
 	<script name="ActionGeneral" file="scripts/manager_action_general.lua" />

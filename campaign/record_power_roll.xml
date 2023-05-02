@@ -1,0 +1,1027 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<root>
+	<!-- STAT / SKILL -->
+	<windowclass name="power_action_stat">
+		<margins control="0,0,0,2" />
+		<script>
+			function onInit()
+				self.onDataChanged();
+				DB.addHandler(getDatabaseNode(), "onChildUpdate", self.onDataChanged);
+			end
+			function onClose()
+				DB.removeHandler(getDatabaseNode(), "onChildUpdate", self.onDataChanged);
+			end
+			function onDataChanged()
+				rollview.setValue(PowerActionManagerCore.getActionText(getDatabaseNode()));
+			end
+			function performAction(draginfo, sSubRoll)
+				PowerActionManagerCore.performAction(draginfo, getDatabaseNode(), { sSubRoll = sSubRoll });
+			end
+		</script>
+		<sheetdata>			
+			<button_poweraction name="rollbutton">
+				<anchored position="insidetopleft" offset="2,2" />
+				<icon normal="button_roll" pressed="button_roll_down" />
+			</button_poweraction>
+			<label name="rollviewlabel">
+				<anchored to="rollbutton" position="righthigh" offset="5,0" width="40" />
+				<static textres="power_label_roll" />
+			</label>
+			<string_poweractionview name="rollview">
+				<anchored to="rollviewlabel" position="righthigh" offset="10,0">
+					<right parent="" offset="-5" />
+				</anchored>
+			</string_poweractionview>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="power_action_editor_stat">
+		<script>
+			function onInit()
+				updateCostType();
+			end
+			function updateCostType()
+				local nodeActor = DB.getChild(getDatabaseNode(), ".....");
+				local bPc = ActorManager.isPC(nodeActor);
+				local bRef = DB.getName(DB.getChild(getDatabaseNode(), "....")) == "ability";
+				local bFixed = DB.getValue(getDatabaseNode(), "costtype", "") == "fixed";
+				
+				header_cost.setVisible(bPc or bRef);
+				costtype_label.setVisible(bPc or bRef);
+				costtype.setVisible(bPc or bRef);
+
+				costtext1.setVisible((bPc or bRef) and bFixed);
+				cost.setVisible((bPc or bRef) and bFixed);
+				cost_label.setVisible((bPc or bRef) and bFixed);
+				costtext2.setVisible((bPc or bRef) and bFixed);
+				coststat.setVisible((bPc or bRef) and bFixed);
+				coststat_label.setVisible((bPc or bRef) and bFixed);				
+				costtext3.setVisible((bPc or bRef) and bFixed);
+			end
+		</script>
+
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+			
+			<label_column name="name_label">
+				<static textres="power_label_name" />
+			</label_column>
+			<stringc_column name="name" />
+
+			<header_column name="header_stat">
+				<static textres="power_header_stat" />
+				<center />
+			</header_column>
+
+			<button_stat name="stat">
+				<anchored width="80" height="20">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="20" />
+					<left offset="5" />
+				</anchored>
+			</button_stat>
+			<label_fieldtop>
+				<anchored to="stat" />
+				<static textres="power_label_stat" />
+			</label_fieldtop>
+
+			<cycler_training name="training">
+				<anchored to="stat" position="righthigh" offset="10,0" width="80" height="20" />
+			</cycler_training>
+			<label_fieldtop>
+				<anchored to="training" />
+				<static textres="power_label_training" />
+			</label_fieldtop>
+
+			<basicnumber name="asset">
+				<anchored to="training" position="righthigh" offset="10,0" width="25" height="20" />
+				<hideonvalue value="0" />
+			</basicnumber>
+			<label_fieldtop>
+				<anchored to="asset" />
+				<static textres="power_label_asset" />
+			</label_fieldtop>
+
+			<basicnumber name="modifier">
+				<anchored to="asset" position="righthigh" offset="10,0" width="25" height="20" />
+				<hideonvalue value="0" />
+			</basicnumber>
+			<label_fieldtop>
+				<anchored to="modifier" />
+				<static textres="power_label_modifier" />
+			</label_fieldtop>
+
+			<header_column name="header_cost">
+				<static textres="power_header_cost" />
+				<center />
+			</header_column>
+			<label_column name="costtype_label">
+				<static textres="power_label_costtype" />
+			</label_column>
+			<cycler_costtype name="costtype" />
+			
+			<label_column name="costtext1">
+				<anchored>
+					<top offset="20" />
+				</anchored>
+				<static textres="power_label_cost_texft_1" />
+			</label_column>
+			<number_column name="cost">
+				<anchored to="costtext1" width="25" height="20">
+					<top offset="20" />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<min>0</min>
+			</number_column>
+			<label_fieldtop name="cost_label">
+				<anchored to="cost" />
+				<static textres="power_label_cost" />
+			</label_fieldtop>
+			<label name="costtext2">
+				<anchored to="cost" width="93">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_cost_texft_2" />
+			</label>
+			<button_stat name="coststat">
+				<anchored to="cost" width="70" height="20">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<tooltip textres="power_tooltip_coststat" />
+			</button_stat>
+			<label_fieldtop name="coststat_label">
+				<anchored to="coststat" />
+				<static textres="power_label_coststat" />
+			</label_fieldtop>
+			<label name="costtext3">
+				<anchored to="cost" width="40">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_cost_texft_3" />
+			</label>	
+		</sheetdata>
+	</windowclass>
+
+	<!-- ATTACK -->
+	<windowclass name="power_action_attack">
+		<margins control="0,0,0,2" />
+		<script>
+			function onInit()
+				self.onDataChanged();
+				local node = getDatabaseNode();
+				local abilityNode = DB.getChild(node, "...");
+				local nodeActor = PowerManagerCore.getPowerActorNode(abilityNode);
+
+				DB.addHandler(node, "onChildUpdate", self.onDataChanged);
+				DB.addHandler(DB.getPath(abilityNode, "useequipped"), "onUpdate", onDataChanged);
+				DB.addHandler(DB.getPath(nodeActor, "attacklist.*"), "onChildUpdate", onDataChanged);
+			end
+			function onClose()
+				local node = getDatabaseNode();
+				local abilityNode = DB.getChild(node, "...");
+				local nodeActor = PowerManagerCore.getPowerActorNode(abilityNode);
+
+				DB.removeHandler(node, "onChildUpdate", self.onDataChanged);
+				DB.removeHandler(DB.getPath(abilityNode, "useequipped"), "onUpdate", onDataChanged);
+				DB.removeHandler(DB.getPath(nodeActor, "attacklist.*"), "onChildUpdate", onDataChanged);
+			end
+			function onDataChanged()
+				attackview.setValue(PowerActionManagerCore.getActionText(getDatabaseNode()));
+			end
+			function performAction(draginfo, sSubRoll)
+				PowerActionManagerCore.performAction(draginfo, getDatabaseNode(), { sSubRoll = sSubRoll });
+			end
+		</script>
+		<sheetdata>			
+			<button_poweraction name="attackbutton">
+				<anchored position="insidetopleft" offset="2,2" />
+				<icon normal="button_action_attack" pressed="button_action_attack_down" />
+			</button_poweraction>
+			<label name="attackviewlabel">
+				<anchored to="attackbutton" position="righthigh" offset="5,0" width="40" />
+				<static textres="power_label_atk" />
+			</label>
+			<string_poweractionview name="attackview">
+				<anchored to="attackviewlabel" position="righthigh" offset="10,0">
+					<right parent="" offset="-5" />
+				</anchored>
+			</string_poweractionview>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="power_action_editor_attack">
+		<script>
+			function onInit()
+				local nodeActor = DB.getChild(getDatabaseNode(), ".....");
+				local bPc = ActorManager.isPC(nodeActor);
+				local bRef = DB.getName(DB.getChild(getDatabaseNode(), "....")) == "ability";
+				
+				training.setVisible(bPc or bRef);
+				training_label.setVisible(bPc or bRef);
+				asset.setVisible(bPc or bRef);
+				asset_label.setVisible(bPc or bRef);
+				modifier.setVisible(bPc or bRef);
+				modifier_label.setVisible(bPc or bRef);
+
+				level.setVisible(not (bPc or bRef));
+				level_label.setVisible(not (bPc or bRef));
+				
+				updateCostType();
+			end
+			function updateCostType()
+				local nodeActor = DB.getChild(getDatabaseNode(), ".....");
+				local bPc = ActorManager.isPC(nodeActor);
+				local bRef = DB.getName(DB.getChild(getDatabaseNode(), "....")) == "ability";
+				local bFixed = DB.getValue(getDatabaseNode(), "costtype", "") == "fixed";
+
+				header_cost.setVisible(bPc or bRef);
+				costtype_label.setVisible(bPc or bRef);
+				costtype.setVisible(bPc or bRef);
+
+				costtext1.setVisible((bPc or bRef) and bFixed);
+				cost.setVisible((bPc or bRef) and bFixed);
+				cost_label.setVisible((bPc or bRef) and bFixed);
+				costtext2.setVisible((bPc or bRef) and bFixed);
+				coststat.setVisible((bPc or bRef) and bFixed);
+				coststat_label.setVisible((bPc or bRef) and bFixed);				
+				costtext3.setVisible((bPc or bRef) and bFixed);
+			end
+		</script>
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+			
+			<label_column name="name_label">
+				<static textres="power_label_name" />
+			</label_column>
+			<stringc_column name="name" />
+
+			<header_column name="header_attack">
+				<static textres="power_header_attack" />
+				<center />
+			</header_column>
+
+			<label_column name="attacktext1">
+				<anchored>
+					<top offset="20" />
+				</anchored>
+				<static textres="power_label_attack_text_1" />
+			</label_column>
+			<column_stat name="stat">
+				<anchored to="attacktext1" width="70" height="20">
+					<top offset="20"/>
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<tooltip textres="power_tooltip_attackstat" />
+			</column_stat>
+			<label_fieldtop>
+				<anchored to="stat" />
+				<static textres="power_label_attackstat" />
+			</label_fieldtop>
+			<label name="attacktext2">
+				<anchored to="stat" width="125">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_attack_text_2" />
+			</label>
+			<button_stat name="defensestat">
+				<anchored to="stat" width="70" height="20">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<tooltip textres="power_tooltip_defensestat" />
+			</button_stat>
+			<label_fieldtop>
+				<anchored to="defensestat" />
+				<static textres="power_label_defensestat" />
+			</label_fieldtop>
+			<label name="attacktext3">
+				<anchored to="stat" width="100">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_attack_text_3" />
+			</label>
+
+			<label_column name="atkrange_label">
+				<static textres="power_label_attackrange" />
+			</label_column>
+			<column_range name="atkrange">
+				<anchored width="80" />
+			</column_range>
+
+			<label_column name="training_label">
+				<static textres="power_label_training" />
+			</label_column>
+			<column_training name="training">
+				<anchored width="80" />
+			</column_training>
+
+			<label_column name="asset_label">
+				<static textres="power_label_asset" />
+			</label_column>
+			<number_column name="asset">
+				<hideonvalue value="0" />
+			</number_column>
+
+			<label_column name="modifier_label">
+				<static textres="power_label_modifier" />
+			</label_column>
+			<number_column name="modifier">
+				<hideonvalue value="0" />
+			</number_column>
+
+			<label_column name="level_label">
+				<static textres="power_label_level" />
+			</label_column>
+			<number_column name="level">
+				<hideonvalue value="0" />
+			</number_column>
+
+			<header_column name="header_cost">
+				<static textres="power_header_cost" />
+				<center />
+			</header_column>
+			<label_column name="costtype_label">
+				<static textres="power_label_costtype" />
+			</label_column>
+			<cycler_costtype name="costtype" />
+			
+			<label_column name="costtext1">
+				<anchored>
+					<top offset="20" />
+				</anchored>
+				<static textres="power_label_cost_texft_1" />
+			</label_column>
+			<number_column name="cost">
+				<anchored to="costtext1" width="25" height="20">
+					<top offset="20" />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<min>0</min>
+			</number_column>
+			<label_fieldtop name="cost_label">
+				<anchored to="cost" />
+				<static textres="power_label_cost" />
+			</label_fieldtop>
+			<label name="costtext2">
+				<anchored to="cost" width="93">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_cost_texft_2" />
+			</label>
+			<button_stat name="coststat">
+				<anchored to="cost" width="70" height="20">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<tooltip textres="power_tooltip_coststat" />
+			</button_stat>
+			<label_fieldtop name="coststat_label">
+				<anchored to="coststat" />
+				<static textres="power_label_coststat" />
+			</label_fieldtop>
+			<label name="costtext3">
+				<anchored to="cost" width="40">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_cost_texft_3" />
+			</label>
+		</sheetdata>
+	</windowclass>
+
+	<!-- DAMAGE -->
+	<windowclass name="power_action_damage">
+		<margins control="0,0,0,2" />
+		<script>
+			function onInit()
+				self.onDataChanged();
+				local node = getDatabaseNode();
+				local abilityNode = DB.getChild(node, "...");
+				local nodeActor = PowerManagerCore.getPowerActorNode(abilityNode);
+
+				DB.addHandler(node, "onChildUpdate", self.onDataChanged);
+				DB.addHandler(DB.getPath(abilityNode, "useequipped"), "onUpdate", onDataChanged);
+				DB.addHandler(DB.getPath(nodeActor, "attacklist.*"), "onChildUpdate", onDataChanged);
+			end
+			function onClose()
+				local node = getDatabaseNode();
+				local abilityNode = DB.getChild(node, "...");
+				local nodeActor = PowerManagerCore.getPowerActorNode(abilityNode);
+
+				DB.removeHandler(node, "onChildUpdate", self.onDataChanged);
+				DB.removeHandler(DB.getPath(abilityNode, "useequipped"), "onUpdate", onDataChanged);
+				DB.removeHandler(DB.getPath(nodeActor, "attacklist.*"), "onChildUpdate", onDataChanged);
+			end
+			function onDataChanged()
+				damageview.setValue(PowerActionManagerCore.getActionText(getDatabaseNode()));
+			end
+			function performAction(draginfo, sSubRoll)
+				PowerActionManagerCore.performAction(draginfo, getDatabaseNode(), { sSubRoll = sSubRoll });
+			end
+		</script>
+		<sheetdata>
+			<button_poweraction name="damagebutton">
+				<anchored position="insidetopleft" offset="2,2" />
+				<icon normal="button_action_damage" pressed="button_action_damage_down" />
+			</button_poweraction>
+			<label name="damagelabel">
+				<anchored to="damagebutton" position="righthigh" offset="5,0" width="40" />
+				<static textres="power_label_dmg" />
+			</label>
+			<string_poweractionview name="damageview">
+				<anchored to="damagelabel" position="righthigh" offset="10,0">
+					<right parent="" offset="-5" />
+				</anchored>
+			</string_poweractionview>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="power_action_editor_damage">
+		<script>
+			function onInit()
+				local nodeActor = DB.getChild(getDatabaseNode(), ".....");
+				local bPc = ActorManager.isPC(nodeActor);
+				local bRef = DB.getName(DB.getChild(getDatabaseNode(), "....")) == "ability";
+				
+				ambient.setVisible(not (bPc or bRef));
+				ambient_label.setVisible(not (bPc or bRef));
+
+				updateCostType();
+				updatePierceAmount();
+			end
+			function updateCostType()
+				local nodeActor = DB.getChild(getDatabaseNode(), ".....");
+				local bPc = ActorManager.isPC(nodeActor);
+				local bRef = DB.getName(DB.getChild(getDatabaseNode(), "....")) == "ability";
+				local bFixed = DB.getValue(getDatabaseNode(), "costtype", "") == "fixed";
+
+				header_cost.setVisible(bPc or bRef);
+				costtype_label.setVisible(bPc or bRef);
+				costtype.setVisible(bPc or bRef);
+				
+				costtext1.setVisible((bPc or bRef) and bFixed);
+				cost.setVisible((bPc or bRef) and bFixed);
+				cost_label.setVisible((bPc or bRef) and bFixed);
+				costtext2.setVisible((bPc or bRef) and bFixed);
+				coststat.setVisible((bPc or bRef) and bFixed);
+				coststat_label.setVisible((bPc or bRef) and bFixed);				
+				costtext3.setVisible((bPc or bRef) and bFixed);
+			end
+			function updatePierceAmount()
+				pierceamount.setVisible(pierce.getValue() == "Yes");
+			end
+		</script>
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+			
+			<label_column name="name_label">
+				<static textres="power_label_name" />
+			</label_column>
+			<stringc_column name="name" />
+
+			<header_column name="header_damage">
+				<static textres="power_header_damage" />
+				<center />
+			</header_column>
+
+			<label_column name="damagetext1">
+				<anchored>
+					<top offset="20" />
+				</anchored>
+				<static textres="power_label_damage_text_1" />
+			</label_column>
+			<number_column name="damage">
+				<anchored to="damagetext1" width="25" height="20">
+					<top offset="20" />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<min>0</min>
+			</number_column>
+			<label_fieldtop name="damage_label">
+				<anchored to="damage" />
+				<static textres="power_label_damage" />
+			</label_fieldtop>
+			<label name="damagetext2">
+				<anchored to="damage" width="137">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_damage_text_2" />
+			</label>
+			<button_stat name="statdmg">
+				<anchored to="damage" width="70" height="20">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<tooltip textres="power_tooltip_statdmg" />
+			</button_stat>
+			<label_fieldtop name="statdmg_label">
+				<anchored to="statdmg" />
+				<static textres="power_label_statdmg" />
+			</label_fieldtop>
+			<label name="damagetext3">
+				<anchored to="damage" width="40">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_damage_text_3" />
+			</label>
+
+			<!-- <stringu_damagetype_autocomplete name="damagetype">
+				<anchored to="statdmg" height="20">
+					<top />
+					<left anchor="right" offset="10" />
+					<right parent="" offset="-10" />
+				</anchored>
+			</stringu_damagetype_autocomplete>
+			<label_fieldtop>
+				<anchored to="damagetype" />
+				<static textres="power_label_damagetype" />
+			</label_fieldtop> -->
+
+			<label_column name="pierce_label">
+				<static textres="power_label_pierce" />
+			</label_column>
+			<cycler_column name="pierce">
+				<anchored width="80" />
+				<script>
+					function onValueChanged()
+						if super and super.onValueChanged then
+							super.onValueChanged()
+						end
+						window.updatePierceAmount();
+					end
+				</script>
+				<parameters>
+					<labelsres>yes</labelsres>
+					<values>yes</values>
+					<defaultlabel>No</defaultlabel>
+				</parameters>
+				<tooltip textres="power_tooltip_pierce" />
+			</cycler_column>
+			<basicnumber name="pierceamount">
+				<anchored to="pierce" position="righthigh" offset="10,0" width="30" height="20" />
+				<min>0</min>
+				<tooltip textres="power_tooltip_pierceamount" />
+			</basicnumber>
+
+			<label_column name="ambient_label">
+				<static textres="power_label_ambient" />
+			</label_column>
+			<cycler_column name="ambient">
+				<anchored width="80" />
+				<parameters>
+					<labelsres>yes</labelsres>
+					<values>yes</values>
+					<defaultlabel>No</defaultlabel>
+				</parameters>
+				<tooltip textres="power_tooltip_ambient" />
+			</cycler_column>
+
+			<header_column name="header_cost">
+				<static textres="power_header_cost" />
+				<center />
+			</header_column>
+			<label_column name="costtype_label">
+				<static textres="power_label_costtype" />
+			</label_column>
+			<cycler_costtype name="costtype" />
+			
+			<label_column name="costtext1">
+				<anchored>
+					<top offset="20" />
+				</anchored>
+				<static textres="power_label_cost_texft_1" />
+			</label_column>
+			<number_column name="cost">
+				<anchored to="costtext1" width="25" height="20">
+					<top offset="20" />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<min>0</min>
+			</number_column>
+			<label_fieldtop name="cost_label">
+				<anchored to="cost" />
+				<static textres="power_label_cost" />
+			</label_fieldtop>
+			<label name="costtext2">
+				<anchored to="cost" width="93">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_cost_texft_2" />
+			</label>
+			<button_stat name="coststat">
+				<anchored to="cost" width="70" height="20">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<tooltip textres="power_tooltip_coststat" />
+			</button_stat>
+			<label_fieldtop name="coststat_label">
+				<anchored to="coststat" />
+				<static textres="power_label_coststat" />
+			</label_fieldtop>
+			<label name="costtext3">
+				<anchored to="cost" width="40">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_cost_texft_3" />
+			</label>
+		</sheetdata>
+	</windowclass>
+
+	<!-- HEAL -->
+	<windowclass name="power_action_heal">
+		<margins control="0,0,0,2" />
+		<script>
+			function onInit()
+				self.onDataChanged();
+				DB.addHandler(getDatabaseNode(), "onChildUpdate", self.onDataChanged);
+			end
+			function onClose()
+				DB.removeHandler(getDatabaseNode(), "onChildUpdate", self.onDataChanged);
+			end
+			function onDataChanged()
+				healview.setValue(PowerActionManagerCore.getActionText(getDatabaseNode()));
+			end
+			function performAction(draginfo, sSubRoll)
+				PowerActionManagerCore.performAction(draginfo, getDatabaseNode(), { sSubRoll = sSubRoll });
+			end
+		</script>
+		<sheetdata>
+			<button_poweraction name="healbutton">
+				<anchored position="insidetopleft" offset="2,2" />
+				<icon normal="button_action_heal" pressed="button_action_heal_down" />
+			</button_poweraction>
+			<label name="heallabel">
+				<anchored to="healbutton" position="righthigh" offset="5,0" width="40" />
+				<static textres="power_label_heal" />
+			</label>
+			<button_iconcycler name="healtargeting">
+				<anchored to="heallabel" position="righthigh" offset="5,5" width="30" height="10" />
+				<parameters>
+					<icons>button_toggle_self</icons>
+					<values>self</values>
+					<tooltipsres>power_tooltip_targetself</tooltipsres>
+					<defaulticon>button_toggle_trgt</defaulticon>
+					<defaulttooltipres>power_tooltip_targetnormal</defaulttooltipres>
+				</parameters>
+			</button_iconcycler>
+			<string_poweractionview name="healview">
+				<anchored to="heallabel" position="righthigh" offset="40,0">
+					<right parent="" offset="-5" />
+				</anchored>
+			</string_poweractionview>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="power_action_editor_heal">
+		<script>
+			function onInit()
+				updateCostType();
+			end
+			function updateCostType()
+				local nodeActor = DB.getChild(getDatabaseNode(), ".....");
+				local bPc = ActorManager.isPC(nodeActor);
+				local bRef = DB.getName(DB.getChild(getDatabaseNode(), "....")) == "ability";
+				local bFixed = DB.getValue(getDatabaseNode(), "costtype", "") == "fixed";
+
+				header_cost.setVisible(bPc or bRef);
+				costtype_label.setVisible(bPc or bRef);
+				costtype.setVisible(bPc or bRef);
+				
+				costtext1.setVisible((bPc or bRef) and bFixed);
+				cost.setVisible((bPc or bRef) and bFixed);
+				cost_label.setVisible((bPc or bRef) and bFixed);
+				costtext2.setVisible((bPc or bRef) and bFixed);
+				coststat.setVisible((bPc or bRef) and bFixed);
+				coststat_label.setVisible((bPc or bRef) and bFixed);				
+				costtext3.setVisible((bPc or bRef) and bFixed);
+			end
+		</script>
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+			
+			<label_column name="name_label">
+				<static textres="power_label_name" />
+			</label_column>
+			<stringc_column name="name" />
+
+			<header_column name="header_heal">
+				<static textres="power_header_heal" />
+				<center />
+			</header_column>
+
+			<label_column name="healtext1">
+				<anchored width="28">
+					<top offset="20" />
+				</anchored>
+				<static textres="power_label_heal_text_1" />
+			</label_column>
+			<cycler_column name="healtargeting">
+				<anchored to="healtext1" width="60" height="20">
+					<top offset="20" />
+					<left anchor="right" offset="10" />
+				</anchored>
+				<parameters>
+					<defaultlabelres>power_label_targetnormal</defaultlabelres>
+					<labelsres>power_label_targetself</labelsres>
+					<values>self</values>
+				</parameters>
+			</cycler_column>
+			<label_fieldtop name="healtargeting_label">
+				<static textres="power_label_targeting" />
+				<anchored to="healtargeting" />
+			</label_fieldtop>
+			<label name="healtext2">
+				<anchored to="healtargeting" width="18">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_heal_text_2" />
+			</label>
+			<basicnumber name="heal">
+				<anchored to="healtargeting" width="30" height="20">
+					<top  />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<min>0</min>
+			</basicnumber>
+			<label_fieldtop>
+				<anchored to="heal" />
+				<static textres="power_label_heal" />
+			</label_fieldtop>
+			<button_stat name="healstat">
+				<anchored to="healtargeting" width="70" height="20">
+					<top  />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<tooltip textres="power_tooltip_healstat" />
+			</button_stat>
+			<label_fieldtop>
+				<anchored to="healstat" />
+				<static textres="power_label_healstat" />
+			</label_fieldtop>
+
+			<header_column name="header_cost">
+				<static textres="power_header_cost" />
+				<center />
+			</header_column>
+			<label_column name="costtype_label">
+				<static textres="power_label_costtype" />
+			</label_column>
+			<cycler_costtype name="costtype" />
+			
+			<label_column name="costtext1">
+				<anchored>
+					<top offset="20" />
+				</anchored>
+				<static textres="power_label_cost_texft_1" />
+			</label_column>
+			<number_column name="cost">
+				<anchored to="costtext1" width="25" height="20">
+					<top offset="20" />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<min>0</min>
+			</number_column>
+			<label_fieldtop name="cost_label">
+				<anchored to="cost" />
+				<static textres="power_label_cost" />
+			</label_fieldtop>
+			<label name="costtext2">
+				<anchored to="cost" width="93">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_cost_texft_2" />
+			</label>
+			<button_stat name="coststat">
+				<anchored to="cost" width="70" height="20">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<tooltip textres="power_tooltip_coststat" />
+			</button_stat>
+			<label_fieldtop name="coststat_label">
+				<anchored to="coststat" />
+				<static textres="power_label_coststat" />
+			</label_fieldtop>
+			<label name="costtext3">
+				<anchored to="cost" width="40">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_cost_texft_3" />
+			</label>
+		</sheetdata>
+	</windowclass>
+	
+	<!-- EFFECTS -->
+	<windowclass name="power_action_effect">
+		<margins control="0,0,0,2" />
+		<script>
+			function onInit()
+				self.onDataChanged();
+				DB.addHandler(getDatabaseNode(), "onChildUpdate", self.onDataChanged);
+			end
+			function onClose()
+				DB.removeHandler(getDatabaseNode(), "onChildUpdate", self.onDataChanged);
+			end
+			function onDataChanged()
+				local nodeAction = getDatabaseNode();
+				
+				local sLabel = PowerActionManagerCore.getActionText(nodeAction);
+				local sDuration = PowerActionManagerCore.getActionText(nodeAction, { sSubRoll = "duration" });
+
+				effectview.setValue(sLabel);
+				durationview.setValue(sDuration);
+			end
+			function performAction(draginfo, sSubRoll)
+				PowerActionManagerCore.performAction(draginfo, getDatabaseNode(), { sSubRoll = sSubRoll });
+			end
+		</script>
+		<sheetdata>
+			<button_poweraction name="effectbutton">
+				<anchored position="insidetopleft" offset="2,2" />
+				<icon normal="button_action_effect" pressed="button_action_effect_down" />
+			</button_poweraction>
+			<label name="effectlabel">
+				<anchored to="effectbutton" position="righthigh" offset="5,0" width="40" />
+				<static textres="power_label_effect" />
+			</label>
+			<button_iconcycler name="targeting">
+				<anchored to="effectlabel" position="righthigh" offset="5,5" width="30" height="10" />
+				<parameters>
+					<icons>button_toggle_self</icons>
+					<values>self</values>
+					<tooltipsres>power_tooltip_targetself</tooltipsres>
+					<defaulticon>button_toggle_trgt</defaulticon>
+					<defaulttooltipres>power_tooltip_targetnormal</defaulttooltipres>
+				</parameters>
+			</button_iconcycler>
+			<string_poweractionview name="effectview">
+				<anchored to="effectlabel" position="righthigh" offset="40,0">
+					<right parent="" offset="-65" />
+				</anchored>
+			</string_poweractionview>
+			<string_poweractionview name="durationview">
+				<anchored to="effectview" position="righthigh" offset="10,0" width="50" />
+			</string_poweractionview>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="power_action_editor_effect">
+		<script>
+			function onInit()
+				updateCostType();
+			end
+			function updateCostType()
+				local nodeActor = DB.getChild(getDatabaseNode(), ".....");
+				local bPc = ActorManager.isPC(nodeActor);
+				local bRef = DB.getName(DB.getChild(getDatabaseNode(), "....")) == "ability";
+				local bFixed = DB.getValue(getDatabaseNode(), "costtype", "") == "fixed";
+
+				header_cost.setVisible(bPc or bRef);
+				costtype_label.setVisible(bPc or bRef);
+				costtype.setVisible(bPc or bRef);
+				
+				costtext1.setVisible((bPc or bRef) and bFixed);
+				cost.setVisible((bPc or bRef) and bFixed);
+				cost_label.setVisible((bPc or bRef) and bFixed);
+				costtext2.setVisible((bPc or bRef) and bFixed);
+				coststat.setVisible((bPc or bRef) and bFixed);
+				coststat_label.setVisible((bPc or bRef) and bFixed);				
+				costtext3.setVisible((bPc or bRef) and bFixed);
+			end
+		</script>
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+			
+			<label_column name="name_label">
+				<static textres="power_label_name" />
+			</label_column>
+			<stringc_column name="name" />
+
+			<header_column name="header_label">
+				<static textres="power_header_effect" />
+				<center />
+			</header_column>
+			<string_column_full name="label" />
+			
+			<header_column name="header_duration">
+				<static textres="power_header_effect_duration" />
+				<center />
+			</header_column>
+			<basicnumber name="durmod">
+				<anchored width="30" height="20">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+					<left offset="5" />
+				</anchored>
+				<hideonvalue value="0" />
+			</basicnumber>
+			<button_stringcycler name="durunit">
+				<anchored to="durmod" position="righthigh" offset="10,0" width="40" height="20" />
+				<parameters>
+					<defaultlabelres>effect_label_durunitrnd</defaultlabelres>
+					<labelsres>effect_label_durunitmin|effect_label_durunithr|effect_label_durunitday</labelsres>
+					<values>minute|hour|day</values>
+				</parameters>
+			</button_stringcycler>
+			
+			<header_column name="header_other">
+				<static textres="power_header_effect_other" />
+				<center />
+			</header_column>
+			
+			<label_column name="targeting_label">
+				<static textres="power_label_targeting" />
+			</label_column>
+			<button_stringcycler name="targeting">
+				<anchored width="60" height="20">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+					<left offset="97" />
+				</anchored>
+				<parameters>
+					<defaultlabelres>power_label_targetnormal</defaultlabelres>
+					<labelsres>power_label_targetself</labelsres>
+					<values>self</values>
+				</parameters>
+			</button_stringcycler>
+			
+			<label_column name="apply_label">
+				<static textres="power_label_effect_apply" />
+			</label_column>
+			<button_stringcycler name="apply">
+				<anchored width="120" height="20">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+					<left offset="97" />
+				</anchored>
+				<parameters>
+					<defaultlabelres>power_label_effect_applyall</defaultlabelres>
+					<labelsres>power_label_effect_applyaction|power_label_effect_applyroll|power_label_effect_applysingle</labelsres>
+					<values>action|roll|single</values>
+				</parameters>
+			</button_stringcycler>
+
+			<header_column name="header_cost">
+				<static textres="power_header_cost" />
+				<center />
+			</header_column>
+			<label_column name="costtype_label">
+				<static textres="power_label_costtype" />
+			</label_column>
+			<cycler_costtype name="costtype" />
+			
+			<label_column name="costtext1">
+				<anchored>
+					<top offset="20" />
+				</anchored>
+				<static textres="power_label_cost_texft_1" />
+			</label_column>
+			<number_column name="cost">
+				<anchored to="costtext1" width="25" height="20">
+					<top offset="20" />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<min>0</min>
+			</number_column>
+			<label_fieldtop name="cost_label">
+				<anchored to="cost" />
+				<static textres="power_label_cost" />
+			</label_fieldtop>
+			<label name="costtext2">
+				<anchored to="cost" width="93">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_cost_texft_2" />
+			</label>
+			<button_stat name="coststat">
+				<anchored to="cost" width="70" height="20">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<tooltip textres="power_tooltip_coststat" />
+			</button_stat>
+			<label_fieldtop name="coststat_label">
+				<anchored to="coststat" />
+				<static textres="power_label_coststat" />
+			</label_fieldtop>
+			<label name="costtext3">
+				<anchored to="cost" width="40">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_cost_texft_3" />
+			</label>
+		</sheetdata>
+	</windowclass>
+</root>

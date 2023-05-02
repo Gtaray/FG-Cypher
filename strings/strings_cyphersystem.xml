@@ -98,7 +98,7 @@
 	<string name="char_label_recovery10hr">10 Hours</string>
 	<string name="char_label_recoveryused">Used</string>
 
-	<string name="char_label_training">Training</string>
+	<string name="power_label_training">Training</string>
 	<string name="char_label_skillinability">In</string>
 	<string name="char_label_skilluntrained">-</string>
 	<string name="char_label_skilltrained">T</string>
@@ -111,10 +111,9 @@
 	
 	<!-- Character - Actions -->
 	<string name="char_label_armorspeedcost">Speed Effort Cost</string>
-	
+
 	<string name="char_label_attacks">Attacks</string>
 	
-	<string name="char_header_properties">PROPERTIES</string>
 	<string name="char_label_attacktype">Attack Type</string>
 	<string name="char_label_attacktype_weapon">Weapon</string>
 	<string name="char_label_attacktype_magic">Magic</string>
@@ -122,40 +121,6 @@
 	<string name="char_label_weapontype_light">Light</string>
 	<string name="char_label_weapontype_medium">Medium</string>
 	<string name="char_label_weapontype_heavy">Heavy</string>
-
-	<string name="char_header_attack">ATTACK</string>
-	<string name="char_label_attack_text_1">Use my</string>
-	<string name="char_label_attack_text_2">to attack the target's</string>
-	<string name="char_label_attack_text_3">defense.</string>
-	<string name="char_label_attackstat">Attack Stat</string>
-	<string name="char_tooltip_attackstat">Stat that's used when rolling this attack. Defaults to Might.</string>
-	<string name="char_label_defensestat">Defense Stat</string>
-	<string name="char_tooltip_defensestat">Stat that the target uses to defend against this attack. Defaults to Speed.</string>
-	<string name="char_label_attackrange">Range</string>
-	<string name="char_label_rangeimmediate">Immediate</string>
-	<string name="char_label_rangeshort">Short</string>
-	<string name="char_label_rangelong">Far</string>
-	<string name="char_label_range200">Very Far</string>
-	<string name="char_label_training">Training</string>
-	<string name="char_label_asset">Asset</string>
-	<string name="char_label_modifier">Mod</string>
-
-	<string name="char_header_damage">DAMAGE</string>
-	<string name="char_label_damage_text_1">Deal</string>
-	<string name="char_label_damage_text_2">damage to the target's</string>
-	<string name="char_label_damage_text_3">pool.</string>
-	<string name="char_label_damage">Dmg</string>
-	<string name="char_label_statdmg">Stat Pool</string>
-	<string name="char_tooltip_statdmg">Deal damage to this stat pool. Defaults to Might.</string>
-	<string name="char_label_damagetype">Damage Type</string>
-	<string name="char_label_pierce">Armor Pierce</string>
-	<string name="char_tooltip_pierce">Does this damage bypass Armor?</string>
-	<string name="char_label_pierceamount">Amt</string>
-	<string name="char_tooltip_pierceamount">How much damage pierces armor? Leave blank to ignore all Armor.</string>
-
-	<string name="char_header_cost">COST</string>
-
-
 
 	<string name="char_label_abilityname">Abilities</string>
 
@@ -179,6 +144,86 @@
     <!-- Character - Dialog Boxes -->
     <string name="dialog_recovery_title">Recovery</string>
     <string name="label_recovery_remaining">Recovery Remaining</string>
+
+	<!-- Powers -->
+	<string name="power_title_stat">Spell/Ability Roll</string>
+	<string name="power_menu_action_add_stat">Add Stat Roll</string>
+	<string name="power_menu_action_add_attack">Add Attack</string>
+
+	<string name="power_tooltip_stat">ROLL</string>
+	<string name="power_tooltip_attack">ATK</string>
+	<string name="power_tooltip_damage">DMG</string>
+	<string name="power_tooltip_heal">HEAL</string>
+	<string name="power_tooltip_effect">EFFECT</string>
+	<string name="power_tooltip_duration">DURATION</string>
+
+	<string name="power_header_properties">PROPERTIES</string>
+	<string name="power_label_useequipped">Use Equipped</string>
+	<string name="power_tooltip_useequipped">Should this ability use the attack and damage properties from the currently equipped weapon.</string>
+	<string name="power_label_recharge_on">Recharge</string>
+	<string name="power_recharge_any">On any recovery action</string>
+	<string name="power_recharge_first">On the first recovery of the day</string>
+	<string name="power_recharge_last">On the last recovery of the day</string>
+	<string name="power_recharge_manual">Manually</string>
+
+	<string name="power_header_stat">STAT</string>
+	<string name="power_label_roll">Roll</string>
+	<string name="power_label_stat">Stat</string>
+
+	<string name="power_header_attack">ATTACK</string>
+	<string name="power_label_attack_text_1">Use my</string>
+	<string name="power_label_attack_text_2">to attack the target's</string>
+	<string name="power_label_attack_text_3">defense.</string>
+	<string name="power_label_attackstat">Attack Stat</string>
+	<string name="power_tooltip_attackstat">Stat that's used when rolling this attack. Defaults to Might.</string>
+	<string name="power_label_defensestat">Defense Stat</string>
+	<string name="power_tooltip_defensestat">Stat that the target uses to defend against this attack. Defaults to Speed.</string>
+	<string name="power_label_attackrange">Range</string>
+	<string name="power_label_rangeimmediate">Immediate</string>
+	<string name="power_label_rangeshort">Short</string>
+	<string name="power_label_rangelong">Far</string>
+	<string name="power_label_range200">Very Far</string>
+	<string name="power_label_training">Training</string>
+	<string name="power_label_asset">Asset</string>
+	<string name="power_label_modifier">Mod</string>
+
+	<string name="power_header_damage">DAMAGE</string>
+	<string name="power_label_damage_text_1">Deal</string>
+	<string name="power_label_damage_text_2">damage to the target's</string>
+	<string name="power_label_damage_text_3">pool.</string>
+	<string name="power_label_damage">Dmg</string>
+	<string name="power_label_statdmg">Stat Pool</string>
+	<string name="power_tooltip_statdmg">Deal damage to this stat pool. Defaults to Might.</string>
+	<string name="power_label_damagetype">Damage Type</string>
+	<string name="power_label_pierce">Armor Pierce</string>
+	<string name="power_tooltip_pierce">Does this damage bypass Armor?</string>
+	<string name="power_label_pierceamount">Amt</string>
+	<string name="power_tooltip_pierceamount">How much damage pierces armor? Leave blank to ignore all Armor.</string>
+	<string name="power_label_level">Level</string>
+	<string name="power_tooltip_level">Level modifier for this attack.</string>
+	<string name="power_label_ambient">Ambient Dmg</string>
+	<string name="power_tooltip_ambient">Ambient damage ignores armor regardless of stat that's damaged</string>
+
+	<string name="power_header_cost">COST</string>
+	<string name="power_label_costtype">Source</string>
+	<string name="power_label_costtype_ability">Use Ability's Cost</string>
+	<string name="power_label_costtype_fixed">Set Cost</string>
+	<string name="power_label_cost_texft_1">Spend</string>
+	<string name="power_label_cost_texft_2">points from my</string>
+	<string name="power_label_cost_texft_3">pool.</string>
+	<string name="power_label_cost">Cost</string>
+	<string name="power_tooltip_cost">How many stat points are spent when making this attack.</string>
+	<string name="power_label_coststat">Cost Stat</string>
+	<string name="power_tooltip_coststat">Cost is deducted from this stat pool. Defaults to the Attack Stat.</string>
+
+	<string name="power_header_heal">HEAL</string>
+	<string name="power_label_heal_text_1">Heal</string>
+	<string name="power_label_heal_text_2">for</string>
+	<string name="power_label_heal">Amt</string>
+	<string name="power_label_healstat">Stat Pool</string>
+	<string name="power_tooltip_healstat">Heal which stat pool?</string>
+
+	<string name="power_header_description">DESCRIPTION</string>
     
 	<!-- Ability -->
 	<string name="ability_label_cost">Stat Cost</string>

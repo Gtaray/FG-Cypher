@@ -28,6 +28,9 @@
 	<icon name="task9" file="graphics/icons/task9.png" />
 	<icon name="task10" file="graphics/icons/task10.png" />
 
+	<!-- Radial -->
+	<icon name="radial_power_action_stat" file="graphics/radial/icon_dice_custom.png" />
+
 	<!-- Override CoreRPG ruleset graphics -->
 
 	<!-- Common -->

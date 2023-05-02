@@ -72,6 +72,73 @@
 		</buttonfield>
 	</template>
 
+	<template name="column_stat">
+		<button_stat>
+			<anchored>
+				<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+				<left offset="97" />
+			</anchored>
+		</button_stat>
+	</template>
+
+	<template name="cycler_training">
+		<button_stringcycler>
+			<parameters>
+				<labelsres>label_training_trained|label_training_specialized|label_training_inability</labelsres>
+				<values>trained|specialized|inability</values>
+				<defaultlabel>-</defaultlabel>
+			</parameters>
+		</button_stringcycler>
+	</template>
+
+	<template name="column_training">
+		<cycler_training>
+			<anchored>
+				<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+				<left offset="97" />
+			</anchored>
+		</cycler_training>
+	</template>
+
+	<template name="cycler_range">
+		<button_stringcycler>
+			<parameters>
+				<defaultlabelres>dash</defaultlabelres>
+				<labelsres>power_label_rangeimmediate|power_label_rangeshort|power_label_rangelong|power_label_range200</labelsres>
+				<values>Immediate|Short|Far|Very Far</values>
+			</parameters>
+		</button_stringcycler>
+	</template>
+
+	<template name="column_range">
+		<cycler_range>
+			<anchored>
+				<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+				<left offset="97" />
+			</anchored>
+		</cycler_range>
+	</template>
+
+	<template name="cycler_costtype">
+		<cycler_column name="costtype">
+			<anchored width="140" />
+			<parameters>
+				<labelsres>power_label_costtype_ability|power_label_costtype_fixed</labelsres>
+				<values>ability|fixed</values>
+				<defaultlabelres>dash</defaultlabelres>
+			</parameters>
+			<script>
+				function onInit()
+					super.onInit();
+					onValueChanged();
+				end
+				function onValueChanged()
+					window.updateCostType();
+				end
+			</script>
+		</cycler_column>
+	</template>
+
 	<template name="button_skill_wide">
 		<buttonfield>
 			<frame name="fielddark" offset="7,5,7,5" hidereadonly="true" />
@@ -121,5 +188,33 @@
 		<subwindow>
 			<bounds>0,100,-1,-20</bounds>
 		</subwindow>
+	</template>
+
+	<template name="button_use_power">
+		<button_checkbox>
+			<anchored to="leftanchor" width="20" height="10">
+				<top offset="8" />
+				<left anchor="right" relation="relative" />
+			</anchored>
+		</button_checkbox>
+	</template>
+
+	<template name="list_poweraction">
+		<windowlist>
+			<anchored>
+				<top parent="name" anchor="bottom" relation="relative" offset="5" />
+				<left offset="20" />
+				<right offset="-20" />
+			</anchored>
+			<datasource>.actions</datasource>
+			<class>power_action</class>
+			<noscroll />
+			<sortby><field>order</field></sortby>
+			<script>
+				function reset()
+					DB.deleteChildren(getDatabaseNode());
+				end
+			</script>
+		</windowlist>
 	</template>
 </root>

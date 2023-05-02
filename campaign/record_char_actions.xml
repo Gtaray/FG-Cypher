@@ -230,7 +230,7 @@
 					<bottom offset="-15" />
 				</anchored>
 				<datasource>.abilitylist</datasource>
-				<class>char_ability</class>
+				<class>power_item</class>
 				<allowcreate />
 				<allowdelete />
 				<sortby><control>name</control></sortby>
@@ -246,101 +246,6 @@
 				<anchored to="abilitylist_iedit" position="righthigh" offset="0,0" />
 				<target>abilitylist</target>
 			</button_iadd>
-		</sheetdata>
-	</windowclass>
-
-	<windowclass name="char_ability">
-		<margins control="0,0,0,2" />
-		<script file="campaign/scripts/char_ability.lua" />
-		<script>
-		</script>
-		<sheetdata>
-			<hs name="stat">
-				<script>
-					function onValueChanged()
-						window.onCostChanged();
-					end
-				</script>
-			</hs>
-			<hn name="statcost">
-				<script>
-					function onValueChanged()
-						window.onCostChanged();
-					end
-				</script>
-			</hn>
-            <hn name="has_roll" />
-			<hn name="training" />
-			<hn name="asset" />
-			<hn name="modifier" />
-			
-			<genericcontrol name="leftanchor">
-				<anchored width="0" height="0">
-					<top />
-					<left />
-				</anchored>
-				<invisible />
-			</genericcontrol>
-			<button_roll name="statroll">
-				<anchored>
-					<top offset="2" />
-					<left parent="leftanchor" anchor="right" relation="relative" offset="5" />
-				</anchored>
-				<script>
-					function action(draginfo)
-						window.actionAbility(draginfo);
-					end
-
-					function onButtonPress(x, y)
-						action();
-						return true;
-					end
-
-					function onDragStart(button, x, y, draginfo)
-						action(draginfo);
-						return true;
-					end
-				</script>
-			</button_roll>
-			<stringcontrol name="statcostview">
-				<anchored height="20">
-					<top offset="2" />
-					<left parent="leftanchor" anchor="right" relation="relative" offset="5" />
-				</anchored>
-				<font>sheetlabel</font>
-				<frame name="fieldlight" offset="7,5,7,5" />
-				<static />
-			</stringcontrol>
-			
-			<genericcontrol name="rightanchor">
-				<anchored width="0" height="0">
-					<top />
-					<right />
-				</anchored>
-				<invisible />
-			</genericcontrol>
-			<button_idelete name="idelete">
-				<anchored width="20" height="20">
-					<top offset="2" />
-					<right parent="rightanchor" anchor="left" relation="relative" offset="0" />
-				</anchored>
-			</button_idelete>
-			<linkcontrol name="shortcut">
-				<anchored width="20" height="20">
-					<top offset="2" />
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-2" />
-				</anchored>
-				<class>ability</class>
-				<readonly />
-			</linkcontrol>
-
-			<string_textlistitem name="name">
-				<anchored height="20">
-					<top offset="2" />
-					<left parent="leftanchor" anchor="right" relation="relative" offset="7" />
-					<right parent="rightanchor" anchor="left" relation="current" offset="-5" />
-				</anchored>
-			</string_textlistitem>
 		</sheetdata>
 	</windowclass>
 </root>

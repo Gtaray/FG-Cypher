@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<!-- Class for each entry in the PC action's tab abilitylist -->
+	<windowclass name="power_item">
+		<margins control="0,0,0,2" />
+		<script file="campaign/scripts/power_item.lua" />
+		<script>
+		</script>
+		<sheetdata>
+			<hs name="coststat">
+				<script>
+					function onValueChanged()
+						window.onCostChanged();
+					end
+				</script>
+			</hs>
+			<hn name="cost">
+				<script>
+					function onValueChanged()
+						window.onCostChanged();
+					end
+				</script>
+			</hn>
+			
+			<genericcontrol name="leftanchor">
+				<anchored width="0" height="0">
+					<top />
+					<left />
+				</anchored>
+				<invisible />
+			</genericcontrol>
+
+			<button_use_power name="used" />
+
+			<stringcontrol name="statcostview">
+				<script>
+					function onDoubleClick(x, y)
+						window.onCostDoubleClicked();
+					end
+				</script>
+				<anchored height="20">
+					<top offset="2" />
+					<left parent="leftanchor" anchor="right" relation="relative" offset="5" />
+				</anchored>
+				<font>sheetlabel</font>
+				<frame name="fieldlight" offset="7,5,7,5" />
+				<static />
+				<cursor>
+					<hover>hand</hover>
+				</cursor>
+			</stringcontrol>
+			
+			<genericcontrol name="rightanchor">
+				<anchored width="0" height="0">
+					<top />
+					<right />
+				</anchored>
+				<invisible />
+			</genericcontrol>
+			<button_idelete name="idelete">
+				<anchored width="20" height="20">
+					<top offset="2" />
+					<right parent="rightanchor" anchor="left" relation="relative" offset="0" />
+				</anchored>
+			</button_idelete>
+			<linkcontrol name="shortcut">
+				<anchored width="20" height="20">
+					<top offset="2" />
+					<right parent="rightanchor" anchor="left" relation="relative" offset="-2" />
+				</anchored>
+				<class>power</class>
+				<readonly />
+			</linkcontrol>
+
+			<button_poweritem_toggle_actions name="activatedetail">
+				<anchored>
+					<top offset="2" />
+					<right parent="rightanchor" anchor="left" relation="relative" offset="-2" />
+				</anchored>
+			</button_poweritem_toggle_actions>
+
+			<list_poweraction_mini name="actionsmini">
+				<script>
+					function onInit()
+						setVisible(true);
+					end
+				</script>
+			</list_poweraction_mini>
+
+			<string_textlistitem name="name">
+				<anchored height="20">
+					<top offset="2" />
+					<left parent="leftanchor" anchor="right" relation="relative" offset="7" />
+					<right parent="rightanchor" anchor="left" relation="current" offset="-5" />
+				</anchored>
+			</string_textlistitem>
+
+			<list_poweraction name="actions">
+				<invisible />
+			</list_poweraction>
+		</sheetdata>
+	</windowclass>
+
+	<!-- Entry in a power_item's list_poweraction list -->
+	<windowclass name="power_action" merge="join">
+		<sheetdata>
+			<button_ireorder name="ireorder" mergerule="resetandadd">
+				<editmode>abilitylist_iedit</editmode>
+			</button_ireorder>
+		</sheetdata>
+	</windowclass>
+
+	<!-- Power Items in the abilitylist link to this class for its details -->
+	<!-- Mirrors reference_ability -->
+	<windowclass name="power">
+		<frame>referencepage</frame>
+		<placement>
+			<size width="400" height="350" />
+		</placement>
+		<sizelimits>
+			<dynamic />
+		</sizelimits>
+		<minimize>minimized_reference</minimize>
+		<tooltip field="name" />
+		<script file="common/scripts/record_window.lua" />
+		<sheetdata>
+			<sub_record_header name="header">
+				<class>power_header</class>
+			</sub_record_header>
+
+			<frame_record name="contentframe">
+				<anchored>
+					<top parent="header" anchor="bottom" offset="15" />
+					<left offset="35" />
+					<right offset="-35" />
+					<bottom offset="-32" />
+				</anchored>
+				<frame offset="20,17,20,17" />
+			</frame_record>
+
+			<subwindow_record name="main">
+				<class>power_main</class>
+				<activate />
+			</subwindow_record>
+
+			<scrollbar_record>
+				<target>main</target>
+			</scrollbar_record>
+			
+			<resize_referencepage />
+			<close_referencepage />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="power_header">
+		<margins control="0,0,0,7" />
+		<script file="common/scripts/record_header_simple.lua" />
+		<sheetdata>
+			<link_record_header>
+				<class>power</class>
+			</link_record_header>
+
+			<anchor_record_header_right />
+			<icon_record_locked />
+			<button_record_locked />
+
+			<string_record_name name="name" />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="power_main">
+		<margins control="0,0,0,2" />
+		<script>
+			function onInit()
+				update();
+			end
+			function update()
+				local bReadOnly = WindowManager.getReadOnlyState(getDatabaseNode());
+				useequipped.setReadOnly(bReadOnly);
+				cost.setReadOnly(bReadOnly);
+				coststat.setReadOnly(bReadOnly);
+				period.setReadOnly(bReadOnly);
+				ftdesc.setReadOnly(bReadOnly);
+
+				local bHasCost = cost.getValue() ~= 0 and coststat.getValue() ~= "-";
+				local bHasRecharge = period.getValue() ~= "-";
+
+				local bShowCost = bHasCost or not bReadOnly;
+				header_cost.setVisible(bShowCost);
+				costtext1.setVisible(bShowCost);
+				cost.setVisible(bHasCost or not bReadOnly);
+				label_cost.setVisible(bHasCost or not bReadOnly);
+				costtext2.setVisible(bShowCost);
+				label_coststat.setVisible(bHasCost or not bReadOnly);
+				coststat.setVisible(bHasCost or not bReadOnly);
+				costtext3.setVisible(bShowCost);
+
+				period_label.setVisible(bHasRecharge or not bReadOnly);
+				period.setVisible(bHasRecharge or not bReadOnly);
+			end
+		</script>
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+
+			<header_column name="header_properties">
+				<static textres="power_header_properties" />
+				<center />
+			</header_column>
+			
+			<label_column name="useequipped_label">
+				<static textres="power_label_useequipped" />
+			</label_column>
+			<cycler_column name="useequipped">
+				<anchored width="60" />
+				<parameters>
+					<labelsres>yes</labelsres>
+					<values>yes</values>
+					<defaultlabelres>no</defaultlabelres>
+				</parameters>
+				<tooltip textres="power_tooltip_useequipped" />
+			</cycler_column>
+			<label_column name="period_label">
+				<static textres="power_label_recharge_on" />
+			</label_column>
+			<cycler_column name="period">
+				<anchored width="200" />
+				<parameters>
+					<labelsres>power_recharge_any|power_recharge_first|power_recharge_last|power_recharge_manual</labelsres>
+					<values>any|first|last|manual</values>
+					<defaultlabelres>dash</defaultlabelres>
+				</parameters>
+			</cycler_column>
+
+			<header_column name="header_cost">
+				<static textres="power_header_cost" />
+				<center />
+			</header_column>
+			<label_column name="costtext1">
+				<anchored>
+					<top offset="20" />
+				</anchored>
+				<static textres="power_label_cost_texft_1" />
+			</label_column>
+			<number_column name="cost">
+				<anchored to="costtext1" width="25" height="20">
+					<top offset="20" />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<min>0</min>
+			</number_column>
+			<label_fieldtop name="label_cost">
+				<anchored to="cost" />
+				<static textres="power_label_cost" />
+			</label_fieldtop>
+			<label name="costtext2">
+				<anchored to="cost" width="93">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_cost_texft_2" />
+			</label>
+			<button_stat name="coststat">
+				<anchored to="cost" width="70" height="20">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<tooltip textres="power_tooltip_coststat" />
+			</button_stat>
+			<label_fieldtop name="label_coststat">
+				<anchored to="coststat" />
+				<static textres="power_label_coststat" />
+			</label_fieldtop>
+			<label name="costtext3">
+				<anchored to="cost" width="40">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_cost_texft_3" />
+			</label>			
+
+			<header_column name="header_desc">
+				<static textres="power_header_description" />
+				<center />
+			</header_column>
+			
+			<string_column_full name="description">
+				<readonly />
+				<invisible />
+			</string_column_full>
+			<basicft name="ftdesc">
+				<anchored>
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+					<left offset="5" />
+					<right offset="-5" />
+				</anchored>
+				<script>
+					function onInit()
+						local oldDesc = window.description.getValue();
+						if oldDesc == "" then
+							return;
+						end
+						
+						local aDescriptionSplit,_ = StringManager.split(oldDesc, "\n", true);
+						
+						local sFormattedString = "";
+						for _,sDescFragment in pairs(aDescriptionSplit) do
+							sFormattedString = sFormattedString .. "&lt;p&gt;" .. sDescFragment .. "&lt;/p&gt;";
+						end
+						
+						setValue(sFormattedString);
+						window.description.setValue("");
+					end
+				</script>
+				<tabtarget prev="modifier" />
+			</basicft>
+		</sheetdata>
+	</windowclass>
+</root>

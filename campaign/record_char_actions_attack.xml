@@ -138,22 +138,16 @@
 				weapontype.setVisible(bWeapon);
 			end
 			function onPierceChanged()
-				local bPierce = DB.getValue(getDatabaseNode(), "pierce", "") == "Yes";
+				local bPierce = DB.getValue(getDatabaseNode(), "pierce", "") == "yes";
 				pierceamount.setVisible(bPierce);
 			end
 		</script>
 		<sheetdata>
 			<anchor_column name="columnanchor" />
-			
-			<!-- NAME -->
-			<label_column name="name_label">
-				<static textres="power_label_name" />
-			</label_column>
-			<stringc_column name="name" source="name" />
 
 			<!-- PROPERTIES -->
 			<header_column name="header_properties">
-				<static textres="char_header_properties" />
+				<static textres="power_header_properties" />
 				<center />
 			</header_column>
 
@@ -206,21 +200,9 @@
 				</parameters>
 			</cycler_column>
 
-			<!-- <label_column name="ammo_label">
-				<static textres="power_label_useammunition" />
-			</label_column>
-			<cycler_column>
-				<anchored width="80" />
-				<parameters>
-					<labelsres>yes</labelsres>
-					<values>yes</values>
-					<defaultlabel>No</defaultlabel>
-				</parameters>
-			</cycler_column> -->
-
 			<!-- ATTACK -->
 			<header_column name="header_attack">
-				<static textres="char_header_attack" />
+				<static textres="power_header_attack" />
 				<center />
 			</header_column>
 
@@ -228,68 +210,68 @@
 				<anchored>
 					<top offset="20" />
 				</anchored>
-				<static textres="char_label_attack_text_1" />
+				<static textres="power_label_attack_text_1" />
 			</label_column>
 			<column_stat name="stat">
 				<anchored to="attacktext1" width="70" height="20">
 					<top offset="20"/>
 					<left anchor="right" relation="relative" offset="10" />
 				</anchored>
-				<tooltip textres="char_tooltip_attackstat" />
+				<tooltip textres="power_tooltip_attackstat" />
 			</column_stat>
 			<label_fieldtop>
 				<anchored to="stat" />
-				<static textres="char_label_attackstat" />
+				<static textres="power_label_attackstat" />
 			</label_fieldtop>
 			<label name="attacktext2">
 				<anchored to="stat" width="125">
 					<top />
 					<left anchor="right" relation="relative" offset="10" />
 				</anchored>
-				<static textres="char_label_attack_text_2" />
+				<static textres="power_label_attack_text_2" />
 			</label>
 			<button_stat name="defensestat">
 				<anchored to="stat" width="70" height="20">
 					<top />
 					<left anchor="right" relation="relative" offset="10" />
 				</anchored>
-				<tooltip textres="char_tooltip_defensestat" />
+				<tooltip textres="power_tooltip_defensestat" />
 			</button_stat>
 			<label_fieldtop>
 				<anchored to="defensestat" />
-				<static textres="char_label_defensestat" />
+				<static textres="power_label_defensestat" />
 			</label_fieldtop>
 			<label name="attacktext3">
 				<anchored to="stat" width="100">
 					<top />
 					<left anchor="right" relation="relative" offset="10" />
 				</anchored>
-				<static textres="char_label_attack_text_3" />
+				<static textres="power_label_attack_text_3" />
 			</label>
 
 			<label_column name="atkrange_label">
-				<static textres="char_label_attackrange" />
+				<static textres="power_label_attackrange" />
 			</label_column>
 			<column_range name="atkrange">
 				<anchored width="80" />
 			</column_range>
 
 			<label_column name="training_label">
-				<static textres="char_label_training" />
+				<static textres="power_label_training" />
 			</label_column>
 			<column_training name="training">
 				<anchored width="80" />
 			</column_training>
 
 			<label_column name="asset_label">
-				<static textres="char_label_asset" />
+				<static textres="power_label_asset" />
 			</label_column>
 			<number_column name="asset">
 				<hideonvalue value="0" />
 			</number_column>
 
 			<label_column name="modifier_label">
-				<static textres="char_label_modifier" />
+				<static textres="power_label_modifier" />
 			</label_column>
 			<number_column name="modifier">
 				<hideonvalue value="0" />
@@ -297,7 +279,7 @@
 
 			<!-- DAMAGE -->
 			<header_column name="header_damage">
-				<static textres="char_header_damage" />
+				<static textres="power_header_damage" />
 				<center />
 			</header_column>
 
@@ -305,7 +287,7 @@
 				<anchored>
 					<top offset="20" />
 				</anchored>
-				<static textres="char_label_damage_text_1" />
+				<static textres="power_label_damage_text_1" />
 			</label_column>
 			<number_column name="damage">
 				<anchored to="damagetext1" width="25" height="20">
@@ -316,32 +298,32 @@
 			</number_column>
 			<label_fieldtop>
 				<anchored to="damage" />
-				<static textres="char_label_damage" />
+				<static textres="power_label_damage" />
 			</label_fieldtop>
 			<label name="damagetext2">
 				<anchored to="damage" width="137">
 					<top />
 					<left anchor="right" relation="relative" offset="10" />
 				</anchored>
-				<static textres="char_label_damage_text_2" />
+				<static textres="power_label_damage_text_2" />
 			</label>
 			<button_stat name="statdmg">
 				<anchored to="damage" width="70" height="20">
 					<top />
 					<left anchor="right" relation="relative" offset="10" />
 				</anchored>
-				<tooltip textres="char_tooltip_statdmg" />
+				<tooltip textres="power_tooltip_statdmg" />
 			</button_stat>
 			<label_fieldtop>
 				<anchored to="statdmg" />
-				<static textres="char_label_statdmg" />
+				<static textres="power_label_statdmg" />
 			</label_fieldtop>
 			<label name="damagetext3">
 				<anchored to="damage" width="40">
 					<top />
 					<left anchor="right" relation="relative" offset="10" />
 				</anchored>
-				<static textres="char_label_damage_text_3" />
+				<static textres="power_label_damage_text_3" />
 			</label>
 
 			<!-- <stringu_damagetype_autocomplete name="damagetype">
@@ -357,7 +339,7 @@
 			</label_fieldtop> -->
 
 			<label_column name="pierce_label">
-				<static textres="char_label_pierce" />
+				<static textres="power_label_pierce" />
 			</label_column>
 			<cycler_column name="pierce">
 				<anchored width="80" />
@@ -374,25 +356,62 @@
 					<values>yes</values>
 					<defaultlabel>No</defaultlabel>
 				</parameters>
-				<tooltip textres="char_tooltip_pierce" />
+				<tooltip textres="power_tooltip_pierce" />
 			</cycler_column>
 			<basicnumber name="pierceamount">
 				<anchored to="pierce" position="righthigh" offset="10,0" width="30" height="20" />
 				<min>0</min>
-				<tooltip textres="char_tooltip_pierceamount" />
+				<tooltip textres="power_tooltip_pierceamount" />
 			</basicnumber>
 
 			<!-- COST -->
 			<header_column name="header_cost">
-				<static textres="char_header_cost" />
+				<static textres="power_header_cost" />
 				<center />
 			</header_column>
-			<label_column name="cost_label">
-				<static textres="char_label_cost" />
+
+			<label_column name="costtext1">
+				<anchored>
+					<top offset="20" />
+				</anchored>
+				<static textres="power_label_cost_texft_1" />
 			</label_column>
 			<number_column name="cost">
+				<anchored to="costtext1" width="25" height="20">
+					<top offset="20" />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
 				<min>0</min>
 			</number_column>
+			<label_fieldtop>
+				<anchored to="cost" />
+				<static textres="power_label_cost" />
+			</label_fieldtop>
+			<label name="costtext2">
+				<anchored to="cost" width="93">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_cost_texft_2" />
+			</label>
+			<button_stat name="coststat">
+				<anchored to="cost" width="70" height="20">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<tooltip textres="power_tooltip_coststat" />
+			</button_stat>
+			<label_fieldtop name="coststat_label">
+				<anchored to="coststat" />
+				<static textres="power_label_coststat" />
+			</label_fieldtop>
+			<label name="costtext3">
+				<anchored to="cost" width="40">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_cost_texft_3" />
+			</label>
 		</sheetdata>
 	</windowclass>
 </root>
