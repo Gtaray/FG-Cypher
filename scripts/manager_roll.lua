@@ -751,7 +751,12 @@ end
 
 function encodeAmbientDamage(rAction, rRoll)
 	if rAction.bAmbient then
-		rRoll.sDesc = string.format("%s [AMBIENT]", rRoll.sDesc)
+		-- Place the text in the roll description
+		rRoll.sDesc = RollManager.addOrOverwriteText(
+			rRoll.sDesc,
+			"%[AMBIENT%]",
+			"[AMBIENT]"
+		);
 	end
 end
 
@@ -761,16 +766,12 @@ function decodeAmbientDamage(vRoll, bPersist)
 		sDesc = vRoll.sDesc;
 	end
 
-	local bAmbient = sDesc:match("%[AMBIENT%]") ~= nil
-
-	if not bPersist then
-		sDesc = sDesc:gsub(" %[AMBIENT%]", "");
-		if type(vRoll) == "table" then
-			vRoll.sDesc = sDesc;
-		end
-	end
-
-	return bAmbient;
+	return RollManager.decodeTextAsBoolean(
+		sDesc,
+		"%[AMBIENT%]",
+		nil,
+		bPersist
+	);
 end
 
 function encodeTarget(vTarget, rRoll)

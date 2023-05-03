@@ -141,13 +141,19 @@ function addToStatPool(rActor, sStat, nValue)
 	else
 		nodeActor = ActorManager.getCreatureNode(rActor);
 	end
-	if not nodeActor or (sStat or "") == "" then
+	if not nodeActor or (sStat or "") == "" or nValue == 0 then
 		return 0;
 	end
 
 	local nCur, nMax = ActorManagerCypher.getStatPool(rActor, sStat);
-	local nNewValue = nCur + nValue;
 
+	-- Shortcut. If the stat pool is already capped out, then we just return
+	-- the entire value as overflow
+	if nCur == nMax then
+		return nValue;
+	end
+
+	local nNewValue = nCur + nValue;
 	local nOverflow = 0;
 	-- Return overflow healing
 	if nNewValue > nMax then
@@ -245,13 +251,22 @@ function getEdge(rActor, sStat, aFilter)
 end
 
 -- This only cares about creatures on the CT, since it's specifically for combat
-function getArmor(rActor, rTarget)
+function getArmor(rActor, rTarget, sStat)
 	local node = ActorManager.getCTNode(rActor);
 	local nBaseArmor = DB.getValue(node, "armor", 0);
 
-	local nEffectArmor = EffectManager.getEffectsBonusByType(rActor, "ARMOR", {}, rTarget, false);
+	if not sStat then
+		sStat = "might";
+	end
 
-	return nBaseArmor + nEffectArmor;
+	local nEffectArmor = EffectManager.getEffectsBonusByType(rActor, "ARMOR", { sStat }, rTarget, false);
+
+	-- Only apply the character's base armor to Might damage.
+	if sStat == "might" then
+		return nBaseArmor + nEffectArmor;
+	else
+		return nEffectArmor;
+	end
 end
 
 function getArmorSpeedCost(rActor)

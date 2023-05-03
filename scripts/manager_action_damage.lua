@@ -76,16 +76,50 @@ function modRoll(rSource, rTarget, rRoll)
 	RollManager.encodeEffects(rRoll, nDmgBonus);
 end
 
-function onDamage(rSource, rTarget, rRoll)
+function onRoll(rSource, rTarget, rRoll)
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
+
+	if rTarget ~= nil then
+		rMessage.text = rMessage.text:gsub(" %[STAT: %w-%]", "");
+	end
+
+	local rResult;
+	rSource, rTarget, rResult = ActionDamage.buildRollResult(rSource, rTarget, rRoll);
+
+	if rResult.bSourceNPC and rResult.bTargetPC then
+		rMessage.text = rMessage.text .. " -> " .. (ActorManager.getDisplayName(rTarget) or "")
+	end
+	rMessage.icon = "action_damage";
 	Comm.deliverChatMessage(rMessage);
 
-	-- Apply damage to the PC or CT entry referenced
-	local nTotal = ActionsManager.total(rRoll);
-	notifyApplyDamage(rSource, rTarget, rRoll.bTower, rRoll.sType, rMessage.text, nTotal);
+	if rTarget then
+		ActionDamage.notifyApplyDamage(rSource, rTarget, rRoll);	
+	end	
 end
 
-function notifyApplyDamage(rSource, rTarget, bSecret, sRollType, sDesc, nTotal)
+function buildRollResult(rSource, rTarget, rRoll)
+	local rResult = {};
+
+	rResult.sDesc = rRoll.sDesc;
+	rResult.bSourcePC = (rSource and ActorManager.isPC(rSource)) or false;
+	rResult.bTargetPC = (rTarget and ActorManager.isPC(rTarget)) or false;
+	rResult.bSourceNPC = (rSource and not ActorManager.isPC(rSource)) or false;
+	rResult.bTargetNPC = (rTarget and not ActorManager.isPC(rTarget)) or false;
+	rResult.sStat = RollManager.decodeStat(rRoll, true);
+	-- rResult.sDamageType, rResult.sDamageStat = RollManager.decodeDamageType(rRoll);
+	rResult.bPiercing, rResult.nPierceAmount = RollManager.decodePiercing(rRoll, true);
+	rResult.bAmbient = RollManager.decodeAmbientDamage(rRoll, true);
+	
+	if rRoll.nTotal  then
+		rResult.nTotal = rRoll.nTotal;
+	else
+		rResult.nTotal = ActionsManager.total(rRoll);
+	end
+
+	return rSource, rTarget, rResult;
+end
+
+function notifyApplyDamage(rSource, rTarget, rRoll, rResult)
 	if not rTarget then
 		return;
 	end
@@ -93,18 +127,16 @@ function notifyApplyDamage(rSource, rTarget, bSecret, sRollType, sDesc, nTotal)
 	local msgOOB = {};
 	msgOOB.type = OOB_MSGTYPE_APPLYDMG;
 	
-	if bSecret then
+	if rRoll.bTower then
 		msgOOB.nSecret = 1;
 	else
 		msgOOB.nSecret = 0;
 	end
-	msgOOB.sRollType = sRollType;
-	msgOOB.nTotal = nTotal;
-	msgOOB.sDamage = sDesc;
-
+	msgOOB.nTargetOrder = rTarget.nOrder;
+	msgOOB.sDesc = rRoll.sDesc;
 	msgOOB.sSourceNode = ActorManager.getCreatureNodeName(rSource);
 	msgOOB.sTargetNode = ActorManager.getCreatureNodeName(rTarget);
-	msgOOB.nTargetOrder = rTarget.nOrder;
+	msgOOB.nTotal = rResult.nTotal;
 
 	Comm.deliverOOBMessage(msgOOB, "");
 end
@@ -115,185 +147,63 @@ function handleApplyDamage(msgOOB)
 	if rTarget then
 		rTarget.nOrder = msgOOB.nTargetOrder;
 	end
+
+	local rRoll = {
+		sDesc = msgOOB.sDesc,
+		nTotal = tonumber(msgOOB.nTotal)
+	}
+	local rResult = ActionDamage.buildRollResult(rSource, rTarget, rRoll);
+	Debug.chat('results', rResult);
 	
-	local nTotal = tonumber(msgOOB.nTotal) or 0;
-	applyDamage(rSource, rTarget, (tonumber(msgOOB.nSecret) == 1), msgOOB.sRollType, msgOOB.sDamage, nTotal);
+	applyDamage(rSource, rTarget, (tonumber(msgOOB.nSecret) == 1), rResult);
 end
 
-function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal)
-	-- Get damage type
-	local sDamageType = (string.match(sDamage, "%[TYPE: (%w+)%]") or ""):lower();
-	if sDamageType ~= "intellect" and sDamageType ~= "speed" then
-		sDamageType = "might";
-	end
-	
+function applyDamage(rSource, rTarget, bSecret, rResult)
+	local sStat = RollManager.decodeStat(rResult, false);
+	local bPiercing, nPierceAmount = RollManager.decodePiercing(rResult, true);
+	local sDamageType = nil; -- This will get added later.
+	local nTotal = rResult.nTotal;
+
 	-- Remember current health status
 	local sOriginalStatus = ActorHealthManager.getHealthStatus(rTarget);
 
-	-- Apply damage, and generate notifications
-	local nPCWounds = nil;
+	-- Variables for applying damage and building notifications
 	local aNotifications = {};
 
 	local sTargetNodeType, nodeTarget = ActorManager.getTypeAndNode(rTarget);
 	if not nodeTarget then
 		return;
 	end
-    if sTargetNodeType == "pc" then
-		local nIntellectHP = DB.getValue(nodeTarget, "abilities.intellect.current", 0);
-		local nSpeedHP = DB.getValue(nodeTarget, "abilities.speed.current", 0);
-		local nMightHP = DB.getValue(nodeTarget, "abilities.might.current", 0);
-		local nWounds = DB.getValue(nodeTarget, "wounds", 0);
-		
-		-- Apply Armor
-		if nTotal > 0 and sDamageType == "might" then
-			local nArmor = DB.getValue(nodeTarget, "armor", 0);
-			if nArmor > 0 then
-				nTotal = math.max(nTotal - nArmor, 0);
-				table.insert(aNotifications, "[ARMOR -" .. nArmor .. "]");
-			end
-		end
-		
-		local nOrigIntellectHP = nIntellectHP;
-		local nOrigSpeedHP = nSpeedHP;
-		local nOrigMightHP = nMightHP;
 
-		-- Damage
-		if nTotal > 0 then
-			local nDamage = nTotal;
-		
-			if sDamageType == "intellect" then
-				if nIntellectHP > 0 then
-					nIntellectHP = nIntellectHP - nDamage;
-					if nIntellectHP < 0 then
-						nDamage = -nIntellectHP;
-						nIntellectHP = 0;
-					else
-						nDamage = 0;
-					end
-				end
-			elseif sDamageType == "speed" then
-				if nSpeedHP > 0 then
-					nSpeedHP = nSpeedHP - nDamage;
-					if nSpeedHP < 0 then
-						nDamage = -nSpeedHP;
-						nSpeedHP = 0;
-					else
-						nDamage = 0;
-					end
-				end
-			end
-			
-			if nMightHP > 0 then
-				nMightHP = nMightHP - nDamage;
-				if nMightHP < 0 then
-					nDamage = -nMightHP;
-					nMightHP = 0;
-				else
-					nDamage = 0;
-				end
-			end
-			if nSpeedHP > 0 then
-				nSpeedHP = nSpeedHP - nDamage;
-				if nSpeedHP < 0 then
-					nDamage = -nSpeedHP;
-					nSpeedHP = 0;
-				else
-					nDamage = 0;
-				end
-			end
-			if nIntellectHP > 0 then
-				nIntellectHP = nIntellectHP - nDamage;
-				if nIntellectHP < 0 then
-					nDamage = -nIntellectHP;
-					nIntellectHP = 0;
-				else
-					nDamage = 0;
-				end
-			end
-			
-			local nNewWounds = 0;
-			if nOrigIntellectHP > 0 and nIntellectHP <= 0 then
-				nNewWounds = nNewWounds + 1;
-			end
-			if nOrigSpeedHP > 0 and nSpeedHP <= 0 then
-				nNewWounds = nNewWounds + 1;
-			end
-			if nOrigMightHP > 0 and nMightHP <= 0 then
-				nNewWounds = nNewWounds + 1;
-			end
-			if nNewWounds > 0 then
-				if nWounds < 3 then
-					local nOrigWounds = nWounds;
-					nWounds = math.min(nWounds + nNewWounds, 3);
-					nPCWounds = nOrigWounds - nWounds;
-				end
-			end
-		
-		-- Healing?
-		elseif nTotal < 0 then
-			if sDamageType == "intellect" then
-				local nIntellectMax = DB.getValue(nodeTarget, "abilities.intellect.max", 0);
-				if nIntellectHP < nIntellectMax then
-					nIntellectHP = math.min(nIntellectHP - nTotal, nIntellectMax);
-				end
-			elseif sDamageType == "speed" then
-				local nSpeedMax = DB.getValue(nodeTarget, "abilities.speed.max", 0);
-				if nSpeedHP < nSpeedMax then
-					nSpeedHP = math.min(nSpeedHP - nTotal, nSpeedMax);
-				end
-			else
-				local nMightMax = DB.getValue(nodeTarget, "abilities.might.max", 0);
-				if nMightHP < nMightMax then
-					nMightHP = math.min(nMightHP - nTotal, nMightMax);
-				end
-			end
-			
-			local nNewHealing = 0;
-			if nOrigIntellectHP <= 0 and nIntellectHP > 0 then
-				nNewHealing = nNewHealing + 1;
-			end
-			if nOrigSpeedHP <= 0 and nSpeedHP > 0 then
-				nNewHealing = nNewHealing + 1;
-			end
-			if nOrigMightHP <= 0 and nMightHP > 0 then
-				nNewHealing = nNewHealing + 1;
-			end
-			if nNewHealing > 0 then
-				if nWounds > 0 then
-					local nOrigWounds = nWounds;
-					nWounds = math.max(nWounds - nNewHealing, 0);
-					nPCWounds = nOrigWounds - nWounds;
-				end
-			end
-		end
-		
-		DB.setValue(nodeTarget, "abilities.intellect.current", "number", nIntellectHP);
-		DB.setValue(nodeTarget, "abilities.speed.current", "number", nSpeedHP);
-		DB.setValue(nodeTarget, "abilities.might.current", "number", nMightHP);
-		DB.setValue(nodeTarget, "wounds", "number", nWounds);
-		
-	elseif sTargetNodeType == "ct" then
-		local nWounds = DB.getValue(nodeTarget, "wounds", 0);
-        local nHP = DB.getValue(nodeTarget, "hp", 0);
-		
-		if nTotal > 0 and sDamageType == "might" then
-			local nArmor = DB.getValue(nodeTarget, "armor", 0);
-			if nArmor > 0 then
-				nTotal = math.max(nTotal - nArmor, 0);
-				table.insert(aNotifications, "[ARMOR -" .. nArmor .. "]");
-			end
-		end
+	-- Only calculate damage reduction if we're dealing damage, and not if we're healing
+	if nTotal > 0 then
+		-- Only calculate piercin
+		if not bAmbient then
+			local nArmorAdjust = ActorManagerCypher.calculateArmor(rSource, rTarget, sStat);
 
-        if nTotal > 0 then
-    		local nOriginalWounds = nWounds;
-	    	nWounds = math.min(nWounds + nTotal, nHP);
-
-		    DB.setValue(nodeTarget, "wounds", "number", nWounds);
-        end
-	else
-        return;
+			if bPiercing then
+				-- if pierce amount is 0 (but bPierce is true), then pierce all armor
+				-- Otherwise it's a flat reduction
+				if nPierceAmount > 0 then
+					nArmorAdjust = nArmorAdjust - nPierceAmount;
+				elseif nPierceAmount == 0 then
+					nArmorAdjust = 0;
+				end
+			end
+			nTotal = nTotal - nArmorAdjust;
+		end
+		-- This gets added with damage types
+		--nTotal = ActionDamageCPP.calculateDamageResistances(rSource, rTarget, nTotal, sDamageType, sDamageStat, aNotifications);
 	end
-	
+
+	if sTargetNodeType == "pc" then
+		ActionDamage.applyDamageToPc(rSource, rTarget, nTotal, sStat, sDamageType, aNotifications);
+	elseif sTargetNodeType == "ct" then
+		ActionDamage.applyDamageToNpc(rSource, rTarget, nTotal, sStat, sDamageType, aNotifications);
+	else
+		return;
+	end
+
 	-- Check for status change
 	local bShowStatus = false;
 	if ActorManager.isFaction(rTarget, "friend") then
@@ -307,7 +217,7 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal)
 			table.insert(aNotifications, string.format("[%s: %s]", Interface.getString("combat_tag_status"), sNewStatus));
 		end
 	end
-	
+
 	-- Output
 	if not (rTarget or sExtraResult ~= "") then
 		return;
@@ -315,23 +225,40 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal)
 	
 	local msgShort = {font = "msgfont"};
 	local msgLong = {font = "msgfont"};
-
+	
+	msgLong.text = "";
 	if nTotal < 0 then
 		msgShort.icon = "roll_heal";
 		msgLong.icon = "roll_heal";
+
+		-- Report positive values only
+		nTotal = math.abs(nTotal);
+		msgLong.text = string.format("[%s healing", nTotal)
+		if (sStat or "") ~= "" then
+			msgLong.text = string.format("%s %s", msgLong.text, sStat)
+		end
+		msgLong.text = string.format("%s]", msgLong.text)
+		
 	else
 		msgShort.icon = "roll_damage";
 		msgLong.icon = "roll_damage";
+
+		if sDamageType then
+			msgLong.text = string.format("[%s %s damage]", nTotal, sDamageType);
+		else
+			msgLong.text = string.format("[%s damage]", nTotal);
+		end
 	end
 
-	msgLong.text = string.format("[%s]", nTotal);
-	if nPCWounds then
-		msgLong.text = string.format("%s (%+d)", msgLong.text, nPCWounds);
-	end
 	msgLong.text = string.format("%s ->", msgLong.text);
 	if rTarget then
-		msgLong.text = string.format("%s [to %s]", msgLong.text, ActorManager.getDisplayName(rTarget));
+		msgLong.text = string.format("%s [to %s", msgLong.text, ActorManager.getDisplayName(rTarget));
 	end
+
+	if ActorManager.isPC(rTarget) and (sStat or "") ~= "" then
+		msgLong.text = string.format("%s's %s", msgLong.text, sStat);
+	end
+	msgLong.text = msgLong.text .. "]";
 	msgShort.text = msgLong.text;
 	
 	if #aNotifications > 0 then
@@ -339,4 +266,45 @@ function applyDamage(rSource, rTarget, bSecret, sRollType, sDamage, nTotal)
 	end
 	
 	ActionsManager.outputResult(bSecret, rSource, rTarget, msgLong, msgShort);
+end
+
+function applyDamageToPc(rSource, rTarget, nDamage, sStat, sDamageType, aNotifications)
+	local sTargetNodeType, nodePC = ActorManager.getTypeAndNode(rTarget);
+	if not nodePC then
+		return;
+	end
+
+	-- Damage
+	if nDamage > 0 then
+		-- Start by applying damage to the stat specified
+		local nOverflow = ActorManagerCypher.addToStatPool(rSource, sStat, -nDamage);
+
+		-- Overflow will follow the normal might -> speed -> intellect damage
+		nOverflow = ActorManagerCypher.addToStatPool(rSource, "might", -nOverflow);
+		nOverflow = ActorManagerCypher.addToStatPool(rSource, "speed", -nOverflow);
+		nOverflow = ActorManagerCypher.addToStatPool(rSource, "intellect", -nOverflow);
+	
+	-- Healing?
+	elseif nDamage < 0 then
+		-- Start by healing the stat specified
+		local nOverflow = ActorManagerCypher.addToStatPool(rSource, sStat, nDamage);
+
+		-- Overflow will follow the opposite of damage, intellect_new -> speed -> might damage
+		nOverflow = ActorManagerCypher.addToStatPool(rSource, "intellect", nOverflow);
+		nOverflow = ActorManagerCypher.addToStatPool(rSource, "speed", nOverflow);
+		nOverflow = ActorManagerCypher.addToStatPool(rSource, "might", nOverflow);
+	end
+end
+
+function applyDamageToNpc(rSource, rTarget, nDamage, sDamageStat, sDamageType, aNotifications)
+	local sTargetNodeType, nodeNPC = ActorManager.getTypeAndNode(rTarget);
+	if not nodeNPC then
+		return;
+	end
+
+	local nWounds = DB.getValue(nodeNPC, "wounds", 0);
+	local nHP = DB.getValue(nodeNPC, "hp", 0);
+
+	nWounds = math.max(math.min(nWounds + nDamage, nHP), 0);
+	DB.setValue(nodeNPC, "wounds", "number", nWounds);
 end
