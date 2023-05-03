@@ -345,6 +345,32 @@ function processStandardConditions(rSource, rTarget)
 	return nLevelAdjust;
 end
 
+function processPiercing(rSource, rTarget, bPiercing, nPierceAmount, aFilter)
+	local nPierceEffectAmount, nPierceEffectCount = EffectManagerCypher.getEffectsBonusByType(rSource, { "pierce", "piercing" }, aFilter, rTarget);
+	if nPierceEffectCount > 0 then
+		-- if we have pierce effects, then bPiercing is set locked to true.
+		bPiercing = true;
+
+		-- If either the effect or innate pierce is equal to 0, 
+		-- it means we have global piercing for all damage, and that has precedence
+		if nPierceEffectAmount == 0 or nPierceAmount == 0 then
+			nPierceAmount = 0;
+
+		-- In this case there's no innate piercing, but there is an effect amount
+		-- Assign piercing value. value of -1 means there's no piercing
+		elseif nPierceAmount < 0 then
+			nPierceAmount = nPierceEffectAmount
+
+		-- Innate and effect piercing are both positive.
+		-- We can safely add the two together
+		else
+			nPierceAmount = nPierceAmount + nPierceEffectAmount;
+		end
+	end
+
+	return bPiercing, nPierceAmount;
+end
+
 function processRollSuccesses(rSource, rTarget, rRoll, rMessage, aAddIcons)
 	if #(rRoll.aDice) == 1 and rRoll.aDice[1].type == "d20" then		
 		local nDifficulty = tonumber(rRoll.nDifficulty) or 0;
@@ -478,31 +504,25 @@ function decodeStat(rRoll, bPersist)
 	return sStat;
 end
 
-function encodeDefenseStat(vAction, rRoll)
-	local sStat = vAction;
-	
-	if type(vAction) == "table" then
-		sStat = vAction.sDefenseStat;
-	end
-
-	if (sStat or "") ~= "" then
-		rRoll.sDesc = RollManager.addOrOverwriteText(
-			rRoll.sDesc,
-			"%[DEFSTAT: %w-%]",
-			string.format("[DEFSTAT: %s]", sStat)
-		)
+function encodeDefenseStat(rAction, rRoll)
+	if (rAction.sDefenseStat or "") ~= "" then
+		local sNewLabel = string.format(
+			"%s vs %s", 
+			rAction.label, 
+			StringManager.capitalize(rAction.sDefenseStat));
+		rRoll.sDesc = rRoll.sDesc:gsub(rAction.label, sNewLabel);
 	end
 end
 function decodeDefenseStat(rRoll, bPersist)
 	local sStat, sText = RollManager.decodeText(
 		rRoll.sDesc,
-		"%[DEFSTAT: %w-%]",
-		"%[DEFSTAT: (%w-)%]",
-		bPersist
+		nil, -- Not needed because we always persist this data
+		"^%[[^]]-][^]]- vs ([^]]-)%[",
+		true
 	);
 	rRoll.sDesc = sText;
 
-	return sStat;
+	return StringManager.trim(sStat or "");
 end
 
 function encodeTraining(vAction, rRoll)
@@ -665,7 +685,7 @@ function encodeWeaponType(rAction, rRoll)
 		rRoll.sDesc = RollManager.addOrOverwriteText(
 			rRoll.sDesc,
 			"%[WTYPE: [^]]-%]",
-			string.format("[SKILL: %s]", rAction.sWeaponType)
+			string.format("[WTYPE: %s]", rAction.sWeaponType)
 		);
 	end
 end
@@ -679,6 +699,78 @@ function decodeWeaponType(rRoll, bPersist)
 	rRoll.sDesc = sText;
 
 	return sWeaponType;
+end
+
+function encodePiercing(rAction, rRoll)
+	if rAction.bPierce then
+		-- Build the text that goes in the roll description
+		local sPierce = "[PIERCE";
+		if (rAction.nPierceAmount or 0) > 0 then
+			sPierce = string.format("%s %s", sPierce, rAction.nPierceAmount);
+		end
+		sPierce = string.format("%s]", sPierce);
+
+		-- Place the text in the roll description
+		rRoll.sDesc = RollManager.addOrOverwriteText(
+			rRoll.sDesc,
+			"%[PIERCE%s?%d-%]",
+			sPierce
+		);
+	end
+end
+
+-- This decode breaks the standard model
+-- because it can either have a number or not
+function decodePiercing(vRoll, bPersist)
+	local sDesc = vRoll;
+	if type(vRoll) == "table" then
+		sDesc = vRoll.sDesc;
+	end
+
+	local sPiercing = sDesc:match("%[PIERCE%s?%d-%]");
+	local bPiercing = sPiercing ~= nil;
+	local nPierceAmount = tonumber(sDesc:match("%[PIERCE (%d+)%]")) or -1;
+
+	-- Dumb hack. If we want to pierce all armor, then nPierceAmount needs to be 0
+	-- But it needs to be -1 if bPiercing is false
+	-- And it needs to be an actual number if we have a flat pierce amount
+	if bPiercing and nPierceAmount == -1 then
+		nPierceAmount = 0;
+	end
+
+	if not bPersist then
+		sDesc = sDesc:gsub("%[PIERCE%s?%d-%]", "");
+
+		if type(vRoll) == "table" then
+			vRoll.sDesc = sDesc;
+		end
+	end
+
+	return bPiercing, nPierceAmount
+end
+
+function encodeAmbientDamage(rAction, rRoll)
+	if rAction.bAmbient then
+		rRoll.sDesc = string.format("%s [AMBIENT]", rRoll.sDesc)
+	end
+end
+
+function decodeAmbientDamage(vRoll, bPersist)
+	local sDesc = vRoll;
+	if type(vRoll) == "table" then
+		sDesc = vRoll.sDesc;
+	end
+
+	local bAmbient = sDesc:match("%[AMBIENT%]") ~= nil
+
+	if not bPersist then
+		sDesc = sDesc:gsub(" %[AMBIENT%]", "");
+		if type(vRoll) == "table" then
+			vRoll.sDesc = sDesc;
+		end
+	end
+
+	return bAmbient;
 end
 
 function encodeTarget(vTarget, rRoll)

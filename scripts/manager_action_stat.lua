@@ -28,12 +28,19 @@ function getRoll(rActor, rAction)
 	rRoll.sType = "stat";
 	rRoll.aDice = { "d20" };
 	rRoll.nMod = rAction.nModifier or 0;
-	rRoll.sDesc = string.format("[STAT] %s", rAction.label or "");
+
+	local sStat = "";
+	if (rAction.sStat or "") ~= "" then
+		sStat = string.format(" (%s)", StringManager.capitalize(rAction.sStat));
+	end
+
+	rRoll.sDesc = string.format("[STAT%s] %s", sStat, rAction.label or "");
 	rRoll.nDifficulty = rAction.nDifficulty or 0;
 
-	RollManager.encodeEffort(rAction, rRoll);
-	RollManager.encodeEdge(rAction, rRoll);
+	RollManager.encodeTraining(rAction, rRoll);
 	RollManager.encodeAssets(rAction, rRoll);
+	RollManager.encodeEdge(rAction, rRoll);
+	RollManager.encodeEffort(rAction, rRoll);
 
 	return rRoll;
 end
@@ -42,6 +49,7 @@ function modRoll(rSource, rTarget, rRoll)
 	local sStat = rRoll.sDesc:match("%[STAT%] (%w+)");
 	local nEffort = RollManager.decodeEffort(rRoll, true);
 	local nAssets = RollManager.decodeAssets(rRoll, true);
+	local bInability, bTrained, bSpecialized = RollManager.decodeTraining(rRoll, true);
 
 	if rTarget and not ActorManager.isPC(rTarget) then
 		rRoll.nDifficulty = ActorManagerCypher.getCreatureLevel(rTarget, rSource, { "stat", "stats", sStat });
@@ -63,8 +71,11 @@ function modRoll(rSource, rTarget, rRoll)
 	-- Process conditions
 	local nConditionEffects = RollManager.processStandardConditions(rSource, rTarget);
 
+	-- Adjust difficulty based on training
+	local nTrainingMod = RollManager.processTraining(bInability, bTrained, bSpecialized)
+
 	-- Roll up all the level/mod adjustments and apply them to the difficulty here
-	rRoll.nDifficulty = rRoll.nDifficulty - nAssets - nEffort - nConditionEffects;
+	rRoll.nDifficulty = rRoll.nDifficulty - nAssets - nEffort - nTrainingMod - nConditionEffects;
 	if bEase then 
 		rRoll.nDifficulty = rRoll.nDifficulty - 1;
 	end

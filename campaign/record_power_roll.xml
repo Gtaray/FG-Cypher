@@ -513,15 +513,15 @@
 				</anchored>
 				<static textres="power_label_damage_text_2" />
 			</label>
-			<button_stat name="statdmg">
+			<button_stat name="damagestat">
 				<anchored to="damage" width="70" height="20">
 					<top />
 					<left anchor="right" relation="relative" offset="10" />
 				</anchored>
 				<tooltip textres="power_tooltip_statdmg" />
 			</button_stat>
-			<label_fieldtop name="statdmg_label">
-				<anchored to="statdmg" />
+			<label_fieldtop name="damagestat_label">
+				<anchored to="damagestat" />
 				<static textres="power_label_statdmg" />
 			</label_fieldtop>
 			<label name="damagetext3">
@@ -756,7 +756,7 @@
 			</basicnumber>
 			<label_fieldtop>
 				<anchored to="heal" />
-				<static textres="power_label_heal" />
+				<static textres="power_label_healamount" />
 			</label_fieldtop>
 			<button_stat name="healstat">
 				<anchored to="healtargeting" width="70" height="20">

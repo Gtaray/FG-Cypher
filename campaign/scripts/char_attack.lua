@@ -41,6 +41,7 @@ function actionAttack(draginfo)
 	rAction.label = DB.getValue(nodeAction, "name", "");
 	rAction.sAttackRange = DB.getValue(nodeAction, "atkrange", "");
 	rAction.sStat = RollManager.resolveStat(DB.getValue(nodeAction, "stat", ""));
+	rAction.sDefenseStat = RollManager.resolveStat(DB.getValue(nodeAction, "defensestat", ""), "speed");
 	rAction.sTraining = DB.getValue(nodeAction, "training", "");
 	rAction.nAsset = DB.getValue(nodeAction, "asset", 0);
 	rAction.nModifier = DB.getValue(nodeAction, "modifier", 0);

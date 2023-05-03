@@ -8,7 +8,72 @@ OOB_MSGTYPE_APPLYDMG = "applydmg";
 function onInit()
 	OOBManager.registerOOBMsgHandler(OOB_MSGTYPE_APPLYDMG, handleApplyDamage);
 
-	ActionsManager.registerResultHandler("damage", onDamage);
+	ActionsManager.registerModHandler("damage", modRoll);
+	ActionsManager.registerResultHandler("damage", onRoll);
+end
+
+function performRoll(draginfo, rActor, rAction)
+	local bCanRoll = true; -- NPCs can always roll
+	if ActorManager.isPC(rActor) then
+		bCanRoll = RollManager.spendPointsForRoll(ActorManager.getCreatureNode(rActor), rAction);
+	end
+
+	if bCanRoll then
+		local rRoll = getRoll(rActor, rAction);
+		ActionsManager.performAction(draginfo, rActor, rRoll);
+	end
+end
+
+function getRoll(rActor, rAction)
+	local rRoll = {}
+	rRoll.sType = "damage"
+
+	local sDamageDetails = rAction.sDamageStat or "";
+	if (rAction.sDamageType or "") ~= "" then
+		sDamageDetails = string.format("%s, %s", sDamageDetails, rAction.sDamageType)
+	end
+	rRoll.sDesc = string.format(
+		"[DAMAGE (%s)] %s", 
+		sDamageDetails, 
+		rAction.label or "");
+
+	rRoll.aDice = { };
+	rRoll.nMod = rAction.nDamage or 0;
+
+	RollManager.encodeStat(rAction.sDamageStat, rRoll); -- Encode the stat that takes damage instead of the stat that's used to attack
+	RollManager.encodePiercing(rAction, rRoll);
+	RollManager.encodeAmbientDamage(rAction, rRoll);
+	RollManager.encodeEdge(rAction, rRoll);
+	RollManager.encodeEffort(rAction, rRoll);
+	
+	return rRoll;
+end
+
+function modRoll(rSource, rTarget, rRoll)
+	local sStat = RollManager.decodeStat(rRoll, true); -- Need to persist this to the onRoll handler
+	local nEffort = RollManager.decodeEffort(rRoll, true);
+	local bPiercing, nPierceAmount = RollManager.decodePiercing(rRoll, true);
+	local sDamageType = nil; -- This will get added later.
+
+	-- Adjust difficulty based on effort
+	nEffort = nEffort + RollManager.processEffort(rSource, rTarget, sStat, { "damage", "dmg" }, nEffort);
+	if (nEffort or 0) > 0 then
+		rRoll.nMod = rRoll.nMod + (nEffort * 3);
+	end
+
+	bPiercing, nPierceAmount = RollManager.processPiercing(rSource, rTarget, { }); -- Eventually the filter param here will include sDamageType
+
+	local nDmgBonus = EffectManagerCypher.getEffectsBonusByType(rSource, { "damage", "dmg" }, { }, rTarget)
+	if nDmgBonus ~= 0 then
+		rRoll.nMod = rRoll.nMod + nDmgBonus;
+	end
+
+	-- We fake the action object here when encoding piercing
+	-- Because it requires two variables as an input
+	-- instead of just the single that most encodes have
+	RollManager.encodePiercing({ bPierce = bPiercing, nPierceAmount = nPierceAmount }, rRoll);
+	RollManager.encodeEffort(nEffort, rRoll)
+	RollManager.encodeEffects(rRoll, nDmgBonus);
 end
 
 function onDamage(rSource, rTarget, rRoll)

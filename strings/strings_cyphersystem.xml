@@ -217,9 +217,10 @@
 	<string name="power_tooltip_coststat">Cost is deducted from this stat pool. Defaults to the Attack Stat.</string>
 
 	<string name="power_header_heal">HEAL</string>
+	<string name="power_label_heal">Heal</string>
 	<string name="power_label_heal_text_1">Heal</string>
 	<string name="power_label_heal_text_2">for</string>
-	<string name="power_label_heal">Amt</string>
+	<string name="power_label_healamount">Amt</string>
 	<string name="power_label_healstat">Stat Pool</string>
 	<string name="power_tooltip_healstat">Heal which stat pool?</string>
 

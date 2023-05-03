@@ -103,7 +103,7 @@ function getPCPowerAttackActionText(nodeAction)
 		if rAction.sAttackRange ~= "" then
 			sAttack = string.format("%s (%s): %s", StringManager.capitalize(rAction.sStat), rAction.sAttackRange, sDice)
 		else
-			sAttack = string.format("%s: %s", StringManager.capitalize(rAction.sStat), sDice)
+			sAttack = string.format("%s: %s", StringManager.capitalize(), sDice)
 		end
 
 		if nDiff < 0 then
@@ -124,10 +124,19 @@ function getPCPowerDamageActionText(nodeAction)
 	local sDamage = "";
 	local rAction, rActor = PowerManager.getPCPowerAction(nodeAction);
 	if rAction then
-		sDamage = string.format("%s: %s %s damage", StringManager.capitalize(rAction.sStat), rAction.nDamage, rAction.sDamageType or "untyped");
+		if (rAction.sDamageType or "" ~= "") then
+			sDamage = string.format(
+				"%s %s damage", 
+				rAction.nDamage, 
+				rAction.sDamageType);
+		else
+			sDamage = string.format(
+				"%s damage", 
+				rAction.nDamage);
+		end
 
-		if rAction.sStat ~= rAction.sStatDamage then
-			sDamage = string.format("%s -> %s", sDamage, StringManager.capitalize(rAction.sStatDamage));
+		if (rAction.sDamageStat or "") ~= "" then
+			sDamage = string.format("%s -> %s", sDamage, StringManager.capitalize(rAction.sDamageStat));
 		end
 
 		if rAction.bPierce then
@@ -213,9 +222,6 @@ function getPCPowerAction(nodeAction)
 	rAction.label = DB.getValue(nodeAction, "...name", "");
 	rAction.order = PowerManager.getPCPowerActionOutputOrder(nodeAction);
 
-	-- Resolve cost of the ability
-	local sCostType = DB.getValue(nodeAction, "costtype", "");
-
 	if rAction.type == "stat" then
 		rAction.sStat = RollManager.resolveStat(DB.getValue(nodeAction, "stat", ""));
 		rAction.sTraining = DB.getValue(nodeAction, "training", "");
@@ -223,29 +229,31 @@ function getPCPowerAction(nodeAction)
 		rAction.nModifier = DB.getValue(nodeAction, "modifier", 0);
 		
 	elseif rAction.type == "attack" then
+		rAction.sStat = RollManager.resolveStat(DB.getValue(nodeAction, "stat", ""));
+		rAction.sDefenseStat = RollManager.resolveStat(DB.getValue(nodeAction, "defensestat", ""), "speed");
 		rAction.sAttackRange = DB.getValue(nodeAction, "atkrange", "");
-		rAction.sStat = DB.getValue(nodeAction, "stat", "");
+
+		-- Only for PCs
 		rAction.sTraining = DB.getValue(nodeAction, "training", "");
 		rAction.nAssets = DB.getValue(nodeAction, "asset", 0);
-		rAction.nLevel = DB.getValue(nodeAction, "level", 0);
 		rAction.nModifier = DB.getValue(nodeAction, "modifier", 0);
 
+		-- Only for NPCs
+		rAction.nLevel = DB.getValue(nodeAction, "level", 0);
+
 		-- For PCs, we try to apply an equipped weapon
-		-- for NPCs, we double check that stat isn't empty
 		if ActorManager.isPC(rActor) then
-			applyWeaponPropertiesToAttack(rAction, nodePower);
-		else
-			if (rAction.sStat or "") == "" then
-				rAction.sStat = "speed";
-			end
+			PowerManager.applyWeaponPropertiesToAttack(rAction, nodePower);
 		end
 
 	elseif rAction.type == "damage" then
-		rAction.sStat = RollManager.resolveStat(DB.getValue(nodeAction, "stat", ""));
 		rAction.nDamage = DB.getValue(nodeAction, "damage", 0);
-		rAction.sDamageType = DB.getValue(nodeAction, "damagetype", "");
-		rAction.sStatDamage = RollManager.resolveStat(DB.getValue(nodeAction, "statdmg", ""));
+		rAction.sDamageStat = RollManager.resolveStat(DB.getValue(nodeAction, "damagestat", ""));
+
+		--rAction.sDamageType = DB.getValue(nodeAction, "damagetype", "");
 		rAction.bPierce = DB.getValue(nodeAction, "pierce", "") == "yes";
+
+		-- Only for NPCs
 		rAction.bAmbient = DB.getValue(nodeAction, "ambient", "") == "yes";
 
 		if rAction.bPierce then
@@ -255,18 +263,13 @@ function getPCPowerAction(nodeAction)
 		-- For PCs, we try to apply an equipped weapon
 		-- for NPCs, we double check that stat isn't empty
 		if ActorManager.isPC(rActor) then
-			applyWeaponPropertiesToDamage(rAction, nodePower);
-		else
-			if (rAction.sStat or "") == "" then
-				rAction.sStat = "might";
-			end
+			PowerManager.applyWeaponPropertiesToDamage(rAction, nodePower);
 		end
 
 	elseif rAction.type == "heal" then
 		rAction.sTargeting = DB.getValue(nodeAction, "healtargeting", "");
-		rAction.sStatHeal = RollManager.resolveStat(DB.getValue(nodeAction, "statheal", ""));
 		rAction.nHeal = DB.getValue(nodeAction, "heal", 0);
-		rAction.sStat = DB.getValue(nodeAction, "coststat", ""); -- Only used if fixed cost is specified
+		rAction.sStatHeal = RollManager.resolveStat(DB.getValue(nodeAction, "healstat", ""));
 
 	elseif rAction.type == "effect" then
 		rAction.sName = DB.getValue(nodeAction, "label", "");
@@ -274,22 +277,21 @@ function getPCPowerAction(nodeAction)
 		rAction.sTargeting = DB.getValue(nodeAction, "targeting", "");
 		rAction.nDuration = DB.getValue(nodeAction, "durmod", 0);
 		rAction.sUnits = DB.getValue(nodeAction, "durunit", "");
-
-		if sCostType == "ability" then
-			rAction.sStat = DB.getValue(nodePower, "stat", "");
-		else
-			rAction.sStat = DB.getValue(nodeAction, "coststat", ""); -- Only used if fixed cost is specified
-		end
 	end
 
+	-- Resolve cost of the ability
+	rAction.nCost = rAction.nCost or 0;
+	local sCostType = DB.getValue(nodeAction, "costtype", "");
+	local costnode = nil;
+
 	if sCostType == "ability" then
-		rAction.nCost = DB.getValue(nodePower, "statcost", 0);
-		rAction.sCostStat = DB.getValue(nodePower, "stat", "");
+		costnode = nodePower;
 	elseif sCostType == "fixed" then
-		rAction.nCost = DB.getValue(nodeAction, "cost", 0);
-		rAction.sCostStat = DB.getValue(nodeAction, "coststat", "");
-	else
-		rAction.nCost = 0;
+		costnode = nodeAction;
+	end
+	if costnode then
+		rAction.nCost = DB.getValue(costnode, "cost", 0);
+		rAction.sCostStat = DB.getValue(costnode, "coststat", "");
 	end
 
 	return rAction, rActor
@@ -301,15 +303,22 @@ function applyWeaponPropertiesToAttack(rAttack, nodeAbility)
 	local rWeapon = {};
 	local bUseEquipped = DB.getValue(nodeAbility, "useequipped", "") == "yes";
 	if bUseEquipped then
-		rWeapon = ActorManager.getEquippedWeapon(nodeActor)
+		rWeapon = ActorManagerCypher.getEquippedWeapon(nodeActor)
 	end
 
 	if (rAttack.sAttackRange or "") == "" then
 		rAttack.sAttackRange = rWeapon.sAttackRange or "";
 	end
 	if (rAttack.sStat or "") == "" then
-		rAttack.sStat = rWeapon.sStat or "might";
+		rAttack.sStat = rWeapon.sStat;
 	end
+	if (rAttack.sDefenseStat or "") == "" then
+		rAttack.sDefenseStat = rWeapon.sDefenseStat;
+	end
+	if (rAttack.sTraining or "") == "" then
+		rAttack.sTraining = rWeapon.sTraining;
+	end
+
 	rAttack.nAssets = rAttack.nAssets + (rWeapon.nAssets or 0)
 	rAttack.nModifier = rAttack.nModifier + (rWeapon.nModifier or 0)
 	rAttack.sWeaponType = rWeapon.sWeaponType or ""; -- Add the weapon type if it exists
@@ -325,18 +334,15 @@ function applyWeaponPropertiesToDamage(rDamage, nodeAbility)
 	local rWeapon = {};
 	local bUseEquipped = DB.getValue(nodeAbility, "useequipped", "") == "yes";
 	if bUseEquipped then
-		rWeapon = ActorManager.getEquippedWeapon(nodeActor)
+		rWeapon = ActorManagerCypher.getEquippedWeapon(nodeActor)
 	end
 
-	if (rDamage.sStat or "") == "" then
-		rAttack.sStat = rWeapon.sStat or "might";
-	end
 	if (rDamage.sStatDamage or "") == "" then
-		rDamage.sStatDamage = rWeapon.sStatDamage or "might";
+		rDamage.sStatDamage = rWeapon.sStatDamage;
 	end
-	if (rDamage.sDamageType or "") == "" then
-		rDamage.sDamageType = rWeapon.sDamageType;
-	end
+	-- if (rDamage.sDamageType or "") == "" then
+	-- 	rDamage.sDamageType = rWeapon.sDamageType;
+	-- end
 
 	rDamage.nDamage = rDamage.nDamage + (rWeapon.nDamage or 0)
 	rDamage.bPierce = rDamage.bPierce or rWeapon.bPierce;
@@ -360,71 +366,31 @@ function performAction(node, tData)
 		return false;
 	end
 
-	-- These are separate because PCs will need to spend effort and stuff
-	-- NPC don't
-	if ActorManager.isPC(rActor) then
-		return performPcAction(draginfo, rActor, rAction);
-	else
-		return performNpcAction(draginfo, rActor, rAction);
-	end
-end
+	local bPC = ActorManager.isPC(rActor);
 
-function performPcAction(draginfo, rActor, rAction)
-	local nodeActor = ActorManager.getCreatureNode(rActor);
-
-	local rRolls = {};	
 	if rAction.type == "stat" then
-		ActionStat.applyEffort(rActor, rAction);
-		if RollManager.spendPointsForRoll(nodeActor, rAction) then
-			table.insert(rRolls, ActionStat.getRoll(rActor, rAction));
+		if bPC then
+			ActionStat.performRoll(draginfo, rActor, rAction);
+		else
+			Comm.addChatMessage({ text = "This action is not available for NPCs.", font = "systemfont" });
 		end
-	elseif rAction.type == "attack" then
-		ActionAttack.applyEffort(rActor, rAction);
-		if RollManager.spendPointsForRoll(nodeActor, rAction) then
-			table.insert(rRolls, ActionAttack.getRoll(rActor, rAction));
-		end
-		
-	elseif rAction.type == "damage" then
-		ActionDamage.applyEffort(rActor, rAction);
-		if RollManager.spendPointsForRoll(nodeActor, rAction) then
-			table.insert(rRolls, ActionDamage.getRoll(rActor, rAction));
-		end
-		
-	elseif rAction.type == "heal" then
-		ActionHeal.applyEffort(rActor, rAction);
-		if RollManager.spendPointsForRoll(nodeActor, rAction) then
-			table.insert(rRolls, ActionHeal.getRoll(rActor, rAction));
-		end
-		
-	elseif rAction.type == "effect" then
-		RollManager.addEffortToAction(rActor, rAction, "effect");
-		RollManager.addWoundedToAction(rActor, rAction);
-		RollManager.applyDesktopAdjustments(rAction);
-		RollManager.calculateEffortCost(rActor, rAction)
 
-		if RollManager.spendPointsForRoll(nodeActor, rAction) then
-			table.insert(rRolls, ActionEffect.getRoll(draginfo, rActor, rAction));
-		end
-	end
-	
-	if #rRolls > 0 then
-		ActionsManager.performMultiAction(draginfo, rActor, rRolls[1].sType, rRolls);
-	end
-	return true;
-end
-
-function performNpcAction(draginfo, rActor, rAction)
-	if rAction.type == "stat" then
-		-- Display a warning and do nothing
-		Comm.addChatMessage({ text = "This action is not available for NPCs.", font = "systemfont" });
 	elseif rAction.type == "attack" then
-		ActionDefenseVs.performRoll(draginfo, rActor, rAction);
+		if bPC then
+			ActionAttack.performRoll(draginfo, rActor, rAction);
+		else
+			ActionDefenseVs.performRoll(draginfo, rActor, rAction);
+		end
+		
 	elseif rAction.type == "damage" then
 		ActionDamage.performRoll(draginfo, rActor, rAction);
+		
 	elseif rAction.type == "heal" then
 		ActionHeal.performRoll(draginfo, rActor, rAction);
+		
 	elseif rAction.type == "effect" then
 		ActionEffect.performRoll(draginfo, rActor, rAction);
 	end
+
 	return true;
 end

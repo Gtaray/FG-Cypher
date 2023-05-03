@@ -23,7 +23,7 @@ function performRoll(draginfo, rActor, rAction)
 	local bCanRoll = RollManager.spendPointsForRoll(ActorManager.getCreatureNode(rActor), rAction);
 
 	if bCanRoll then
-		local rRoll = ActionDefense.getRoll(rActor, rAction);
+		local rRoll = ActionAttack.getRoll(rActor, rAction);
 		ActionsManager.performAction(draginfo, rActor, rRoll);
 	end
 end
@@ -49,9 +49,9 @@ function getRoll(rActor, rAction)
 end
 
 function modRoll(rSource, rTarget, rRoll)
-	local bPersist = rTarget == nil;
-	local sStat = RollManager.decodeStat(rRoll, bPersist);
+	local sStat = RollManager.decodeStat(rRoll, false); -- Don't need to persist
 	local sDefenseStat = RollManager.decodeDefenseStat(rRoll, true); -- We need this in the onRoll handler, so it's always persisted.
+	Debug.chat(sDefenseStat);
 	local nAssets = RollManager.decodeAssets(rRoll, true);
 	local nEffort = RollManager.decodeEffort(rRoll, true);
 	local bInability, bTrained, bSpecialized = RollManager.decodeTraining(rRoll, true);

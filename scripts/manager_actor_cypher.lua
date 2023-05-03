@@ -423,15 +423,16 @@ function getEquippedWeapon(nodeActor)
 
 	local rWeapon = {};
 	rWeapon.sLabel = DB.getValue(node, "name", "");
+	rWeapon.sStat = RollManager.resolveStat(DB.getValue(node, "stat", ""));
+	rWeapon.sDefenseStat = RollManager.resolveStat(DB.getValue(node, "defensestat", ""), "speed");
 	rWeapon.sAttackRange = DB.getValue(node, "atkrange", "");
-	rWeapon.sStat = RollManager.resolveStat(DB.getValue(node, "stat", ""), "might");
 	rWeapon.sTraining = DB.getValue(node, "training", "");
 	rWeapon.nAssets = DB.getValue(node, "asset", 0);
 	rWeapon.nModifier = DB.getValue(node, "modifier", 0);
 
 	rWeapon.nDamage = DB.getValue(node, "damage", 0);
-	rWeapon.sDamageType = DB.getValue(node, "damagetype", "");
-	rWeapon.sStatDamage = RollManager.resolveStat(DB.getValue(node, "statdmg", ""), "might");
+	rWeapon.sDamageStat = RollManager.resolveStat(DB.getValue(node, "damagestat", ""));
+	--rWeapon.sDamageType = DB.getValue(node, "damagetype", "");
 	rWeapon.bPierce = DB.getValue(node, "pierce", "") == "yes";
 	rWeapon.sWeaponType = DB.getValue(node, "weapontype", "");
 
