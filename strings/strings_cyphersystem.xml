@@ -188,12 +188,13 @@
 	<string name="power_label_modifier">Mod</string>
 
 	<string name="power_header_damage">DAMAGE</string>
-	<string name="power_label_damage_text_1">Deal</string>
-	<string name="power_label_damage_text_2">damage to the target's</string>
-	<string name="power_label_damage_text_3">pool.</string>
+	<string name="power_label_damage_text_1">Use</string>
+	<string name="power_label_damage_text_2">to deal</string>
+	<string name="power_label_damage_text_3">damage to the target's</string>
+	<string name="power_label_statpool">Stat Pool</string>
 	<string name="power_label_damage">Dmg</string>
-	<string name="power_label_statdmg">Stat Pool</string>
-	<string name="power_tooltip_statdmg">Deal damage to this stat pool. Defaults to Might.</string>
+	<string name="power_label_damagestat">Dmg Pool</string>
+	<string name="power_tooltip_damagestat">Deal damage to this stat pool. Defaults to Might.</string>
 	<string name="power_label_damagetype">Damage Type</string>
 	<string name="power_label_pierce">Armor Pierce</string>
 	<string name="power_tooltip_pierce">Does this damage bypass Armor?</string>
@@ -218,8 +219,9 @@
 
 	<string name="power_header_heal">HEAL</string>
 	<string name="power_label_heal">Heal</string>
-	<string name="power_label_heal_text_1">Heal</string>
-	<string name="power_label_heal_text_2">for</string>
+	<string name="power_label_heal_text_1">Use</string>
+	<string name="power_label_heal_text_2">To heal</string>
+	<string name="power_label_heal_text_3">for</string>
 	<string name="power_label_healamount">Amt</string>
 	<string name="power_label_healstat">Stat Pool</string>
 	<string name="power_tooltip_healstat">Heal which stat pool?</string>

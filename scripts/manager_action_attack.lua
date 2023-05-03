@@ -12,7 +12,7 @@ function performRoll(draginfo, rActor, rAction)
 	local aFilter = { "attack", "atk", rAction.sStat };
 
 	RollManager.addEdgeToAction(rActor, rAction, aFilter);
-	RollManager.addWoundedToAction(rActor, rAction, aFilter);
+	RollManager.addWoundedToAction(rActor, rAction, "attack");
 	RollManager.addArmorCostToAction(rActor, rAction);
 	RollManager.applyDesktopAdjustments(rActor, rAction);
 	RollManager.resolveMaximumEffort(rActor, rAction, aFilter);
@@ -51,7 +51,6 @@ end
 function modRoll(rSource, rTarget, rRoll)
 	local sStat = RollManager.decodeStat(rRoll, false); -- Don't need to persist
 	local sDefenseStat = RollManager.decodeDefenseStat(rRoll, true); -- We need this in the onRoll handler, so it's always persisted.
-	Debug.chat(sDefenseStat);
 	local nAssets = RollManager.decodeAssets(rRoll, true);
 	local nEffort = RollManager.decodeEffort(rRoll, true);
 	local bInability, bTrained, bSpecialized = RollManager.decodeTraining(rRoll, true);

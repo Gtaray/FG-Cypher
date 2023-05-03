@@ -35,7 +35,7 @@ end
 	-- bDisableEdge = boolean (flags whether edge should be applied to the cost of the roll)
 	-- nEffort = number (number of effort levels applied to this roll)
 	-- nMaxEffort = number (maximum effort that can be applied to this roll)
-	-- sStatUsedForCost = string (stat used to pay for costs. might|speed|intellect. Defaults to match rAction.sStat, or might)
+	-- sCostStat = string (stat used to pay for costs. might|speed|intellect. Defaults to match rAction.sStat, or might)
 	-- nCost = number (cost of the ability)
 	-- nArmorCost = number (cost increase due to wearing armor)
 	-- bWounded = boolean (flags whether the character rolling is wounded, which increases effort cost)
@@ -43,9 +43,13 @@ end
 	-- sWeaponType = string (weapon type. light|medium|heavy)
 	-- sRange = string (range of an attack. immediate|short|far)
 	-- nLevel = number (level modifier for NPC actions)
+	-- nDamage = number (damage dealt)
+	-- nDamageStat = string (stat pool that is deducted when applying damage. might|speed|intellect)
 	-- bPierce = boolean (flags whether a damage roll should pierce armor)
 	-- nPierceAmount = number (amount of armor a damage roll pierces. If bPierce is true and this is 0, then all armor is ignored)
 	-- bAmbient = boolean (flags whether a damage roll is ambient damage)
+	-- nHeal = number (amount healed)
+	-- nHealStat = string (might|speed|intellect. Stat that's healed with ability)
 -- }
 -----------------------------------------------------------------------
 -- ACTION ADJUSTMENTS
@@ -124,7 +128,7 @@ function addArmorCostToAction(rActor, rAction)
 		return;
 	end
 
-	if rAction.sStatUsedForCost == "speed" then
+	if rAction.sCostStat == "speed" then
 		rAction.nArmorCost = ActorManagerCypher.getArmorSpeedCost(rActor);
 	end
 end
@@ -181,7 +185,7 @@ function spendPointsForRoll(rActor, rAction)
 		return false;
 	end
 
-	local nCurrentPool = ActorManagerCypher.getStatPool(rActor, rAction.sStatUsedForCost);
+	local nCurrentPool = ActorManagerCypher.getStatPool(rActor, rAction.sCostStat);
 	if rAction.nCost > nCurrentPool then
 		local rMessage = ChatManager.createBaseMessage(rActor);
 		rMessage.text = rMessage.text .. " [INSUFFICIENT POINTS IN POOL]";
@@ -192,9 +196,9 @@ function spendPointsForRoll(rActor, rAction)
 	rAction.label = rAction.label .. string.format(
 		" [SPENT %d %s]", 
 		rAction.nCost, 
-		Interface.getString(rAction.sStatUsedForCost):upper());
+		Interface.getString(rAction.sCostStat):upper());
 
-	ActorManagerCypher.addToStatPool(rActor, rAction.sStatUsedForCost, -rAction.nCost);
+	ActorManagerCypher.addToStatPool(rActor, rAction.sCostStat, -rAction.nCost);
 
 	return true;
 end
@@ -220,7 +224,7 @@ end
 function resolveDifficultyModifier(sTraining, nAssets, nLevel, nMod)
 	local nDifficulty = nLevel or 0;
 
-	sTraining = sTraining:lower();
+	sTraining = (sTraining or ""):lower();
 	if sTraining == "trained" then
 		nDifficulty = -1;
 	elseif sTraining == "specialized" then
@@ -239,13 +243,13 @@ end
 
 function resolveStatUsedForCost(rAction)
 	-- if cost.sStat is already set, then don't do anything
-	if (rAction.sStatUsedForCost or "") ~= "" then
+	if (rAction.sCostStat or "") ~= "" then
 		return true;
 	end
 
 	-- if cost.sStat is not set, then set it to match rAction.sStat
 	if rAction.sStat ~= "" then
-		rAction.sStatUsedForCost = rAction.sStat;
+		rAction.sCostStat = rAction.sStat;
 		return true;
 	end
 
@@ -268,8 +272,8 @@ function resolveEaseHindrance(rSource, rTarget, aFilter)
 		aFilter = { aFilter }
 	end
 
-	local aEaseEffects = EffectManager.getEffectsByType(rSource, "EASE", aFilter, rTarget)
-	local aHinderEffects = EffectManager.getEffectsByType(rSource, "HINDER", aFilter, rTarget)
+	local aEaseEffects = EffectManagerCypher.getEffectsByType(rSource, "EASE", aFilter, rTarget)
+	local aHinderEffects = EffectManagerCypher.getEffectsByType(rSource, "HINDER", aFilter, rTarget)
 
 	bEase = #aEaseEffects > 0 or ModifierManager.getKey("EASE");
 	bHinder = #aHinderEffects > 0 or ModifierManager.getKey("HINDER");
@@ -499,9 +503,14 @@ function decodeStat(rRoll, bPersist)
 		"%[STAT: (%w-)%]",
 		bPersist
 	);
+	-- If there's no stat found with the STAT tag
+	-- Then look for it in the parenthesis in the roll type tag
+	if (sStat or "") == "" then
+		sStat = string.match(rRoll.sDesc, "^%[[^.]-%((%w-)%)%]");
+	end
 	rRoll.sDesc = sText;
 
-	return sStat;
+	return (sStat or ""):lower();
 end
 
 function encodeDefenseStat(rAction, rRoll)
@@ -575,7 +584,12 @@ function decodeTraining(rRoll, bPersist)
 	return bInability, bTrained, bSpecialized;
 end
 
-function encodeEdge(rAction, rRoll)
+function encodeEdge(rAction, vRoll)
+	local sDesc = vRoll;
+	if type(vRoll) == "table" then
+		sDesc = vRoll.sDesc;
+	end
+
 	local sText = "";
 	local sMatch = "";
 	if rAction.bDisableEdge then
@@ -587,14 +601,20 @@ function encodeEdge(rAction, rRoll)
 	end
 
 	if sText == "" or sMatch == "" then
-		return;
+		return sDesc;
 	end
 
-	rRoll.sDesc = RollManager.addOrOverwriteText(
-		rRoll.sDesc,
+	sDesc = RollManager.addOrOverwriteText(
+		sDesc,
 		sMatch,
 		sText
 	)
+
+	if type(vRoll) == "table" then
+		rRoll.sDesc = sDesc;
+	end
+
+	return sDesc;
 end
 function decodeEdge(rRoll, bPersist)
 	local nEdge, sText = RollManager.decodeTextAsNumber(
@@ -607,19 +627,30 @@ function decodeEdge(rRoll, bPersist)
 	return nEdge;
 end
 
-function encodeEffort(vAction, rRoll)
+function encodeEffort(vAction, vRoll)
 	local nEffort = vAction;
 	
 	if type(vAction) == "table" then
 		nEffort = vAction.nEffort
 	end
 
+	local sDesc = vRoll;
+	if type(vRoll) == "table" then
+		sDesc = vRoll.sDesc;
+	end
+
 	if (nEffort or 0) > 0 then
-		rRoll.sDesc = RollManager.addOrOverwriteText(
-			rRoll.sDesc, 
+		sDesc = RollManager.addOrOverwriteText(
+			sDesc, 
 			"%[APPLIED %d+ EFFORT%]", 
 			string.format("[APPLIED %s EFFORT]", nEffort));
+
+		if type(vRoll) == "table" then
+			vRoll.sDesc = sDesc;
+		end
 	end
+
+	return sDesc;
 end
 function decodeEffort(rRoll, bPersist)
 	local nEffort, sText = RollManager.decodeTextAsNumber(

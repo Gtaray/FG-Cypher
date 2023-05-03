@@ -66,8 +66,8 @@ function actionDamage(draginfo)
 	rAction.label = DB.getValue(nodeAction, "name", "");
 	rAction.nDamage = DB.getValue(nodeAction, "damage", 0);
 	rAction.sStat = RollManager.resolveStat(DB.getValue(nodeAction, "stat", ""));
-	rAction.sStatDamage = RollManager.resolveStat(DB.getValue(nodeAction, "statdmg", ""));
-	rAction.sDamageType = RollManager.resolveDamageType(DB.getValue(nodeAction, "damagetype", ""));
+	rAction.sStatDamage = RollManager.resolveStat(DB.getValue(nodeAction, "damagestat", ""));
+	-- rAction.sDamageType = RollManager.resolveDamageType(DB.getValue(nodeAction, "damagetype", ""));
 
 	rAction.bPierce = DB.getValue(nodeAction, "pierce", "") == "yes";
 	if rAction.bPierce then

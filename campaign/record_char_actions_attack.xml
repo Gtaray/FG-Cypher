@@ -213,6 +213,20 @@
 				<static textres="power_label_attack_text_1" />
 			</label_column>
 			<column_stat name="stat">
+				<script>
+					function onInit()
+						if super and super.onInit then
+							super.onInit();
+						end
+						onValueChanged();
+					end
+					function onValueChanged()
+						if super and super.onValueChanged then
+							super.onValueChanged();
+						end
+						window.stat2.setStringValue(getStringValue());
+					end
+				</script>
 				<anchored to="attacktext1" width="70" height="20">
 					<top offset="20"/>
 					<left anchor="right" relation="relative" offset="10" />
@@ -284,50 +298,62 @@
 			</header_column>
 
 			<label_column name="damagetext1">
-				<anchored>
+				<anchored width="21">
 					<top offset="20" />
 				</anchored>
 				<static textres="power_label_damage_text_1" />
 			</label_column>
-			<number_column name="damage">
-				<anchored to="damagetext1" width="25" height="20">
+			<!-- Stat2 is only used for display purposes, and is edited in the attack section -->
+			<column_stat name="stat2">
+				<anchored width="65">
 					<top offset="20" />
-					<left anchor="right" relation="relative" offset="10" />
+					<left parent="damagetext1" anchor="right" relation="relative" offset="10" />
 				</anchored>
-				<min>0</min>
-			</number_column>
-			<label_fieldtop>
-				<anchored to="damage" />
-				<static textres="power_label_damage" />
+				<tooltip textres="power_tooltip_damagestat" />
+				<readonly />
+			</column_stat>
+			<label_fieldtop name="stat_label">
+				<anchored to="stat2" />
+				<static textres="power_label_statpool" />
 			</label_fieldtop>
 			<label name="damagetext2">
-				<anchored to="damage" width="137">
+				<anchored to="stat2" width="42">
 					<top />
 					<left anchor="right" relation="relative" offset="10" />
 				</anchored>
 				<static textres="power_label_damage_text_2" />
 			</label>
-			<button_stat name="damagestat">
-				<anchored to="damage" width="70" height="20">
+			<basicnumber name="damage">
+				<anchored to="stat2" width="25" height="20">
 					<top />
 					<left anchor="right" relation="relative" offset="10" />
 				</anchored>
-				<tooltip textres="power_tooltip_statdmg" />
-			</button_stat>
-			<label_fieldtop>
-				<anchored to="damagestat" />
-				<static textres="power_label_statdmg" />
+			</basicnumber>
+			<label_fieldtop name="damage_label">
+				<anchored to="damage" />
+				<static textres="power_label_damage" />
 			</label_fieldtop>
 			<label name="damagetext3">
-				<anchored to="damage" width="40">
+				<anchored to="stat2" width="138">
 					<top />
 					<left anchor="right" relation="relative" offset="10" />
 				</anchored>
 				<static textres="power_label_damage_text_3" />
 			</label>
+			<button_stat name="damagestat">
+				<anchored to="stat2" width="65" height="20">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<tooltip textres="power_tooltip_damagestat" />
+			</button_stat>
+			<label_fieldtop name="damagestat_label">
+				<anchored to="damagestat" />
+				<static textres="power_label_damagestat" />
+			</label_fieldtop>
 
 			<!-- <stringu_damagetype_autocomplete name="damagetype">
-				<anchored to="statdmg" height="20">
+				<anchored to="damagestat" height="20">
 					<top />
 					<left anchor="right" offset="10" />
 					<right parent="" offset="-10" />

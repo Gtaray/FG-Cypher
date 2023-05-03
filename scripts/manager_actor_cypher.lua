@@ -149,8 +149,8 @@ function addToStatPool(rActor, sStat, nValue)
 
 	-- Shortcut. If the stat pool is already capped out, then we just return
 	-- the entire value as overflow
-	if nCur == nMax then
-		return nValue;
+	if (nCur == nMax and nValue > 0) or (nCur == 0 and nValue < 0) then
+		return math.abs(nValue);
 	end
 
 	local nNewValue = nCur + nValue;
@@ -222,7 +222,7 @@ function getMaxAssets(rActor, aFilter)
 		return 0;
 	end
 
-	return 2 + EffectManager.getEffectsBonusByType(rActor, "MAXASSETS", aFilter);
+	return 2 + EffectManagerCypher.getEffectsBonusByType(rActor, "MAXASSETS", aFilter);
 end
 
 function getMaxEffort(rActor, sStat, aFilter)
@@ -232,7 +232,7 @@ function getMaxEffort(rActor, sStat, aFilter)
 	end
 
 	local nBase = DB.getValue(nodeActor, "effort", 0);
-	local nEffectMaxEffort = EffectManager.getEffectsBonusByType(rActor, "MAXEFF", aFilter);
+	local nEffectMaxEffort = EffectManagerCypher.getEffectsBonusByType(rActor, "MAXEFF", aFilter);
 	
 	-- clamp max effort to between 0 and 6
 	return math.max(math.min(nBase + nEffectMaxEffort, 6), 0);
@@ -245,7 +245,7 @@ function getEdge(rActor, sStat, aFilter)
 	end
 
 	local nBase = DB.getValue(nodeActor, "abilities." .. sStat .. ".edge", 0);
-	local nBonus = EffectManager.getEffectsBonusByType(rActor, "EDGE", aFilter);
+	local nBonus = EffectManagerCypher.getEffectsBonusByType(rActor, "EDGE", aFilter);
 
 	return nBase + nBonus;
 end
@@ -259,7 +259,7 @@ function getArmor(rActor, rTarget, sStat)
 		sStat = "might";
 	end
 
-	local nEffectArmor = EffectManager.getEffectsBonusByType(rActor, "ARMOR", { sStat }, rTarget, false);
+	local nEffectArmor = EffectManagerCypher.getEffectsBonusByType(rActor, "ARMOR", { sStat }, rTarget, false);
 
 	-- Only apply the character's base armor to Might damage.
 	if sStat == "might" then
@@ -276,7 +276,7 @@ function getArmorSpeedCost(rActor)
 	end
 
 	local nBase = DB.getValue(nodeActor, "armorspeedcost", 0);
-	local nBonus = EffectManager.getEffectsBonusByType(rActor, "COST", { "armor" });
+	local nBonus = EffectManagerCypher.getEffectsBonusByType(rActor, "COST", { "armor" });
 
 	return nBase + nBonus;
 end
@@ -382,7 +382,7 @@ function getDamageMods(rActor, sFilter, rTarget)
 	end
 
 	-- Then get values from effects
-	local aEffects = EffectManager.getEffectsByType(rActor, sFilter, rTarget);
+	local aEffects = EffectManagerCypher.getEffectsByType(rActor, sFilter, rTarget);
 	for _,v in pairs(aEffects) do
 		-- If there's no type specified, then set it to all
 		if #(v.remainder) == 0 then
@@ -485,7 +485,7 @@ function getCreatureLevel(rCreature, rAttacker, aFilter)
 	end
 
 	local nBase = DB.getValue(creatureNode, "level", 0);
-	local nLevelBonus = EffectManager.getEffectsBonusByType(rCreature, "LEVEL", aFilter, rAttacker);
+	local nLevelBonus = EffectManagerCypher.getEffectsBonusByType(rCreature, "LEVEL", aFilter, rAttacker);
 
 	return nBase + nLevelBonus;
 end

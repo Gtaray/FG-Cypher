@@ -79,6 +79,7 @@
 	<script name="ActionStat" file="scripts/manager_action_stat.lua" />
 	<script name="ActionSkill" file="scripts/manager_action_skill.lua" />
 	<script name="ActionDefense" file="scripts/manager_action_defense.lua" />
+	<script name="ActionDefenseVS" file="scripts/manager_action_defensevs.lua" />
 	<script name="ActionAttack" file="scripts/manager_action_attack.lua" />
 	<script name="ActionDamage" file="scripts/manager_action_damage.lua" />
 	<script name="ActionInit" file="scripts/manager_action_init.lua" />

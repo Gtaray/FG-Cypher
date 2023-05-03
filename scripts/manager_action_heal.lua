@@ -7,16 +7,17 @@ function performRoll(draginfo, rActor, rAction)
 	local aFilter = { "heal" };
 
 	RollManager.addEdgeToAction(rActor, rAction, aFilter);
-	RollManager.addWoundedToAction(rActor, rAction, aFilter);
 	RollManager.addArmorCostToAction(rActor, rAction);
 	RollManager.applyDesktopAdjustments(rActor, rAction);
 	RollManager.resolveMaximumEffort(rActor, rAction, aFilter);
 	RollManager.resolveMaximumAssets(rActor, rAction, aFilter);
 	RollManager.calculateBaseEffortCost(rActor, rAction);
 	RollManager.adjustEffortCostWithEffects(rActor, rAction, aFilter);
-	RollManager.applyEffortToModifier(rActor, rAction);
 
-	local bCanRoll = RollManager.spendPointsForRoll(ActorManager.getCreatureNode(rActor), rAction);
+	local bCanRoll = true; -- NPCs can always roll
+	if ActorManager.isPC(rActor) then
+		bCanRoll = RollManager.spendPointsForRoll(ActorManager.getCreatureNode(rActor), rAction);
+	end
 
 	if bCanRoll then
 		local rRoll = ActionHeal.getRoll(rActor, rAction);
@@ -27,52 +28,60 @@ end
 
 function getRoll(rActor, rAction)
 	local rRoll = {};
-	-- rRoll.sType = "heal";
-	-- rRoll.aDice = { };
-	-- rRoll.nMod = rAction.nModifier or 0;
+	rRoll.sType = "heal";
+	rRoll.aDice = { };
+	rRoll.nMod = rAction.nHeal or rAction.nModifier or 0;
 	
-	-- rRoll.sDesc = string.format("[HEAL (%s)] %s", rAction.sStatHeal, rAction.label);
+	rRoll.sDesc = string.format(
+		"[HEAL (%s)] %s", 
+		StringManager.capitalize(rAction.sHealStat), 
+		rAction.label);
 
-	-- -- Handle self-targeting
-	-- if rAction.sTargeting == "self" then
-	-- 	rRoll.bSelfTarget = true;
-	-- end
+	-- Handle self-targeting
+	if rAction.sTargeting == "self" then
+		rRoll.bSelfTarget = true;
+	end
 
-	-- RollManager.encodeStat(rAction, rRoll)
+	RollManager.encodeStat(rAction, rRoll);
+	RollManager.encodeEdge(rAction, rRoll);
+	RollManager.encodeEffort(rAction, rRoll);
 	
 	return rRoll;
 end
 
 function modRoll(rSource, rTarget, rRoll)
-	-- local sStat = RollManager.decodeStat(rRoll, true);
-	-- local nHealBonus, nHealEffectCount = EffectManager.getEffectsBonusByType(rSource, "HEAL", { sStat }, rTarget)
+	-- We want to get rid of the [STAT: %s] tag here, because the onRoll handler
+	-- will decode the [HEAL (%s)] stat tag (which is the stat that's being damaged)
+	-- We only need the source's stat to handle effects
+	local sStat = RollManager.decodeStat(rRoll, false);
+	local nEffort = RollManager.decodeEffort(rRoll, true);
 
-	-- rRoll.nMod = rRoll.nMod + nHealBonus;
+	-- Adjust mod based on effort
+	nEffort = nEffort + RollManager.processEffort(rSource, rTarget, sStat, { "heal", "healing" }, nEffort);
+	if (nEffort or 0) > 0 then
+		rRoll.nMod = rRoll.nMod + (nEffort * 3);
+	end
 
-	-- if nHealEffectCount > 0 then
-	-- 	if nHealBonus < 0 then
-	-- 		rRoll.sDesc = rRoll.sDesc  .. " " .. nHealBonus .. "]";
-	-- 	elseif nEffects > 0 then
-	-- 		rRoll.sDesc = rRoll.sDesc  .. " +" .. nHealBonus .. "]";
-	-- 	else
-	-- 		rRoll.sDesc = rRoll.sDesc .. "]";
-	-- 	end
-	-- end
+	local nHealBonus, nHealEffectCount = EffectManagerCypher.getEffectsBonusByType(rSource, "HEAL", { sStat }, rTarget)
+	if nHealBonus ~= 0 then
+		rRoll.nMod = rRoll.nMod + nHealBonus;
+	end
+
+	RollManager.encodeEffort(nEffort, rRoll)
+	RollManager.encodeEffects(rRoll, nHealBonus);
 end
 
 function onRoll(rSource, rTarget, rRoll)
-	-- local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
+	local rResult = ActionDamage.buildRollResult(rSource, rTarget, rRoll);
+	RollManager.decodeStat(rRoll, false); -- Don't need this after getting rResult
+	rResult.nTotal = rResult.nTotal * -1; --Invert the roll total because negative damage is healing
 
-	-- rMessage.icon = "action_heal";
-	-- if rTarget ~= nil then
-	-- 	rMessage.text = rMessage.text:gsub(" %[STAT: %w-%]", "");
-	-- end
+	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
+	rMessage.icon = "action_heal";
+	Comm.deliverChatMessage(rMessage);
 
-	-- Comm.deliverChatMessage(rMessage);
-
-	-- -- Apply damage to the PC or CT entry referenced
-	-- local nTotal = ActionsManager.total(rRoll) * -1;
-	-- if nTotal ~= 0 then
-	-- 	ActionDamage.notifyApplyDamage(rSource, rTarget, rRoll.bTower, rRoll.sType, rRoll.sDesc, nTotal);
-	-- end
+	-- Apply damage to the PC or CT entry referenced
+	if rResult.nTotal ~= 0 then
+		ActionDamage.notifyApplyDamage(rSource, rTarget, rRoll, rResult);
+	end
 end

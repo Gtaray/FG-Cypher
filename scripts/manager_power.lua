@@ -103,7 +103,7 @@ function getPCPowerAttackActionText(nodeAction)
 		if rAction.sAttackRange ~= "" then
 			sAttack = string.format("%s (%s): %s", StringManager.capitalize(rAction.sStat), rAction.sAttackRange, sDice)
 		else
-			sAttack = string.format("%s: %s", StringManager.capitalize(), sDice)
+			sAttack = string.format("%s: %s", StringManager.capitalize(rAction.sStat), sDice)
 		end
 
 		if nDiff < 0 then
@@ -164,7 +164,7 @@ function getPCPowerHealActionText(nodeAction)
 	
 	local rAction, rActor = PowerManager.getPCPowerAction(nodeAction);
 	if rAction then		
-		sHeal = string.format("%s %s", rAction.nHeal, StringManager.capitalize(rAction.sStatHeal));
+		sHeal = string.format("%s %s", rAction.nHeal, StringManager.capitalize(rAction.sHealStat));
 
 		if DB.getValue(nodeAction, "healtargeting", "") == "self" then
 			sHeal = sHeal .. " [SELF]";
@@ -247,6 +247,7 @@ function getPCPowerAction(nodeAction)
 		end
 
 	elseif rAction.type == "damage" then
+		rAction.sStat = DB.getValue(nodeAction, "stat", "");
 		rAction.nDamage = DB.getValue(nodeAction, "damage", 0);
 		rAction.sDamageStat = RollManager.resolveStat(DB.getValue(nodeAction, "damagestat", ""));
 
@@ -267,9 +268,10 @@ function getPCPowerAction(nodeAction)
 		end
 
 	elseif rAction.type == "heal" then
+		rAction.sStat = DB.getValue(nodeAction, "stat", "");
 		rAction.sTargeting = DB.getValue(nodeAction, "healtargeting", "");
 		rAction.nHeal = DB.getValue(nodeAction, "heal", 0);
-		rAction.sStatHeal = RollManager.resolveStat(DB.getValue(nodeAction, "healstat", ""));
+		rAction.sHealStat = RollManager.resolveStat(DB.getValue(nodeAction, "healstat", ""));
 
 	elseif rAction.type == "effect" then
 		rAction.sName = DB.getValue(nodeAction, "label", "");
@@ -344,7 +346,7 @@ function applyWeaponPropertiesToDamage(rDamage, nodeAbility)
 	-- 	rDamage.sDamageType = rWeapon.sDamageType;
 	-- end
 
-	rDamage.nDamage = rDamage.nDamage + (rWeapon.nDamage or 0)
+	rDamage.nDamage = math.max(rDamage.nDamage + (rWeapon.nDamage or 0), 0);
 	rDamage.bPierce = rDamage.bPierce or rWeapon.bPierce;
 	if rDamage.bPierce then
 		rDamage.nPierceAmount = (rDamage.nPierceAmount or 0) + (rWeapon.nPierceAmount or 0);

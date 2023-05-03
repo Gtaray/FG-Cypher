@@ -7,7 +7,7 @@ function performRoll(draginfo, rActor, rAction)
 	local aFilter = { "stat", "stats", rAction.sStat };
 
 	RollManager.addEdgeToAction(rActor, rAction, aFilter);
-	RollManager.addWoundedToAction(rActor, rAction, aFilter);
+	RollManager.addWoundedToAction(rActor, rAction, "stat");
 	RollManager.addArmorCostToAction(rActor, rAction);
 	RollManager.applyDesktopAdjustments(rActor, rAction);
 	RollManager.resolveMaximumEffort(rActor, rAction, aFilter);

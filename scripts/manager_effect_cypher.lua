@@ -8,11 +8,6 @@ function onInit()
 	EffectManager.setCustomOnEffectRollEncode(onEffectRollEncode);
 	EffectManager.setCustomOnEffectTextEncode(onEffectTextEncode);
 	EffectManager.setCustomOnEffectTextDecode(onEffectTextDecode);
-
-	-- Not overriding, just assigning functions to the CoreRPG EffectManager
-	-- this is just to save typing "EffectManagerCypher" everywhere else in this ruleset
-	EffectManager.getEffectsByType = EffectManagerCypher.getEffectsByType;
-	EffectManager.getEffectsBonusByType = EffectManagerCypher.getEffectsBonusByType;
 end
 
 ---------------------------------
