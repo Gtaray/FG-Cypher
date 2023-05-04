@@ -70,7 +70,8 @@
 	
 	<script name="ActorManagerCypher" file="scripts/manager_actor_cypher.lua" />
 	<script name="EffectManagerCypher" file="scripts/manager_effect_cypher.lua" />
-	<script name="CombatManager2" file="scripts/manager_combat2.lua" />
+	<script name="CombatManagerCypher" file="scripts/manager_combat_cypher.lua" />
+	<script name="ItemManagerCypher" file="scripts/manager_item_cypher.lua" />
 	<script name="RollManager" file="scripts/manager_roll.lua"/>
 	<script name="PowerManager" file="scripts/manager_power.lua" />
 	<script name="PromptManager" file="scripts/manager_prompt.lua" />

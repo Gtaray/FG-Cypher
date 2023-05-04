@@ -22,6 +22,29 @@ function getPowerActorNode(node)
 	return DB.getChild(node, "...");
 end
 
+-- Gets the source of an action node, which can exist on a PC, NPC, item, or ability
+function getActionNodeSource(actionNode)
+	if type(actionNode) == "string" then
+		actionNode = DB.findNode(actionNode);
+	end
+	if not actionNode then
+		return;
+	end
+
+	-- This will return if the action is innately on a PC or NPC
+	-- As well as if the action is on an item that a PC holds
+	-- It works for NPCs that are either on the CT or reference entries
+	local rActor = ActorManager.resolveActor(DB.getChild(actionNode, "....."));
+	if rActor then
+		return ActorManager.getRecordType(rActor);
+	end
+
+	-- Since we've already ruled out that this action comes from a PC or NPC
+	-- As well as any of the items they may hold
+	-- Then all that's left for this to be is a reference object
+	return "ref";
+end
+
 -------------------------
 -- POWER ACTIONS
 -------------------------

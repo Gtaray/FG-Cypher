@@ -41,22 +41,27 @@
 				updateCostType();
 			end
 			function updateCostType()
-				local nodeActor = DB.getChild(getDatabaseNode(), ".....");
-				local bPc = ActorManager.isPC(nodeActor);
-				local bRef = DB.getName(DB.getChild(getDatabaseNode(), "....")) == "ability";
-				local bFixed = DB.getValue(getDatabaseNode(), "costtype", "") == "fixed";
-				
-				header_cost.setVisible(bPc or bRef);
-				costtype_label.setVisible(bPc or bRef);
-				costtype.setVisible(bPc or bRef);
+				local sSource = PowerManager.getActionNodeSource(getDatabaseNode());
+				local bNPC = sSource == "npc";
+				local bRef = sSource == "ref";
 
-				costtext1.setVisible((bPc or bRef) and bFixed);
-				cost.setVisible((bPc or bRef) and bFixed);
-				cost_label.setVisible((bPc or bRef) and bFixed);
-				costtext2.setVisible((bPc or bRef) and bFixed);
-				coststat.setVisible((bPc or bRef) and bFixed);
-				coststat_label.setVisible((bPc or bRef) and bFixed);				
-				costtext3.setVisible((bPc or bRef) and bFixed);
+				if bRef then
+					costtype.setStringValue("fixed");
+					costtype.setReadOnly(true)
+				end
+
+				local bFixed = DB.getValue(getDatabaseNode(), "costtype", "") == "fixed";
+				header_cost.setVisible(not bNPC);
+				costtype_label.setVisible(not bNPC);
+				costtype.setVisible(not bNPC);
+
+				costtext1.setVisible(not bNPC and bFixed);
+				cost.setVisible(not bNPC and bFixed);
+				cost_label.setVisible(not bNPC and bFixed);
+				costtext2.setVisible(not bNPC and bFixed);
+				coststat.setVisible(not bNPC and bFixed);
+				coststat_label.setVisible(not bNPC and bFixed);				
+				costtext3.setVisible(not bNPC and bFixed);
 			end
 		</script>
 
@@ -214,39 +219,43 @@
 	<windowclass name="power_action_editor_attack">
 		<script>
 			function onInit()
-				local nodeActor = DB.getChild(getDatabaseNode(), ".....");
-				local bPc = ActorManager.isPC(nodeActor);
-				local bRef = DB.getName(DB.getChild(getDatabaseNode(), "....")) == "ability";
-				
-				training.setVisible(bPc or bRef);
-				training_label.setVisible(bPc or bRef);
-				asset.setVisible(bPc or bRef);
-				asset_label.setVisible(bPc or bRef);
-				modifier.setVisible(bPc or bRef);
-				modifier_label.setVisible(bPc or bRef);
+				local sSource = PowerManager.getActionNodeSource(getDatabaseNode());
+				local bNPC = sSource == "npc";
 
-				level.setVisible(not (bPc or bRef));
-				level_label.setVisible(not (bPc or bRef));
+				training.setVisible(not bNPC);
+				training_label.setVisible(not bNPC);
+				asset.setVisible(not bNPC);
+				asset_label.setVisible(not bNPC);
+				modifier.setVisible(not bNPC);
+				modifier_label.setVisible(not bNPC);
+
+				level.setVisible(bNPC);
+				level_label.setVisible(bNPC);
 				
 				updateCostType();
 			end
 			function updateCostType()
-				local nodeActor = DB.getChild(getDatabaseNode(), ".....");
-				local bPc = ActorManager.isPC(nodeActor);
-				local bRef = DB.getName(DB.getChild(getDatabaseNode(), "....")) == "ability";
+				local sSource = PowerManager.getActionNodeSource(getDatabaseNode());
+				local bNPC = sSource == "npc";
+				local bRef = sSource == "ref";
+
+				if bRef then
+					costtype.setStringValue("fixed");
+					costtype.setReadOnly(true)
+				end
+
 				local bFixed = DB.getValue(getDatabaseNode(), "costtype", "") == "fixed";
+				header_cost.setVisible(not bNPC);
+				costtype_label.setVisible(not bNPC);
+				costtype.setVisible(not bNPC);
 
-				header_cost.setVisible(bPc or bRef);
-				costtype_label.setVisible(bPc or bRef);
-				costtype.setVisible(bPc or bRef);
-
-				costtext1.setVisible((bPc or bRef) and bFixed);
-				cost.setVisible((bPc or bRef) and bFixed);
-				cost_label.setVisible((bPc or bRef) and bFixed);
-				costtext2.setVisible((bPc or bRef) and bFixed);
-				coststat.setVisible((bPc or bRef) and bFixed);
-				coststat_label.setVisible((bPc or bRef) and bFixed);				
-				costtext3.setVisible((bPc or bRef) and bFixed);
+				costtext1.setVisible(not bNPC and bFixed);
+				cost.setVisible(not bNPC and bFixed);
+				cost_label.setVisible(not bNPC and bFixed);
+				costtext2.setVisible(not bNPC and bFixed);
+				coststat.setVisible(not bNPC and bFixed);
+				coststat_label.setVisible(not bNPC and bFixed);				
+				costtext3.setVisible(not bNPC and bFixed);
 			end
 		</script>
 		<sheetdata>
@@ -444,33 +453,37 @@
 	<windowclass name="power_action_editor_damage">
 		<script>
 			function onInit()
-				local nodeActor = DB.getChild(getDatabaseNode(), ".....");
-				local bPc = ActorManager.isPC(nodeActor);
-				local bRef = DB.getName(DB.getChild(getDatabaseNode(), "....")) == "ability";
+				local sSource = PowerManager.getActionNodeSource(getDatabaseNode());
+				local bNPC = sSource == "npc";
 				
-				ambient.setVisible(not (bPc or bRef));
-				ambient_label.setVisible(not (bPc or bRef));
+				ambient.setVisible(bNPC);
+				ambient_label.setVisible(bNPC);
 
 				updateCostType();
 				updatePierceAmount();
 			end
 			function updateCostType()
-				local nodeActor = DB.getChild(getDatabaseNode(), ".....");
-				local bPc = ActorManager.isPC(nodeActor);
-				local bRef = DB.getName(DB.getChild(getDatabaseNode(), "....")) == "ability";
-				local bFixed = DB.getValue(getDatabaseNode(), "costtype", "") == "fixed";
+				local sSource = PowerManager.getActionNodeSource(getDatabaseNode());
+				local bNPC = sSource == "npc";
+				local bRef = sSource == "ref";
 
-				header_cost.setVisible(bPc or bRef);
-				costtype_label.setVisible(bPc or bRef);
-				costtype.setVisible(bPc or bRef);
-				
-				costtext1.setVisible((bPc or bRef) and bFixed);
-				cost.setVisible((bPc or bRef) and bFixed);
-				cost_label.setVisible((bPc or bRef) and bFixed);
-				costtext2.setVisible((bPc or bRef) and bFixed);
-				coststat.setVisible((bPc or bRef) and bFixed);
-				coststat_label.setVisible((bPc or bRef) and bFixed);				
-				costtext3.setVisible((bPc or bRef) and bFixed);
+				if bRef then
+					costtype.setStringValue("fixed");
+					costtype.setReadOnly(true)
+				end
+
+				local bFixed = DB.getValue(getDatabaseNode(), "costtype", "") == "fixed";
+				header_cost.setVisible(not bNPC);
+				costtype_label.setVisible(not bNPC);
+				costtype.setVisible(not bNPC);
+
+				costtext1.setVisible(not bNPC and bFixed);
+				cost.setVisible(not bNPC and bFixed);
+				cost_label.setVisible(not bNPC and bFixed);
+				costtext2.setVisible(not bNPC and bFixed);
+				coststat.setVisible(not bNPC and bFixed);
+				coststat_label.setVisible(not bNPC and bFixed);				
+				costtext3.setVisible(not bNPC and bFixed);
 			end
 			function updatePierceAmount()
 				pierceamount.setVisible(pierce.getValue() == "Yes");
@@ -697,22 +710,27 @@
 				updateCostType();
 			end
 			function updateCostType()
-				local nodeActor = DB.getChild(getDatabaseNode(), ".....");
-				local bPc = ActorManager.isPC(nodeActor);
-				local bRef = DB.getName(DB.getChild(getDatabaseNode(), "....")) == "ability";
-				local bFixed = DB.getValue(getDatabaseNode(), "costtype", "") == "fixed";
+				local sSource = PowerManager.getActionNodeSource(getDatabaseNode());
+				local bNPC = sSource == "npc";
+				local bRef = sSource == "ref";
 
-				header_cost.setVisible(bPc or bRef);
-				costtype_label.setVisible(bPc or bRef);
-				costtype.setVisible(bPc or bRef);
-				
-				costtext1.setVisible((bPc or bRef) and bFixed);
-				cost.setVisible((bPc or bRef) and bFixed);
-				cost_label.setVisible((bPc or bRef) and bFixed);
-				costtext2.setVisible((bPc or bRef) and bFixed);
-				coststat.setVisible((bPc or bRef) and bFixed);
-				coststat_label.setVisible((bPc or bRef) and bFixed);				
-				costtext3.setVisible((bPc or bRef) and bFixed);
+				if bRef then
+					costtype.setStringValue("fixed");
+					costtype.setReadOnly(true)
+				end
+
+				local bFixed = DB.getValue(getDatabaseNode(), "costtype", "") == "fixed";
+				header_cost.setVisible(not bNPC);
+				costtype_label.setVisible(not bNPC);
+				costtype.setVisible(not bNPC);
+
+				costtext1.setVisible(not bNPC and bFixed);
+				cost.setVisible(not bNPC and bFixed);
+				cost_label.setVisible(not bNPC and bFixed);
+				costtext2.setVisible(not bNPC and bFixed);
+				coststat.setVisible(not bNPC and bFixed);
+				coststat_label.setVisible(not bNPC and bFixed);				
+				costtext3.setVisible(not bNPC and bFixed);
 			end
 		</script>
 		<sheetdata>
@@ -910,22 +928,27 @@
 				updateCostType();
 			end
 			function updateCostType()
-				local nodeActor = DB.getChild(getDatabaseNode(), ".....");
-				local bPc = ActorManager.isPC(nodeActor);
-				local bRef = DB.getName(DB.getChild(getDatabaseNode(), "....")) == "ability";
-				local bFixed = DB.getValue(getDatabaseNode(), "costtype", "") == "fixed";
+				local sSource = PowerManager.getActionNodeSource(getDatabaseNode());
+				local bNPC = sSource == "npc";
+				local bRef = sSource == "ref";
 
-				header_cost.setVisible(bPc or bRef);
-				costtype_label.setVisible(bPc or bRef);
-				costtype.setVisible(bPc or bRef);
-				
-				costtext1.setVisible((bPc or bRef) and bFixed);
-				cost.setVisible((bPc or bRef) and bFixed);
-				cost_label.setVisible((bPc or bRef) and bFixed);
-				costtext2.setVisible((bPc or bRef) and bFixed);
-				coststat.setVisible((bPc or bRef) and bFixed);
-				coststat_label.setVisible((bPc or bRef) and bFixed);				
-				costtext3.setVisible((bPc or bRef) and bFixed);
+				if bRef then
+					costtype.setStringValue("fixed");
+					costtype.setReadOnly(true)
+				end
+
+				local bFixed = DB.getValue(getDatabaseNode(), "costtype", "") == "fixed";
+				header_cost.setVisible(not bNPC);
+				costtype_label.setVisible(not bNPC);
+				costtype.setVisible(not bNPC);
+
+				costtext1.setVisible(not bNPC and bFixed);
+				cost.setVisible(not bNPC and bFixed);
+				cost_label.setVisible(not bNPC and bFixed);
+				costtext2.setVisible(not bNPC and bFixed);
+				coststat.setVisible(not bNPC and bFixed);
+				coststat_label.setVisible(not bNPC and bFixed);				
+				costtext3.setVisible(not bNPC and bFixed);
 			end
 		</script>
 		<sheetdata>

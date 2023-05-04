@@ -38,13 +38,13 @@ function onMenuSelection(selection, subselection, subsubselection)
 			if subselection == 4 then
 				CombatManager.resetInit();
 			elseif subselection == 6 then
-				CombatManager2.rollInit();
+				CombatManagerCypher.rollInit();
 			end
 		end
 		if selection == 8 then
 			if subselection == 6 then
 				ChatManager.Message(Interface.getString("ct_message_restovernight"), true);
-				CombatManager2.rest();
+				CombatManagerCypher.rest();
 			end
 		end
 		if selection == 5 then

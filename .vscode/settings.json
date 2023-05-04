@@ -26,6 +26,6 @@
 		"getDatabaseNode",
 		"registerMenuItem",
 		"Session",
-		"CombatManager2"
+		"CombatManagerCypher"
 	]
 }

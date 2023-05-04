@@ -253,6 +253,8 @@
 	<string name="item_label_subtype">Subtype</string>
 	<string name="item_label_armor">Armor</string>
 	<string name="item_label_damage">Damage</string>
+	<string name="item_label_levelroll">Level Roll</string>
+	<string name="button_levelroll">Roll</string>
 	<string name="item_label_level">Level</string>
 	<string name="item_label_slots">Slots</string>
 	<string name="item_label_depletion">Depletion</string>

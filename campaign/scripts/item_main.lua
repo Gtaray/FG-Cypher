@@ -35,7 +35,7 @@ function update()
 	type.setVisible(bID);
 	type.setReadOnly(bReadOnly);
 	type_label.setVisible(bID);
-	local sType = type.getStringValue();
+	local sType = ItemManagerCypher.getItemType(nodeRecord);
 	
 	local bArmor = (sType == "armor");
 	local bWeapon = (sType == "weapon");
@@ -47,7 +47,9 @@ function update()
 	WindowManager.callSafeControlUpdate(self, "cost", bReadOnly, not (bID and (bArmor or bWeapon or bEquipment)));
 	WindowManager.callSafeControlUpdate(self, "armor", bReadOnly, not (bID and bArmor));
 	WindowManager.callSafeControlUpdate(self, "damage", bReadOnly, not (bID and bWeapon));
+	WindowManager.callSafeControlUpdate(self, "levelroll", bReadOnly, not bCypher or (not (bID or Sesion.IsHost)));
 	WindowManager.callSafeControlUpdate(self, "level", bReadOnly, not (bID and (bCypher or bArtifact)));
+
 	depletion.setVisible(bID and bArtifact);
 	depletion_label.setVisible(bID and bArtifact);
 	depletion.setReadOnly(bReadOnly);
