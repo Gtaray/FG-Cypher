@@ -15,6 +15,14 @@ function InvisDataAdded()
 	update();
 end
 
+function updateControl(control, bReadOnly, bHide)
+	if control == nil then
+		return;
+	end
+	control.setReadOnly(bReadOnly);
+	control.setVisible(not bHide);
+end
+
 function update()
 	local nodeRecord = getDatabaseNode();
 	local bReadOnly = WindowManager.getReadOnlyState(nodeRecord);
@@ -43,10 +51,16 @@ function update()
 	local bArtifact = (sType == "artifact");
 	local bEquipment = (sType == "");
 	
-	WindowManager.callSafeControlUpdate(self, "subtype", bReadOnly, not (bID and (bArmor or bWeapon)));
 	WindowManager.callSafeControlUpdate(self, "cost", bReadOnly, not (bID and (bArmor or bWeapon or bEquipment)));
-	WindowManager.callSafeControlUpdate(self, "armor", bReadOnly, not (bID and bArmor));
+
+	updateControl(weapontype, bReadOnly, not bWeapon);
+	updateControl(weapontype_label, bReadOnly, not bWeapon);
 	WindowManager.callSafeControlUpdate(self, "damage", bReadOnly, not (bID and bWeapon));
+
+	updateControl(armortype, bReadOnly, not bArmor);
+	updateControl(armortype_label, bReadOnly, not bArmor);
+	WindowManager.callSafeControlUpdate(self, "armor", bReadOnly, not (bID and bArmor));
+
 	WindowManager.callSafeControlUpdate(self, "levelroll", bReadOnly, not bCypher or (not (bID or Sesion.IsHost)));
 	WindowManager.callSafeControlUpdate(self, "level", bReadOnly, not (bID and (bCypher or bArtifact)));
 

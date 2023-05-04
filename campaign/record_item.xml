@@ -91,10 +91,29 @@
 				</script>
 			</button_itemtype>
 			
-			<label_column name="subtype_label">
-				<static textres="item_label_subtype" />
+			<label_column name="weapontype_label">
+				<static textres="char_label_weapontype" />
 			</label_column>
-			<string_columnh name="subtype" />
+			<cycler_column name="weapontype">
+				<anchored width="80" />
+				<parameters>
+					<labelsres>item_label_weapontype_light|item_label_weapontype_medium|item_label_weapontype_heavy</labelsres>
+					<values>light|medium|heavy</values>
+					<defaultlabelres>dash</defaultlabelres>
+				</parameters>
+			</cycler_column>
+
+			<label_column name="armortype_label">
+				<static textres="item_label_armortype" />
+			</label_column>
+			<cycler_column name="armortype">
+				<anchored width="80" />
+				<parameters>
+					<labelsres>item_label_armortype_light|item_label_armortype_medium|item_label_armortype_heavy|item_label_armortype_shield</labelsres>
+					<values>light|medium|heavy|shield</values>
+					<defaultlabelres>dash</defaultlabelres>
+				</parameters>
+			</cycler_column>
 			
 			<label_column name="cost_label">
 				<static textres="item_label_cost" />
