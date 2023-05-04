@@ -35,14 +35,39 @@
 			<number_column name="level">
 				<script>
 					function onInit()
+						if super and super.onInit then
+							super.onInit();
+						end
 						onValueChanged();
 					end
 					function onValueChanged()
+						if super.onValueChanged then
+							super.onValueChanged();
+						end
 						window.tn.setValue("(" .. getValue() * 3 .. ")");
+					end
+					function getActor()
+						return ActorManager.resolveActor(DB.getChild(getDatabaseNode(), ".."));
+					end
+					function onDoubleClick(x, y)
+						action();
+						return true;
+					end
+					function onDragStart(button, x, y, draginfo)
+						action(draginfo);
+						return true;
+					end
+					function action(draginfo)
+						local rActor = self.getActor();
+						local rAction = {};
+						rAction.label = ActorManager.getDisplayName(rActor);
+						rAction.sDefenseStat = "speed";
+						ActionDefenseVs.performRoll(draginfo, rActor, rAction);
 					end
 				</script>
 				<min>0</min>
 				<max>10</max>
+				<rollable />
 			</number_column>
 			<label name="tn">
 				<anchored to="level" position="righthigh" offset="10,0" />

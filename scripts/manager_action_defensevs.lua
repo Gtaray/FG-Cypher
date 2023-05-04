@@ -10,6 +10,8 @@ function performRoll(draginfo, rActor, rAction)
 		return;
 	end
 
+	rAction.sDefenseStat = RollManager.resolveStat(rAction.sDefenseStat, "speed");
+	
     local rRoll = getRoll(rActor, rAction);
 	ActionsManager.performAction(draginfo, rActor, rRoll);
 end
