@@ -50,6 +50,10 @@ function onDragStart(button, x, y, draginfo)
 	return true;
 end
 
+function getActorNode()
+	return DB.getChild(getDatabaseNode(), "....");
+end
+
 ---------------------------------------------
 -- HANDLE HEALING ON DROP
 ---------------------------------------------

@@ -54,6 +54,8 @@
 			<basicnumber name="initasset">
 				<anchored to="inittraining" position="right" offset="7,0" width="15" />
 				<tooltip textres="assets" />
+				<min>0</min>
+				<max>2</max>
 			</basicnumber>
 			<basicnumber name="initmod">
 				<anchored to="initasset" position="right" offset="7,0" width="15" />

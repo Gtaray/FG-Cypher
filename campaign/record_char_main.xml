@@ -48,6 +48,7 @@
 				</anchored>
 				<default>1</default>
 				<min>0</min>
+				<max>6</max>
 			</basicnumber>
 			<label name="hero_label">
 				<anchored to="overviewanchor">
@@ -74,6 +75,7 @@
 					<top />
 					<left anchor="right" relation="relative" offset="10" />
 				</anchored>
+				<min>0</min>
 			</basicnumber>
 			<button_checkbox name="adv_stats" source="advancement.abilities">
 				<anchored to="xp" position="righthigh" offset="35,-2" width="12" height="12" />
@@ -122,6 +124,7 @@
 			<basicnumber name="mightedge" source="abilities.might.edge">
 				<anchored to="mightmax" position="belowleft" offset="0,15" width="30" height="20" />
 				<min>0</min>
+				<max>6</max>
 			</basicnumber>
 			<label_fieldtop>
 				<anchored to="mightedge" />
@@ -154,6 +157,8 @@
 			<basicnumber name="mightdefasset" source="abilities.might.def.asset">
 				<anchored to="mightdefskill" position="righthigh" offset="7,0" width="15" height="20" />
 				<tooltip textres="assets" />
+				<min>0</min>
+				<max>2</max>
 			</basicnumber>
 			<basicnumber name="mightdefmod" source="abilities.might.def.misc">
 				<anchored to="mightdefasset" position="righthigh" offset="7,0" width="15" height="20" />
@@ -174,6 +179,7 @@
 			<basicnumber name="speededge" source="abilities.speed.edge">
 				<anchored to="speedmax" position="belowleft" offset="0,15" width="30" height="20" />
 				<min>0</min>
+				<max>6</max>
 			</basicnumber>
 			<label_fieldtop>
 				<anchored to="speededge" />
@@ -224,6 +230,8 @@
 			<basicnumber name="speeddefasset" source="abilities.speed.def.asset">
 				<anchored to="speeddefskill" position="righthigh" offset="7,0" width="15" height="20" />
 				<tooltip textres="assets" />
+				<min>0</min>
+				<max>2</max>
 			</basicnumber>
 			<basicnumber name="speeddefmod" source="abilities.speed.def.misc">
 				<anchored to="speeddefasset" position="righthigh" offset="7,0" width="15" height="20" />
@@ -244,6 +252,7 @@
 			<basicnumber name="intellectedge" source="abilities.intellect.edge">
 				<anchored to="intellectmax" position="belowleft" offset="0,15" width="30" height="20" />
 				<min>0</min>
+				<max>6</max>
 			</basicnumber>
 			<label_fieldtop>
 				<anchored to="intellectedge" />
@@ -276,6 +285,8 @@
 			<basicnumber name="intellectdefasset" source="abilities.intellect.def.asset">
 				<anchored to="intellectdefskill" position="righthigh" offset="7,0" width="15" height="20" />
 				<tooltip textres="assets" />
+				<min>0</min>
+				<max>2</max>
 			</basicnumber>
 			<basicnumber name="intellectdefmod" source="abilities.intellect.def.misc">
 				<anchored to="intellectdefasset" position="righthigh" offset="7,0" width="15" height="20" />
