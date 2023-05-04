@@ -218,7 +218,7 @@ end
 
 function getMaxAssets(rActor, aFilter)
 	local nodeActor = ActorManager.getCreatureNode(rActor);
-	if not nodeActor then
+	if not nodeActor or not ActorManager.isPC(rActor) then
 		return 0;
 	end
 
@@ -227,7 +227,7 @@ end
 
 function getMaxEffort(rActor, sStat, aFilter)
 	local nodeActor = ActorManager.getCreatureNode(rActor);
-	if not nodeActor or (sStat or "") == "" then
+	if not nodeActor or not ActorManager.isPC(rActor) or (sStat or "") == "" then
 		return 0;
 	end
 
@@ -240,7 +240,7 @@ end
 
 function getEdge(rActor, sStat, aFilter)
 	local nodeActor = ActorManager.getCreatureNode(rActor);
-	if not nodeActor or (sStat or "") == "" then
+	if not nodeActor or not ActorManager.isPC(rActor) or (sStat or "") == "" then
 		return 0;
 	end
 

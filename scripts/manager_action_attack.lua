@@ -33,7 +33,11 @@ function getRoll(rActor, rAction)
 	rRoll.sType = "attack";
 	rRoll.aDice = { "d20" };
 	rRoll.nMod = rAction.nModifier or 0;
-	rRoll.sDesc = string.format("[ATTACK (%s)] %s", rAction.sAttackRange, rAction.label);
+	if (rAction.sAttackRange or "") ~= "" then
+		rRoll.sDesc = string.format("[ATTACK (%s)] %s", rAction.sAttackRange, rAction.label);
+	else
+		rRoll.sDesc = string.format("[ATTACK] %s", rAction.label);
+	end
 	rRoll.nDifficulty = rAction.nDifficulty or 0;
 
 	RollManager.encodeStat(rAction, rRoll);

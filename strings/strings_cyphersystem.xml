@@ -260,8 +260,15 @@
 	
 	<string name="depletion_tag">DEPLETION</string>
 
+	<!-- Defense Prompt -->
+	<string name="defense_prompt_window_title">Defend Thyself</string>
+	<string name="defense_prompt_button_roll">Roll</string>
+	<string name="defense_prompt_description">%s is attacking you, defend yourself with %s!\nDifficulty: %s</string>
+
 	<!-- Desktop -->
 	<string name="diffadj_label_effort">Effort</string>
 	<string name="diffadj_label_assets">Assets</string>
 	<string name="diffadj_label_edge">Use Edge?</string>
+	<string name="modifier_label_EASE">Ease</string>
+	<string name="modifier_label_HINDER">Hinder</string>
 </root>

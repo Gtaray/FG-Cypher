@@ -8,8 +8,14 @@
 <root>
 	<panel name="difficultyadjustpanel">
 		<class>difficultyadjust</class>
-		<bounds>80,-95,150,52</bounds>
+		<bounds>80,-95,210,52</bounds>
 		<dynamic />
 		<locked />
+	</panel>
+
+	<panel name="dicepanel" merge="join">
+		<anchored>
+			<left offset="270" />
+		</anchored>
 	</panel>
 </root>

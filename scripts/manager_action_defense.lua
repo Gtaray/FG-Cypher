@@ -20,7 +20,10 @@ function performRoll(draginfo, rActor, rAction)
 	if bCanRoll then
 		local rRoll = ActionDefense.getRoll(rActor, rAction);
 		ActionsManager.performAction(draginfo, rActor, rRoll);
+		return true;
 	end
+
+	return false;
 end
 
 function getRoll(rActor, rAction)
@@ -29,6 +32,7 @@ function getRoll(rActor, rAction)
 	rRoll.aDice = { "d20" };
 	rRoll.nMod = rAction.nModifier or 0;
 	rRoll.sDesc = string.format("[DEFENSE] %s", rAction.label);
+
 	rRoll.nDifficulty = rAction.nDifficulty or 0;
 
 	RollManager.encodeStat(rAction, rRoll);
@@ -36,7 +40,7 @@ function getRoll(rActor, rAction)
 	RollManager.encodeAssets(rAction, rRoll);
 	RollManager.encodeEdge(rAction, rRoll);
 	RollManager.encodeEffort(rAction, rRoll);
-	RollManager.encodeTarget(rAction.sTarget, rRoll);
+	RollManager.encodeTarget(rAction.rTarget, rRoll);
 
 	return rRoll;
 end
@@ -46,14 +50,14 @@ function modRoll(rSource, rTarget, rRoll)
 	local nAssets = RollManager.decodeAssets(rRoll, true);
 	local nEffort = RollManager.decodeEffort(rRoll, true);
 	local bInability, bTrained, bSpecialized = RollManager.decodeTraining(rRoll, true);
-	RollManager.decodeTarget(rRoll, rTarget, true);
+	rTarget = RollManager.decodeTarget(rRoll, rTarget, true);
 
 	-- Get base difficulty
 	-- Only calc difficulty if it's not already been set
 	-- this is because defense vs rolls will calc the difficulty of an NPC attack
 	-- ahead of time. Defense rolls in response don't need to get the difficulty
 	if rTarget and not ActorManager.isPC(rTarget) and rRoll.nDifficulty == 0 then
-		rRoll.nDifficulty = ActorManagerCypher.getCreatureLevel(rTarget, rSource, { "attack", "atk", sStat });
+		rRoll.nDifficulty = ActorManagerCypher.getCreatureLevel(rTarget, rSource, { "attack", "atk", sStat });		
 	end
 
 	--Adjust raw modifier, converting every increment of 3 to a difficultly modifier
@@ -91,7 +95,7 @@ function modRoll(rSource, rTarget, rRoll)
 end
 
 function onRoll(rSource, rTarget, rRoll)
-	RollManager.decodeTarget(rRoll, rTarget);
+	rTarget = RollManager.decodeTarget(rRoll, rTarget);
 
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 	rMessage.icon = "action_roll";

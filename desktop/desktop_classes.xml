@@ -9,7 +9,7 @@
 	<windowclass name="difficultyadjust">
 		<frame>imagepanel</frame>
 		<sizelimits>
-			<minimum width="150" height="52" />
+			<minimum width="210" height="52" />
 		</sizelimits>
 		<noclose />
 		<script>
@@ -49,6 +49,23 @@
 				<anchored to="disableedge" position="below" offset="7,1" />
 				<static textres="diffadj_label_edge" />
 			</label_fieldtop>
+			<button_modifierkey name="EASE">
+				<bounds>150,8,50,14</bounds>
+			</button_modifierkey>
+			<button_modifierkey name="HINDER">
+				<bounds>150,30,50,14</bounds>
+			</button_modifierkey>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="difficultyadjust" merge="join">
+		<sheetdata>
+			<button_modifierkey name="EASE">
+				<bounds>150,8,50,14</bounds>
+			</button_modifierkey>
+			<button_modifierkey name="HINDER">
+				<bounds>150,30,50,14</bounds>
+			</button_modifierkey>
 		</sheetdata>
 	</windowclass>
 </root>

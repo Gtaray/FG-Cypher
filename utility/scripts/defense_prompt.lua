@@ -43,8 +43,8 @@ function roll()
 	rAction.sTraining, rAction.nAssets, rAction.nModifier = ActorManagerCypher.getDefense(rTarget, rAction.sStat)
 	rAction.label = StringManager.capitalize(rAction.sStat);
 
-	ActionDefense.performRoll(nil, rTarget, rAction);
+	local bRolled = ActionDefense.performRoll(nil, rTarget, rAction);
 
 	bAccepted = true;
-	return true;
+	return bRolled;
 end

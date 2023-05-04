@@ -24,11 +24,14 @@ function getRoll(rActor, rAction)
 	-- This is here for display purposes. The difficulty will be re-calced
 	-- when the player makes a defense roll
 	rRoll.nDifficulty = rAction.nLevel or 0;
-
+	
+	local sDescription = StringManager.capitalize(rAction.sDefenseStat);
+	if (rAction.sAttackRange or "") ~= "" then
+		sDescription = string.format("%s, %s", rAction.sAttackRange, sDescription);
+	end
 	rRoll.sDesc = string.format(
-		"[ATTACK (%s, %s)] %s", 
-		rAction.sAttackRange or "", 
-		rAction.sDefenseStat, 
+		"[ATTACK (%s)] %s", 
+		sDescription,
 		rAction.label);
 
 	RollManager.encodeStat(rAction.DefenseStat, rRoll);

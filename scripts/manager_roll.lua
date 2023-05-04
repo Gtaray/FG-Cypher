@@ -73,7 +73,7 @@ end
 
 function addMaxAssetsToAction(rActor, rAction, aFilter)
 	-- if there's no stat, then we can't apply any effort or edge (no stat pool to pull from)
-	if not rActor or (rAction.sStat or "") == "" then
+	if not rActor or not ActorManager.isPC(rActor) or (rAction.sStat or "") == "" then
 		return;
 	end
 
@@ -82,7 +82,7 @@ end
 
 function addMaxEffortToAction(rActor, rAction, aFilter)
 	-- if there's no stat, then we can't apply any effort or edge (no stat pool to pull from)
-	if not rActor or (rAction.sStat or "") == "" then
+	if not rActor or not ActorManager.isPC(rActor) or (rAction.sStat or "") == "" then
 		return;
 	end
 
@@ -90,7 +90,7 @@ function addMaxEffortToAction(rActor, rAction, aFilter)
 end
 
 function addEdgeToAction(rActor, rAction, aFilter)
-	if not rActor or (rAction.sStat or "") == "" then
+	if not rActor or not ActorManager.isPC(rActor) or (rAction.sStat or "") == "" then
 		return;
 	end
 
@@ -99,7 +99,7 @@ end
 
 function addWoundedToAction(rActor, rAction, sRollType)
 	local nodeActor = ActorManager.getCreatureNode(rActor);
-	if not nodeActor then
+	if not nodeActor or not ActorManager.isPC(rActor) then
 		return;
 	end
 
@@ -111,6 +111,10 @@ function addWoundedToAction(rActor, rAction, sRollType)
 end
 
 function applyEffortToModifier(rActor, rAction)
+	if not  ActorManager.isPC(rActor) then
+		return;
+	end
+	
 	if rAction.nEffort ~= 0 then
 		rAction.nModifier = rAction.nModifier + (rAction.nEffort * 3);
 	end
@@ -119,7 +123,7 @@ end
 -- Adds the effort values to the action table
 function addArmorCostToAction(rActor, rAction)
 	-- if there's no stat, then we can't apply any effort or edge (no stat pool to pull from)
-	if not rActor or (rAction.sStat or "") == "" then
+	if not rActor or not ActorManager.isPC(rActor) or (rAction.sStat or "") == "" then
 		return;
 	end
 
@@ -135,6 +139,10 @@ end
 
 -- the sMisc argument here is used by rolls to further filter the COST effect
 function calculateBaseEffortCost(rActor, rAction)
+	if not ActorManager.isPC(rActor) then
+		return;
+	end
+
 	rAction.bUsedEdge = false;
 	
 	local nWounded = 0;
@@ -160,7 +168,7 @@ function calculateBaseEffortCost(rActor, rAction)
 end
 
 function adjustEffortCostWithEffects(rActor, rAction, aEffectFilter)
-	if not rActor then
+	if not rActor or not ActorManager.isPC(rActor) then
 		return
 	end
 	local nCostMod = EffectManagerCypher.getEffectsBonusByType(rActor, "COST", aEffectFilter);
@@ -168,6 +176,10 @@ function adjustEffortCostWithEffects(rActor, rAction, aEffectFilter)
 end
 
 function spendPointsForRoll(rActor, rAction)
+	if not ActorManager.isPC(rActor) then
+		return true;
+	end
+
 	local nodeActor = ActorManager.getCreatureNode(rActor);
 	if not nodeActor or not rAction then
 		return false;
@@ -257,11 +269,17 @@ function resolveStatUsedForCost(rAction)
 end
 
 function resolveMaximumEffort(rActor, rAction, aFilter)
+	if not ActorManager.isPC(rActor) then
+		return true;
+	end
 	RollManager.addMaxEffortToAction(rActor, rAction, aFilter);
-	rAction.nEffort = math.min(rAction.nEffort, rAction.nMaxEffort);
+	rAction.nEffort = math.min(rAction.nEffort or 0, rAction.nMaxEffort or 0);
 end
 
 function resolveMaximumAssets(rActor, rAction, aFilter)
+	if not ActorManager.isPC(rActor) then
+		return true;
+	end
 	RollManager.addMaxAssetsToAction(rActor, rAction, aFilter);
 	rAction.nAssets = math.min(rAction.nAssets, rAction.nMaxAssets);
 end
@@ -806,7 +824,7 @@ function decodeAmbientDamage(vRoll, bPersist)
 end
 
 function encodeTarget(vTarget, rRoll)
-	if (vTarget or "") ~= "" then
+	if not vTarget then
 		return;
 	end
 
@@ -821,7 +839,7 @@ function encodeTarget(vTarget, rRoll)
 	end
 
 	if (sTargetNode or "") ~= "" then
-		RollManager.addOrOverwriteText(
+		rRoll.sDesc = RollManager.addOrOverwriteText(
 			rRoll.sDesc,
 			"%[TARGET: [^]]+%]",
 			string.format("[TARGET: %s]", sTargetNode)
@@ -842,7 +860,7 @@ function decodeTarget(rRoll, rTarget, bPersist)
 		rTarget = ActorManager.resolveActor(sTarget);
 	end
 
-	return sTarget;
+	return rTarget;
 end
 
 function encodeEaseHindrance(rRoll, bEase, bHinder)
