@@ -127,21 +127,7 @@
 	</windowclass>
 
 	<windowclass name="pc_weapon_editor_main">
-		<script>
-			function onInit()
-				onAttackTypeChanged();
-				onPierceChanged();
-			end
-			function onAttackTypeChanged()
-				local bWeapon = DB.getValue(getDatabaseNode(), "type", "") == "";
-				weapontype_label.setVisible(bWeapon);
-				weapontype.setVisible(bWeapon);
-			end
-			function onPierceChanged()
-				local bPierce = DB.getValue(getDatabaseNode(), "pierce", "") == "yes";
-				pierceamount.setVisible(bPierce);
-			end
-		</script>
+		<script file="campaign/scripts/pc_weapon_editor_main.lua" />
 		<sheetdata>
 			<anchor_column name="columnanchor" />
 

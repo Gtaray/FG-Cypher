@@ -17,6 +17,10 @@ function isItemCypher(itemNode)
 	return ItemManagerCypher.getItemType(itemNode) == "cypher";
 end
 
+function getItemName(itemNode)
+	return DB.getValue(itemNode, "name", "");
+end
+
 ----------------------------------------------------------------------
 -- ARMOR
 ----------------------------------------------------------------------
@@ -81,20 +85,20 @@ function getWeaponAttackStat(itemNode)
 	return DB.getValue(itemNode, "attackstat", "");
 end
 
-function getWeaponAttackRange(itemNode)
-	if not ItemManagerCypher.isItemWeapon(itemNode) then
-		return "";
-	end
-
-	return DB.getValue(itemNode, "atkrange", "");
-end
-
 function getWeaponDefenseStat(itemNode)
 	if not ItemManagerCypher.isItemWeapon(itemNode) then
 		return "";
 	end
 
 	return DB.getValue(itemNode, "defensestat", "");
+end
+
+function getWeaponAttackRange(itemNode)
+	if not ItemManagerCypher.isItemWeapon(itemNode) then
+		return "";
+	end
+
+	return DB.getValue(itemNode, "atkrange", "");
 end
 
 function getWeaponAsset(itemNode)
