@@ -65,7 +65,15 @@ function modRoll(rSource, rTarget, rRoll)
 	nAssets = nAssets + nAssetMod;
 
 	-- Adjust difficulty based on assets
-	nAssets = nAssets + RollManager.processAssets(rSource, rTarget, { "defense", "def", sStat }, nAssets);
+	local nMaxAssets = ActorManagerCypher.getMaxAssets(rSource, { "defense", "def", sStat });
+	nAssets = (nAssets + RollManager.processAssets(rSource, rTarget, sStat, { "defense", "def", sStat }, nAssets));
+
+	-- Get the shield bonus of the defender
+	local nShieldBonus = 0;
+	if sStat == "speed" then
+		nShieldBonus = ActorManagerCypher.getShieldBonus(rSource);
+	end
+	nAssets = math.min(nAssets + nShieldBonus, nMaxAssets);
 
 	-- Adjust difficulty based on effort
 	nEffort = nEffort + RollManager.processEffort(rSource, rTarget, sStat, { "defense", "def", sStat }, nEffort);

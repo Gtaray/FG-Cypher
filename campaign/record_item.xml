@@ -90,45 +90,145 @@
 					end
 				</script>
 			</button_itemtype>
+
+			<label_column name="cost_label">
+				<static textres="item_label_cost" />
+			</label_column>
+			<string_columnh name="cost" />
 			
+			<!-- WEAPONS -->
 			<label_column name="weapontype_label">
 				<static textres="char_label_weapontype" />
 			</label_column>
 			<cycler_column name="weapontype">
 				<anchored width="80" />
 				<parameters>
-					<labelsres>item_label_weapontype_light|item_label_weapontype_medium|item_label_weapontype_heavy</labelsres>
+					<labelsres>item_weapontypelight|item_weapontypemedium|item_weapontypeheavy</labelsres>
 					<values>light|medium|heavy</values>
 					<defaultlabelres>dash</defaultlabelres>
 				</parameters>
+				<script>
+					function onValueChanged()
+						window.update();
+						window.updateDamageValue();
+					end
+				</script>
 			</cycler_column>
 
+			<header_column name="header_attack">
+				<static textres="item_header_attack" />
+				<center />
+			</header_column>
+			<label_column name="attackstat_label">
+				<static textres="item_label_attackstat" />
+			</label_column>
+			<column_stat name="attackstat">
+				<anchored width="80" />
+				<tooltip textres="item_tooltip_attackstat" />
+			</column_stat>
+			<label_column name="defensestat_label">
+				<static textres="item_label_defensestat" />
+			</label_column>
+			<column_stat name="defensestat">
+				<anchored width="80" />
+				<tooltip textres="item_tooltip_defensestat" />
+			</column_stat>
+			<label_column name="atkrange_label">
+				<static textres="item_label_attackrange" />
+			</label_column>
+			<column_range name="atkrange">
+				<anchored width="80" />
+				<tooltip textres="item_tooltip_attackrange" />
+			</column_range>
+			<label_column name="asset_label">
+				<static textres="item_label_asset" />
+			</label_column>
+			<number_column name="asset">
+				<hideonvalue value="0" />
+				<min>0</min>
+				<max>2</max>
+			</number_column>
+			<label_column name="modifier_label">
+				<static textres="item_label_modifier" />
+			</label_column>
+			<number_column name="modifier">
+				<hideonvalue value="0" />
+			</number_column>
+
+			<header_column name="header_damage">
+				<static textres="item_header_damage" />
+				<center />
+			</header_column>
+			<label_column name="damagestat_label">
+				<static textres="item_label_damagestat" />
+			</label_column>
+			<column_stat name="damagestat">
+				<anchored width="80" />
+				<tooltip textres="item_tooltip_damagestat" />
+			</column_stat>
+			<label_column name="damage_label">
+				<static textres="item_label_damage" />
+			</label_column>
+			<number_columnh name="damage" />
+			<label_column name="pierce_label">
+				<static textres="item_label_pierce" />
+			</label_column>
+			<cycler_column name="pierce">
+				<anchored width="80" />
+				<script>
+					function onValueChanged()
+						if super and super.onValueChanged then
+							super.onValueChanged()
+						end
+						window.onPierceChanged();
+					end
+				</script>
+				<parameters>
+					<labelsres>yes</labelsres>
+					<values>yes</values>
+					<defaultlabel>No</defaultlabel>
+				</parameters>
+				<tooltip textres="power_tooltip_pierce" />
+			</cycler_column>
+			<basicnumber name="pierceamount">
+				<anchored to="pierce" position="righthigh" offset="10,0" width="30" height="20" />
+				<min>0</min>
+				<tooltip textres="item_tooltip_pierceamount" />
+			</basicnumber>
+
+			<!-- ARMOR -->
 			<label_column name="armortype_label">
 				<static textres="item_label_armortype" />
 			</label_column>
 			<cycler_column name="armortype">
 				<anchored width="80" />
 				<parameters>
-					<labelsres>item_label_armortype_light|item_label_armortype_medium|item_label_armortype_heavy|item_label_armortype_shield</labelsres>
+					<labelsres>item_armortypelight|item_armortypemedium|item_armortypeheavy|item_armortypeshield</labelsres>
 					<values>light|medium|heavy|shield</values>
 					<defaultlabelres>dash</defaultlabelres>
 				</parameters>
+				<script>
+					function onValueChanged()
+						window.update();
+						window.updateArmorValue();
+					end
+				</script>
 			</cycler_column>
-			
-			<label_column name="cost_label">
-				<static textres="item_label_cost" />
-			</label_column>
-			<string_columnh name="cost" />
-
 			<label_column name="armor_label">
 				<static textres="item_label_armor" />
 			</label_column>
 			<number_columnh name="armor" />
-			
-			<label_column name="damage_label">
-				<static textres="item_label_damage" />
+			<label_column name="shieldbonus_label">
+				<static textres="item_label_shieldbonus" />
 			</label_column>
-			<number_columnh name="damage" />
+			<cycler_column name="shieldbonus">
+				<anchored width="120" />
+				<parameters>
+					<labelsres>item_shieldbonus_1|item_shieldbonus_2</labelsres>
+					<values>1|2</values>
+					<defaultlabelres>dash</defaultlabelres>
+				</parameters>
+			</cycler_column>
 
 			<label_column name="levelroll_label">
 				<static textres="item_label_levelroll" />

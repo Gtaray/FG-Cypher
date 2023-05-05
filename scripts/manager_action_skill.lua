@@ -60,7 +60,7 @@ function modRoll(rSource, rTarget, rRoll)
 	nAssets = nAssets + nAssetMod;
 
 	-- Adjust difficulty based on assets
-	nAssets = nAssets + RollManager.processAssets(rSource, rTarget, { "skill", "skills", sStat, sSkill }, nAssets);
+	nAssets = nAssets + RollManager.processAssets(rSource, rTarget, sStat, { "skill", "skills", sStat, sSkill }, nAssets);
 
 	-- Adjust difficulty based on effort
 	nEffort = nEffort + RollManager.processEffort(rSource, rTarget, sStat, { "skill", "skills", sStat, sSkill }, nEffort);

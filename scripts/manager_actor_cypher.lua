@@ -265,8 +265,20 @@ function getArmor(rActor, rTarget, sStat)
 	if sStat == "might" then
 		return nBaseArmor + nEffectArmor;
 	else
-		return nEffectArmor;
+		return nEffectArmor, nAssets;
 	end
+end
+
+function getShieldBonus(rActor)
+	local items = ActorManagerCypher.getArmorInInventory(rActor);
+	local nMax = 0;
+	for _, item in ipairs(items) do
+		local nShieldBonus = ItemManagerCypher.getArmorSpeedAsset(item);
+		if nShieldBonus > nMax then
+			nMax = nShieldBonus;
+		end
+	end
+	return nMax;
 end
 
 function getArmorSpeedCost(rActor)
@@ -319,6 +331,31 @@ function getRecoveryRollMod(rActor)
 	end
 
 	return DB.getValue(nodeActor, "recoveryrollmod", 0);
+end
+
+---------------------------------------------------------------
+-- INVENTORY
+---------------------------------------------------------------
+function getItemsOfTypeInInventory(rActor, sType)
+	local nodeActor;
+	if type(rActor) == "databasenode" then
+		nodeActor = rActor;
+	else
+		nodeActor = ActorManager.getCreatureNode(rActor);
+	end
+
+	local nodes = {};
+	for _,vNode in ipairs(DB.getChildList(nodeActor, "inventorylist")) do
+		if ItemManagerCypher.getItemType(vNode) == sType then
+			table.insert(nodes, vNode);
+		end
+	end
+
+	return nodes;
+end
+
+function getArmorInInventory(rActor)
+	return ActorManagerCypher.getItemsOfTypeInInventory(rActor, "armor");
 end
 
 ---------------------------------------------------------------

@@ -250,20 +250,42 @@
 
 	<!-- Items -->
 	<string name="item_label_type">Type</string>
-	<string name="item_label_subtype">Subtype</string>
-	<string name="item_label_armor">Armor</string>
+
 	<string name="item_label_weapontype">Weapon Type</string>
-	<string name="item_label_weapontype_light">Light</string>
-	<string name="item_label_weapontype_medium">Medium</string>
-	<string name="item_label_weapontype_heavy">Heavy</string>
-	<string name="item_label_armortype">Armor Type</string>
-	<string name="item_label_armortype_light">Light</string>
-	<string name="item_label_armortype_medium">Medium</string>
-	<string name="item_label_armortype_heavy">Heavy</string>
-	<string name="item_label_armortype_shield">Shield</string>
+	<string name="item_weapontypelight">Light</string>
+	<string name="item_weapontypemedium">Medium</string>
+	<string name="item_weapontypeheavy">Heavy</string>
+	
+	<string name="item_header_attack">ATTACK</string>
+	<string name="item_label_attackstat">Attack Stat</string>
+	<string name="item_tooltip_attackstat">Stat that's used to make attacks with this weapon.</string>
+	<string name="item_label_defensestat">Defense Stat</string>
+	<string name="item_tooltip_defensestat">Stat that's used to defend against attacks made with this weapon.</string>
+	<string name="item_label_attackrange">Attack Range</string>
+	<string name="item_tooltip_attackrange">Weapon's attack range.</string>
+	<string name="item_label_asset">Attack Asset</string>
+	<string name="item_label_modifier">Attack Bonus</string>
+
+	<string name="item_header_damage">DAMAGE</string>
+	<string name="item_label_damagestat">Damage Stat</string>
+	<string name="item_tooltip_attackstat">Stat pool that this weapon deals damage to (only applies when attacking PCs).</string>
 	<string name="item_label_damage">Damage</string>
+	<string name="item_label_pierce">Armor Pierce</string>
+	<string name="item_tooltip_pierceamount">How much damage pierces armor? Leave blank to ignore all Armor.</string>
+
+	<string name="item_label_armor">Armor</string>
+	<string name="item_label_armortype">Armor Type</string>
+	<string name="item_armortypelight">Light</string>
+	<string name="item_armortypemedium">Medium</string>
+	<string name="item_armortypeheavy">Heavy</string>
+	<string name="item_armortypeshield">Shield</string>
+	<string name="item_label_shieldbonus">Shield Bonus</string>
+	<string name="item_shieldbonus_1">+1 Speed Asset</string>
+	<string name="item_shieldbonus_2">+2 Speed Assets</string>
+
 	<string name="item_label_levelroll">Level Roll</string>
 	<string name="item_label_level">Level</string>
+
 	<string name="item_label_slots">Slots</string>
 	<string name="item_label_depletion">Depletion</string>
 	<string name="item_label_depletionin">in</string>

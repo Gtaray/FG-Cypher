@@ -15,12 +15,21 @@ function InvisDataAdded()
 	update();
 end
 
-function updateControl(control, bReadOnly, bHide)
-	if control == nil then
+-- This is needed to handle updating cyclers, which callSafeControlUpdate doesn't work with
+-- because cyclers don't implement the correct update function
+function updateControl(sControlName, bReadOnly, bHide)
+	if (sControlName or "") == "" then
 		return;
 	end
-	control.setReadOnly(bReadOnly);
-	control.setVisible(not bHide);
+
+	if self[sControlName] then
+		self[sControlName].setReadOnly(bReadOnly);
+		self[sControlName].setVisible(not bHide);
+	end
+	if self[sControlName .. "_label"] then
+		self[sControlName .. "_label"].setReadOnly(bReadOnly);
+		self[sControlName .. "_label"].setVisible(not bHide);
+	end
 end
 
 function update()
@@ -51,19 +60,35 @@ function update()
 	local bArtifact = (sType == "artifact");
 	local bEquipment = (sType == "");
 	
+	-- COMMON PROPERTIES
 	WindowManager.callSafeControlUpdate(self, "cost", bReadOnly, not (bID and (bArmor or bWeapon or bEquipment)));
 
-	updateControl(weapontype, bReadOnly, not bWeapon);
-	updateControl(weapontype_label, bReadOnly, not bWeapon);
-	WindowManager.callSafeControlUpdate(self, "damage", bReadOnly, not (bID and bWeapon));
+	-- WEAPON PROPERTIES
+	local bPierce = ItemManagerCypher.getWeaponPiercing(getDatabaseNode()) >= 0;
+	updateControl("weapontype", bReadOnly, not bWeapon);
+	updateControl("header_attack", true, not (bID and bWeapon)); -- Always readonly
+	updateControl("attackstat", bReadOnly, not (bID and bWeapon));
+	updateControl("defensestat", bReadOnly, not (bID and bWeapon));
+	updateControl("atkrange", bReadOnly, not (bID and bWeapon));
+	updateControl("asset", bReadOnly, not (bID and bWeapon));
+	updateControl("modifier", bReadOnly, not (bID and bWeapon));
+	updateControl("header_damage", true, not (bID and bWeapon)); -- Always readonly
+	updateControl("damagestat", bReadOnly, not (bID and bWeapon));
+	updateControl("damage", bReadOnly, not (bID and bWeapon));
+	updateControl("pierce", bReadOnly, not (bID and bWeapon));
+	updateControl("pierceamount", bReadOnly, not (bID and bWeapon and bPierce));
 
-	updateControl(armortype, bReadOnly, not bArmor);
-	updateControl(armortype_label, bReadOnly, not bArmor);
-	WindowManager.callSafeControlUpdate(self, "armor", bReadOnly, not (bID and bArmor));
+	-- ARMOR PROPERTIES
+	local bShield = ItemManagerCypher.getArmorType(nodeRecord) == "shield";
+	updateControl("armortype", bReadOnly, not bArmor);
+	updateControl("shieldbonus", bReadOnly, not (bID and bArmor and bShield));
+	WindowManager.callSafeControlUpdate(self, "armor", bReadOnly, not (bID and bArmor and not bShield));
 
+	-- CYPHER PROPERTIES
 	WindowManager.callSafeControlUpdate(self, "levelroll", bReadOnly, not bCypher or (not (bID or Sesion.IsHost)));
 	WindowManager.callSafeControlUpdate(self, "level", bReadOnly, not (bID and (bCypher or bArtifact)));
 
+	-- ARTIFACT PROPERTIES
 	depletion.setVisible(bID and bArtifact);
 	depletion_label.setVisible(bID and bArtifact);
 	depletion.setReadOnly(bReadOnly);
@@ -76,6 +101,60 @@ function update()
 		
 	divider.setVisible(bHost);
 	divider2.setVisible(bID);
+end
+
+function updateArmorValue()
+	local node = getDatabaseNode();
+	if not ItemManagerCypher.isItemArmor(node) then
+		return;
+	end
+	
+	local sType = ItemManagerCypher.getArmorType(node);
+	if sType == "shield" then
+		return;
+	end
+
+	-- Guaranteed to be an armor that's not a shield
+	local nArmor = armor.getValue();
+	-- if armor is set to 0 or the default armor value for its type
+	-- then we update the armor value
+	if sType == "light" and (nArmor == 0 or nArmor == 2 or nArmor == 3) then
+		armor.setValue(1);
+	elseif sType == "medium" and (nArmor == 0 or nArmor == 1 or nArmor == 3) then
+		armor.setValue(2);
+	elseif sType == "heavy" and (nArmor == 0 or nArmor == 1 or nArmor == 2) then
+		armor.setValue(3);
+	elseif sType == "" and (nArmor == 1 or nArmor == 2 or nArmor == 3) then
+		armor.setValue(0);
+	end
+end
+
+function updateDamageValue()
+	local node = getDatabaseNode();
+	if not ItemManagerCypher.isItemWeapon(node) then
+		return;
+	end
+	
+	local sType = ItemManagerCypher.getWeaponType(node);
+
+	-- Guaranteed to be an armor that's not a shield
+	local nDamage = damage.getValue();
+	-- if armor is set to 0 or the default armor value for its type
+	-- then we update the armor value
+	if sType == "light" and (nDamage == 0 or nDamage == 4 or nDamage == 6) then
+		damage.setValue(2);
+	elseif sType == "medium" and (nDamage == 0 or nDamage == 2 or nDamage == 6) then
+		damage.setValue(4);
+	elseif sType == "heavy" and (nDamage == 0 or nDamage == 2 or nDamage == 4) then
+		damage.setValue(6);
+	elseif sType =="" and (nDamage == 2 or nDamage == 4 or nDamage == 6) then
+		damage.setValue(0);
+	end
+end
+
+function onPierceChanged()
+	local bPierce = ItemManagerCypher.getWeaponPiercing(getDatabaseNode()) >= 0;
+	pierceamount.setVisible(bPierce);
 end
 
 function actionDepletion(draginfo)

@@ -327,9 +327,10 @@ function processFlatModifiers(rSource, rTarget, rRoll, aEffects, aFilter)
 	return nAssets, nEffectMod;
 end
 
-function processAssets(rSource, rTarget, aFilter, nAssets)
+function processAssets(rSource, rTarget, sStat, aFilter, nAssets)
 	local nAssetEffect = EffectManagerCypher.getEffectsBonusByType(rSource, "ASSET", aFilter, rTarget)
 	local nMaxAssets = ActorManagerCypher.getMaxAssets(rSource, aFilter);
+
 	return math.min(nAssetEffect, nMaxAssets - nAssets);
 end
 
