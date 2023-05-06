@@ -108,6 +108,10 @@
 	<string name="char_tooltip_skilltrained">Trained</string>
 	<string name="char_tooltip_skillspecialized">Specialized</string>
 	<string name="char_tooltip_stat">The Stat associated with this skill</string>
+
+	<string name="char_message_not_enough_xp">You do not have enough XP for an advancement.</string>
+	<string name="char_message_advancement_taken">%s took an advancement to %s.</string>
+	<string name="char_message_tier_increase">%s advanced to tier %s.</string>
 	
 	<!-- Character - Actions -->
 	<string name="char_label_armorspeedcost">Speed Effort Cost</string>

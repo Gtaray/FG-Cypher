@@ -32,7 +32,6 @@
 				</anchored>
 				<default>1</default>
 				<min>1</min>
-				<max>6</max>
 			</basicnumber>
 			<label name="effort_label">
 				<anchored to="overviewanchor">
@@ -79,6 +78,12 @@
 			</basicnumber>
 			<button_checkbox name="adv_stats" source="advancement.abilities">
 				<anchored to="xp" position="righthigh" offset="35,-2" width="12" height="12" />
+				<script>
+					function onValueChanged()
+						if getValue() == 0 then return end
+						CharManager.takeAbilityAdvancement(window.getDatabaseNode());
+					end
+				</script>
 			</button_checkbox>
 			<stringcontrol>
 				<anchored to="adv_stats" position="lefthigh" offset="2,0" />
@@ -87,6 +92,12 @@
 			</stringcontrol>
 			<button_checkbox name="adv_edge" source="advancement.edge">
 				<anchored to="xp" position="righthigh" offset="82,-2" width="12" height="12" />
+				<script>
+					function onValueChanged()
+						if getValue() == 0 then return end
+						CharManager.takeEdgeAdvancement(window.getDatabaseNode());
+					end
+				</script>
 			</button_checkbox>
 			<stringcontrol>
 				<anchored to="adv_edge" position="lefthigh" offset="2,0" />
@@ -95,6 +106,12 @@
 			</stringcontrol>
 			<button_checkbox name="adv_effort" source="advancement.effort">
 				<anchored to="xp" position="righthigh" offset="35,10" width="12" height="12" />
+				<script>
+					function onValueChanged()
+						if getValue() == 0 then return end
+						CharManager.takeEffortAdvancement(window.getDatabaseNode());
+					end
+				</script>
 			</button_checkbox>
 			<stringcontrol>
 				<anchored to="adv_effort" position="lefthigh" offset="2,0" />
@@ -103,6 +120,12 @@
 			</stringcontrol>
 			<button_checkbox name="adv_skill" source="advancement.skill">
 				<anchored to="xp" position="righthigh" offset="82,10" width="12" height="12" />
+				<script>
+					function onValueChanged()
+						if getValue() == 0 then return end
+						CharManager.takeSkillAdvancement(window.getDatabaseNode());
+					end
+				</script>
 			</button_checkbox>
 			<stringcontrol>
 				<anchored to="adv_skill" position="lefthigh" offset="2,0" />

@@ -7,6 +7,130 @@ function onInit()
 	ItemManager.setCustomCharAdd(onCharItemAdd);
 end
 
+-------------------------------------------------------------------------------
+-- ADVANCEMENTS
+-------------------------------------------------------------------------------
+function takeAbilityAdvancement(nodeChar)
+	if not nodeChar then
+		return;
+	end
+
+	CharManager.takeAdvancement(nodeChar, "increase their stat pools");
+end
+
+function takeEdgeAdvancement(nodeChar)
+	if not nodeChar then
+		return;
+	end
+
+	CharManager.takeAdvancement(nodeChar, "increase their edge");
+end
+
+function takeEffortAdvancement(nodeChar)
+	if not nodeChar then
+		return;
+	end
+
+	CharManager.takeAdvancement(nodeChar, "increase their effort");
+end
+
+function takeSkillAdvancement(nodeChar)
+	if not nodeChar then
+		return;
+	end
+
+	CharManager.takeAdvancement(nodeChar, "gain training in a skill");
+end
+
+function takeAdvancement(nodeChar, sMessage)
+	if not nodeChar then
+		return;
+	end
+
+	if not CharManager.deductXpForAdvancement(nodeChar, 4) then
+		return;
+	end
+
+	if (sMessage or "") ~= "" then
+		CharManager.sendAdvancementMessage(nodeChar, "char_message_advancement_taken", sMessage);
+	end
+
+	-- Check if all advancements have been taken, and if so, clear all the checkboxes
+	-- and increment tier
+	
+	if CharManager.checkForAllAdvancements(nodeChar) then
+		CharManager.increaseTier(nodeChar);
+	end
+end
+
+function deductXpForAdvancement(nodeChar, nCost)
+	local nXP = DB.getValue(nodeChar, "xp", 0);
+
+	if nXP < nCost then
+		local rMessage = {
+			text = Interface.getString("char_message_not_enough_xp"),
+			font = "msgfont"
+		};
+		Comm.addChatMessage(rMessage);
+		return false;
+	end
+
+	DB.setValue(nodeChar, "xp", "number", math.max(nXP - nCost, 0));
+	return true;
+end
+
+function sendAdvancementMessage(nodeChar, sMessageResource, sMessage)
+	local sName = DB.getValue(nodeChar, "name", "");
+	if sName == "" then
+		return;
+	end
+
+	local sSender = "";
+	if not Session.IsHost then
+		sSender = User.getCurrentIdentity();
+	end
+
+	local rMessage = {
+		text = string.format(
+			Interface.getString(
+				sMessageResource), 
+				sName, 
+				sMessage),
+		font = "msgfont",
+		sender = User.getIdentityLabel(sSender)
+	};
+
+	Comm.deliverChatMessage(rMessage);
+end
+
+function checkForAllAdvancements(nodeChar)
+	local bAbilities = DB.getValue(nodeChar, "advancement.abilities", 0) == 1;
+	local bEdge = DB.getValue(nodeChar, "advancement.edge", 0) == 1;
+	local bEffort = DB.getValue(nodeChar, "advancement.effort", 0) == 1;
+	local bSkill = DB.getValue(nodeChar, "advancement.skill", 0) == 1;
+
+	return bAbilities and bEdge and bEffort and bSkill;
+end
+
+function increaseTier(nodeChar)
+	local nTier = DB.getValue(nodeChar, "tier", 0);
+	nTier = nTier + 1;
+
+	CharManager.sendAdvancementMessage(
+		nodeChar, 
+		"char_message_tier_increase", 
+		tostring(nTier));
+
+	DB.setValue(nodeChar, "tier", "number", nTier);
+	DB.setValue(nodeChar, "advancement.abilities", "number", 0);
+	DB.setValue(nodeChar, "advancement.edge", "number", 0);
+	DB.setValue(nodeChar, "advancement.effort", "number", 0);
+	DB.setValue(nodeChar, "advancement.skill", "number", 0);
+end
+
+-------------------------------------------------------------------------------
+-- ITEM MANAGEMENT
+-------------------------------------------------------------------------------
 function onCharItemAdd(nodeItem)
 	self.addWeaponToAttackList(nodeItem);
 end
@@ -62,9 +186,9 @@ function updateCyphers(nodeChar)
 	DB.setValue(nodeChar, "cypherload", "number", nCypherTotal);
 end
 
---
--- ACTIONS
---
+-------------------------------------------------------------------------------
+-- RESTING
+-------------------------------------------------------------------------------
 
 function rest(nodeChar)
 	DB.setValue(nodeChar, "recoveryused", "number", 0);
