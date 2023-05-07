@@ -188,7 +188,7 @@
 					<values>yes</values>
 					<defaultlabel>No</defaultlabel>
 				</parameters>
-				<tooltip textres="power_tooltip_pierce" />
+				<tooltip textres="power_tooltip_pierce_armor" />
 			</cycler_column>
 			<basicnumber name="pierceamount">
 				<anchored to="pierce" position="righthigh" offset="10,0" width="30" height="20" />

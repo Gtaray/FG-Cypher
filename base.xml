@@ -32,7 +32,7 @@
 	<!-- Desktop -->
 	<includefile source="desktop/desktop_classes.xml" />
 	<includefile source="desktop/desktop_panels.xml" />
-	<script name="OptionsCypherSystem" file="scripts/data_options_cyphersystem.lua" />
+	<script name="OptionsManagerCypher" file="scripts/manager_options_cypher.lua" />
 	
 	<!-- Campaign Records -->
 	<includefile source="campaign/template_char.xml" />
@@ -53,6 +53,7 @@
 
 	<!-- Common files -->
 	<includefile source="common/template_common.xml" />
+	<includefile source="common/damagetype_templates.xml" />
 
 	<!-- Party sheet -->
 	<includefile source="ps/ps_inventory.xml" />
@@ -75,6 +76,7 @@
 	<script name="RollManager" file="scripts/manager_roll.lua"/>
 	<script name="PowerManager" file="scripts/manager_power.lua" />
 	<script name="PromptManager" file="scripts/manager_prompt.lua" />
+	<script name="DamageTypeManager" file="scripts/manager_damage_types.lua" />
 
 	<script name="ActionGeneral" file="scripts/manager_action_general.lua" />
 	<script name="ActionStat" file="scripts/manager_action_stat.lua" />

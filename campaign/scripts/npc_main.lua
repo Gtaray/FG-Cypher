@@ -4,7 +4,12 @@
 --
 
 function onInit()
+	OptionsManager.registerCallback("DMGTYPES", update);
 	update();
+end
+
+function onClose()
+	OptionsManager.unregisterCallback("DMGTYPES", update);
 end
 
 function VisDataCleared()
@@ -19,6 +24,7 @@ function update()
 	local nodeRecord = getDatabaseNode();
 	local bReadOnly = WindowManager.getReadOnlyState(nodeRecord);
 	local bID = LibraryData.getIDState("npc", nodeRecord);
+	local bUseDmgTypes = OptionsManagerCypher.replaceArmorWithDamageTypes();
 	
 	local bSection1 = false;
 	if Session.IsHost then
@@ -32,13 +38,14 @@ function update()
 	
 	hp.setReadOnly(bReadOnly);
 	damagestr.setReadOnly(bReadOnly);
-	WindowManager.callSafeControlUpdate(self, "armor", bReadOnly);
+	WindowManager.callSafeControlUpdate(self, "armor", bReadOnly, bUseDmgTypes);
 	move.setReadOnly(bReadOnly);
 	WindowManager.callSafeControlUpdate(self, "modifications", bReadOnly);
 	WindowManager.callSafeControlUpdate(self, "combat", bReadOnly);
 	WindowManager.callSafeControlUpdate(self, "intrusion", bReadOnly);
 
 	updateActions(bReadOnly);
+	updateResistances(bReadOnly);
 end
 
 function updateActions(bReadOnly)
@@ -57,18 +64,19 @@ function updateActions(bReadOnly)
 end
 
 function updateResistances(bReadOnly)
+	local bUseDmgTypes = OptionsManagerCypher.replaceArmorWithDamageTypes();
 	local bShowResistances = (resistances.getWindowCount() ~= 0);
 
 	-- Update the edit and add buttons
-	if bReadOnly then
+	if bReadOnly or bUseDmgTypes then
 		resistances_iedit.setValue(0);
 	end
 
-	resistances_iedit.setVisible(not bReadOnly);
-	resistances_iadd.setVisible(not bReadOnly);
+	resistances_iedit.setVisible(not bReadOnly and bUseDmgTypes);
+	resistances_iadd.setVisible(not bReadOnly and bUseDmgTypes);
 	-- Only show this section if we're in edit mode OR if the list isn't empty
-	header_resistances.setVisible((not bReadOnly) or bShowResistances);
-	resistances.setVisible((not bReadOnly) or bShowResistances);
+	header_resistances.setVisible(bUseDmgTypes and ((not bReadOnly) or bShowResistances));
+	resistances.setVisible(bUseDmgTypes and ((not bReadOnly) or bShowResistances));
 
 	-- Update all resistance subwindows
 	for _,w in ipairs(resistances.getWindows()) do

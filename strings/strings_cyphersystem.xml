@@ -38,11 +38,17 @@
 	<string name="label_training_trained">Trained</string>
 	<string name="label_training_specialized">Specialized</string>
 
+	<string name="library_recordtype_label_damagetypes">Damage Types</string>
+
 	<!-- Options -->
 	<string name="option_label_INITPC">Init: PC</string>
 	<string name="option_label_INITNPC">Init: NPC</string>
-
+	<string name="option_label_EXPF">Enable Experimental Features</string>
 	<string name="option_label_HRXP">Hero Points (Intrusion XP)</string>
+	<string name="option_label_DMGTYPES">Replace Armor with individual damage types (requires reloading the campaign to take effect)</string>
+
+	<string name="option_val_yes">Yes</string>
+	<string name="option_val_no">No</string>
 
 	<!-- Combat Tracker -->
 	<string name="ct_label_hp">Health</string>
@@ -200,10 +206,13 @@
 	<string name="power_label_damagestat">Dmg Pool</string>
 	<string name="power_tooltip_damagestat">Deal damage to this stat pool. Defaults to Might.</string>
 	<string name="power_label_damagetype">Damage Type</string>
-	<string name="power_label_pierce">Armor Pierce</string>
-	<string name="power_tooltip_pierce">Does this damage bypass Armor?</string>
+	<string name="power_label_pierce_resist">Resist Pierce</string>
+	<string name="power_tooltip_pierce_resist">Does this damage bypass damage resistance?</string>
+	<string name="power_tooltip_pierce_resistamount">How much damage pierces damage resistance? Leave blank to ignore all resistance.</string>
+	<string name="power_label_pierce_armor">Armor Pierce</string>
+	<string name="power_tooltip_pierce_armor">Does this damage bypass Armor?</string>
 	<string name="power_label_pierceamount">Amt</string>
-	<string name="power_tooltip_pierceamount">How much damage pierces armor? Leave blank to ignore all Armor.</string>
+	<string name="power_tooltip_pierce_armoramount">How much damage pierces armor? Leave blank to ignore all Armor.</string>
 	<string name="power_label_level">Level</string>
 	<string name="power_tooltip_level">Level modifier for this attack.</string>
 	<string name="power_label_ambient">Ambient Dmg</string>
@@ -251,6 +260,12 @@
 	<string name="npc_label_interaction">Interaction</string>
 	<string name="npc_label_use">Use</string>
 	<string name="npc_label_loot">Loot</string>
+
+	<string name="npc_header_actions">Actions</string>
+	<string name="npc_header_resistances">Resistances &amp; Vulnerabilities</string>
+	<string name="npc_resistances_resistance">Resistance</string>
+	<string name="npc_resistances_immunity">Immunity</string>
+	<string name="npc_resistances_vulnerability">Vulnerability</string>
 
 	<!-- Items -->
 	<string name="item_label_type">Type</string>

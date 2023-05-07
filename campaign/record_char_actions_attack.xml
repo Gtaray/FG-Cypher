@@ -351,7 +351,7 @@
 			</label_fieldtop> -->
 
 			<label_column name="pierce_label">
-				<static textres="power_label_pierce" />
+				<static textres="power_label_pierce_armor" />
 			</label_column>
 			<cycler_column name="pierce">
 				<anchored width="80" />
@@ -368,12 +368,12 @@
 					<values>yes</values>
 					<defaultlabel>No</defaultlabel>
 				</parameters>
-				<tooltip textres="power_tooltip_pierce" />
+				<tooltip textres="power_tooltip_pierce_armor" />
 			</cycler_column>
 			<basicnumber name="pierceamount">
 				<anchored to="pierce" position="righthigh" offset="10,0" width="30" height="20" />
 				<min>0</min>
-				<tooltip textres="power_tooltip_pierceamount" />
+				<tooltip textres="power_tooltip_pierce_armoramount" />
 			</basicnumber>
 
 			<!-- COST -->

@@ -453,14 +453,37 @@
 	<windowclass name="power_action_editor_damage">
 		<script>
 			function onInit()
+				OptionsManager.registerCallback("DMGTYPES", updateDamageTypeOption);
 				local sSource = PowerManager.getActionNodeSource(getDatabaseNode());
 				local bNPC = sSource == "npc";
 				
 				ambient.setVisible(bNPC);
 				ambient_label.setVisible(bNPC);
 
+				updateDamageTypeOption();
 				updateCostType();
 				updatePierceAmount();
+			end
+			function onClose()
+				OptionsManager.unregisterCallback("DMGTYPES", updateDamageTypeOption);
+			end
+			function updateDamageTypeOption()
+				local bDmgTypes = OptionsManagerCypher.replaceArmorWithDamageTypes();
+				damagetype.setVisible(bDmgTypes)
+				damagetype_label.setVisible(bDmgTypes)
+
+				local sLabel = "power_label_pierce_armor";
+				local sTooltip = "power_tooltip_pierce_armor";
+				local sAmountTooltip = "power_tooltip_pierce_armoramount";
+				if bDmgTypes then
+					sLabel = "power_label_pierce_resist";
+					sTooltip = "power_tooltip_pierce_resist";
+					sAmountTooltip = "power_tooltip_pierce_resistamount";
+				end
+
+				pierce_label.setValue(Interface.getString(sLabel));
+				pierce.setTooltipText(Interface.getString(sTooltip));
+				pierceamount.setTooltipText(Interface.getString(sAmountTooltip));
 			end
 			function updateCostType()
 				local sSource = PowerManager.getActionNodeSource(getDatabaseNode());
@@ -487,6 +510,10 @@
 			end
 			function updatePierceAmount()
 				pierceamount.setVisible(pierce.getValue() == "Yes");
+			end
+			function updateDamageType()
+				local bUseDamageTypes = OptionsManagerCypher.replaceArmorWithDamageTypes();
+				
 			end
 		</script>
 		<sheetdata>
@@ -553,21 +580,18 @@
 				<anchored to="damagestat" />
 				<static textres="power_label_damagestat" />
 			</label_fieldtop>
-
-			<!-- <stringu_damagetype_autocomplete name="damagetype">
-				<anchored to="damagestat" height="20">
-					<top />
-					<left anchor="right" offset="10" />
-					<right parent="" offset="-10" />
+			<label_column name="damagetype_label">
+				<static textres="power_label_damagetype" />
+			</label_column>
+			<stringu_damagetype_autocomplete name="damagetype">
+				<anchored height="20">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+					<left offset="97" />
+					<right offset="-10" />
 				</anchored>
 			</stringu_damagetype_autocomplete>
-			<label_fieldtop>
-				<anchored to="damagetype" />
-				<static textres="power_label_damagetype" />
-			</label_fieldtop> -->
-
 			<label_column name="pierce_label">
-				<static textres="power_label_pierce" />
+				<static textres="power_label_pierce_armor" />
 			</label_column>
 			<cycler_column name="pierce">
 				<anchored width="80" />
@@ -584,12 +608,12 @@
 					<values>yes</values>
 					<defaultlabel>No</defaultlabel>
 				</parameters>
-				<tooltip textres="power_tooltip_pierce" />
+				<tooltip textres="power_tooltip_pierce_armor" />
 			</cycler_column>
 			<basicnumber name="pierceamount">
 				<anchored to="pierce" position="righthigh" offset="10,0" width="30" height="20" />
 				<min>0</min>
-				<tooltip textres="power_tooltip_pierceamount" />
+				<tooltip textres="power_tooltip_pierce_armoramount" />
 			</basicnumber>
 
 			<label_column name="ambient_label">

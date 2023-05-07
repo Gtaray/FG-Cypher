@@ -170,6 +170,7 @@ function applyDamage(rSource, rTarget, bSecret, rResult)
 	local bPiercing, nPierceAmount = RollManager.decodePiercing(rResult, true);
 	local sDamageType = nil; -- This will get added later.
 	local nTotal = rResult.nTotal;
+	local bUseDamageTypes = OptionsManager.replaceArmorWithDamageTypes()
 
 	-- Remember current health status
 	local sOriginalStatus = ActorHealthManager.getHealthStatus(rTarget);
@@ -182,8 +183,28 @@ function applyDamage(rSource, rTarget, bSecret, rResult)
 		return;
 	end
 
-	if not bAmbient then
-		nTotal = ActionDamage.applyArmor(rSource, rTarget, nTotal, sStat, bPiercing, nPierceAmount, aNotifications);
+	-- If using damage types, we don't need to apply armor or care about ambient damage
+	if bUseDamageTypes then 
+		nTotal = ActionDamage.applyDamageModifications(
+			rSource, 
+			rTarget, 
+			nTotal, 
+			sStat, 
+			sDamageType, 
+			bPiercing,
+			nPierceAmount,
+			aNotifications)
+	else
+		if not bAmbient then
+			nTotal = ActionDamage.applyArmor(
+				rSource, 
+				rTarget, 
+				nTotal, 
+				sStat, 
+				bPiercing, 
+				nPierceAmount, 
+				aNotifications);
+		end
 	end
 	
 
@@ -291,9 +312,37 @@ function applyArmor(rSource, rTarget, nTotal, sStat, bPiercing, nPierceAmount, a
 	return nTotal
 end
 
-function applyDamageModifications(rSource, rTarget, nTotal, sStat, sDamageType, bPiercing, nPierceAmount, aNotifications)
-	-- This gets added with damage types
-	--nTotal = ActionDamageCPP.calculateDamageResistances(rSource, rTarget, nTotal, sDamageType, sDamageStat, aNotifications);
+function applyDamageModifications(rSource, rTarget, nTotal, sDamageStat, sDamageType, bPiercing, nPierceAmount, aNotifications)
+	if ActorManagerCypher.isImmune(rTarget, rSource, { sDamageType, sDamageStat }) then
+		table.insert(aNotifications, "[IMMUNE]");
+		return 0;
+	end
+
+	local bResist, nResistAmount = ActorManagerCypher.isResistant(rTarget, rSource, { sDamageType, sDamageStat })
+	if bResist and nResistAmount >= 0 then
+		-- Resist half if amount is 0, otherwise flat reduction
+		if nResistAmount == 0 then
+			nDamage = math.floor(nDamage / 2);
+		else
+			nDamage = math.max(0, nDamage - nResistAmount);
+		end
+		if nDamage > 0 then
+			table.insert(aNotifications, "[PARTIALLY RESISTED]")
+		else
+			table.insert(aNotifications, "[RESISTED]")
+		end
+	end
+
+	local bVuln, nVulnAmount = ActorManagerCypher.isVulnerable(rTarget, rSource, {sDamageType, sDamageStat});
+	if bVuln and nVulnAmount >= 0 then
+		if nVulnAmount == 0 then
+			nDamage = nDamage * 2;
+		else
+			nDamage = nDamage + nVulnAmount;
+		end
+		table.insert(aNotifications, "[VULNERABLE]");
+	end
+
 	return nTotal;
 end
 

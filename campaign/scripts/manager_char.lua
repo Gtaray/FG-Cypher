@@ -43,6 +43,9 @@ function takeSkillAdvancement(nodeChar)
 end
 
 function takeAdvancement(nodeChar, sMessage)
+	if not OptionsManagerCypher.areExperimentalFeaturesEnabled() then
+		return;
+	end
 	if not nodeChar then
 		return;
 	end
