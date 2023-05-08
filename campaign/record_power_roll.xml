@@ -43,12 +43,6 @@
 			function updateCostType()
 				local sSource = PowerManager.getActionNodeSource(getDatabaseNode());
 				local bNPC = sSource == "npc";
-				local bRef = sSource == "ref";
-
-				if bRef then
-					costtype.setStringValue("fixed");
-					costtype.setReadOnly(true)
-				end
 
 				local bFixed = DB.getValue(getDatabaseNode(), "costtype", "") == "fixed";
 				header_cost.setVisible(not bNPC);
@@ -238,11 +232,6 @@
 				local sSource = PowerManager.getActionNodeSource(getDatabaseNode());
 				local bNPC = sSource == "npc";
 				local bRef = sSource == "ref";
-
-				if bRef then
-					costtype.setStringValue("fixed");
-					costtype.setReadOnly(true)
-				end
 
 				local bFixed = DB.getValue(getDatabaseNode(), "costtype", "") == "fixed";
 				header_cost.setVisible(not bNPC);
@@ -467,11 +456,6 @@
 				local bNPC = sSource == "npc";
 				local bRef = sSource == "ref";
 
-				if bRef then
-					costtype.setStringValue("fixed");
-					costtype.setReadOnly(true)
-				end
-
 				local bFixed = DB.getValue(getDatabaseNode(), "costtype", "") == "fixed";
 				header_cost.setVisible(not bNPC);
 				costtype_label.setVisible(not bNPC);
@@ -691,12 +675,6 @@
 			function updateCostType()
 				local sSource = PowerManager.getActionNodeSource(getDatabaseNode());
 				local bNPC = sSource == "npc";
-				local bRef = sSource == "ref";
-
-				if bRef then
-					costtype.setStringValue("fixed");
-					costtype.setReadOnly(true)
-				end
 
 				local bFixed = DB.getValue(getDatabaseNode(), "costtype", "") == "fixed";
 				header_cost.setVisible(not bNPC);
@@ -909,12 +887,6 @@
 			function updateCostType()
 				local sSource = PowerManager.getActionNodeSource(getDatabaseNode());
 				local bNPC = sSource == "npc";
-				local bRef = sSource == "ref";
-
-				if bRef then
-					costtype.setStringValue("fixed");
-					costtype.setReadOnly(true)
-				end
 
 				local bFixed = DB.getValue(getDatabaseNode(), "costtype", "") == "fixed";
 				header_cost.setVisible(not bNPC);

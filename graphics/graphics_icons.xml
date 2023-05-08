@@ -55,4 +55,10 @@
 	<!-- Modifier stack -->
 	<icon name="modcollector" file="graphics/icons/modcollector.png" />
 	<icon name="modcollector_counter" file="graphics/icons/modcollector_counter.png" />
+
+	<!-- Sidebar -->
+	<icon name="sidebar_icon_recordtype_ability" file="graphics/sidebar/sidebar_icon_spell.png" />
+	<icon name="sidebar_icon_recordtype_type" file="graphics/sidebar/sidebar_icon_class.png" />
+	<icon name="sidebar_icon_recordtype_descriptor" file="graphics/sidebar/sidebar_icon_background.png" />
+	<icon name="sidebar_icon_recordtype_focus" file="graphics/sidebar/sidebar_icon_feat.png" />
 </root>

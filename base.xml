@@ -54,6 +54,7 @@
 	<!-- Common files -->
 	<includefile source="common/template_common.xml" />
 	<includefile source="common/damagetype_templates.xml" />
+	<includefile source="common/template_actions_tab.xml" />
 
 	<!-- Party sheet -->
 	<includefile source="ps/ps_inventory.xml" />

@@ -31,8 +31,26 @@ targetactions = {
 	"effect",
 };
 
+aRecordOverrides = {
+	["ability"] = {
+		bExport = true,
+		aDataMap = { "ability", "reference.ability" },
+		sRecordDisplayClass = "ability",
+		aCustomFilters = {
+			["Type"] = { sField = "type" },
+			["Use"] = { sField = "usetype" }
+		}
+	}
+}
+
 currencies = { };
 currencyDefault = nil;
+
+function onInit()
+	for kRecordType,vRecordType in pairs(aRecordOverrides) do
+		LibraryData.overrideRecordTypeInfo(kRecordType, vRecordType);
+	end
+end
 
 function getCharSelectDetailHost(nodeChar)
 	local sValue = DB.getValue(nodeChar, "class.descriptor", "") .. " " .. DB.getValue(nodeChar, "class.type", "") .. " who " .. DB.getValue(nodeChar, "class.focus", "");

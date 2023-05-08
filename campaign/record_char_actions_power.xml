@@ -131,7 +131,7 @@
 		<script file="common/scripts/record_window.lua" />
 		<sheetdata>
 			<sub_record_header name="header">
-				<class>power_header</class>
+				<class>ability_header</class>
 			</sub_record_header>
 
 			<frame_record name="contentframe">
@@ -145,7 +145,7 @@
 			</frame_record>
 
 			<subwindow_record name="main">
-				<class>power_main</class>
+				<class>ability_main</class>
 				<activate />
 			</subwindow_record>
 
@@ -182,27 +182,25 @@
 			end
 			function update()
 				local bReadOnly = WindowManager.getReadOnlyState(getDatabaseNode());
-				useequipped.setReadOnly(bReadOnly);
-				cost.setReadOnly(bReadOnly);
-				coststat.setReadOnly(bReadOnly);
-				period.setReadOnly(bReadOnly);
-				ftdesc.setReadOnly(bReadOnly);
-
 				local bHasCost = cost.getValue() ~= 0 and coststat.getValue() ~= "-";
+				local bShowCost = bHasCost or not bReadOnly;
 				local bHasRecharge = period.getValue() ~= "-";
 
-				local bShowCost = bHasCost or not bReadOnly;
+				useequipped.setReadOnly(bReadOnly);
+				period.setReadOnly(bReadOnly);
+
 				header_cost.setVisible(bShowCost);
 				costtext1.setVisible(bShowCost);
-				cost.setVisible(bHasCost or not bReadOnly);
-				label_cost.setVisible(bHasCost or not bReadOnly);
+				cost.setReadOnly(bReadOnly);
+				cost.setVisible(bShowCost);
+				label_cost.setVisible(bShowCost);
 				costtext2.setVisible(bShowCost);
-				label_coststat.setVisible(bHasCost or not bReadOnly);
-				coststat.setVisible(bHasCost or not bReadOnly);
+				label_coststat.setVisible(bShowCost);
+				coststat.setVisible(bShowCost);
+				coststat.setReadOnly(bReadOnly);
 				costtext3.setVisible(bShowCost);
-
-				period_label.setVisible(bHasRecharge or not bReadOnly);
-				period.setVisible(bHasRecharge or not bReadOnly);
+				
+				ftdesc.setReadOnly(bReadOnly);
 			end
 		</script>
 		<sheetdata>
