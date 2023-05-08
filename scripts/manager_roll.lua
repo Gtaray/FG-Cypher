@@ -526,7 +526,6 @@ function decodeStat(rRoll, bPersist)
 	-- Then look for it in the parenthesis in the roll type tag
 	if (sStat or "") == "" then
 		sStat = string.match(rRoll.sDesc, "^%[.- %((%w-)[.]-%)%]");
-		Debug.chat('decodeStat()', sStat);
 	end
 	rRoll.sDesc = sText;
 

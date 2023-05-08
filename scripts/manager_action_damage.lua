@@ -196,7 +196,6 @@ function applyDamage(rSource, rTarget, bSecret, rResult)
 			nPierceAmount,
 			aNotifications)
 	else
-		Debug.chat('use armor');
 		if not bAmbient then
 			nTotal = ActionDamage.applyArmor(
 				rSource, 
@@ -283,13 +282,11 @@ function applyDamage(rSource, rTarget, bSecret, rResult)
 end
 
 function applyArmor(rSource, rTarget, nTotal, sStat, bPiercing, nPierceAmount, aNotifications)
-	Debug.chat('applyArmor()', nTotal, sStat)
 	if nTotal < 0 then
 		return nTotal;
 	end
 
 	local nArmorAdjust = ActorManagerCypher.getArmor(rTarget, rSource, sStat);
-	Debug.chat('armor', nArmorAdjust)
 
 	if bPiercing then
 		-- if pierce amount is 0 (but bPierce is true), then pierce all armor

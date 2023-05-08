@@ -88,7 +88,7 @@
 			<label_column name="armor_label">
 				<static textres="npc_label_armor" />
 			</label_column>
-			<number_columnh name="armor" />
+			<number_column_armor name="armor" />
 
 			<label_column name="move_label">
 				<static textres="npc_label_move" />
@@ -112,21 +112,18 @@
 			</label_column>
 			<string_columnh name="intrusion" />
 
-			<header_column name="header_resistances">
-				<static textres="npc_header_resistances"/>
+			<header_column name="resistances_header">
+				<static textres="header_damage_modifications"/>
 			</header_column>
 			<button_iedit name="resistances_iedit">
-				<anchored to="header_resistances" position="righthigh" offset="-20,0" />
+				<anchored to="resistances_header" position="righthigh" offset="-20,0" />
 				<target>resistances</target>
 			</button_iedit>
 			<button_iadd name="resistances_iadd">
 				<anchored to="resistances_iedit" position="lefthigh" offset="5,0" />
 				<target>resistances</target>
 			</button_iadd>
-			<list_npcactions name="resistances">
-				<datasource>.resistances</datasource>
-				<class>npc_resistance</class>
-			</list_npcactions>
+			<list_damagemods name="resistances" />
 
 			<header_column name="header_actions">
 				<static textres="npc_header_actions"/>
@@ -238,47 +235,6 @@
 			<string_columnh name="loot" />
 
 			<ft_columnh name="text" />
-		</sheetdata>
-	</windowclass>
-
-	<windowclass name="npc_resistance">
-		<margins control="0,0,0,2" />
-		<sheetdata>
-			<genericcontrol name="rightanchor">
-				<anchored position="insidetopright" offset="0,2" height="0" width="0" />
-				<invisible />
-			</genericcontrol>
-			<button_idelete name="idelete">
-				<anchored to="rightanchor">
-					<top />
-					<right anchor="left" offset="-5" />
-				</anchored>
-			</button_idelete>
-			<basicnumber name="amount">
-				<anchored to="rightanchor" relation="relative" height="20" width="30">
-					<top />
-					<right anchor="left" relation="relative" offset="-35" />
-				</anchored>
-				<min>0</min>
-			</basicnumber>
-			<button_stringcycler name="type">
-				<anchored to="rightanchor" width="80">
-					<top />
-					<right anchor="left" relation="relative" offset="-10" />
-				</anchored>  
-				<parameters>
-					<labelsres>npc_resistances_resistance|npc_resistances_immunity|npc_resistances_vulnerability</labelsres>
-					<values>resist|immune|vuln</values>
-					<defaultlabelres>dash</defaultlabelres>
-				</parameters>
-			</button_stringcycler>
-			<stringu_damagetype_autocomplete name="damagetype">
-				<anchored to="rightanchor" height="20">
-					<top />
-					<left parent="" offset="5" />
-					<right anchor="left" relation="relative" offset="-10" />
-				</anchored>
-			</stringu_damagetype_autocomplete>
 		</sheetdata>
 	</windowclass>
 

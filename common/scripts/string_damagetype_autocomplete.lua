@@ -7,12 +7,25 @@ function onClose()
 end
 
 function updateDamageTypeOption()
-	local bDmgTypes = OptionsManagerCypher.replaceArmorWithDamageTypes();
-	self.setVisible(bDmgTypes)
+	local bReadOnly = WindowManager.getReadOnlyState(window.getDatabaseNode());
 
-	local sLabelName = getName() .. "_label";
-	if window[sLabelName] then
-		window[sLabelName].setVisible(bDmgTypes)
+	if window.update then
+		window.update();
+	else
+		self.update(bReadOnly, false);
+	end
+end
+
+function update(bReadOnly, bForceHide)
+	local bDmgTypes = OptionsManagerCypher.replaceArmorWithDamageTypes();
+	local bHasValue = getValue() ~= "";
+	local bLocalShow = (not bReadOnly or bHasValue) and bDmgTypes and not bForceHide;
+
+	self.setVisible(bLocalShow);
+	self.setReadOnly(bReadOnly);
+
+	if window[getName() .. "_label"] then
+		window[getName() .. "_label"].setVisible(bLocalShow);
 	end
 end
 

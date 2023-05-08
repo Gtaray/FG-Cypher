@@ -400,6 +400,12 @@ function getDamageMods(rActor, sFilter, rTarget)
 		return nil;
 	end
 
+	-- If the game option to use damage types is not enabled, then do not 
+	-- return any modifications here
+	if not OptionsManagerCypher.replaceArmorWithDamageTypes() then
+		return { };
+	end
+
 	local tDmgMods = {};
 
 	-- Start by getting values from the creature node

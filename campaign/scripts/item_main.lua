@@ -77,12 +77,13 @@ function update()
 	updateControl("damage", bReadOnly, not (bID and bWeapon));
 	updateControl("pierce", bReadOnly, not (bID and bWeapon));
 	updateControl("pierceamount", bReadOnly, not (bID and bWeapon and bPierce));
+	WindowManager.callSafeControlUpdate(self, "damagetype", bReadOnly, not (bID and bWeapon));
 
 	-- ARMOR PROPERTIES
 	local bShield = ItemManagerCypher.getArmorType(nodeRecord) == "shield";
 	updateControl("armortype", bReadOnly, not bArmor);
 	updateControl("shieldbonus", bReadOnly, not (bID and bArmor and bShield));
-	WindowManager.callSafeControlUpdate(self, "armor", bReadOnly, not (bID and bArmor and not bShield));
+	WindowManager.callSafeControlUpdate(self, "armor", bReadOnly, bDmgTypes or not (bID and bArmor and not bShield));
 
 	-- CYPHER PROPERTIES
 	WindowManager.callSafeControlUpdate(self, "levelroll", bReadOnly, not bCypher or (not (bID or Sesion.IsHost)));

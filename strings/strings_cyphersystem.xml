@@ -263,10 +263,6 @@
 	<string name="npc_label_loot">Loot</string>
 
 	<string name="npc_header_actions">Actions</string>
-	<string name="npc_header_resistances">Resistances &amp; Vulnerabilities</string>
-	<string name="npc_resistances_resistance">Resistance</string>
-	<string name="npc_resistances_immunity">Immunity</string>
-	<string name="npc_resistances_vulnerability">Vulnerability</string>
 
 	<!-- Items -->
 	<string name="item_label_type">Type</string>
@@ -311,6 +307,12 @@
 	<string name="item_label_depletionin">in</string>
 	
 	<string name="depletion_tag">DEPLETION</string>
+
+	<!-- Damage Modifications -->
+	<string name="header_damage_modifications">Resistances &amp; Vulnerabilities</string>
+	<string name="damage_modification_resistance">Resistance</string>
+	<string name="damage_modification_immunity">Immunity</string>
+	<string name="damage_modification_vulnerability">Vulnerability</string>
 
 	<!-- Defense Prompt -->
 	<string name="defense_prompt_window_title">Defend Thyself</string>
