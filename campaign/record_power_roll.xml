@@ -460,7 +460,7 @@
 				ambient_label.setVisible(bNPC);
 
 				updateCostType();
-				updatePierceAmount();
+				onPierceChanged();
 			end
 			function updateCostType()
 				local sSource = PowerManager.getActionNodeSource(getDatabaseNode());
@@ -485,7 +485,7 @@
 				coststat_label.setVisible(not bNPC and bFixed);				
 				costtext3.setVisible(not bNPC and bFixed);
 			end
-			function updatePierceAmount()
+			function onPierceChanged()
 				pierceamount.setVisible(pierce.getValue() == "Yes");
 			end
 		</script>

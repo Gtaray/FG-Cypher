@@ -20,10 +20,16 @@
 			<anchored width="80" />
 			<script>
 				function onInit()
+					if super and super.onInit then
+						super.onInit()
+					end
 					OptionsManager.registerCallback("DMGTYPES", updateDamageTypeOption);
 					updateDamageTypeOption();
 				end
 				function onClose()
+					if super and super.onClose then
+						super.onClose()
+					end
 					OptionsManager.unregisterCallback("DMGTYPES", updateDamageTypeOption);
 				end
 				function updateDamageTypeOption()
@@ -46,7 +52,7 @@
 					if super and super.onValueChanged then
 						super.onValueChanged()
 					end
-					window.updatePierceAmount();
+					window.onPierceChanged();
 				end
 			</script>
 			<parameters>

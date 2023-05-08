@@ -525,7 +525,8 @@ function decodeStat(rRoll, bPersist)
 	-- If there's no stat found with the STAT tag
 	-- Then look for it in the parenthesis in the roll type tag
 	if (sStat or "") == "" then
-		sStat = string.match(rRoll.sDesc, "^%[[^.]-%((%w-)%)%]");
+		sStat = string.match(rRoll.sDesc, "^%[.- %((%w-)[.]-%)%]");
+		Debug.chat('decodeStat()', sStat);
 	end
 	rRoll.sDesc = sText;
 
@@ -749,6 +750,16 @@ function decodeWeaponType(rRoll, bPersist)
 	rRoll.sDesc = sText;
 
 	return sWeaponType;
+end
+
+function decodeDamageType(rRoll)
+	local sDamageType, sText = RollManager.decodeText(
+		rRoll.sDesc,
+		"^%[DAMAGE %(.-, .-%)]",
+		"^%[DAMAGE %(.-, (.-)%)]",
+		true
+	);
+	return sDamageType;
 end
 
 function encodePiercing(rAction, rRoll)

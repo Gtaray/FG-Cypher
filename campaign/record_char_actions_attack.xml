@@ -51,8 +51,7 @@
 						window.actionAttack();
 					end
 					function updateTooltip()
-						local sAttack = PowerManager.getPCAttackText(
-							window.getAttackAction());
+						local sAttack = PowerManager.getPCAttackText(window.getAttackAction());
 						setTooltipText(sAttack);
 					end
 				</script>
@@ -73,8 +72,7 @@
 						window.actionDamage();
 					end
 					function updateTooltip()
-						local sDamage = PowerManager.getPCDamageText(
-							window.getDamageAction());
+						local sDamage = PowerManager.getPCDamageText(window.getDamageAction());
 						setTooltipText(sDamage);
 					end
 				</script>

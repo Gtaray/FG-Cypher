@@ -34,11 +34,12 @@ function performRoll(draginfo, rActor, rAction)
 end
 
 function getRoll(rActor, rAction)
+	local bUseDmgTypes = OptionsManagerCypher.replaceArmorWithDamageTypes();
 	local rRoll = {}
 	rRoll.sType = "damage"
 
 	local sDamageDetails = StringManager.capitalize(rAction.sDamageStat or "");
-	if (rAction.sDamageType or "") ~= "" then
+	if bUseDmgTypes and (rAction.sDamageType or "") ~= "" then
 		sDamageDetails = string.format("%s, %s", sDamageDetails, rAction.sDamageType)
 	end
 	rRoll.sDesc = string.format(
@@ -65,7 +66,7 @@ function modRoll(rSource, rTarget, rRoll)
 	local sStat = RollManager.decodeStat(rRoll, false);
 	local nEffort = RollManager.decodeEffort(rRoll, true);
 	local bPiercing, nPierceAmount = RollManager.decodePiercing(rRoll, true);
-	local sDamageType = nil; -- This will get added later.
+	local sDamageType = RollManager.decodeDamageType(rRoll);
 
 	-- Adjust mod based on effort
 	nEffort = nEffort + RollManager.processEffort(rSource, rTarget, sStat, { "damage", "dmg" }, nEffort);
@@ -75,7 +76,7 @@ function modRoll(rSource, rTarget, rRoll)
 
 	bPiercing, nPierceAmount = RollManager.processPiercing(rSource, rTarget, bPiercing, nPierceAmount, { }); -- Eventually the filter param here will include sDamageType
 
-	local nDmgBonus = EffectManagerCypher.getEffectsBonusByType(rSource, { "damage", "dmg" }, { sStat }, rTarget)
+	local nDmgBonus = EffectManagerCypher.getEffectsBonusByType(rSource, { "damage", "dmg" }, { sStat, sDamageType }, rTarget)
 	if nDmgBonus ~= 0 then
 		rRoll.nMod = rRoll.nMod + nDmgBonus;
 	end
@@ -114,7 +115,7 @@ function buildRollResult(rSource, rTarget, rRoll)
 	rResult.bSourceNPC = (rSource and not ActorManager.isPC(rSource)) or false;
 	rResult.bTargetNPC = (rTarget and not ActorManager.isPC(rTarget)) or false;
 	rResult.sStat = RollManager.decodeStat(rRoll, true);
-	-- rResult.sDamageType, rResult.sDamageStat = RollManager.decodeDamageType(rRoll);
+	rResult.sDamageType = RollManager.decodeDamageType(rRoll);
 	rResult.bPiercing, rResult.nPierceAmount = RollManager.decodePiercing(rRoll, true);
 	rResult.bAmbient = RollManager.decodeAmbientDamage(rRoll, true);
 	
@@ -168,9 +169,9 @@ end
 function applyDamage(rSource, rTarget, bSecret, rResult)
 	local sStat = RollManager.decodeStat(rResult, false);
 	local bPiercing, nPierceAmount = RollManager.decodePiercing(rResult, true);
-	local sDamageType = nil; -- This will get added later.
+	local sDamageType = rResult.sDamageType
 	local nTotal = rResult.nTotal;
-	local bUseDamageTypes = OptionsManager.replaceArmorWithDamageTypes()
+	local bUseDamageTypes = OptionsManagerCypher.replaceArmorWithDamageTypes()
 
 	-- Remember current health status
 	local sOriginalStatus = ActorHealthManager.getHealthStatus(rTarget);
@@ -195,6 +196,7 @@ function applyDamage(rSource, rTarget, bSecret, rResult)
 			nPierceAmount,
 			aNotifications)
 	else
+		Debug.chat('use armor');
 		if not bAmbient then
 			nTotal = ActionDamage.applyArmor(
 				rSource, 
@@ -281,11 +283,13 @@ function applyDamage(rSource, rTarget, bSecret, rResult)
 end
 
 function applyArmor(rSource, rTarget, nTotal, sStat, bPiercing, nPierceAmount, aNotifications)
+	Debug.chat('applyArmor()', nTotal, sStat)
 	if nTotal < 0 then
 		return nTotal;
 	end
 
 	local nArmorAdjust = ActorManagerCypher.getArmor(rTarget, rSource, sStat);
+	Debug.chat('armor', nArmorAdjust)
 
 	if bPiercing then
 		-- if pierce amount is 0 (but bPierce is true), then pierce all armor
@@ -312,7 +316,7 @@ function applyArmor(rSource, rTarget, nTotal, sStat, bPiercing, nPierceAmount, a
 	return nTotal
 end
 
-function applyDamageModifications(rSource, rTarget, nTotal, sDamageStat, sDamageType, bPiercing, nPierceAmount, aNotifications)
+function applyDamageModifications(rSource, rTarget, nDamage, sDamageStat, sDamageType, bPiercing, nPierceAmount, aNotifications)
 	if ActorManagerCypher.isImmune(rTarget, rSource, { sDamageType, sDamageStat }) then
 		table.insert(aNotifications, "[IMMUNE]");
 		return 0;
@@ -343,7 +347,7 @@ function applyDamageModifications(rSource, rTarget, nTotal, sDamageStat, sDamage
 		table.insert(aNotifications, "[VULNERABLE]");
 	end
 
-	return nTotal;
+	return nDamage;
 end
 
 function applyDamageToPc(rSource, rTarget, nDamage, sStat, sDamageType, aNotifications)

@@ -170,31 +170,23 @@
 				<static textres="item_label_damage" />
 			</label_column>
 			<number_columnh name="damage" />
-			<label_column name="pierce_label">
-				<static textres="item_label_pierce" />
+			<label_column name="damagetype_label">
+				<static textres="power_label_damagetype" />
 			</label_column>
-			<cycler_column name="pierce">
-				<anchored width="80" />
-				<script>
-					function onValueChanged()
-						if super and super.onValueChanged then
-							super.onValueChanged()
-						end
-						window.onPierceChanged();
-					end
-				</script>
-				<parameters>
-					<labelsres>yes</labelsres>
-					<values>yes</values>
-					<defaultlabel>No</defaultlabel>
-				</parameters>
-				<tooltip textres="power_tooltip_pierce_armor" />
-			</cycler_column>
-			<basicnumber name="pierceamount">
-				<anchored to="pierce" position="righthigh" offset="10,0" width="30" height="20" />
-				<min>0</min>
-				<tooltip textres="item_tooltip_pierceamount" />
-			</basicnumber>
+			<stringu_damagetype_autocomplete name="damagetype">
+				<anchored height="20">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+					<left offset="97" />
+					<right offset="-10" />
+				</anchored>
+			</stringu_damagetype_autocomplete>
+			<label_column name="pierce_label">
+				<static textres="power_label_pierce_armor" />
+			</label_column>
+			<cycler_column_pierce name="pierce">
+			</cycler_column_pierce>
+			<number_pierce_amount name="pierceamount">
+			</number_pierce_amount>
 
 			<!-- ARMOR -->
 			<label_column name="armortype_label">

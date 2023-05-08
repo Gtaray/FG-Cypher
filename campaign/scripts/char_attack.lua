@@ -67,7 +67,7 @@ function getDamageAction()
 	rAction.label = DB.getValue(nodeAction, "name", "");
 	rAction.nDamage = DB.getValue(nodeAction, "damage", 0);
 	rAction.sStat = RollManager.resolveStat(DB.getValue(nodeAction, "stat", ""));
-	rAction.sStatDamage = RollManager.resolveStat(DB.getValue(nodeAction, "damagestat", ""));
+	rAction.sDamageStat = RollManager.resolveStat(DB.getValue(nodeAction, "damagestat", ""));
 	rAction.sDamageType = DB.getValue(nodeAction, "damagetype", "");
 	rAction.nCost = 0;
 
