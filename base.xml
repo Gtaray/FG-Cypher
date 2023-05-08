@@ -65,6 +65,7 @@
 
 	<!-- Utility windows -->
 	<includefile source="utility/prompt_defense.xml" />
+	<includefile source="utility/options_damagetypes.xml" />
 
 	<!-- High-level scripts -->
 	<script name="GameSystem" file="scripts/manager_gamesystem.lua" />

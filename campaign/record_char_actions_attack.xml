@@ -47,9 +47,13 @@
 						window.actionAttack(draginfo);
 						return true;
 					end
-
 					function onButtonPress()
 						window.actionAttack();
+					end
+					function updateTooltip()
+						local sAttack = PowerManager.getPCAttackText(
+							window.getAttackAction());
+						setTooltipText(sAttack);
 					end
 				</script>
 			</buttoncontrol>
@@ -65,9 +69,13 @@
 						window.actionDamage(draginfo);
 						return true;
 					end
-
 					function onButtonPress()
 						window.actionDamage();
+					end
+					function updateTooltip()
+						local sDamage = PowerManager.getPCDamageText(
+							window.getDamageAction());
+						setTooltipText(sDamage);
 					end
 				</script>
 			</buttoncontrol>
@@ -337,19 +345,16 @@
 				<anchored to="damagestat" />
 				<static textres="power_label_damagestat" />
 			</label_fieldtop>
-
-			<!-- <stringu_damagetype_autocomplete name="damagetype">
-				<anchored to="damagestat" height="20">
-					<top />
-					<left anchor="right" offset="10" />
-					<right parent="" offset="-10" />
+			<label_column name="damagetype_label">
+				<static textres="power_label_damagetype" />
+			</label_column>
+			<stringu_damagetype_autocomplete name="damagetype">
+				<anchored height="20">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+					<left offset="97" />
+					<right offset="-10" />
 				</anchored>
 			</stringu_damagetype_autocomplete>
-			<label_fieldtop>
-				<anchored to="damagetype" />
-				<static textres="power_label_damagetype" />
-			</label_fieldtop> -->
-
 			<label_column name="pierce_label">
 				<static textres="power_label_pierce_armor" />
 			</label_column>

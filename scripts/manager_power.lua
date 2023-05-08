@@ -64,13 +64,13 @@ function getActionButtonIcons(node, tData)
 end
 function getActionText(node, tData)
 	if tData.sType == "stat" then
-		return PowerManager.getPCPowerStatActionText(node);
+		return PowerManager.getPowerStatActionText(node);
 	elseif tData.sType == "attack" then
-		return PowerManager.getPCPowerAttackActionText(node);
+		return PowerManager.getPowerAttackActionText(node, tData);
 	elseif tData.sType == "damage" then
-		return PowerManager.getPCPowerDamageActionText(node);
+		return PowerManager.getPowerDamageActionText(node, tData);
 	elseif tData.sType == "heal" then
-		return PowerManager.getPCPowerHealActionText(node);
+		return PowerManager.getPowerHealActionText(node);
 	elseif tData.sType == "effect" then
 		return PowerActionManagerCore.getActionEffectText(node, tData);
 	end
@@ -91,10 +91,10 @@ function getActionTooltip(node, tData)
 	return "";
 end
 
-function getPCPowerStatActionText(nodeAction)
+function getPowerStatActionText(nodeAction)
 	local sText = "";
 
-	local rAction, rActor = PowerManager.getPCPowerAction(nodeAction);
+	local rAction, rActor = PowerManager.getPowerAction(nodeAction);
 	if rAction then
 		local nDiff, nMod = RollManager.resolveDifficultyModifier(rAction.sTraining, rAction.nAssets, rAction.nLevel, rAction.nModifier);
 		local sDice = StringManager.convertDiceToString({ "d20" }, nMod);
@@ -115,77 +115,93 @@ function getPCPowerStatActionText(nodeAction)
 	return sText;
 end
 
-function getPCPowerAttackActionText(nodeAction)
+function getPowerAttackActionText(nodeAction)
 	local sAttack = "";
+	local rAction, rActor = PowerManager.getPowerAction(nodeAction);
 
-	local rAction, rActor = PowerManager.getPCPowerAction(nodeAction);
 	if rAction then		
-		local nDiff, nMod = RollManager.resolveDifficultyModifier(rAction.sTraining, rAction.nAssets, rAction.nLevel, rAction.nModifier);
-		local sDice = StringManager.convertDiceToString({ "d20" }, nMod);
-
-		if rAction.sAttackRange ~= "" then
-			sAttack = string.format("%s (%s): %s", StringManager.capitalize(rAction.sStat), rAction.sAttackRange, sDice)
-		else
-			sAttack = string.format("%s: %s", StringManager.capitalize(rAction.sStat), sDice)
-		end
-
-		if nDiff < 0 then
-			sAttack = string.format("%s [Diff: %s]", sAttack, nDiff);
-		elseif nDiff > 0 then
-			sAttack = string.format("%s [Diff: +%s]", sAttack, nDiff);
-		end
-
-		if rAction.nCost > 0 then
-			sAttack = string.format("%s [Cost: %s]", sAttack, rAction.nCost);
-		end
+		sAttack = PowerManager.getPCAttackText(rAction);
 	end
 
 	return sAttack;
 end
 
-function getPCPowerDamageActionText(nodeAction)
+function getPCAttackText(rAction)
+	local sAttack = ""
+	local nDiff, nMod = RollManager.resolveDifficultyModifier(rAction.sTraining, rAction.nAssets, rAction.nLevel, rAction.nModifier);
+	local sDice = StringManager.convertDiceToString({ "d20" }, nMod);
+
+	if rAction.sAttackRange ~= "" then
+		sAttack = string.format("%s (%s): %s", StringManager.capitalize(rAction.sStat), rAction.sAttackRange, sDice)
+	else
+		sAttack = string.format("%s: %s", StringManager.capitalize(rAction.sStat), sDice)
+	end
+
+	if nDiff < 0 then
+		sAttack = string.format("%s [Diff: %s]", sAttack, nDiff);
+	elseif nDiff > 0 then
+		sAttack = string.format("%s [Diff: +%s]", sAttack, nDiff);
+	end
+
+	if rAction.nCost > 0 then
+		sAttack = string.format("%s [Cost: %s]", sAttack, rAction.nCost);
+	end
+
+	return sAttack;
+end
+
+function getPowerDamageActionText(nodeAction)
 	local sDamage = "";
-	local rAction, rActor = PowerManager.getPCPowerAction(nodeAction);
+	local rAction, rActor = PowerManager.getPowerAction(nodeAction);
+
 	if rAction then
-		if (rAction.sDamageType or "" ~= "") then
-			sDamage = string.format(
-				"%s %s damage", 
-				rAction.nDamage, 
-				rAction.sDamageType);
-		else
-			sDamage = string.format(
-				"%s damage", 
-				rAction.nDamage);
-		end
-
-		if (rAction.sDamageStat or "") ~= "" then
-			sDamage = string.format("%s -> %s", sDamage, StringManager.capitalize(rAction.sDamageStat));
-		end
-
-		if rAction.bPierce then
-			local sPierceAmount = "";
-			if rAction.nPierceAmount > 0 then
-				sPierceAmount = string.format(": %s", rAction.nPierceAmount);
-			end
-
-			sDamage = string.format("%s [PIERCE%s]", sDamage, sPierceAmount);
-		end
-
-		if rAction.bAmbient then
-			sDamage = string.format("%s [AMBIENT]", sDamage);
-		end
-
-		if rAction.nCost > 0 then
-			sDamage = string.format("%s [Cost: %s]", sDamage, rAction.nCost);
-		end
+		sDamage = PowerManager.getPCDamageText(rAction);
 	end
 	return sDamage;
 end
 
-function getPCPowerHealActionText(nodeAction)
+function getPCDamageText(rAction)
+	local sDamage = "";
+
+	if (rAction.sDamageType or "" ~= "") then
+		sDamage = string.format(
+			"%s %s damage", 
+			rAction.nDamage, 
+			rAction.sDamageType);
+	else
+		sDamage = string.format(
+			"%s damage", 
+			rAction.nDamage);
+	end
+
+	if (rAction.sDamageStat or "") ~= "" then
+		sDamage = string.format("%s -> %s", sDamage, StringManager.capitalize(rAction.sDamageStat));
+	end
+
+	if rAction.bPierce then
+		local sPierceAmount = "";
+		if rAction.nPierceAmount > 0 then
+			sPierceAmount = string.format(": %s", rAction.nPierceAmount);
+		end
+
+		sDamage = string.format("%s [PIERCE%s]", sDamage, sPierceAmount);
+	end
+
+	if rAction.bAmbient then
+		sDamage = string.format("%s [AMBIENT]", sDamage);
+	end
+
+	if rAction.nCost > 0 then
+		sDamage = string.format("%s [Cost: %s]", sDamage, rAction.nCost);
+	end
+
+	return sDamage;
+end
+
+function getPowerHealActionText(nodeAction)
 	local sHeal = "";
 	
-	local rAction, rActor = PowerManager.getPCPowerAction(nodeAction);
+	local rAction, rActor = PowerManager.getPowerAction(nodeAction);
 	if rAction then		
 		sHeal = string.format("%s %s", rAction.nHeal, StringManager.capitalize(rAction.sHealStat));
 
@@ -201,7 +217,7 @@ function getPCPowerHealActionText(nodeAction)
 	return sHeal;
 end
 
-function getPCPowerActionOutputOrder(nodeAction)
+function getPowerActionOutputOrder(nodeAction)
 	if not nodeAction then
 		return 1;
 	end
@@ -227,7 +243,7 @@ function getPCPowerActionOutputOrder(nodeAction)
 	return nOutputOrder;
 end
 
-function getPCPowerAction(nodeAction)
+function getPowerAction(nodeAction)
 	if not nodeAction then
 		return;
 	end
@@ -243,7 +259,7 @@ function getPCPowerAction(nodeAction)
 	local rAction = {};
 	rAction.type = DB.getValue(nodeAction, "type", "");
 	rAction.label = DB.getValue(nodeAction, "...name", "");
-	rAction.order = PowerManager.getPCPowerActionOutputOrder(nodeAction);
+	rAction.order = PowerManager.getPowerActionOutputOrder(nodeAction);
 
 	if rAction.type == "stat" then
 		rAction.sStat = RollManager.resolveStat(DB.getValue(nodeAction, "stat", ""));
@@ -273,6 +289,7 @@ function getPCPowerAction(nodeAction)
 		rAction.sStat = DB.getValue(nodeAction, "stat", "");
 		rAction.nDamage = DB.getValue(nodeAction, "damage", 0);
 		rAction.sDamageStat = RollManager.resolveStat(DB.getValue(nodeAction, "damagestat", ""));
+		rAction.sDamageType = DB.getValue(nodeAction, "damagetype", "");
 
 		--rAction.sDamageType = DB.getValue(nodeAction, "damagetype", "");
 		rAction.bPierce = DB.getValue(nodeAction, "pierce", "") == "yes";
@@ -385,7 +402,7 @@ end
 -------------------------
 function performAction(node, tData)
 	local draginfo = tData.draginfo;
-	local rAction, rActor = PowerManager.getPCPowerAction(node);
+	local rAction, rActor = PowerManager.getPowerAction(node);
 
 	if not rActor or not rAction then
 		return false;

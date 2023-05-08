@@ -173,7 +173,6 @@ function addWeaponToAttackList(itemnode)
 		DB.setValue(attacknode, "pierceamount", "number", nPiercing);
 	end
 
-	Debug.chat(DB.getPath(itemnode));
 	DB.setValue(attacknode, "source", "windowreference", "item", DB.getPath(itemnode));
 end
 
