@@ -453,37 +453,14 @@
 	<windowclass name="power_action_editor_damage">
 		<script>
 			function onInit()
-				OptionsManager.registerCallback("DMGTYPES", updateDamageTypeOption);
 				local sSource = PowerManager.getActionNodeSource(getDatabaseNode());
 				local bNPC = sSource == "npc";
 				
 				ambient.setVisible(bNPC);
 				ambient_label.setVisible(bNPC);
 
-				updateDamageTypeOption();
 				updateCostType();
 				updatePierceAmount();
-			end
-			function onClose()
-				OptionsManager.unregisterCallback("DMGTYPES", updateDamageTypeOption);
-			end
-			function updateDamageTypeOption()
-				local bDmgTypes = OptionsManagerCypher.replaceArmorWithDamageTypes();
-				damagetype.setVisible(bDmgTypes)
-				damagetype_label.setVisible(bDmgTypes)
-
-				local sLabel = "power_label_pierce_armor";
-				local sTooltip = "power_tooltip_pierce_armor";
-				local sAmountTooltip = "power_tooltip_pierce_armoramount";
-				if bDmgTypes then
-					sLabel = "power_label_pierce_resist";
-					sTooltip = "power_tooltip_pierce_resist";
-					sAmountTooltip = "power_tooltip_pierce_resistamount";
-				end
-
-				pierce_label.setValue(Interface.getString(sLabel));
-				pierce.setTooltipText(Interface.getString(sTooltip));
-				pierceamount.setTooltipText(Interface.getString(sAmountTooltip));
 			end
 			function updateCostType()
 				local sSource = PowerManager.getActionNodeSource(getDatabaseNode());
@@ -510,10 +487,6 @@
 			end
 			function updatePierceAmount()
 				pierceamount.setVisible(pierce.getValue() == "Yes");
-			end
-			function updateDamageType()
-				local bUseDamageTypes = OptionsManagerCypher.replaceArmorWithDamageTypes();
-				
 			end
 		</script>
 		<sheetdata>
@@ -593,28 +566,10 @@
 			<label_column name="pierce_label">
 				<static textres="power_label_pierce_armor" />
 			</label_column>
-			<cycler_column name="pierce">
-				<anchored width="80" />
-				<script>
-					function onValueChanged()
-						if super and super.onValueChanged then
-							super.onValueChanged()
-						end
-						window.updatePierceAmount();
-					end
-				</script>
-				<parameters>
-					<labelsres>yes</labelsres>
-					<values>yes</values>
-					<defaultlabel>No</defaultlabel>
-				</parameters>
-				<tooltip textres="power_tooltip_pierce_armor" />
-			</cycler_column>
-			<basicnumber name="pierceamount">
-				<anchored to="pierce" position="righthigh" offset="10,0" width="30" height="20" />
-				<min>0</min>
-				<tooltip textres="power_tooltip_pierce_armoramount" />
-			</basicnumber>
+			<cycler_column_pierce name="pierce">
+			</cycler_column_pierce>
+			<number_pierce_amount name="pierceamount">
+			</number_pierce_amount>
 
 			<label_column name="ambient_label">
 				<static textres="power_label_ambient" />

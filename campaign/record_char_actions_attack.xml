@@ -108,7 +108,9 @@
 			<dynamic />
 		</sizelimits>
 		<sheetdata>
-			<windowtitlebar_charsheethelper name="title" />
+			<windowtitlebar_charsheethelper name="title">
+				<prefix>char_title_attack_editor</prefix>
+			</windowtitlebar_charsheethelper>
 			<anchor_title_charsheethelper name="contentanchor" />
 			
 			<genericcontrol name="contentframe">
@@ -358,28 +360,10 @@
 			<label_column name="pierce_label">
 				<static textres="power_label_pierce_armor" />
 			</label_column>
-			<cycler_column name="pierce">
-				<anchored width="80" />
-				<script>
-					function onValueChanged()
-						if super and super.onValueChanged then
-							super.onValueChanged()
-						end
-						window.onPierceChanged();
-					end
-				</script>
-				<parameters>
-					<labelsres>yes</labelsres>
-					<values>yes</values>
-					<defaultlabel>No</defaultlabel>
-				</parameters>
-				<tooltip textres="power_tooltip_pierce_armor" />
-			</cycler_column>
-			<basicnumber name="pierceamount">
-				<anchored to="pierce" position="righthigh" offset="10,0" width="30" height="20" />
-				<min>0</min>
-				<tooltip textres="power_tooltip_pierce_armoramount" />
-			</basicnumber>
+			<cycler_column_pierce name="pierce">
+			</cycler_column_pierce>
+			<number_pierce_amount name="pierceamount">
+			</number_pierce_amount>
 
 			<!-- COST -->
 			<header_column name="header_cost">

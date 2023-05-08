@@ -14,4 +14,73 @@
 			</anchored>
 		</button_stringcycler>
 	</template>
+
+	<template name="cycler_column_pierce">
+		<cycler_column name="pierce">
+			<anchored width="80" />
+			<script>
+				function onInit()
+					OptionsManager.registerCallback("DMGTYPES", updateDamageTypeOption);
+					updateDamageTypeOption();
+				end
+				function onClose()
+					OptionsManager.unregisterCallback("DMGTYPES", updateDamageTypeOption);
+				end
+				function updateDamageTypeOption()
+					local bDmgTypes = OptionsManagerCypher.replaceArmorWithDamageTypes();
+
+					local sLabel = "power_label_pierce_armor";
+					local sTooltip = "power_tooltip_pierce_armor";
+					if bDmgTypes then
+						sLabel = "power_label_pierce_resist";
+						sTooltip = "power_tooltip_pierce_resist";
+					end
+					setTooltipText(Interface.getString(sTooltip));
+
+					local sLabelControl = getName() .. "_label";
+					if window[sLabelControl] then
+						window[sLabelControl].setValue(Interface.getString(sLabel));
+					end
+				end
+				function onValueChanged()
+					if super and super.onValueChanged then
+						super.onValueChanged()
+					end
+					window.updatePierceAmount();
+				end
+			</script>
+			<parameters>
+				<labelsres>yes</labelsres>
+				<values>yes</values>
+				<defaultlabel>No</defaultlabel>
+			</parameters>
+			<tooltip textres="power_tooltip_pierce_armor" />
+		</cycler_column>
+	</template>
+
+	<template name="number_pierce_amount">
+		<basicnumber name="pierceamount">
+			<script>
+				function onInit()
+					OptionsManager.registerCallback("DMGTYPES", updateDamageTypeOption);
+					updateDamageTypeOption();
+				end
+				function onClose()
+					OptionsManager.unregisterCallback("DMGTYPES", updateDamageTypeOption);
+				end
+				function updateDamageTypeOption()
+					local bDmgTypes = OptionsManagerCypher.replaceArmorWithDamageTypes();
+
+					local sTooltip = "power_tooltip_pierce_armoramount";
+					if bDmgTypes then
+						sTooltip = "power_tooltip_pierce_resistamount";
+					end
+					setTooltipText(Interface.getString(sTooltip));
+				end
+			</script>
+			<anchored to="pierce" position="righthigh" offset="10,0" width="30" height="20" />
+			<min>0</min>
+			<tooltip textres="power_tooltip_pierce_armoramount" />
+		</basicnumber>
+	</template>
 </root>

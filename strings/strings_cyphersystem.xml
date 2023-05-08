@@ -123,6 +123,7 @@
 	<string name="char_label_armorspeedcost">Speed Effort Cost</string>
 
 	<string name="char_label_attacks">Attacks</string>
+	<string name="char_title_attack_editor">Attack Editor</string>
 	
 	<string name="char_label_attacktype">Attack Type</string>
 	<string name="char_label_attacktype_weapon">Weapon</string>
