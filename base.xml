@@ -45,6 +45,7 @@
 	<includefile source="campaign/record_char_actions_power.xml" />
 	<includefile source="campaign/record_power_roll.xml" />
 	<includefile source="campaign/record_ability.xml" />
+	<!-- <includefile source="campaign/record_type.xml" /> -->
 	<script name="CharManager" file="campaign/scripts/manager_char.lua" />
 
 	<includefile source="campaign/record_item.xml" />

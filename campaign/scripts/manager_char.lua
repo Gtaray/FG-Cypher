@@ -189,6 +189,52 @@ function updateCyphers(nodeChar)
 end
 
 -------------------------------------------------------------------------------
+-- TYPE, DESCRIPTOR, FOCUS, ABILITIES
+-------------------------------------------------------------------------------
+function addTypeToCharater(nodeChar, nodeType)
+	if not nodeChar then return false end
+	if not nodeType then return false end
+
+	local sTypeName = DB.getValue(nodeType, "name", "");
+	
+	DB.setValue(nodeChar, "class.type", "string", sTypeName);
+	DB.setValue(nodeChar, "class.typelink", "windowreference", "type", DB.getPath(nodeType));
+end
+
+function addDescriptorToCharater(nodeChar, nodeDescriptor)
+	if not nodeChar then return false end
+	if not nodeDescriptor then return false end
+
+	local sDescName = DB.getValue(nodeDescriptor, "name", "");
+	
+	DB.setValue(nodeChar, "class.descriptor", "string", sDescName);
+	DB.setValue(nodeChar, "class.descriptorlink", "windowreference", "descriptor", DB.getPath(nodeDescriptor));
+end
+
+function addFocusToCharater(nodeChar, nodeFocus)
+	if not nodeChar then return false end
+	if not nodeFocus then return false end
+
+	local sFocusName = DB.getValue(nodeFocus, "name", "");
+	
+	DB.setValue(nodeChar, "class.descriptor", "string", sFocusName);
+	DB.setValue(nodeChar, "class.descriptorlink", "windowreference", "focus", DB.getPath(nodeFocus));
+end
+
+function addAbilityToCharacter(nodeChar, nodeAbility)
+	if not nodeChar then return false end
+	if not nodeAbility then return false end
+
+	local abilityList = DB.getChild(nodeChar, "abilitylist");
+	if not abilityList then return false end;
+
+	local newNode = DB.createChild(abilityList);
+	DB.copyNode(nodeAbility, newNode);
+
+	return true;
+end
+
+-------------------------------------------------------------------------------
 -- RESTING
 -------------------------------------------------------------------------------
 

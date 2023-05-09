@@ -36,11 +36,18 @@ aRecordOverrides = {
 		bExport = true,
 		aDataMap = { "ability", "reference.ability" },
 		sRecordDisplayClass = "ability",
+		sSidebarCategory = "create",
 		aCustomFilters = {
 			["Type"] = { sField = "type" },
 			["Use"] = { sField = "usetype" }
 		}
-	}
+	},
+	-- ["type"] = {
+	-- 	bExport = true,
+	-- 	aDataMap = { "type", "reference.type" },
+	-- 	sRecordDisplayClass = "type",
+	-- 	sSidebarCategory = "create",
+	-- }
 }
 
 currencies = { };

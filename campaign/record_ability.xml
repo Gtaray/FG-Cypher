@@ -67,6 +67,9 @@
 			<button_record_locked />
 
 			<string_record_name name="name" />
+			<label_recordtype name="recordtype_label">
+				<static textres="library_recordtype_ref_ability" />
+			</label_recordtype>
 		</sheetdata>
 	</windowclass>
 

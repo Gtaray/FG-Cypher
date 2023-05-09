@@ -19,3 +19,25 @@ function onMenuSelection(selection, subselection)
 		end
 	end
 end
+
+function onDrop(x, y, draginfo)
+	if not draginfo.isType("shortcut") then
+		return;
+	end
+
+	local sClass, sNodeName = draginfo.getShortcutData();
+	local node = draginfo.getDatabaseNode();
+
+	if not node then
+		return;
+	end
+	if sClass == "ability" then
+		return CharManager.addAbilityToCharacter(getDatabaseNode(), node);
+	elseif sClass == "type" then
+		return CharManager.addTypeToCharater(getDatabaseNode(), node);
+	elseif sClass == "descriptor" then
+		return CharManager.addDescriptorToCharater(getDatabaseNode(), node);
+	elseif sClass == "focus" then
+		return CharManager.addFocusToCharater(getDatabaseNode(), node);
+	end
+end

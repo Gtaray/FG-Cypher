@@ -158,7 +158,7 @@
 		</sheetdata>
 	</windowclass>
 
-	<windowclass name="power_header">
+	<!-- <windowclass name="power_header">
 		<margins control="0,0,0,7" />
 		<script file="common/scripts/record_header_simple.lua" />
 		<sheetdata>
@@ -318,5 +318,5 @@
 				<tabtarget prev="modifier" />
 			</basicft>
 		</sheetdata>
-	</windowclass>
+	</windowclass> -->
 </root>

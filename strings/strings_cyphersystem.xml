@@ -245,10 +245,16 @@
 	<!-- Ability -->
 	<string name="library_recordtype_label_ability">Abilities</string>
 	<string name="library_recordtype_empty_ability">&#171; New Ability &#187;</string>
+	<string name="library_recordtype_ref_ability">Ability</string>
 	<string name="ability_label_use_type">Use Type</string>
 	<string name="ability_usetype_enabler">Enabler</string>
 	<string name="ability_usetype_action">Action</string>
 	<string name="ability_label_type">Type</string>
+
+	<!-- Type -->
+	<string name="library_recordtype_label_type">Types</string>
+	<string name="library_recordtype_empty_type">&#171; New Type &#187;</string>
+	<string name="library_recordtype_ref_type">Type</string>
     
 	<!-- NPCs -->
 	<string name="npc_label_level">Level</string>
