@@ -201,7 +201,7 @@
 			</header_column>
 
 			<label_column name="attacktext1">
-				<anchored>
+				<anchored width="45">
 					<top offset="20" />
 				</anchored>
 				<static textres="power_label_attack_text_1" />
