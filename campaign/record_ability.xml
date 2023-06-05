@@ -75,52 +75,7 @@
 
 	<windowclass name="ability_main">
 		<margins control="0,0,0,2" />
-		<script>
-			function onInit()
-				update();
-			end
-			function update()
-				local bReadOnly = WindowManager.getReadOnlyState(getDatabaseNode());
-				local bHasCost = cost.getValue() ~= 0 and coststat.getValue() ~= "-";
-				local bShowCost = bHasCost or not bReadOnly;
-				local bHasType = type.getValue() ~= "";
-				local bHasRecharge = period.getValue() ~= "-";
-				local bHasUseType = usetype.getValue() ~= "-";
-
-				type.setReadOnly(bReadOnly);
-				type.setVisible(bHasType or not bReadOnly);
-				type_label.setReadOnly(bReadOnly);
-				type_label.setVisible(bHasType or not bReadOnly);
-
-				usetype.setReadOnly(bReadOnly);
-				usetype.setVisible(bHasUseType or not bReadOnly);
-				usetype_label.setReadOnly(bReadOnly);
-				usetype_label.setVisible(bHasUseType or not bReadOnly);
-
-				useequipped.setReadOnly(bReadOnly);
-				useequipped.setVisible(bHasType or not bReadonly);
-				useequipped_label.setReadOnly(bReadOnly);
-				useequipped_label.setVisible(bHasType or not bReadonly);
-
-				period.setReadOnly(bReadOnly);
-				period.setVisible(bHasRecharge or not bReadOnly);
-				period_label.setReadOnly(bReadOnly);
-				period_label.setVisible(bHasRecharge or not bReadOnly);
-
-				header_cost.setVisible(bShowCost);
-				costtext1.setVisible(bShowCost);
-				cost.setReadOnly(bReadOnly);
-				cost.setVisible(bShowCost);
-				label_cost.setVisible(bShowCost);
-				costtext2.setVisible(bShowCost);
-				label_coststat.setVisible(bShowCost);
-				coststat.setVisible(bShowCost);
-				coststat.setReadOnly(bReadOnly);
-				costtext3.setVisible(bShowCost);
-				
-				ftdesc.setReadOnly(bReadOnly);
-			end
-		</script>
+		<script file="campaign/scripts/ability_main.lua" />
 		<sheetdata>
 			<anchor_column name="columnanchor" />
 
