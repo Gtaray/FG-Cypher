@@ -262,10 +262,6 @@
 			</label>
 			<button_stringcycler name="depletiondie">
 				<anchored to="depletiondie_label" position="righthigh" offset="10,0" height="20" width="40" />
-				<frame name="fielddark" offset="7,5,7,5" />
-				<stateframe>
-					<hover name="fieldfocus" offset="7,5,7,5" hidereadonly="true" />
-				</stateframe>
 				<parameters>
 					<labels>1d6|1d10|1d20|1d100</labels>
 					<values>d6|d10|d20|d100</values>

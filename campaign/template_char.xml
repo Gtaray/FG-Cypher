@@ -154,7 +154,6 @@
 
     <template name="button_increase">
         <button_text_sm>
-            <anchored width="20" />
             <state text="&gt;" />
             <script>
                 function onButtonPress()
@@ -166,7 +165,6 @@
 
 	<template name="button_decrease">        
         <button_text_sm>
-            <anchored width="20" />
             <state text="&lt;" />
             <script>
                 function onButtonPress()

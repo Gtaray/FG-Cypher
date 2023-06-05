@@ -64,7 +64,7 @@ function onRoll(rSource, rTarget, rRoll)
 
     -- Now open the dialog to assign the recovery points
     local wRecovery = Interface.openWindow("recovery", DB.getPath(nodeActor));
-    wRecovery.recovery_remaining.setValue(ActionsManager.total(rRoll));
+    wRecovery.setRecoveryAmount(ActionsManager.total(rRoll));
 end
 
 function applyRecovery(nodeChar, nMightNew, nSpeedNew, nIntellectNew, nRemainder)

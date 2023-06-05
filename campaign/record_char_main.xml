@@ -402,10 +402,7 @@
 				</anchored>
 				<datasource>.skilllist</datasource>
 				<class>char_skill</class>
-				<sortby>
-					<field>name</field>
-				</sortby>
-				<newfocus>name</newfocus>
+				<sortby><field>name</field></sortby>
 			</list_text>
 			<scrollbar>
 				<anchored to="skills" />
@@ -503,147 +500,141 @@
 		</sheetdata>
 	</windowclass>
 
-    <windowclass name="recovery">
-        <frame>utilitybox3</frame>
-        <placement>
-            <size width="350" height="270" />
-        </placement>
-        <script file="campaign/scripts/recovery.lua" />
-        <sheetdata>
-            <windowtitlebar name="title">
-                <resource>dialog_recovery_title</resource>
-            </windowtitlebar>
-            <anchor_column name="columnanchor">
-                <anchored offset="-40,50" />
-            </anchor_column>
+	<windowclass name="recovery">
+		<frame>utilitybox</frame>
+		<placement>
+			<size width="350" height="350" />
+		</placement>
+		<script>
+			function setRecoveryAmount(n)
+				content.subwindow.setRecoveryAmount(n);
+    		end
+			function processOK()
+				content.subwindow.apply();
+				close();
+			end
+			function processCancel()
+				close();
+			end
+		</script>
+		<sheetdata>
+			<windowtitlebar name="title">
+				<resource>dialog_recovery_title</resource>
+			</windowtitlebar>
 
-            <hn name="might_max" source="abilities.might.max" />
-            <hn name="speed_max" source="abilities.speed.max" />
-            <hn name="intellect_max" source="abilities.intellect.max" />
+			<anchor_content_utilitybox_top />
+			
+			<anchor_content_utilitybox_bottom />
+			<sub_content_bottom name="sub_buttons">
+				<class>dialog_buttons_okcancel</class>
+			</sub_content_bottom>
 
-            <label_column name="label_recovery_remaining">
-                <anchored width="150" height="20">
-                    <top relation="relative" />
-                    <left parent="columnanchor" anchor="left" />
-                </anchored>
-                <static textres="label_recovery_remaining" />
-                <color>ffffff</color>
-            </label_column>
-            <basicnumberc name="recovery_remaining">
-                <anchored width="20" height="20">
-                    <top parent="label_recovery_remaining" anchor="top" />
-                    <right anchor="right" offset="-35" />
-                </anchored>
-                <readonly />
-                <script>
-                    function onValueChanged()
-                        window.update();
-                    end
-                </script>
-            </basicnumberc>
+			<sub_content_framed_groupbox name="content">
+				<class>recovery_content</class>
+			</sub_content_framed_groupbox>
+			<scrollbar_content />
 
-            <!-- Might Controls -->
-            <label_column name="label_might">
-                <anchored height="20">
-                    <top relation="relative" offset="20" />
-                    <left parent="columnanchor" anchor="left" />
-                </anchored>
-                <color>ffffff</color>
-                <static textres="might" />
-            </label_column>
+			<close_utilitybox />
+		</sheetdata>
+	</windowclass>
+	<windowclass name="recovery_content">
+		<script file="campaign/scripts/recovery.lua" />
+		<sheetdata>
+			<hn name="might_max" source="abilities.might.max" />
+			<hn name="speed_max" source="abilities.speed.max" />
+			<hn name="intellect_max" source="abilities.intellect.max" />
 
-            <basicnumberc name="might_new">
-                <anchored width="20" height="20">
-                    <top parent="label_might" anchor="top" />
-                    <right offset="-35" />
-                </anchored>
-                <readonly />
-            </basicnumberc>
-            <button_increase name="button_might_increase">
-                <anchored to="might_new" position="lefthigh" offset="11,0" />
-                <stat>might</stat>
-            </button_increase>
-            <button_decrease name="button_might_decrease">
-                <anchored to="might_new" position="lefthigh" offset="37,0" />
-                <stat>might</stat>
-            </button_decrease>
-            <basicnumber name="might_current" source="abilities.might.current">
-                <anchored to="might_new" position="lefthigh" offset="68,0" width="20" height="20" />
-                <readonly />
-            </basicnumber>
+			<anchor_column name="columnanchor" />
 
-            <!-- Speed Controls -->
-            <label_column name="label_speed">
-                <anchored width="150" height="20">
-                    <top relation="relative" />
-                    <left parent="columnanchor" anchor="left" />
-                </anchored>
-                <color>ffffff</color>
-                <static textres="speed" />
-            </label_column>
+			<label_column name="label_recovery_remaining">
+				<anchored width="150" />
+				<static textres="label_recovery_remaining" />
+			</label_column>
+			<basicnumberc name="recovery_remaining">
+				<anchored width="30" height="20">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+					<right offset="-5" />
+				</anchored>
+				<readonly />
+				<script>
+					function onValueChanged()
+						window.update();
+					end
+				</script>
+			</basicnumberc>
 
-            <basicnumberc name="speed_new">
-                <anchored width="20" height="20">
-                    <top parent="label_speed" anchor="top" />
-                    <right offset="-35" />
-                </anchored>
-                <readonly />
-            </basicnumberc>
-            <button_increase name="button_speed_increase">
-                <anchored to="speed_new" position="lefthigh" offset="11,0" />
-                <stat>speed</stat>
-            </button_increase>
-            <button_decrease name="button_speed_decrease">
-                <anchored to="speed_new" position="lefthigh" offset="37,0" />
-                <stat>speed</stat>
-            </button_decrease>
-            <basicnumber name="speed_current" source="abilities.speed.current">
-                <anchored to="speed_new" position="lefthigh" offset="68,0" width="20" height="20" />
-                <readonly />
-            </basicnumber>
+			<spacer_column name="spacer">
+				<anchored height="10" />
+			</spacer_column>
 
-            <!-- Intellect Controls -->
-            <label_column name="label_intellect">
-                <anchored width="150" height="20">
-                    <top relation="relative" />
-                    <left parent="columnanchor" anchor="left" />
-                </anchored>
-                <color>ffffff</color>
-                <static textres="intellect" />
-            </label_column>
+			<!-- Might Controls -->
+			<label_column name="label_might">
+				<static textres="might" />
+			</label_column>
+			<number_column name="might_current" source="abilities.might.current">
+				<readonly />
+			</number_column>
+			<basicnumberc name="might_new">
+				<anchored width="30" height="20">
+					<top parent="might_current" />
+					<right offset="-5" />
+				</anchored>
+				<readonly />
+			</basicnumberc>
+			<button_increase name="button_might_increase">
+				<anchored to="might_new" position="lefthigh" offset="10,0" width="20" />
+				<stat>might</stat>
+			</button_increase>
+			<button_decrease name="button_might_decrease">
+				<anchored to="might_new" position="lefthigh" offset="40,0" width="20" />
+				<stat>might</stat>
+			</button_decrease>
 
-            <basicnumberc name="intellect_new">
-                <anchored width="20" height="20">
-                    <top parent="label_intellect" anchor="top" />
-                    <right offset="-35" />
-                </anchored>
-                <readonly />
-            </basicnumberc>
-            <button_increase name="button_intellect_increase">
-                <anchored to="intellect_new" position="lefthigh" offset="11,0" />
-                <stat>intellect</stat>
-            </button_increase>
-            <button_decrease name="button_intellect_decrease">
-                <anchored to="intellect_new" position="lefthigh" offset="37,0" />
-                <stat>intellect</stat>
-            </button_decrease>
-            <basicnumber name="intellect_current" source="abilities.intellect.current">
-                <anchored to="intellect_new" position="lefthigh" offset="68,0" width="20" height="20" />
-                <readonly />
-            </basicnumber>
+			<!-- Speed Controls -->
+			<label_column name="label_might">
+				<static textres="speed" />
+			</label_column>
+			<number_column name="speed_current" source="abilities.speed.current">
+				<readonly />
+			</number_column>
+			<basicnumberc name="speed_new">
+				<anchored width="30" height="20">
+					<top parent="speed_current" />
+					<right offset="-5" />
+				</anchored>
+				<readonly />
+			</basicnumberc>
+			<button_increase name="button_speed_increase">
+				<anchored to="speed_new" position="lefthigh" offset="10,0" width="20" />
+				<stat>speed</stat>
+			</button_increase>
+			<button_decrease name="button_speed_decrease">
+				<anchored to="speed_new" position="lefthigh" offset="40,0" width="20" />
+				<stat>speed</stat>
+			</button_decrease>
 
-            <button_dialog_cancel name="button_cancel">
-                <anchored>
-                    <top parent="columnanchor" anchor="bottom" relation="relative" offset="20" />
-                    <right offset="-30" />
-                </anchored>
-            </button_dialog_cancel>
-            <button_dialog_ok name="button_ok">
-                <anchored to="button_cancel" position="lefthigh" offset="0,0" />
-            </button_dialog_ok>
-
-            <close_utilitybox3 />
-
-        </sheetdata>
-    </windowclass>
+			<!-- Intellect Controls -->
+			<label_column name="label_might">
+				<static textres="intellect" />
+			</label_column>
+			<number_column name="intellect_current" source="abilities.intellect.current">
+				<readonly />
+			</number_column>
+			<basicnumberc name="intellect_new">
+				<anchored width="30" height="20">
+					<top parent="intellect_current" />
+					<right offset="-5" />
+				</anchored>
+				<readonly />
+			</basicnumberc>
+			<button_increase name="button_intellect_increase">
+				<anchored to="intellect_new" position="lefthigh" offset="10,0" width="20" />
+				<stat>intellect</stat>
+			</button_increase>
+			<button_decrease name="button_intellect_decrease">
+				<anchored to="intellect_new" position="lefthigh" offset="40,0" width="20" />
+				<stat>intellect</stat>
+			</button_decrease>
+		</sheetdata>
+	</windowclass>
 </root>

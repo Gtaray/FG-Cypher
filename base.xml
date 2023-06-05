@@ -6,7 +6,7 @@
 -->
 
 <root version="3.0" release="4.1" logo="logo.png">
-	<announcement text="Cypher System ruleset (2023-02-23) for Fantasy Grounds\rCopyright 2023 Smiteworks USA, LLC" font="emotefont" icon="rulesetlogo_CoreRPG" />
+	<announcement text="Cypher System ruleset (2023-06-13) for Fantasy Grounds\rCopyright 2023 Smiteworks USA, LLC" font="emotefont" icon="rulesetlogo_CoreRPG" />
 	
 	<!-- Attributes -->
 	<description>
@@ -32,7 +32,6 @@
 	<!-- Desktop -->
 	<includefile source="desktop/desktop_classes.xml" />
 	<includefile source="desktop/desktop_panels.xml" />
-	<script name="OptionsManagerCypher" file="scripts/manager_options_cypher.lua" />
 	
 	<!-- Campaign Records -->
 	<includefile source="campaign/template_char.xml" />
@@ -71,6 +70,7 @@
 
 	<!-- High-level scripts -->
 	<script name="GameSystem" file="scripts/manager_gamesystem.lua" />
+	<script name="OptionsManagerCypher" file="scripts/data_options_cyphersystem.lua" />
 	
 	<script name="ActorManagerCypher" file="scripts/manager_actor_cypher.lua" />
 	<script name="EffectManagerCypher" file="scripts/manager_effect_cypher.lua" />
