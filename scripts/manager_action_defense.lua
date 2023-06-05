@@ -64,9 +64,10 @@ function modRoll(rSource, rTarget, rRoll)
 	local nAssetMod, nEffectMod = RollManager.processFlatModifiers(rSource, rTarget, rRoll, { "defense", "def" }, { sStat })
 	nAssets = nAssets + nAssetMod;
 
-	-- Adjust difficulty based on assets
+	-- Adjust difficulty based on assets. We can't hide everything behind processAssets here because
+	-- shields grant an asset bonus
 	local nMaxAssets = ActorManagerCypher.getMaxAssets(rSource, { "defense", "def", sStat });
-	nAssets = (nAssets + RollManager.processAssets(rSource, rTarget, sStat, { "defense", "def", sStat }, nAssets));
+	nAssets = nAssets + RollManager.processAssets(rSource, rTarget, { "defense", "def", sStat }, nAssets);
 
 	-- Get the shield bonus of the defender
 	local nShieldBonus = 0;
@@ -76,7 +77,7 @@ function modRoll(rSource, rTarget, rRoll)
 	nAssets = math.min(nAssets + nShieldBonus, nMaxAssets);
 
 	-- Adjust difficulty based on effort
-	nEffort = nEffort + RollManager.processEffort(rSource, rTarget, sStat, { "defense", "def", sStat }, nEffort);
+	nEffort = nEffort + RollManager.processEffort(rSource, rTarget, { "defense", "def", sStat }, nEffort);
 
 	-- Get ease/hinder effects
 	local bEase, bHinder = RollManager.resolveEaseHindrance(rSource, rTarget, { "defense", "def", sStat });

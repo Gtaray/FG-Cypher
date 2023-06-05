@@ -145,6 +145,8 @@ function addToStatPool(rActor, sStat, nValue)
 		return 0;
 	end
 
+	sStat = sStat:lower();
+
 	local nCur, nMax = ActorManagerCypher.getStatPool(rActor, sStat);
 
 	-- Shortcut. If the stat pool is already capped out, then we just return
@@ -180,6 +182,8 @@ function setStatPool(rActor, sStat, nValue)
 		return 0;
 	end
 
+	sStat = sStat:lower();
+
 	local sPath = "abilities." .. sStat;
 	local nCur, nMax = ActorManagerCypher.getStatPool(rActor, sStat)
 
@@ -208,6 +212,8 @@ function getStatPool(rActor, sStat)
 		return 0, 0;
 	end
 
+	sStat = sStat:lower();
+
 	local sPath = "abilities." .. sStat;
 
 	local nCur = DB.getValue(nodeActor, sPath .. ".current", 0);
@@ -225,17 +231,17 @@ function getMaxAssets(rActor, aFilter)
 	return 2 + EffectManagerCypher.getEffectsBonusByType(rActor, "MAXASSETS", aFilter);
 end
 
-function getMaxEffort(rActor, sStat, aFilter)
+function getMaxEffort(rActor, aFilter)
 	local nodeActor = ActorManager.getCreatureNode(rActor);
-	if not nodeActor or not ActorManager.isPC(rActor) or (sStat or "") == "" then
+	if not nodeActor or not ActorManager.isPC(rActor) then
 		return 0;
 	end
 
-	local nBase = DB.getValue(nodeActor, "effort", 0);
+	local nBase = DB.getValue(nodeActor, "effort", 1);
 	local nEffectMaxEffort = EffectManagerCypher.getEffectsBonusByType(rActor, "MAXEFF", aFilter);
 	
 	-- clamp max effort to between 0 and 6
-	return math.max(math.min(nBase + nEffectMaxEffort, 6), 0);
+	return math.max(math.min(nBase + nEffectMaxEffort, 6), 1);
 end
 
 function getEdge(rActor, sStat, aFilter)
@@ -243,6 +249,8 @@ function getEdge(rActor, sStat, aFilter)
 	if not nodeActor or not ActorManager.isPC(rActor) or (sStat or "") == "" then
 		return 0;
 	end
+
+	sStat = sStat:lower();
 
 	local nBase = DB.getValue(nodeActor, "abilities." .. sStat .. ".edge", 0);
 	local nBonus = EffectManagerCypher.getEffectsBonusByType(rActor, "EDGE", aFilter);
@@ -298,6 +306,8 @@ function getDefense(rActor, sStat)
 	if not nodeActor or (sStat or "") == "" then
 		return;
 	end
+
+	sStat = sStat:lower();
 
 	local sTraining = RollManager.resolveTraining(DB.getValue(nodeActor, "abilities." .. sStat .. ".def.training", 1));
 	local nAssets = DB.getValue(nodeActor, "abilities." .. sStat .. ".def.asset", 0);

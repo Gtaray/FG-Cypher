@@ -11,6 +11,7 @@ function action(draginfo)
 
 	local rAction = {};
 	rAction.label = DB.getValue(nodeSkill, "name", "");
+	rAction.sSkill = DB.getValue(nodeSkill, "name", "");
 	rAction.sStat = RollManager.resolveStat(DB.getValue(nodeSkill, "stat", "")); -- Resolves a blank stat to "Might"
 	rAction.sTraining = RollManager.resolveTraining(DB.getValue(nodeSkill, "training", 1));
 	rAction.nAssets = DB.getValue(nodeSkill, "asset", 0);

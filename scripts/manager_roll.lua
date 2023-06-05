@@ -327,16 +327,16 @@ function processFlatModifiers(rSource, rTarget, rRoll, aEffects, aFilter)
 	return nAssets, nEffectMod;
 end
 
-function processAssets(rSource, rTarget, sStat, aFilter, nAssets)
+function processAssets(rSource, rTarget, aFilter, nAssets)
 	local nAssetEffect = EffectManagerCypher.getEffectsBonusByType(rSource, "ASSET", aFilter, rTarget)
 	local nMaxAssets = ActorManagerCypher.getMaxAssets(rSource, aFilter);
 
 	return math.min(nAssetEffect, nMaxAssets - nAssets);
 end
 
-function processEffort(rSource, rTarget, sStat, aFilter, nEffort)
+function processEffort(rSource, rTarget, aFilter, nEffort)
 	local nEffortEffect = EffectManagerCypher.getEffectsBonusByType(rSource, "EFFORT", aFilter, rTarget)
-	local nMaxEffort = ActorManagerCypher.getMaxEffort(rSource, sStat, aFilter);
+	local nMaxEffort = ActorManagerCypher.getMaxEffort(rSource, aFilter);
 	return math.min(nEffortEffect, nMaxEffort - nEffort);
 end
 
@@ -630,7 +630,7 @@ function encodeEdge(rAction, vRoll)
 	)
 
 	if type(vRoll) == "table" then
-		rRoll.sDesc = sDesc;
+		vRoll.sDesc = sDesc;
 	end
 
 	return sDesc;
@@ -709,12 +709,12 @@ function decodeAssets(rRoll, bPersist)
 	return nAssets;
 end
 
-function encodeSkill(sSkill, rRoll)	
-	if (sSkill or "") ~= "" then
+function encodeSkill(rAction, rRoll)	
+	if (rAction.sSkill or "") ~= "" then
 		rRoll.sDesc = RollManager.addOrOverwriteText(
 			rRoll.sDesc,
 			"%[SKILL: [^]]-%]",
-			string.format("[SKILL: %s]", sSkill)
+			string.format("[SKILL: %s]", rAction.sSkill)
 		)
 	end
 end

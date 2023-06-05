@@ -69,10 +69,10 @@ function modRoll(rSource, rTarget, rRoll)
 	nAssets = nAssets + nAssetMod;
 
 	-- Adjust difficulty based on assets
-	nAssets = nAssets + RollManager.processAssets(rSource, rTarget, sStat, { "attack", "atk", sStat }, nAssets);
+	nAssets = nAssets + RollManager.processAssets(rSource, rTarget, { "attack", "atk", sStat }, nAssets);
 
 	-- Adjust difficulty based on effort
-	nEffort = nEffort + RollManager.processEffort(rSource, rTarget, sStat, { "attack", "atk", sStat }, nEffort);
+	nEffort = nEffort + RollManager.processEffort(rSource, rTarget, { "attack", "atk", sStat }, nEffort);
 
 	-- Get ease/hinder effects
 	local bEase, bHinder = RollManager.resolveEaseHindrance(rSource, rTarget, { "attack", "atk", sStat });

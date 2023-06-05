@@ -35,7 +35,7 @@ function getRoll(rActor, rAction)
 	rRoll.nDifficulty = rAction.nDifficulty or 0;
 
 	RollManager.encodeStat(rAction, rRoll);
-	RollManager.encodeSkill(rAction.label, rRoll);
+	RollManager.encodeSkill(rAction, rRoll);
 	RollManager.encodeTraining(rAction, rRoll);
 	RollManager.encodeAssets(rAction, rRoll);
 	RollManager.encodeEdge(rAction, rRoll);
@@ -60,10 +60,10 @@ function modRoll(rSource, rTarget, rRoll)
 	nAssets = nAssets + nAssetMod;
 
 	-- Adjust difficulty based on assets
-	nAssets = nAssets + RollManager.processAssets(rSource, rTarget, sStat, { "skill", "skills", sStat, sSkill }, nAssets);
+	nAssets = nAssets + RollManager.processAssets(rSource, rTarget, { "skill", "skills", sStat, sSkill }, nAssets);
 
 	-- Adjust difficulty based on effort
-	nEffort = nEffort + RollManager.processEffort(rSource, rTarget, sStat, { "skill", "skills", sStat, sSkill }, nEffort);
+	nEffort = nEffort + RollManager.processEffort(rSource, rTarget, { "skill", "skills", sStat, sSkill }, nEffort);
 
 	-- Get ease/hinder effects
 	local bEase, bHinder = RollManager.resolveEaseHindrance(rSource, rTarget, { "skill", "skills", sStat, sSkill });

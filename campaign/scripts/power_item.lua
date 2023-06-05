@@ -69,9 +69,9 @@ end
 -- TODO: Update this to roll a generic roll with cost
 function onCostDoubleClicked()
 	local rActor = ActorManager.resolveActor(DB.getChild(getDatabaseNode(), "..."));
-	local sStat = StringManager.capitalize(coststat.getValue() or "");
+	local sStat = coststat.getValue() or "";
 	local rAction = {
-		sDesc = string.format("[COST (%s)] %s", sStat, name.getValue()),
+		sDesc = string.format("[COST (%s)] %s", StringManager.capitalize(sStat), name.getValue()),
 		nCost = cost.getValue(),
 		sStat = sStat;
 		sCostStat = sStat,

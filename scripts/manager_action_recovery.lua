@@ -120,4 +120,18 @@ function applyRecovery(nodeChar, nMightNew, nSpeedNew, nIntellectNew, nRemainder
     end
 
     Comm.deliverChatMessage(rMessage);
+
+	-- Handle recharging powers
+	local nRecoveryUsed = DB.getValue(nodeChar, "recoveryused", 0);
+
+	for _, abilityNode in ipairs(DB.getChildList(nodeChar, "abilitylist")) do
+		local sPeriod = DB.getValue(abilityNode, "period", "");
+		local bRecharge = (sPeriod == "first" and nRecoveryUsed == 1) or 
+						  (sPeriod == "last" and nRecoveryUsed == 4) or
+						  (sPeriod == "any");
+
+		if bRecharge then
+			DB.setValue(abilityNode, "used", "number", 0);
+		end
+	end
 end
