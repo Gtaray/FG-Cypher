@@ -69,7 +69,7 @@ function modRoll(rSource, rTarget, rRoll)
 	local sDamageType = RollManager.decodeDamageType(rRoll);
 
 	-- Adjust mod based on effort
-	nEffort = nEffort + RollManager.processEffort(rSource, rTarget, sStat, { "damage", "dmg" }, nEffort);
+	nEffort = nEffort + RollManager.processEffort(rSource, rTarget, { "damage", "dmg" }, nEffort);
 	if (nEffort or 0) > 0 then
 		rRoll.nMod = rRoll.nMod + (nEffort * 3);
 	end

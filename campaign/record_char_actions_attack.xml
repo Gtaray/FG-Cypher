@@ -27,7 +27,7 @@
 			<button_details name="activatedetail">
 				<anchored>
 					<top offset="4" />
-					<right parent="rightanchor" anchor="left" offset="-24" />
+					<right parent="rightanchor" anchor="left" relation="relative" offset="-2" />
 				</anchored>
 				<script>
 					function onButtonPress()

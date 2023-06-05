@@ -116,8 +116,6 @@
 		</sheetdata>
 	</windowclass>
 
-	<!-- Power Items in the abilitylist link to this class for its details -->
-	<!-- Mirrors reference_ability -->
 	<windowclass name="power">
 		<frame>referencepage</frame>
 		<placement>
