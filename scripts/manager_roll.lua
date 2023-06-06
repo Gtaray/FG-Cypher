@@ -50,8 +50,8 @@ end
 	-- bAmbient = boolean (flags whether a damage roll is ambient damage)
 	-- nHeal = number (amount healed)
 	-- nHealStat = string (might|speed|intellect. Stat that's healed with ability)
-	-- bEase = boolean (reduces the difficulty of the roll by 1 stage)
-	-- bHinder = boolean (increases the difficulty of the roll by 1 stage)
+	-- nEase = number (reduces the difficulty of the roll by x stages)
+	-- nHinder = number (increases the difficulty of the roll by x stages)
 -- }
 -----------------------------------------------------------------------
 -- ACTION ADJUSTMENTS
@@ -287,20 +287,25 @@ function resolveMaximumAssets(rActor, rAction, aFilter)
 end
 
 function resolveEaseHindrance(rSource, rTarget, rRoll, aFilter)
-	local bEase, bHinder = false, false;
+	local nEase, nHinder = 0, 0;
+	local nEaseModifier, nHinderModifier = 0, 0;
 	if type(aFilter) == "string" then
 		aFilter = { aFilter }
 	end
 
 	bEase, bHinder = RollManager.decodeEaseHindrance(rRoll, true);
 
-	local aEaseEffects = EffectManagerCypher.getEffectsByType(rSource, "EASE", aFilter, rTarget)
-	local aHinderEffects = EffectManagerCypher.getEffectsByType(rSource, "HINDER", aFilter, rTarget)
+	local nEaseEffects = EffectManagerCypher.getEffectsBonusByType(rSource, "EASE", aFilter, rTarget)
+	local nHinderEffects = EffectManagerCypher.getEffectsBonusByType(rSource, "HINDER", aFilter, rTarget)
 
-	bEase = bEase or #aEaseEffects > 0 or ModifierManager.getKey("EASE");
-	bHinder = bHinder or #aHinderEffects > 0 or ModifierManager.getKey("HINDER");
+	if ModifierManager.getKey("EASE") then
+		nEaseModifier = 1;
+	end
+	if ModifierManager.getKey("HINDER") then
+		nHinderModifier = 1;
+	end
 
-	return bEase, bHinder;
+	return nEase + nEaseEffects + nEaseModifier, nHinder + nHinderEffects + nHinderModifier;
 end
 
 -- Converts a training cycler's value (a number) to a string that's used by the action rollers
@@ -429,18 +434,11 @@ function processRollSuccesses(rSource, rTarget, rRoll, rMessage, aAddIcons)
 		local nTotal = ActionsManager.total(rRoll);
 		nSuccess = math.max(0, math.min(10, math.floor(nTotal / 3)));
 		
-		if bPvP then
-			-- For PC vs PC, we need to invert any difficulty adjustments
-			-- This converts every difficulty reduction into a +3, and difficulty increase to a -3
-			nSuccess = nTotal + RollManager.convertDifficultyAdjustmentToFlatBonus(nDifficulty);
-			rMessage.dice[1].value = nSuccess;
-		else
-			nDifficulty = math.min(math.max(nDifficulty, 0), 10);
-			table.insert(aAddIcons, "task" .. nDifficulty)
-		end
-		
 		-- Only track success flags for non pvp rolls
 		if not bPvP then
+			nDifficulty = math.min(math.max(nDifficulty, 0), 10);
+			table.insert(aAddIcons, "task" .. nDifficulty)
+
 			if nDifficulty == 0 then
 				bAutomaticSuccess = true;
 			end
@@ -471,10 +469,20 @@ function updateRollMessageIcons(rMessage, aAddIcons, sFirstIcon)
 	end
 end
 
+function updateMessageWithConvertedTotal(rRoll, rMessage)
+	if rMessage.dice and rMessage.dice[1] and rMessage.dice[1].value then
+		rMessage.dice[1].value = RollManager.getConvertedTotal(rRoll)
+	end
+end
+
+function getConvertedTotal(rRoll)
+	return ActionsManager.total(rRoll) + RollManager.convertDifficultyAdjustmentToFlatBonus(rRoll.nDifficulty or 0)
+end
+
 -- This function simply converts a flat difficulty adjustment to the equivalent flat bonus
 -- e.g. minus 1 difficulty = +3 to the roll; plus 1 difficulty = -3 to the roll
 function convertDifficultyAdjustmentToFlatBonus(nDifficulty)
-	return nDifficulty * -3;
+	return (nDifficulty or 0) * -3;
 end
 
 -----------------------------------------------------------------------
@@ -899,37 +907,37 @@ function decodeTarget(rRoll, rTarget, bPersist)
 	return rTarget;
 end
 
-function encodeEaseHindrance(rRoll, bEase, bHinder)
-	if bEase then
+function encodeEaseHindrance(rRoll, nEase, nHinder)
+	if nEase > 0 then
 		rRoll.sDesc = RollManager.addOrOverwriteText(
 			rRoll.sDesc,
-			"%[EASED%]",
-			"[EASED]"
+			"%[EASE%s%d+%]",
+			string.format("[EASE %s]", nEase)
 		);
 	end
-	if bHinder then
+	if nHinder > 0 then
 		rRoll.sDesc = RollManager.addOrOverwriteText(
 			rRoll.sDesc,
-			"%[HINDERED%]",
-			"[HINDERED]"
+			"%[HINDER%s%d+%]",
+			string.format("[HINDER %s]", nHinder)
 		);
 	end
 end
 function decodeEaseHindrance(rRoll, bPersist)
-	local bEase = RollManager.decodeTextAsBoolean(
+	local nEase = RollManager.decodeTextAsNumber(
 		rRoll.sDesc,
-		"%[EASED%]",
-		nil,
+		"%[EASE%s?%d+%]",
+		"%[EASE%s?(%d+)%]",
 		bPersist
 	);
-	local bHinder = RollManager.decodeTextAsBoolean(
+	local nHinder = RollManager.decodeTextAsNumber(
 		rRoll.sDesc,
-		"%[HINDERED%]",
-		nil,
+		"%[HINDER%s?%d+%]",
+		"%[HINDER%s?%(d+)%]",
 		bPersist
 	);
 
-	return bEase, bHinder
+	return nEase, nHinder
 end
 
 function encodeEffects(rRoll, nRollMod)

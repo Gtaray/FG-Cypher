@@ -178,6 +178,11 @@ function getEffectsByType(rActor, sEffectType, aFilter, rFilterActor, bTargetedO
 							if #(rEffectComp.remainder) > 0 then
 								-- Match against all effect tags, or don't match at all
 								for _,tag in pairs(rEffectComp.remainder) do
+									if tag:lower() == "all" then
+										bMatch = true;
+										break;
+									end
+									
 									if not StringManager.contains(aFilter, tag:lower()) then
 										bMatch = false;
 										break;

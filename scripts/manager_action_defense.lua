@@ -40,7 +40,7 @@ function getRoll(rActor, rAction)
 	RollManager.encodeAssets(rAction, rRoll);
 	RollManager.encodeEdge(rAction, rRoll);
 	RollManager.encodeEffort(rAction, rRoll);
-	RollManager.encodeEaseHindrance(rRoll, (rAction.bEase or false), (rAction.bHinder or false));
+	RollManager.encodeEaseHindrance(rRoll, (rAction.nEase or 0), (rAction.nHinder or 0));
 	RollManager.encodeTarget(rAction.rTarget, rRoll);
 
 	return rRoll;
@@ -81,7 +81,7 @@ function modRoll(rSource, rTarget, rRoll)
 	nEffort = nEffort + RollManager.processEffort(rSource, rTarget, { "defense", "def", sStat }, nEffort);
 
 	-- Get ease/hinder effects
-	local bEase, bHinder = RollManager.resolveEaseHindrance(rSource, rTarget, rRoll, { "defense", "def", sStat });
+	local nEase, nHinder = RollManager.resolveEaseHindrance(rSource, rTarget, rRoll, { "defense", "def", sStat });
 
 	-- Process conditions
 	local nConditionEffects = RollManager.processStandardConditions(rSource, rTarget);
@@ -90,17 +90,11 @@ function modRoll(rSource, rTarget, rRoll)
 	local nTrainingMod = RollManager.processTraining(bInability, bTrained, bSpecialized)
 
 	-- Roll up all the level/mod adjustments and apply them to the difficulty here
-	rRoll.nDifficulty = rRoll.nDifficulty - nAssets - nEffort - nTrainingMod - nConditionEffects;
-	if bEase then 
-		rRoll.nDifficulty = rRoll.nDifficulty - 1;
-	end
-	if bHinder then
-		rRoll.nDifficulty = rRoll.nDifficulty + 1;
-	end
+	rRoll.nDifficulty = rRoll.nDifficulty - nAssets - nEffort - nTrainingMod - nConditionEffects - nEase + nHinder;
 
 	RollManager.encodeEffort(nEffort, rRoll)
 	RollManager.encodeAssets(nAssets, rRoll);
-	RollManager.encodeEaseHindrance(rRoll, bEase, bHinder);
+	RollManager.encodeEaseHindrance(rRoll, nEase, nHinder);
 	RollManager.encodeEffects(rRoll, nEffectMod);
 end
 
@@ -122,7 +116,10 @@ function onRoll(rSource, rTarget, rRoll)
 
 	-- only check for hit/miss on non-pvp rolls. Eventually this will change
 	-- once I have a better way of handling pvp rolls
-	if not bPvP then
+	if bPvP then
+		RollManager.updateMessageWithConvertedTotal(rRoll, rMessage);
+		
+	else
 		if bSuccess then
 			if bAutomaticSuccess then
 				rMessage.text = rMessage.text .. " [AUTOMATIC MISS]";

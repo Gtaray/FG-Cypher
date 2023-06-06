@@ -47,6 +47,7 @@ function getRoll(rActor, rAction)
 	RollManager.encodeEdge(rAction, rRoll);
 	RollManager.encodeEffort(rAction, rRoll);
 	-- RollManager.encodeCost(rAction, rRoll); -- Might not need this as nothing cares about cost after initiating the roll
+	RollManager.encodeEaseHindrance(rRoll, (rAction.nEase or 0), (rAction.nHinder or 0));
 	RollManager.encodeWeaponType(rAction, rRoll);
 
 	return rRoll;
@@ -73,7 +74,7 @@ function modRoll(rSource, rTarget, rRoll)
 	nEffort = nEffort + RollManager.processEffort(rSource, rTarget, { "attack", "atk", sStat }, nEffort);
 
 	-- Get ease/hinder effects
-	local bEase, bHinder = RollManager.resolveEaseHindrance(rSource, rTarget, rRoll, { "attack", "atk", sStat });
+	local nEase, nHinder = RollManager.resolveEaseHindrance(rSource, rTarget, rRoll, { "attack", "atk", sStat });
 
 	-- Process conditions
 	local nConditionEffects = RollManager.processStandardConditions(rSource, rTarget);
@@ -82,17 +83,11 @@ function modRoll(rSource, rTarget, rRoll)
 	local nTrainingMod = RollManager.processTraining(bInability, bTrained, bSpecialized)
 
 	-- Roll up all the level/mod adjustments and apply them to the difficulty here
-	rRoll.nDifficulty = rRoll.nDifficulty - nAssets - nEffort - nTrainingMod - nConditionEffects;
-	if bEase then 
-		rRoll.nDifficulty = rRoll.nDifficulty - 1;
-	end
-	if bHinder then
-		rRoll.nDifficulty = rRoll.nDifficulty + 1;
-	end
+	rRoll.nDifficulty = rRoll.nDifficulty - nAssets - nEffort - nTrainingMod - nConditionEffects - nEase + nHinder;
 
 	RollManager.encodeEffort(nEffort, rRoll)
 	RollManager.encodeAssets(nAssets, rRoll);
-	RollManager.encodeEaseHindrance(rRoll, bEase, bHinder);
+	RollManager.encodeEaseHindrance(rRoll, nEase, nHinder);
 	RollManager.encodeEffects(rRoll, nEffectMod);
 end
 
@@ -114,7 +109,10 @@ function onRoll(rSource, rTarget, rRoll)
 	local bSuccess, bAutomaticSuccess, nSuccesses = RollManager.processRollSuccesses(rSource, rTarget, rRoll, rMessage, aAddIcons);
 	local sIcon = "";
 	
-	if not bPvP then
+	if bPvP then
+		RollManager.updateMessageWithConvertedTotal(rRoll, rMessage);
+
+	else
 		if bSuccess then
 			if bAutomaticSuccess then
 				rMessage.text = rMessage.text .. " [AUTOMATIC HIT]";
@@ -161,10 +159,9 @@ function onRoll(rSource, rTarget, rRoll)
 	Comm.deliverChatMessage(rMessage);
 
 	-- for PC vs PC rolls, prompt a defense roll
-	if ActorManager.isPC(rSource) and rTarget and ActorManager.isPC(rTarget) then
-		
+	if bPvP then
 		local rDefense = {};
-		rDefense.nDifficulty = nSuccesses; -- Removing for now, until I find a better solution for handling PvP rolls
+		rDefense.nDifficulty = nSuccesses;
 		rDefense.sStat = RollManager.resolveStat(sDefenseStat, "speed"); -- default to Speed defense if for some reason the stat is missing
 		rDefense.rTarget = rSource;
 

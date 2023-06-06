@@ -40,6 +40,7 @@ function getRoll(rActor, rAction)
 	RollManager.encodeAssets(rAction, rRoll);
 	RollManager.encodeEdge(rAction, rRoll);
 	RollManager.encodeEffort(rAction, rRoll);
+	RollManager.encodeEaseHindrance(rRoll, (rAction.nEase or 0), (rAction.nHinder or 0));
 
 	return rRoll;
 end
@@ -64,7 +65,7 @@ function modRoll(rSource, rTarget, rRoll)
 	nEffort = nEffort + RollManager.processEffort(rSource, rTarget, { "skill", "skills", sStat, sSkill }, nEffort);
 
 	-- Get ease/hinder effects
-	local bEase, bHinder = RollManager.resolveEaseHindrance(rSource, rTarget, rRoll, { "skill", "skills", sStat, sSkill });
+	local nEase, nHinder = RollManager.resolveEaseHindrance(rSource, rTarget, rRoll, { "skill", "skills", sStat, sSkill });
 
 	-- Process conditions
 	local nConditionEffects = RollManager.processStandardConditions(rSource, rTarget);
@@ -73,21 +74,16 @@ function modRoll(rSource, rTarget, rRoll)
 	local nTrainingMod = RollManager.processTraining(bInability, bTrained, bSpecialized)
 
 	-- Roll up all the level/mod adjustments and apply them to the difficulty here
-	rRoll.nDifficulty = rRoll.nDifficulty - nAssets - nEffort - nTrainingMod - nConditionEffects;
-	if bEase then 
-		rRoll.nDifficulty = rRoll.nDifficulty - 1;
-	end
-	if bHinder then
-		rRoll.nDifficulty = rRoll.nDifficulty + 1;
-	end
+	rRoll.nDifficulty = rRoll.nDifficulty - nAssets - nEffort - nTrainingMod - nConditionEffects - nEase + nHinder;
 
-	RollManager.encodeEffort(nEffort, rRoll)
+	RollManager.encodeEffort(nEffort, rRoll);
 	RollManager.encodeAssets(nAssets, rRoll);
-	RollManager.encodeEaseHindrance(rRoll, bEase, bHinder);
+	RollManager.encodeEaseHindrance(rRoll, nEase, nHinder);
 	RollManager.encodeEffects(rRoll, nEffectMod);
 end
 
 function onRoll(rSource, rTarget, rRoll)
+	local bPvP = ActorManager.isPC(rSource) and ActorManager.isPC(rTarget);
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 	rMessage.icon = "action_roll";
 
@@ -99,12 +95,17 @@ function onRoll(rSource, rTarget, rRoll)
 	local nFirstDie = rRoll.aDice[1].result or 0;	
 	local bSuccess, bAutomaticSuccess = RollManager.processRollSuccesses(rSource, rTarget, rRoll, rMessage, aAddIcons);
 
-	if bAutomaticSuccess then
-		rMessage.text = rMessage.text .. " [AUTOMATIC SUCCESS]";
-	elseif bSuccess then
-		rMessage.text = rMessage.text .. " [SUCCESS]";
+	if bPvP then
+		RollManager.updateMessageWithConvertedTotal(rRoll, rMessage);
+		
 	else
-		rMessage.text = rMessage.text .. " [FAILED]";
+		if bAutomaticSuccess then
+			rMessage.text = rMessage.text .. " [AUTOMATIC SUCCESS]";
+		elseif bSuccess then
+			rMessage.text = rMessage.text .. " [SUCCESS]";
+		else
+			rMessage.text = rMessage.text .. " [FAILED]";
+		end
 	end
 
 	-- Since players technically shouldn't roll if the difficulty is reduced to 0

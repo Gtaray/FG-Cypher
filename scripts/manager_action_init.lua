@@ -44,10 +44,10 @@ function getRoll(rActor, rAction)
 
 	RollManager.encodeStat(rAction, rRoll);
 	RollManager.encodeTraining(rAction, rRoll);
-	RollManager.encodeEffort(rAction, rRoll);
+	RollManager.encodeAssets(rAction, rRoll);
 	RollManager.encodeEdge(rAction, rRoll);
 	RollManager.encodeEffort(rAction, rRoll);
-	RollManager.encodeAssets(rAction, rRoll);
+	RollManager.encodeEaseHindrance(rRoll, (rAction.nEase or 0), (rAction.nHinder or 0));
 
 	return rRoll;
 end
@@ -70,7 +70,7 @@ function modRoll(rSource, rTarget, rRoll)
 	nEffort = nEffort + RollManager.processEffort(rSource, rTarget, { "initiative", "init", sStat }, nEffort);
 
 	-- Get ease/hinder effects
-	local bEase, bHinder = RollManager.resolveEaseHindrance(rSource, rTarget, rRoll, { "initiative", "init", sStat });
+	local nEase, nHinder = RollManager.resolveEaseHindrance(rSource, rTarget, rRoll, { "initiative", "init", sStat });
 
 	-- Process conditions
 	local nConditionEffects = RollManager.processStandardConditions(rSource, rTarget);
@@ -78,15 +78,11 @@ function modRoll(rSource, rTarget, rRoll)
 	-- Adjust difficulty based on training
 	local nTrainingMod = RollManager.processTraining(bInability, bTrained, bSpecialized)
 
-	rRoll.nDifficulty = rRoll.nDifficulty - nAssets - nEffort - nTrainingMod - nConditionEffects;
-	if bEase then 
-		rRoll.nDifficulty = rRoll.nDifficulty - 1;
-	end
-	if bHinder then
-		rRoll.nDifficulty = rRoll.nDifficulty + 1;
-	end
+	rRoll.nDifficulty = rRoll.nDifficulty - nAssets - nEffort - nTrainingMod - nConditionEffects - nEase + nHinder;
 
+	RollManager.encodeEffort(nEffort, rRoll);
 	RollManager.encodeAssets(nAssets, rRoll);
+	RollManager.encodeEaseHindrance(rRoll, nEase, nHinder);
 	RollManager.encodeEffects(rRoll, nEffectMod);
 end
 
@@ -107,12 +103,10 @@ function onRoll(rSource, rTarget, rRoll)
 		table.insert(aAddIcons, "roll1");
 	end
 
-	Comm.deliverChatMessage(rMessage);
-
-	local nTotal = ActionsManager.total(rRoll);
-
 	-- Convert difficulty adjustments to their equivalent flat bonus
-	nTotal = nTotal + RollManager.convertDifficultyAdjustmentToFlatBonus(rRoll.nDifficulty or 0)
+	RollManager.updateMessageWithConvertedTotal(rRoll, rMessage);
+
+	Comm.deliverChatMessage(rMessage);
 	notifyApplyInit(rSource, nTotal);
 end
 
