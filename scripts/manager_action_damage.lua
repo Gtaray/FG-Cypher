@@ -74,7 +74,7 @@ function modRoll(rSource, rTarget, rRoll)
 		rRoll.nMod = rRoll.nMod + (nEffort * 3);
 	end
 
-	bPiercing, nPierceAmount = RollManager.processPiercing(rSource, rTarget, bPiercing, nPierceAmount, { }); -- Eventually the filter param here will include sDamageType
+	bPiercing, nPierceAmount = RollManager.processPiercing(rSource, rTarget, bPiercing, nPierceAmount, { sDamageType });
 
 	local nDmgBonus = EffectManagerCypher.getEffectsBonusByType(rSource, { "damage", "dmg" }, { sStat, sDamageType }, rTarget)
 	if nDmgBonus ~= 0 then
@@ -320,19 +320,7 @@ function applyDamageModifications(rSource, rTarget, nDamage, sDamageStat, sDamag
 	end
 
 	local bResist, nResistAmount = ActorManagerCypher.isResistant(rTarget, rSource, { sDamageType, sDamageStat })
-	if bResist and nResistAmount >= 0 then
-		-- Resist half if amount is 0, otherwise flat reduction
-		if nResistAmount == 0 then
-			nDamage = math.floor(nDamage / 2);
-		else
-			nDamage = math.max(0, nDamage - nResistAmount);
-		end
-		if nDamage > 0 then
-			table.insert(aNotifications, "[PARTIALLY RESISTED]")
-		else
-			table.insert(aNotifications, "[RESISTED]")
-		end
-	end
+	nDamage = ActionDamage.applyResistPiercing(nDamage, bResist, nResistAmount, bPiercing, nPierceAmount, aNotifications);
 
 	local bVuln, nVulnAmount = ActorManagerCypher.isVulnerable(rTarget, rSource, {sDamageType, sDamageStat});
 	if bVuln and nVulnAmount >= 0 then
@@ -345,6 +333,44 @@ function applyDamageModifications(rSource, rTarget, nDamage, sDamageStat, sDamag
 	end
 
 	return nDamage;
+end
+
+function applyResistPiercing(nDamage, bResist, nResistAmount, bPiercing, nPierceAmount, aNotifications)
+	local nAdjustedDamage = nDamage;
+	-- If there's no resistance, then we don't need to do any work
+	if not bResist or nResistAmount < 0 then
+		return nAdjustedDamage;
+	end
+
+	-- if piercing is 0, then it pierces all resistance
+	if bPiercing and nPierceAmount == 0 then
+		return nAdjustedDamage;
+	end
+
+	-- At this point, if nPierceAmount is not 0, but we're not supposed to
+	-- pierce damage, then set the pierce to 0
+	if not bPiercing and nPierceAmount > 0 then
+		nPierceAmount = 0;
+	end
+
+	-- Resist half if amount is 0, otherwise flat reduction
+	-- nPierceAmount is positive if it should be applied, and 0 if it should be ignored
+	if nResistAmount == 0 then
+		nAdjustedDamage = nPierceAmount + math.floor((nDamage - nPierceAmount) / 2);
+	elseif nResistAmount > 0 then
+		nResistAmount = nResistAmount - nPierceAmount;
+		nAdjustedDamage = math.max(0, nDamage - nResistAmount);
+	end
+
+	if nAdjustedDamage == nDamage then
+		-- Do nothing here
+	elseif nAdjustedDamage > 0 then
+		table.insert(aNotifications, "[PARTIALLY RESISTED]")
+	else
+		table.insert(aNotifications, "[RESISTED]")
+	end
+
+	return nAdjustedDamage;
 end
 
 function applyDamageToPc(rSource, rTarget, nDamage, sStat, sDamageType, aNotifications)
