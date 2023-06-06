@@ -9,6 +9,8 @@
 	<windowclass name="type" copy="record_window">
 		<minimize>minimized_reference</minimize>
 		<script>
+			function update()
+			end
 		</script>
 		<sheetdata>
 			<sub_record_header name="header">
@@ -18,20 +20,19 @@
 			<frame_record_content_tabbed name="contentframe" />
 			<ft_record name="text">
 				<anchored to="contentframe" position="over" />
-				<invisible />
 			</ft_record>
-			<subwindow_record name="content">
+			<!-- <subwindow_record name="content">
 				<class>type_stats</class>
-			</subwindow_record>
+			</subwindow_record> -->
 
 			<scrollbar_record>
 				<target>text</target>
 			</scrollbar_record>
-			<scrollbar_record>
+			<!-- <scrollbar_record>
 				<target>content</target>
-			</scrollbar_record>
+			</scrollbar_record> -->
 
-			<tabs_recordsheet name="tabs">
+			<!-- <tabs_recordsheet name="tabs">
 				<tab>
 					<icon>tab_main</icon>
 					<subwindow>text</subwindow>
@@ -40,7 +41,7 @@
 					<icon>tab_other</icon>
 					<subwindow>content</subwindow>
 				</tab>
-			</tabs_recordsheet>
+			</tabs_recordsheet> -->
 
 			<resize_referencepage />
 			<close_referencepage />
@@ -52,7 +53,7 @@
 		<script file="common/scripts/record_header_simple.lua" />
 		<sheetdata>
 			<link_record_header>
-				<class>ability</class>
+				<class>type</class>
 			</link_record_header>
 
 			<anchor_record_header_right />
@@ -69,9 +70,130 @@
 	<windowclass name="type_stats">
 		<margins control="0,0,0,2" />
 		<script>
+			function update()
+			end
 		</script>
 		<sheetdata>
 			<anchor_column name="columnanchor" />
+
+			<header_column name="starting_features_header">
+				<static textres="type_header_starting_features"/>
+				<center />
+			</header_column>
+
+			<label_column name="stats_label">
+				<anchored>
+					<top offset="20" />
+				</anchored>
+				<static textres="type_label_starting_stats" />
+			</label_column>
+
+			<number_column name="mightpool">
+				<anchored>
+					<top offset="20" />
+				</anchored>
+				<min>0</min>
+				<default>10</default>
+			</number_column>
+			<label_fieldtop name="label_mightpool">
+				<anchored to="mightpool" />
+				<static textres="type_label_might" />
+			</label_fieldtop>
+
+			<number_column_extended name="speedpool">
+				<anchored to="mightpool" />
+				<min>0</min>
+				<default>10</default>
+			</number_column_extended>
+			<label_fieldtop name="label_speedpool">
+				<anchored to="speedpool" />
+				<static textres="type_label_speed" />
+			</label_fieldtop>
+
+			<number_column_extended name="intellectpool">
+				<anchored to="mightpool" />	
+				<min>0</min>
+				<default>10</default>
+			</number_column_extended>
+			<label_fieldtop name="label_intellectpool">
+				<anchored to="intellectpool" />
+				<static textres="type_label_intellect" />
+			</label_fieldtop>
+
+			<label_column name="floatingstats_label">
+				<static textres="type_label_floating_stats" />
+			</label_column>
+			<number_column name="floatingstats">
+				<min>0</min>
+				<default>6</default>
+				<tooltip textres="type_tooltip_floatingstats" />
+			</number_column>
+
+			<label_column name="edge_label">
+				<anchored>
+					<top offset="20" />
+				</anchored>
+				<static textres="type_label_starting_edge" />
+			</label_column>
+
+			<number_column name="mightedge">
+				<anchored>
+					<top offset="20" />
+				</anchored>
+				<min>0</min>
+			</number_column>
+			<label_fieldtop name="label_mightedge">
+				<anchored to="mightedge" />
+				<static textres="type_label_might" />
+			</label_fieldtop>
+
+			<number_column_extended name="speededge">
+				<anchored to="mightedge" />
+				<min>0</min>
+			</number_column_extended>
+			<label_fieldtop name="label_speededge">
+				<anchored to="speededge" />
+				<static textres="type_label_speed" />
+			</label_fieldtop>
+
+			<number_column_extended name="intellectedge">
+				<anchored to="mightedge" />	
+				<min>0</min>
+			</number_column_extended>
+			<label_fieldtop name="label_intellectedge">
+				<anchored to="intellectedge" />
+				<static textres="type_label_intellect" />
+			</label_fieldtop>
+
+			<label_column name="effort_label">
+				<static textres="type_label_starting_effort" />
+			</label_column>
+			<number_column name="effort">
+				<min>0</min>
+				<default>1</default>
+			</number_column>
+
+			<label_column name="cypheruse_label">
+				<static textres="type_label_cypher_use" />
+			</label_column>
+			<number_column name="cypheruse">
+				<min>0</min>
+				<default>2</default>
+			</number_column>
+
+			<header_column name="tiers_header">
+				<static textres="type_header_tiers"/>
+				<center />
+			</header_column>
 		</sheetdata>
 	</windowclass>
+
+	<template name="number_column_extended">
+		<basicnumber name="speed">
+			<anchored width="40" height="20">
+				<top anchor="top" />
+				<left anchor="right" relation="relative" offset="10" />
+			</anchored>
+		</basicnumber>
+	</template>
 </root>

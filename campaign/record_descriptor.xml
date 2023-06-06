@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="descriptor" copy="record_window">
+		<minimize>minimized_reference</minimize>
+		<script>
+		</script>
+		<sheetdata>
+			<sub_record_header name="header">
+				<class>descriptor_header</class>
+			</sub_record_header>
+
+			<frame_record_content_tabbed name="contentframe" />
+			<ft_record name="text">
+				<anchored to="contentframe" position="over" />
+			</ft_record>
+			<!-- <subwindow_record name="content">
+				<class>descriptor_stats</class>
+			</subwindow_record> -->
+
+			<scrollbar_record>
+				<target>text</target>
+			</scrollbar_record>
+			<!-- <scrollbar_record>
+				<target>content</target>
+			</scrollbar_record> -->
+
+			<!-- <tabs_recordsheet name="tabs">
+				<tab>
+					<icon>tab_main</icon>
+					<subwindow>text</subwindow>
+				</tab>
+				<tab>
+					<icon>tab_other</icon>
+					<subwindow>content</subwindow>
+				</tab>
+			</tabs_recordsheet> -->
+
+			<resize_referencepage />
+			<close_referencepage />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="descriptor_header">
+		<margins control="0,0,0,7" />
+		<script file="common/scripts/record_header_simple.lua" />
+		<sheetdata>
+			<link_record_header>
+				<class>descriptor</class>
+			</link_record_header>
+
+			<anchor_record_header_right />
+			<icon_record_locked />
+			<button_record_locked />
+
+			<string_record_name name="name" />
+			<label_recordtype name="recordtype_label">
+				<static textres="library_recordtype_ref_descriptor" />
+			</label_recordtype>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="descriptor_stats">
+		<margins control="0,0,0,2" />
+		<script>
+		</script>
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+		</sheetdata>
+	</windowclass>
+</root>

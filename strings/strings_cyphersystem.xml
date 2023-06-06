@@ -255,6 +255,28 @@
 	<string name="library_recordtype_label_type">Types</string>
 	<string name="library_recordtype_empty_type">&#171; New Type &#187;</string>
 	<string name="library_recordtype_ref_type">Type</string>
+	<string name="type_header_starting_features">Starting Features</string>
+	<string name="type_label_starting_stats">Stats</string>
+	<string name="type_label_starting_edge">Edge</string>
+	<string name="type_label_might">Might</string>
+	<string name="type_label_speed">Speed</string>
+	<string name="type_label_intellect">Intellect</string>
+	<string name="type_label_floating_stats">Floating</string>
+	<string name="type_tooltip_floatingstats">The number of additional points to divide among stat pools.</string>
+	<string name="type_label_starting_effort">Effort</string>
+	<string name="type_label_cypher_use">Cypher Use</string>
+
+	<string name="type_header_tiers">Tiers</string>
+
+	<!-- Descriptor -->
+	<string name="library_recordtype_label_descriptor">Descriptors</string>
+	<string name="library_recordtype_empty_descriptor">&#171; New Descriptor &#187;</string>
+	<string name="library_recordtype_ref_descriptor">Descriptor</string>
+
+	<!-- Focus -->
+	<string name="library_recordtype_label_focus">Foci</string>
+	<string name="library_recordtype_empty_focus">&#171; New Focus &#187;</string>
+	<string name="library_recordtype_ref_focus">Focus</string>
     
 	<!-- NPCs -->
 	<string name="npc_label_level">Level</string>
