@@ -10,34 +10,23 @@
 	<windowclass name="tab_actions">
 		<margins control="0,0,0,2" />
 		<script>
-		function onInit()    
-			update();
-		end
-
-		function onClose()
-		end
-
-		function updateControl(sControl, bReadOnly, bForceHide)
-			if not self[sControl] then
-				return false;
-			end
-			
-			return self[sControl].update(bReadOnly, bForceHide);
-		end
-
-		function update()
-			local bReadOnly = WindowManager.getReadOnlyState(getDatabaseNode());
-			if bReadOnly then
-				actions_iedit.setValue(0);
+			function onInit()    
+				update();
 			end
 
-			actions_iedit.setVisible(not bReadOnly)
-			stat_iadd.setVisible(not bReadOnly);
-			attack_iadd.setVisible(not bReadOnly)
-			damage_iadd.setVisible(not bReadOnly)
-			heal_iadd.setVisible(not bReadOnly)
-			effect_iadd.setVisible(not bReadOnly)
-		end
+			function update()
+				local bReadOnly = WindowManager.getReadOnlyState(getDatabaseNode());
+				if bReadOnly then
+					actions_iedit.setValue(0);
+				end
+
+				actions_iedit.setVisible(not bReadOnly)
+				stat_iadd.setVisible(not bReadOnly);
+				attack_iadd.setVisible(not bReadOnly)
+				damage_iadd.setVisible(not bReadOnly)
+				heal_iadd.setVisible(not bReadOnly)
+				effect_iadd.setVisible(not bReadOnly)
+			end
 		</script>
 		<sheetdata>
 			<anchor_column name="columnanchor" />
