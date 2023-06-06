@@ -525,6 +525,10 @@ end
 -- NPCs
 ---------------------------------------------------------------
 function getCreatureLevel(rCreature, rAttacker, aFilter)
+	if not aFilter then
+		aFilter = {};
+	end
+
 	local creatureNode = rCreature;
 	if type(rCreature) ~= "databasenode" then
 		creatureNode = ActorManager.getCTNode(rCreature);
