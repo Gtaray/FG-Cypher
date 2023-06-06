@@ -37,6 +37,7 @@
 	<includefile source="campaign/template_char.xml" />
 	<includefile source="campaign/record_char.xml" />
 	<includefile source="campaign/record_char_main.xml" />
+	<includefile source="campaign/record_char_skills.xml" />
 	<includefile source="campaign/record_char_inventory.xml" />
 	<includefile source="campaign/record_char_notes.xml" />
 	<includefile source="campaign/record_char_actions.xml" />

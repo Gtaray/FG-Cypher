@@ -25,6 +25,9 @@
 			<sub_charsheet name="main">
 				<class>charsheet_main</class>
 			</sub_charsheet>
+			<sub_charsheet name="skills">
+				<class>charsheet_skills</class>
+			</sub_charsheet>
 			<sub_charsheet name="inventory">
 				<class>charsheet_inventory</class>
 			</sub_charsheet>
@@ -39,6 +42,10 @@
 				<tab>
 					<icon>tab_main</icon>
 					<subwindow>main</subwindow>
+				</tab>
+				<tab>
+					<icon>tab_skills</icon>
+					<subwindow>skills</subwindow>
 				</tab>
 				<tab>
 					<icon>tab_inventory</icon>

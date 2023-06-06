@@ -105,10 +105,15 @@
 	<string name="char_label_recoveryused">Used</string>
 
 	<string name="power_label_training">Training</string>
-	<string name="char_label_skillinability">In</string>
+	<string name="char_label_skillmodifier">Mod</string>
+	<string name="char_label_skillassets">Assets</string>
+	<string name="char_label_skilltraining">Training</string>
+	<string name="char_label_skillstat">Stat</string>
+	<string name="char_label_skillname">Name</string>
+	<string name="char_label_skillinability">Inability</string>
 	<string name="char_label_skilluntrained">-</string>
-	<string name="char_label_skilltrained">T</string>
-	<string name="char_label_skillspecialized">S</string>
+	<string name="char_label_skilltrained">Trained</string>
+	<string name="char_label_skillspecialized">Specialized</string>
 	<string name="char_tooltip_skillinability">Inability</string>
 	<string name="char_tooltip_skilluntrained">Untrained</string>
 	<string name="char_tooltip_skilltrained">Trained</string>
@@ -255,7 +260,7 @@
 	<string name="library_recordtype_label_type">Types</string>
 	<string name="library_recordtype_empty_type">&#171; New Type &#187;</string>
 	<string name="library_recordtype_ref_type">Type</string>
-	<string name="type_header_starting_features">Starting Features</string>
+	<!-- <string name="type_header_starting_features">Starting Features</string>
 	<string name="type_label_starting_stats">Stats</string>
 	<string name="type_label_starting_edge">Edge</string>
 	<string name="type_label_might">Might</string>
@@ -264,7 +269,7 @@
 	<string name="type_label_floating_stats">Floating</string>
 	<string name="type_tooltip_floatingstats">The number of additional points to divide among stat pools.</string>
 	<string name="type_label_starting_effort">Effort</string>
-	<string name="type_label_cypher_use">Cypher Use</string>
+	<string name="type_label_cypher_use">Cypher Use</string> -->
 
 	<string name="type_header_tiers">Tiers</string>
 
