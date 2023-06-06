@@ -40,6 +40,7 @@ function getRoll(rActor, rAction)
 	RollManager.encodeAssets(rAction, rRoll);
 	RollManager.encodeEdge(rAction, rRoll);
 	RollManager.encodeEffort(rAction, rRoll);
+	RollManager.encodeEaseHindrance(rRoll, (rAction.bEase or false), (rAction.bHinder or false));
 	RollManager.encodeTarget(rAction.rTarget, rRoll);
 
 	return rRoll;
@@ -56,8 +57,8 @@ function modRoll(rSource, rTarget, rRoll)
 	-- Only calc difficulty if it's not already been set
 	-- this is because defense vs rolls will calc the difficulty of an NPC attack
 	-- ahead of time. Defense rolls in response don't need to get the difficulty
-	if rTarget and not ActorManager.isPC(rTarget) and rRoll.nDifficulty == 0 then
-		rRoll.nDifficulty = ActorManagerCypher.getCreatureLevel(rTarget, rSource, { "attack", "atk", sStat });		
+	if (tonumber(rRoll.nDifficulty) or 0) == 0 then
+		rRoll.nDifficulty = RollManager.getBaseRollDifficulty(rSource, rTarget,  { "attack", "atk", sStat });		
 	end
 
 	--Adjust raw modifier, converting every increment of 3 to a difficultly modifier
@@ -80,7 +81,7 @@ function modRoll(rSource, rTarget, rRoll)
 	nEffort = nEffort + RollManager.processEffort(rSource, rTarget, { "defense", "def", sStat }, nEffort);
 
 	-- Get ease/hinder effects
-	local bEase, bHinder = RollManager.resolveEaseHindrance(rSource, rTarget, { "defense", "def", sStat });
+	local bEase, bHinder = RollManager.resolveEaseHindrance(rSource, rTarget, rRoll, { "defense", "def", sStat });
 
 	-- Process conditions
 	local nConditionEffects = RollManager.processStandardConditions(rSource, rTarget);
@@ -105,6 +106,7 @@ end
 
 function onRoll(rSource, rTarget, rRoll)
 	rTarget = RollManager.decodeTarget(rRoll, rTarget);
+	local bPvP = ActorManager.isPC(rSource) and ActorManager.isPC(rTarget);
 
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 	rMessage.icon = "action_roll";
@@ -115,27 +117,19 @@ function onRoll(rSource, rTarget, rRoll)
 
 	local aAddIcons = {};
 	local nFirstDie = rRoll.aDice[1].result or 0;
-	if nFirstDie >= 20 then
-		rMessage.text = rMessage.text .. " [MAJOR EFFECT]";
-		table.insert(aAddIcons, "roll20");
-	elseif nFirstDie == 19 then
-		rMessage.text = rMessage.text .. " [MINOR EFFECT]";
-		table.insert(aAddIcons, "roll19");
-	elseif nFirstDie == 1 then
-		rMessage.text = rMessage.text .. " [GM INTRUSION]";
-		table.insert(aAddIcons, "roll1");
-	end
-
 	local bSuccess, bAutomaticSuccess = RollManager.processRollSuccesses(rSource, rTarget, rRoll, rMessage, aAddIcons);
+	local sIcon = "";
 
-	if rTarget then
-		local sIcon = "";
+	-- only check for hit/miss on non-pvp rolls. Eventually this will change
+	-- once I have a better way of handling pvp rolls
+	if not bPvP then
 		if bSuccess then
 			if bAutomaticSuccess then
 				rMessage.text = rMessage.text .. " [AUTOMATIC MISS]";
 			else
 				rMessage.text = rMessage.text .. " [MISS]";
 			end
+
 			if nFirstDie >= 19 then
 				sIcon = "roll_attack_crit_miss";
 			else
@@ -150,15 +144,21 @@ function onRoll(rSource, rTarget, rRoll)
 				sIcon = "roll_attack_hit";
 			end
 		end
+	end
 
-		-- Replace the first icon ('action_roll') with proper hit/miss icon
-		if type(rMessage.icon) == "table" then
-			rMessage.icon[1] = sIcon
-		else
-			-- This should never be the case, since we should always have 2 icons (action_roll and task#)
-			rMessage.icon = sIcon;
+	if not bAutomaticSuccess then
+		if nFirstDie >= 20 then
+			rMessage.text = rMessage.text .. " [MAJOR EFFECT]";
+			table.insert(aAddIcons, "roll20");
+		elseif nFirstDie == 19 then
+			rMessage.text = rMessage.text .. " [MINOR EFFECT]";
+			table.insert(aAddIcons, "roll19");
+		elseif nFirstDie == 1 then
+			rMessage.text = rMessage.text .. " [GM INTRUSION]";
+			table.insert(aAddIcons, "roll1");
 		end
 	end
 
+	RollManager.updateRollMessageIcons(rMessage, aAddIcons, sIcon);
 	Comm.deliverChatMessage(rMessage);
 end

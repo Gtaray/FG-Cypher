@@ -60,9 +60,7 @@ function modRoll(rSource, rTarget, rRoll)
 	local bInability, bTrained, bSpecialized = RollManager.decodeTraining(rRoll, true);
 	local sWeaponType = RollManager.decodeWeaponType(rRoll, false); -- Don't persist
 
-	if rTarget and not ActorManager.isPC(rTarget) then
-		rRoll.nDifficulty = ActorManagerCypher.getCreatureLevel(rTarget, rSource, { "defense", "def", sDefenseStat });
-	end
+	rRoll.nDifficulty = RollManager.getBaseRollDifficulty(rSource, rTarget, { "defense", "def", sDefenseStat });
 
 	--Adjust raw modifier, converting every increment of 3 to a difficultly modifier
 	local nAssetMod, nEffectMod = RollManager.processFlatModifiers(rSource, rTarget, rRoll, { "attack", "atk" }, { sStat })
@@ -75,7 +73,7 @@ function modRoll(rSource, rTarget, rRoll)
 	nEffort = nEffort + RollManager.processEffort(rSource, rTarget, { "attack", "atk", sStat }, nEffort);
 
 	-- Get ease/hinder effects
-	local bEase, bHinder = RollManager.resolveEaseHindrance(rSource, rTarget, { "attack", "atk", sStat });
+	local bEase, bHinder = RollManager.resolveEaseHindrance(rSource, rTarget, rRoll, { "attack", "atk", sStat });
 
 	-- Process conditions
 	local nConditionEffects = RollManager.processStandardConditions(rSource, rTarget);
@@ -99,6 +97,7 @@ function modRoll(rSource, rTarget, rRoll)
 end
 
 function onRoll(rSource, rTarget, rRoll)
+	local bPvP = ActorManager.isPC(rSource) and ActorManager.isPC(rTarget);
 	local bPersist = rTarget == nil;
 	local sDefenseStat = RollManager.decodeDefenseStat(rRoll, bPersist);
 
@@ -111,37 +110,18 @@ function onRoll(rSource, rTarget, rRoll)
 	end
 	
 	local aAddIcons = {};
-	local nFirstDie = 0;
-	if #(rRoll.aDice) > 0 then
-		nFirstDie = rRoll.aDice[1].result or 0;
-	end
-	if nFirstDie >= 20 then
-		rMessage.text = rMessage.text .. " [DAMAGE +4 OR MAJOR EFFECT]";
-		table.insert(aAddIcons, "roll20");
-	elseif nFirstDie == 19 then
-		rMessage.text = rMessage.text .. " [DAMAGE +3 OR MINOR EFFECT]";
-		table.insert(aAddIcons, "roll19");
-	elseif nFirstDie == 18 then
-		rMessage.text = rMessage.text .. " [DAMAGE +2]";
-		table.insert(aAddIcons, "roll18");
-	elseif nFirstDie == 17 then
-		rMessage.text = rMessage.text .. " [DAMAGE +1]";
-		table.insert(aAddIcons, "roll17");
-	elseif nFirstDie == 1 then
-		rMessage.text = rMessage.text .. " [GM INTRUSION]";
-		table.insert(aAddIcons, "roll1");
-	end
+	local nFirstDie = rRoll.aDice[1].result or 0;
+	local bSuccess, bAutomaticSuccess, nSuccesses = RollManager.processRollSuccesses(rSource, rTarget, rRoll, rMessage, aAddIcons);
+	local sIcon = "";
 	
-	-- Only process roll successes if a PC is attacking an NPC (not PC vs PC)
-	local bSuccess, bAutomaticSuccess = RollManager.processRollSuccesses(rSource, rTarget, rRoll, rMessage, aAddIcons);
-	if rTarget and not ActorManager.isPC(rTarget) then
-		local sIcon = "";
+	if not bPvP then
 		if bSuccess then
 			if bAutomaticSuccess then
 				rMessage.text = rMessage.text .. " [AUTOMATIC HIT]";
 			else
 				rMessage.text = rMessage.text .. " [HIT]";
 			end
+
 			if nFirstDie >= 17 then
 				sIcon = "roll_attack_crit";
 			else
@@ -156,22 +136,35 @@ function onRoll(rSource, rTarget, rRoll)
 				sIcon = "roll_attack_miss";
 			end
 		end
+	end
 
-		-- If we have multiple icons, replace the first.
-		if type(rMessage.icon) == "table" then
-			rMessage.icon[1] = sIcon
-		else
-			rMessage.icon = sIcon;
+	if not bAutomaticSuccess then
+		if nFirstDie >= 20 then
+			rMessage.text = rMessage.text .. " [DAMAGE +4 OR MAJOR EFFECT]";
+			table.insert(aAddIcons, "roll20");
+		elseif nFirstDie == 19 then
+			rMessage.text = rMessage.text .. " [DAMAGE +3 OR MINOR EFFECT]";
+			table.insert(aAddIcons, "roll19");
+		elseif nFirstDie == 18 then
+			rMessage.text = rMessage.text .. " [DAMAGE +2]";
+			table.insert(aAddIcons, "roll18");
+		elseif nFirstDie == 17 then
+			rMessage.text = rMessage.text .. " [DAMAGE +1]";
+			table.insert(aAddIcons, "roll17");
+		elseif nFirstDie == 1 then
+			rMessage.text = rMessage.text .. " [GM INTRUSION]";
+			table.insert(aAddIcons, "roll1");
 		end
 	end
 	
+	RollManager.updateRollMessageIcons(rMessage, aAddIcons, sIcon);
 	Comm.deliverChatMessage(rMessage);
 
 	-- for PC vs PC rolls, prompt a defense roll
 	if ActorManager.isPC(rSource) and rTarget and ActorManager.isPC(rTarget) then
 		
 		local rDefense = {};
-		rDefense.nDifficulty = nTotal;
+		rDefense.nDifficulty = nSuccesses; -- Removing for now, until I find a better solution for handling PvP rolls
 		rDefense.sStat = RollManager.resolveStat(sDefenseStat, "speed"); -- default to Speed defense if for some reason the stat is missing
 		rDefense.rTarget = rSource;
 

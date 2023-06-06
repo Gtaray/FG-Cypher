@@ -327,7 +327,12 @@
 	<!-- Defense Prompt -->
 	<string name="defense_prompt_window_title">Defend Thyself</string>
 	<string name="defense_prompt_button_roll">Roll</string>
+	<string name="defense_prompt_button_close">Close</string>
 	<string name="defense_prompt_description">%s is attacking you, defend yourself with %s!\nDifficulty: %s</string>
+	<string name="defense_prompt_effort">Effort:</string>
+	<string name="defense_prompt_assets">Assets:</string>
+	<string name="defense_prompt_ease">Ease</string>
+	<string name="defense_prompt_hinder">Hinder</string>
 
 	<!-- Desktop -->
 	<string name="diffadj_label_effort">Effort</string>
@@ -335,4 +340,5 @@
 	<string name="diffadj_label_edge">Use Edge?</string>
 	<string name="modifier_label_EASE">Ease</string>
 	<string name="modifier_label_HINDER">Hinder</string>
+	<string name="desktop_tooltip_difficulty">Difficulty that all non-targeted rolls are made against. Use the scroll wheel to increase or decrease this value.</string>
 </root>

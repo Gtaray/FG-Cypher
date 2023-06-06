@@ -51,9 +51,7 @@ function modRoll(rSource, rTarget, rRoll)
 	local nAssets = RollManager.decodeAssets(rRoll, true);
 	local bInability, bTrained, bSpecialized = RollManager.decodeTraining(rRoll, true);
 
-	if rTarget and not ActorManager.isPC(rTarget) then
-		rRoll.nDifficulty = ActorManagerCypher.getCreatureLevel(rTarget, rSource, { "skill", "skills", sStat, sSkill });
-	end
+	rRoll.nDifficulty = RollManager.getBaseRollDifficulty(rSource, rTarget, { "skill", "skills", sStat, sSkill });
 
 	--Adjust raw modifier, converting every increment of 3 to a difficultly modifier
 	local nAssetMod, nEffectMod = RollManager.processFlatModifiers(rSource, rTarget, rRoll, { "skill", "skills" }, { sStat, sSkill })
@@ -66,7 +64,7 @@ function modRoll(rSource, rTarget, rRoll)
 	nEffort = nEffort + RollManager.processEffort(rSource, rTarget, { "skill", "skills", sStat, sSkill }, nEffort);
 
 	-- Get ease/hinder effects
-	local bEase, bHinder = RollManager.resolveEaseHindrance(rSource, rTarget, { "skill", "skills", sStat, sSkill });
+	local bEase, bHinder = RollManager.resolveEaseHindrance(rSource, rTarget, rRoll, { "skill", "skills", sStat, sSkill });
 
 	-- Process conditions
 	local nConditionEffects = RollManager.processStandardConditions(rSource, rTarget);
@@ -98,29 +96,32 @@ function onRoll(rSource, rTarget, rRoll)
 	end
 
 	local aAddIcons = {};
-	local nFirstDie = rRoll.aDice[1].result or 0;
-	if nFirstDie >= 20 then
-		rMessage.text = rMessage.text .. " [MAJOR EFFECT]";
-		table.insert(aAddIcons, "roll20");
-	elseif nFirstDie == 19 then
-		rMessage.text = rMessage.text .. " [MINOR EFFECT]";
-		table.insert(aAddIcons, "roll19");
-	elseif nFirstDie == 1 then
-		rMessage.text = rMessage.text .. " [GM INTRUSION]";
-		table.insert(aAddIcons, "roll1");
-	end
-	
+	local nFirstDie = rRoll.aDice[1].result or 0;	
 	local bSuccess, bAutomaticSuccess = RollManager.processRollSuccesses(rSource, rTarget, rRoll, rMessage, aAddIcons);
 
-	if rTarget then
-		if bAutomaticSuccess then
-			rMessage.text = rMessage.text .. " [AUTOMATIC SUCCESS]";
-		elseif bSuccess then
-			rMessage.text = rMessage.text .. " [SUCCESS]";
-		else
-			rMessage.text = rMessage.text .. " [FAILED]";
+	if bAutomaticSuccess then
+		rMessage.text = rMessage.text .. " [AUTOMATIC SUCCESS]";
+	elseif bSuccess then
+		rMessage.text = rMessage.text .. " [SUCCESS]";
+	else
+		rMessage.text = rMessage.text .. " [FAILED]";
+	end
+
+	-- Since players technically shouldn't roll if the difficulty is reduced to 0
+	-- they also don't have the chance to get major/minor/intrusion effects, so don't put them here.
+	if not bAutomaticSuccess then
+		if nFirstDie >= 20 then
+			rMessage.text = rMessage.text .. " [MAJOR EFFECT]";
+			table.insert(aAddIcons, "roll20");
+		elseif nFirstDie == 19 then
+			rMessage.text = rMessage.text .. " [MINOR EFFECT]";
+			table.insert(aAddIcons, "roll19");
+		elseif nFirstDie == 1 then
+			rMessage.text = rMessage.text .. " [GM INTRUSION]";
+			table.insert(aAddIcons, "roll1");
 		end
 	end
 	
+	RollManager.updateRollMessageIcons(rMessage, aAddIcons);
 	Comm.deliverChatMessage(rMessage);
 end

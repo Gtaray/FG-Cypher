@@ -80,6 +80,7 @@
 	<script name="PowerManager" file="scripts/manager_power.lua" />
 	<script name="PromptManager" file="scripts/manager_prompt.lua" />
 	<script name="DamageTypeManager" file="scripts/manager_damage_types.lua" />
+	<script name="DifficultyManager" file="scripts/manager_difficulty.lua" />
 
 	<script name="ActionGeneral" file="scripts/manager_action_general.lua" />
 	<script name="ActionStat" file="scripts/manager_action_stat.lua" />

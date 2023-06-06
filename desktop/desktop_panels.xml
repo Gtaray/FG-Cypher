@@ -6,16 +6,29 @@
 -->
 
 <root>
+	<panel name="global_difficulty">
+		<class>global_difficulty</class>
+		<bounds>15,-95,52,52</bounds>
+		<locked />
+	</panel>
+
+	<panel name="modifierstack">
+		<class>modifierstack</class>
+		<bounds>75,-100,64,57</bounds>
+		<dynamic />
+		<locked />
+	</panel>
+
 	<panel name="difficultyadjustpanel">
 		<class>difficultyadjust</class>
-		<bounds>80,-95,210,52</bounds>
+		<bounds>150,-95,210,52</bounds>
 		<dynamic />
 		<locked />
 	</panel>
 
 	<panel name="dicepanel" merge="join">
 		<anchored>
-			<left offset="270" />
+			<left offset="350" />
 		</anchored>
 	</panel>
 </root>

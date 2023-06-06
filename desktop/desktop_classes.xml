@@ -6,6 +6,18 @@
 -->
 
 <root>
+	<windowclass name="global_difficulty">
+		<sheetdata>
+			<genericcontrol name="difficulty">
+				<anchored height="32" width="32">
+					<top offset="10" />
+					<left offset="10" />
+				</anchored>
+				<script file="desktop/scripts/global_difficulty.lua" />
+				<tooltip textres="desktop_tooltip_difficulty" />
+			</genericcontrol>
+		</sheetdata>
+	</windowclass>
 	<windowclass name="difficultyadjust">
 		<frame>imagepanel</frame>
 		<sizelimits>

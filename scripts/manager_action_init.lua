@@ -70,7 +70,7 @@ function modRoll(rSource, rTarget, rRoll)
 	nEffort = nEffort + RollManager.processEffort(rSource, rTarget, { "initiative", "init", sStat }, nEffort);
 
 	-- Get ease/hinder effects
-	local bEase, bHinder = RollManager.resolveEaseHindrance(rSource, rTarget, { "initiative", "init", sStat });
+	local bEase, bHinder = RollManager.resolveEaseHindrance(rSource, rTarget, rRoll, { "initiative", "init", sStat });
 
 	-- Process conditions
 	local nConditionEffects = RollManager.processStandardConditions(rSource, rTarget);
