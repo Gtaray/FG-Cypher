@@ -2,13 +2,7 @@
 <root version="3.3" release="1.0">
 	<windowclass name="damage_modification">
 		<margins control="0,0,0,2" />
-		<script>
-			function update(bReadOnly)
-				damagetype.setReadOnly(bReadOnly);
-				type.setReadOnly(bReadOnly);
-				amount.setReadOnly(bReadOnly);
-			end
-		</script>
+		<script file="common/scripts/damage_modification.lua" />
 		<sheetdata>
 			<genericcontrol name="rightanchor">
 				<anchored position="insidetopright" offset="0,2" height="0" width="0" />
@@ -20,14 +14,14 @@
 					<right anchor="left" offset="-5" />
 				</anchored>
 			</button_idelete>
-			<basicnumber name="amount">
+			<basicnumber name="armor">
 				<anchored to="rightanchor" relation="relative" height="20" width="30">
 					<top />
 					<right anchor="left" relation="relative" offset="-35" />
 				</anchored>
-				<min>0</min>
+				<tooltip textres="damage_modification_tooltip_armor" />
 			</basicnumber>
-			<button_stringcycler name="type">
+			<!-- <button_stringcycler name="type">
 				<anchored to="rightanchor" width="80">
 					<top />
 					<right anchor="left" relation="relative" offset="-10" />
@@ -37,7 +31,7 @@
 					<values>resist|immune|vuln</values>
 					<defaultlabelres>dash</defaultlabelres>
 				</parameters>
-			</button_stringcycler>
+			</button_stringcycler> -->
 			<stringu_damagetype_autocomplete name="damagetype">
 				<anchored to="rightanchor" height="20">
 					<top />
@@ -51,26 +45,12 @@
 	<template name="list_damagemods">
 		<list_column>
 			<script>
-				function onInit()
-					if super and super.onInit then
-						super.onInit()
-					end
-					OptionsManager.registerCallback("DMGTYPES", update);
-					update();
-				end
-				function onClose()
-					if super and super.onClose then
-						super.onClose()
-					end
-					OptionsManager.unregisterCallback("DMGTYPES", update);
-				end
 				function update(bReadOnly, bForceHide)
 					local nodeRecord = window.getDatabaseNode();
 					local bReadOnly = WindowManager.getReadOnlyState(nodeRecord);
-					local bDmgTypes = OptionsManagerCypher.replaceArmorWithDamageTypes();
 					local bShow = getWindowCount() ~= 0;
 
-					bForceHide = bForceHide or not bDmgTypes or (bReadOnly and not bShow)
+					bForceHide = bForceHide or (bReadOnly and not bShow)
 					bReadOnly = bForceHide or bReadOnly;
 
 					super.update(bReadOnly, bForceHide);
@@ -85,32 +65,13 @@
 
 	<template name="number_column_armor">
 		<number_columnh name="armor">
-			<script>
-				function onInit()
-					if super and super.onInit then
-						super.onInit()
-					end
-					OptionsManager.registerCallback("DMGTYPES", update);
-					update();
-				end
-				function onClose()
-					if super and super.onClose then
-						super.onClose()
-					end
-					OptionsManager.unregisterCallback("DMGTYPES", update);
-				end
-				function update(bReadOnly, bForceHide)
-					local bDmgTypes = OptionsManagerCypher.replaceArmorWithDamageTypes();
-					local bReadOnlyState = WindowManager.getReadOnlyState(nodeRecord);
-					super.update(bReadOnlyState or bReadOnly, bDmgTypes or bForceHide);
-				end
-			</script>
 		</number_columnh>
 	</template>
 
 	<template name="stringu_damagetype_autocomplete">
 		<stringu>
 			<script file="common/scripts/string_damagetype_autocomplete.lua" />
+			<tooltip textres="damage_modification_tooltip_name" />
 		</stringu>
 	</template >
 </root>

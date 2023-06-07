@@ -258,25 +258,6 @@ function getEdge(rActor, sStat, aFilter)
 	return nBase + nBonus;
 end
 
--- This only cares about creatures on the CT, since it's specifically for combat
-function getArmor(rActor, rTarget, sStat)
-	local node = ActorManager.getCTNode(rActor);
-	local nBaseArmor = DB.getValue(node, "armor", 0);
-
-	if not sStat then
-		sStat = "might";
-	end
-
-	local nEffectArmor = EffectManagerCypher.getEffectsBonusByType(rActor, "ARMOR", { sStat }, rTarget, false);
-
-	-- Only apply the character's base armor to Might damage.
-	if sStat == "might" then
-		return nBaseArmor + nEffectArmor;
-	else
-		return nEffectArmor, nAssets;
-	end
-end
-
 function getShieldBonus(rActor)
 	local items = ActorManagerCypher.getArmorInInventory(rActor);
 	local nMax = 0;
@@ -369,8 +350,45 @@ function getArmorInInventory(rActor)
 end
 
 ---------------------------------------------------------------
--- RESIST / VULN / IMMUNE
+-- ARMOR
 ---------------------------------------------------------------
+-- This only cares about creatures on the CT, since it's specifically for combat
+function getArmor(rActor, rTarget, sStat, sDamageType)
+	local node = ActorManager.getCTNode(rActor);
+
+	if not node then
+		return 0, 0;
+	end
+
+	-- Default to might, since that's the default for damage dealt
+	if not sStat then
+		sStat = "might";
+	end
+	
+	local sModFilter = { sStat, sDamageType }
+	local nArmor = 0;
+
+	
+	-- Only apply the character's base armor to Might damage.
+	if sDamageType == "untyped" and sStat == "might" then
+		nArmor = DB.getValue(node, "armor", 0);
+	end
+
+	-- These properties will only have values for ARMOR effects with 
+	-- some kind of remainder (either a damage type or stat)
+	local bResist, nResistAmount = ActorManagerCypher.isResistant(rActor, rTarget, sModFilter);
+	local bVuln, nVulnAmount = ActorManagerCypher.isVulnerable(rActor, rTarget, sModFilter);
+
+	if bResist then
+		nArmor = nArmor + nResistAmount;
+	end
+	if bVuln then
+		nArmor = nArmor + nVulnAmount;
+	end
+
+	return nArmor;
+end
+
 function isImmune(rActor, rTarget, aDmgTypes)
 	local tImmune = ActorManagerCypher.getImmunities(rActor, rTarget);
 	local bImmune = ActorManagerCypher.resistanceCheckerHelper(tImmune, aDmgTypes);
@@ -390,63 +408,111 @@ function isVulnerable(rActor, rTarget, aDmgTypes)
 end
 
 function getResistances(rActor, rTarget)
-	return ActorManagerCypher.getDamageMods(rActor, "RESIST", rTarget);
-end
-
-function getImmunities(rActor, rTarget)
-	return ActorManagerCypher.getDamageMods(rActor, "IMMUNE", rTarget);
-end
-
-function getVulnerabilities(rActor, rTarget)
-	return ActorManagerCypher.getDamageMods(rActor, "VULN", rTarget);
-end
-
--- sFilter can be "resist", "vuln", or "immune" and it will only get those resistances
--- If it is nil, then this returns the full list
-function getDamageMods(rActor, sFilter, rTarget)
 	-- Only do this for CT Nodes
 	local charNode = ActorManager.getCTNode(rActor);
 	if not charNode then
 		return nil;
 	end
 
-	-- If the game option to use damage types is not enabled, then do not 
-	-- return any modifications here
-	if not OptionsManagerCypher.replaceArmorWithDamageTypes() then
-		return { };
+	local tDmgMods = {};
+
+	-- Start by getting values from the creature node
+	for _, node in ipairs(DB.getChildList(charNode, "resistances")) do
+		local sDamageType = DB.getValue(node, "damagetype", ""):lower();
+		local nAmount = DB.getValue(node, "armor", 0);
+
+		-- Only add to the list if the filter is nil OR if the filter matches the 
+		-- damage mod amount
+		if nAmount > 0 then
+			tDmgMods[sDamageType] = nAmount;
+		end
+	end
+
+	-- Then get values from effects
+	local aEffects = EffectManagerCypher.getEffectsByType(rActor, "ARMOR", {}, rTarget);
+	for _,v in pairs(aEffects) do
+		if #(v.remainder) == 0 then
+			tDmgMods["untyped"] = tDmgMods["untyped"] + v.mod;
+		end
+
+		for _,vType in pairs(v.remainder) do
+			if vType ~= "untyped" and tDmgMods[vType] > 0 then
+				tDmgMods[vType] = (tDmgMods[vType] or 0) + v.mod
+			end
+		end
+	end
+
+	return tDmgMods;
+end
+
+function getImmunities(rActor, rTarget)
+	-- Only do this for CT Nodes
+	local charNode = ActorManager.getCTNode(rActor);
+	if not charNode then
+		return nil;
 	end
 
 	local tDmgMods = {};
 
 	-- Start by getting values from the creature node
 	for _, node in ipairs(DB.getChildList(charNode, "resistances")) do
-		local sType = DB.getValue(node, "type", "");
-		if sType:lower() == sFilter:lower() then
-			local sDamageType = DB.getValue(node, "damagetype", ""):lower();
-			local nAmount = DB.getValue(node, "amount", 0);
+		local sDamageType = DB.getValue(node, "damagetype", ""):lower();
+		local nAmount = DB.getValue(node, "armor", 0);
 
-			-- Don't care if it's assigned or not.
-			-- if DamageTypeManager.isDamageType(sDamageType) then
-				
-			-- end
-
+		-- Only add to the list if the filter is nil OR if the filter matches the 
+		-- damage mod amount
+		if nAmount == 0 then
 			tDmgMods[sDamageType] = nAmount;
 		end
 	end
 
 	-- Then get values from effects
-	local aEffects = EffectManagerCypher.getEffectsByType(rActor, sFilter, rTarget);
+	local aEffects = EffectManagerCypher.getEffectsByType(rActor, "IMMUNE", {}, rTarget);
 	for _,v in pairs(aEffects) do
-		-- If there's no type specified, then set it to all
 		if #(v.remainder) == 0 then
-			tDmgMods["all"] = (tDmgMods["all"] or 0) + v.mod
+			tDmgMods["untyped"] = 0;
 		end
 		for _,vType in pairs(v.remainder) do
-			if tDmgMods[vType] then
-				-- Merge the mods
-				tDmgMods[vType] = tDmgMods[vType] + v.mod
-			else
-				tDmgMods[vType] = v.mod;	
+			if vType ~= "untyped" then
+				tDmgMods[vType] = 0;
+			end
+		end
+	end
+
+	return tDmgMods;
+end
+
+function getVulnerabilities(rActor, rTarget)
+	-- Only do this for CT Nodes
+	local charNode = ActorManager.getCTNode(rActor);
+	if not charNode then
+		return nil;
+	end
+
+	local tDmgMods = {};
+
+	-- Start by getting values from the creature node
+	for _, node in ipairs(DB.getChildList(charNode, "resistances")) do
+		local sDamageType = DB.getValue(node, "damagetype", ""):lower();
+		local nAmount = DB.getValue(node, "armor", 0);
+
+		-- Only add to the list if the filter is nil OR if the filter matches the 
+		-- damage mod amount
+		if nAmount < 0 then
+			tDmgMods[sDamageType] = nAmount;
+		end
+	end
+
+	-- Then get values from effects
+	local aEffects = EffectManagerCypher.getEffectsByType(rActor, "ARMOR", {}, rTarget);
+	for _,v in pairs(aEffects) do
+		if #(v.remainder) == 0 then
+			tDmgMods["untyped"] = tDmgMods["untyped"] + v.mod;
+		end
+
+		for _,vType in pairs(v.remainder) do
+			if vType ~= "untyped" and tDmgMods[vType] < 0 then
+				tDmgMods[vType] = (tDmgMods[vType] or 0) + v.mod
 			end
 		end
 	end
@@ -455,6 +521,10 @@ function getDamageMods(rActor, sFilter, rTarget)
 end
 
 function resistanceCheckerHelper(tDmgMods, aDmgTypes)
+	if aDmgTypes == nil then
+		return false, 0;
+	end
+
 	if type(aDmgTypes) == "string" then
 		aDmgTypes = { aDmgTypes }
 	end
@@ -464,7 +534,7 @@ function resistanceCheckerHelper(tDmgMods, aDmgTypes)
 	end
 
 	for _, sType in ipairs(aDmgTypes) do
-		if tDmgMods[sType] and tDmgMods[sType] >= 0 then 
+		if tDmgMods[sType] then 
 			return true, tDmgMods[sType];
 		end
 	end

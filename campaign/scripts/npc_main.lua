@@ -24,7 +24,6 @@ function update()
 	local nodeRecord = getDatabaseNode();
 	local bReadOnly = WindowManager.getReadOnlyState(nodeRecord);
 	local bID = LibraryData.getIDState("npc", nodeRecord);
-	local bUseDmgTypes = OptionsManagerCypher.replaceArmorWithDamageTypes();
 	
 	local bSection1 = false;
 	if Session.IsHost then
@@ -38,7 +37,7 @@ function update()
 	
 	hp.setReadOnly(bReadOnly);
 	damagestr.setReadOnly(bReadOnly);
-	WindowManager.callSafeControlUpdate(self, "armor", bReadOnly, bUseDmgTypes);
+	WindowManager.callSafeControlUpdate(self, "armor", bReadOnly);
 	move.setReadOnly(bReadOnly);
 	WindowManager.callSafeControlUpdate(self, "modifications", bReadOnly);
 	WindowManager.callSafeControlUpdate(self, "combat", bReadOnly);

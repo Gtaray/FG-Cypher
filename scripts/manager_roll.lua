@@ -791,6 +791,7 @@ function decodeDamageType(rRoll)
 		"^%[DAMAGE %(.-, (.-)%)]",
 		true
 	);
+	
 	return sDamageType;
 end
 

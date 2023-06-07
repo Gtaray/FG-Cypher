@@ -34,12 +34,11 @@ function performRoll(draginfo, rActor, rAction)
 end
 
 function getRoll(rActor, rAction)
-	local bUseDmgTypes = OptionsManagerCypher.replaceArmorWithDamageTypes();
 	local rRoll = {}
 	rRoll.sType = "damage"
 
 	local sDamageDetails = StringManager.capitalize(rAction.sDamageStat or "");
-	if bUseDmgTypes and (rAction.sDamageType or "") ~= "" then
+	if (rAction.sDamageType or "") ~= "" then
 		sDamageDetails = string.format("%s, %s", sDamageDetails, rAction.sDamageType)
 	end
 	rRoll.sDesc = string.format(
@@ -169,7 +168,7 @@ end
 function applyDamage(rSource, rTarget, bSecret, rResult)
 	local sStat = RollManager.decodeStat(rResult, false);
 	local bPiercing, nPierceAmount = RollManager.decodePiercing(rResult, true);
-	local sDamageType = rResult.sDamageType
+	local sDamageType = rResult.sDamageType;
 	local nTotal = rResult.nTotal;
 	local bUseDamageTypes = OptionsManagerCypher.replaceArmorWithDamageTypes()
 
@@ -184,28 +183,16 @@ function applyDamage(rSource, rTarget, bSecret, rResult)
 		return;
 	end
 
-	-- If using damage types, we don't need to apply armor or care about ambient damage
-	if bUseDamageTypes then 
-		nTotal = ActionDamage.applyDamageModifications(
+	if not bAmbient then
+		nTotal = ActionDamage.applyArmor(
 			rSource, 
 			rTarget, 
 			nTotal, 
 			sStat, 
-			sDamageType, 
-			bPiercing,
-			nPierceAmount,
-			aNotifications)
-	else
-		if not bAmbient then
-			nTotal = ActionDamage.applyArmor(
-				rSource, 
-				rTarget, 
-				nTotal, 
-				sStat, 
-				bPiercing, 
-				nPierceAmount, 
-				aNotifications);
-		end
+			sDamageType,
+			bPiercing, 
+			nPierceAmount, 
+			aNotifications);
 	end
 	
 
@@ -281,9 +268,22 @@ function applyDamage(rSource, rTarget, bSecret, rResult)
 	ActionsManager.outputResult(bSecret, rSource, rTarget, msgLong, msgShort);
 end
 
-function applyArmor(rSource, rTarget, nTotal, sStat, bPiercing, nPierceAmount, aNotifications)
+function applyArmor(rSource, rTarget, nTotal, sStat, sDamageType, bPiercing, nPierceAmount, aNotifications)
+	-- If for some reason the amount of damage is negative, then we don't need to do any processing
+	-- Because it's handling as healing
 	if nTotal < 0 then
 		return nTotal;
+	end
+
+	-- if damage type is not specified, then we make sure it has
+	-- the untyped value here. This makes all of the calcs easier
+	if not sDamageType then
+		sDamageType = "untyped";
+	end
+	
+	if ActorManagerCypher.isImmune(rTarget, rSource, { sDamageType, sDamageStat }) then
+		table.insert(aNotifications, "[IMMUNE]");
+		return 0;
 	end
 
 	local nArmorAdjust = ActorManagerCypher.getArmor(rTarget, rSource, sStat);
@@ -297,11 +297,15 @@ function applyArmor(rSource, rTarget, nTotal, sStat, bPiercing, nPierceAmount, a
 			nArmorAdjust = 0;
 		end
 	end
-	nTotal = nTotal - nArmorAdjust;
 
+	-- if the adjusted armor is reduced to below 0
+	-- then we return all the damage
 	if nArmorAdjust <= 0 then
 		return nTotal;
 	end
+
+	-- Apply the adjusted armor value to the total damage
+	nTotal = nTotal - nArmorAdjust;
 
 	-- If any amount of armor was applied, then we add a notification
 	if nTotal <= 0 then
@@ -311,40 +315,6 @@ function applyArmor(rSource, rTarget, nTotal, sStat, bPiercing, nPierceAmount, a
 	end
 
 	return nTotal
-end
-
-function applyDamageModifications(rSource, rTarget, nDamage, sDamageStat, sDamageType, bPiercing, nPierceAmount, aNotifications)
-	if ActorManagerCypher.isImmune(rTarget, rSource, { sDamageType, sDamageStat }) then
-		table.insert(aNotifications, "[IMMUNE]");
-		return 0;
-	end
-
-	local bResist, nResistAmount = ActorManagerCypher.isResistant(rTarget, rSource, { sDamageType, sDamageStat })
-	if bResist and nResistAmount >= 0 then
-		-- Resist half if amount is 0, otherwise flat reduction
-		if nResistAmount == 0 then
-			nDamage = math.floor(nDamage / 2);
-		else
-			nDamage = math.max(0, nDamage - nResistAmount);
-		end
-		if nDamage > 0 then
-			table.insert(aNotifications, "[PARTIALLY RESISTED]")
-		else
-			table.insert(aNotifications, "[RESISTED]")
-		end
-	end
-
-	local bVuln, nVulnAmount = ActorManagerCypher.isVulnerable(rTarget, rSource, {sDamageType, sDamageStat});
-	if bVuln and nVulnAmount >= 0 then
-		if nVulnAmount == 0 then
-			nDamage = nDamage * 2;
-		else
-			nDamage = nDamage + nVulnAmount;
-		end
-		table.insert(aNotifications, "[VULNERABLE]");
-	end
-
-	return nDamage;
 end
 
 function applyDamageToPc(rSource, rTarget, nDamage, sStat, sDamageType, aNotifications)

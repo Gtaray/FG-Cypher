@@ -1,25 +1,6 @@
-function onInit()
-	OptionsManager.registerCallback("DMGTYPES", updateDamageTypeOption);
-	updateDamageTypeOption();
-end
-function onClose()
-	OptionsManager.unregisterCallback("DMGTYPES", updateDamageTypeOption);
-end
-
-function updateDamageTypeOption()
-	local bReadOnly = WindowManager.getReadOnlyState(window.getDatabaseNode());
-
-	if window.update then
-		window.update();
-	else
-		self.update(bReadOnly, false);
-	end
-end
-
 function update(bReadOnly, bForceHide)
-	local bDmgTypes = OptionsManagerCypher.replaceArmorWithDamageTypes();
 	local bHasValue = getValue() ~= "";
-	local bLocalShow = (not bReadOnly or bHasValue) and bDmgTypes and not bForceHide;
+	local bLocalShow = (not bReadOnly or bHasValue) and not bForceHide;
 
 	self.setVisible(bLocalShow);
 	self.setReadOnly(bReadOnly);

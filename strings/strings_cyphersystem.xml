@@ -346,10 +346,9 @@
 	<string name="depletion_tag">DEPLETION</string>
 
 	<!-- Damage Modifications -->
-	<string name="header_damage_modifications">Resistances &amp; Vulnerabilities</string>
-	<string name="damage_modification_resistance">Resistance</string>
-	<string name="damage_modification_immunity">Immunity</string>
-	<string name="damage_modification_vulnerability">Vulnerability</string>
+	<string name="header_damage_modifications">Special Defenses &amp; Armor</string>
+	<string name="damage_modification_tooltip_name">Damage Type</string>
+	<string name="damage_modification_tooltip_armor">Armor value applied against the specified damage type. Positive armor reduces damage taken. Negative armor increases damage taken. A value of 0 indicates immunity to the damage type.</string>
 
 	<!-- Defense Prompt -->
 	<string name="defense_prompt_window_title">Defend Thyself</string>
