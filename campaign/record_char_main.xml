@@ -133,6 +133,7 @@
 				<static textres="char_label_adv_skill" />
 			</stringcontrol>
 			
+			<!-- STATS -->
 			<frame_char name="mightframe">
 				<bounds>15,50,150,120</bounds>
 			</frame_char>
@@ -315,9 +316,15 @@
 				<anchored to="intellectdefasset" position="righthigh" offset="7,0" width="15" height="20" />
 				<tooltip textres="modifier" />
 			</basicnumber>
+
+			<!-- SPECIAL DEFENSES -->
+			<frame_char name="resistframe">
+				<bounds>165,170,328,-81</bounds>
+			</frame_char>
 			
+			<!-- DAMAGE TRACK -->
 			<frame_char name="damageframe">
-				<bounds>15,410,225,75</bounds>
+				<bounds>15,-80,225,75</bounds>
 			</frame_char>
 			<label_frametop>
 				<anchored to="damageframe" />
@@ -338,8 +345,9 @@
 				<center />
 			</label>
 
+			<!-- RECOVERIES -->
 			<frame_char name="recoveryframe">
-				<bounds>240,410,255,75</bounds>
+				<bounds>240,-80,255,75</bounds>
 			</frame_char>
 			<label_frametop>
 				<anchored to="recoveryframe" />
