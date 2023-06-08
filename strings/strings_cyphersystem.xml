@@ -45,7 +45,6 @@
 	<string name="option_label_INITNPC">Init: NPC</string>
 	<string name="option_label_EXPF">Enable Experimental Features</string>
 	<string name="option_label_HRXP">Hero Points (Intrusion XP)</string>
-	<string name="option_label_DMGTYPES">Replace Armor with individual damage types (requires reloading the campaign to take effect)</string>
 
 	<string name="option_val_yes">Yes</string>
 	<string name="option_val_no">No</string>
@@ -104,6 +103,12 @@
 	<string name="char_label_recovery10hr">10 Hours</string>
 	<string name="char_label_recoveryused">Used</string>
 
+	<string name="char_label_armor">Armor</string>
+	<string name="char_label_armorspeedcost">Speed Effort Cost</string>
+	<string name="char_tooltip_armorspeedcost">Increase to the cost of spending effort on speed tests due to wearing armor.</string>
+	<string name="char_header_special_defenses">Special Defenses</string>
+
+	<!-- Character - Skills -->
 	<string name="power_label_training">Training</string>
 	<string name="char_label_skillmodifier">Mod</string>
 	<string name="char_label_skillassets">Assets</string>
@@ -125,8 +130,6 @@
 	<string name="char_message_tier_increase">%s advanced to tier %s.</string>
 	
 	<!-- Character - Actions -->
-	<string name="char_label_armorspeedcost">Speed Effort Cost</string>
-
 	<string name="char_label_attacks">Attacks</string>
 	<string name="char_title_attack_editor">Attack Editor</string>
 	
@@ -347,7 +350,7 @@
 
 	<!-- Damage Modifications -->
 	<string name="header_damage_modifications">Special Defenses &amp; Armor</string>
-	<string name="damage_modification_tooltip_name">Damage Type</string>
+	<string name="damage_modification_tooltip_name">Damage Type (fire, cold, lightning, etc.)</string>
 	<string name="damage_modification_tooltip_armor">Armor value applied against the specified damage type. Positive armor reduces damage taken. Negative armor increases damage taken. A value of 0 indicates immunity to the damage type.</string>
 
 	<!-- Defense Prompt -->

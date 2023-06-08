@@ -70,34 +70,11 @@
 				</anchored>
 			</frame_char>
 
-			<!-- ARMOR -->
-			<basicnumber name="armor">
-				<anchored to="armorframe" width="30" height="30">
-					<bottom offset="-10" />
-					<left offset="10" />
-				</anchored>
-			</basicnumber>
-			<label_fieldtop>
-				<anchored to="armor" />
-				<static textres="char_label_armor" />
-			</label_fieldtop>
-			<basicnumber name="armorspeedcost">
-				<anchored to="armor" width="20" height="20">
-					<left anchor="right" offset="10" />
-					<bottom />
-				</anchored>
-				<tooltip textres="char_tooltip_armorspeedcost" />
-			</basicnumber>
-			<label_fieldtop>
-				<anchored to="armorspeedcost" />
-				<static textres="char_label_armorspeedcost" />
-			</label_fieldtop>
-
 			<!-- STATS -->
 			<number_charabilitypool name="mightpool" source="abilities.might.current">
-				<anchored to="armorspeedcost" width="45" height="30">
-					<bottom />
-					<left anchor="right" offset="15" />
+				<anchored to="armorframe" width="50" height="30">
+					<left offset="25" />
+					<bottom offset="-10" />
 				</anchored>
 				<stat>might</stat>
 			</number_charabilitypool>
@@ -119,9 +96,9 @@
 			</label_fieldtop>
 
 			<number_charabilitypool name="speedpool" source="abilities.speed.current">
-				<anchored to="mightdefroll" width="45" height="30">
+				<anchored to="mightdefroll" width="50" height="30">
 					<bottom />
-					<left anchor="right" offset="15" />
+					<left anchor="right" offset="30" />
 				</anchored>
 				<stat>speed</stat>
 			</number_charabilitypool>
@@ -143,9 +120,9 @@
 			</label_fieldtop>
 
 			<number_charabilitypool name="intellectpool" source="abilities.intellect.current">
-				<anchored to="speeddefroll" width="45" height="30">
+				<anchored to="speeddefroll" width="50" height="30">
 					<bottom />
-					<left anchor="right" offset="15" />
+					<left anchor="right" offset="30" />
 				</anchored>
 				<stat>intellect</stat>
 			</number_charabilitypool>

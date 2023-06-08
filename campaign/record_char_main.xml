@@ -317,10 +317,73 @@
 				<tooltip textres="modifier" />
 			</basicnumber>
 
-			<!-- SPECIAL DEFENSES -->
-			<frame_char name="resistframe">
-				<bounds>165,170,328,-81</bounds>
+			<!-- ARMOR -->
+			<frame_char name="armorframe">
+				<bounds>165,220,328,-81</bounds>
 			</frame_char>
+			<label name="armor_label">
+				<anchored to="armorframe" height="20" width="40">
+					<left offset="30"/>
+					<top offset="15" />
+				</anchored>	
+				<static textres="char_label_armor" />
+			</label>
+			<basicnumber name="armor">
+				<anchored to="armor_label" position="righthigh" offset="10,0" height="20" width="30" />
+			</basicnumber>
+			<label name="armorspeedcost_label">
+				<anchored to="armor" position="righthigh" offset="20,0" height="20" width="105" />
+				<static textres="char_label_armorspeedcost" />
+			</label>
+			<basicnumber name="armorspeedcost">
+				<anchored to="armorspeedcost_label" position="righthigh" offset="10,0" height="20" width="30" />
+				<tooltip textres="char_tooltip_armorspeedcost" />
+			</basicnumber>
+
+			<label_frametop name="header_special_defenses">
+				<anchored to="armorframe">
+					<top offset="40" />
+				</anchored>
+				<static textres="char_header_special_defenses" />
+			</label_frametop>
+
+			<list_damagemods name="resistances">
+				<script>
+					function update()
+						local bEditMode = (window.resistances_iedit.getValue() == 1);
+						if window.idelete_header then
+							window.idelete_header.setVisible(bEditMode);
+						end
+						for _,w in ipairs(getWindows()) do
+							w.idelete.setVisibility(bEditMode);
+						end
+					end
+				</script>
+				<anchored>
+					<left parent="armorframe" offset="10" />
+					<top parent="header_special_defenses" anchor="bottom" offset="5" />
+					<right parent="armorframe" offset="-10" />
+					<bottom parent="armorframe" offset="-10" />
+				</anchored>
+				<noscroll merge="delete" />
+			</list_damagemods>
+
+			<scrollbar>
+				<anchored to="resistances" />
+				<target>resistances</target>
+			</scrollbar>
+
+			<button_iedit name="resistances_iedit">
+				<anchored to="header_special_defenses">
+					<top />
+					<right anchor="right" offset="-15" />
+				</anchored>
+				<target>resistances</target>
+			</button_iedit>
+			<button_iadd name="resistances_iadd">
+				<anchored to="resistances_iedit" position="lefthigh" offset="5,0" />
+				<target>resistances</target>
+			</button_iadd>
 			
 			<!-- DAMAGE TRACK -->
 			<frame_char name="damageframe">
