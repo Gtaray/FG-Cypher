@@ -28,7 +28,7 @@
 
 	<panel name="dicepanel" merge="join">
 		<anchored>
-			<left offset="350" />
+			<left offset="360" />
 		</anchored>
 	</panel>
 </root>
