@@ -73,7 +73,7 @@ function modRoll(rSource, rTarget, rRoll)
 		rRoll.nMod = rRoll.nMod + (nEffort * 3);
 	end
 
-	bPiercing, nPierceAmount = RollManager.processPiercing(rSource, rTarget, bPiercing, nPierceAmount, { }); -- Eventually the filter param here will include sDamageType
+	bPiercing, nPierceAmount = RollManager.processPiercing(rSource, rTarget, bPiercing, nPierceAmount, { sDamageType }); -- Eventually the filter param here will include sDamageType
 
 	local nDmgBonus = EffectManagerCypher.getEffectsBonusByType(rSource, { "damage", "dmg" }, { sStat, sDamageType }, rTarget)
 	if nDmgBonus ~= 0 then
@@ -114,7 +114,7 @@ function buildRollResult(rSource, rTarget, rRoll)
 	rResult.bSourceNPC = (rSource and not ActorManager.isPC(rSource)) or false;
 	rResult.bTargetNPC = (rTarget and not ActorManager.isPC(rTarget)) or false;
 	rResult.sStat = RollManager.decodeStat(rRoll, true);
-	rResult.sDamageType = RollManager.decodeDamageType(rRoll);
+	rResult.sDamageType = (RollManager.decodeDamageType(rRoll) or ""):lower();
 	rResult.bPiercing, rResult.nPierceAmount = RollManager.decodePiercing(rRoll, true);
 	rResult.bAmbient = RollManager.decodeAmbientDamage(rRoll, true);
 	
@@ -170,7 +170,6 @@ function applyDamage(rSource, rTarget, bSecret, rResult)
 	local bPiercing, nPierceAmount = RollManager.decodePiercing(rResult, true);
 	local sDamageType = rResult.sDamageType;
 	local nTotal = rResult.nTotal;
-	local bUseDamageTypes = OptionsManagerCypher.replaceArmorWithDamageTypes()
 
 	-- Remember current health status
 	local sOriginalStatus = ActorHealthManager.getHealthStatus(rTarget);
@@ -277,7 +276,7 @@ function applyArmor(rSource, rTarget, nTotal, sStat, sDamageType, bPiercing, nPi
 
 	-- if damage type is not specified, then we make sure it has
 	-- the untyped value here. This makes all of the calcs easier
-	if not sDamageType then
+	if (sDamageType or "") == "" then
 		sDamageType = "untyped";
 	end
 	
@@ -286,9 +285,11 @@ function applyArmor(rSource, rTarget, nTotal, sStat, sDamageType, bPiercing, nPi
 		return 0;
 	end
 
-	local nArmorAdjust = ActorManagerCypher.getArmor(rTarget, rSource, sStat);
+	local nArmorAdjust = ActorManagerCypher.getArmor(rTarget, rSource, sStat, sDamageType);
 
-	if bPiercing then
+	-- only apply piercing if the armor adjustment is positive. 
+	-- negative armor adjust means there's a vulnerability to a dmg type
+	if bPiercing and nArmorAdjust > 0 then
 		-- if pierce amount is 0 (but bPierce is true), then pierce all armor
 		-- Otherwise it's a flat reduction
 		if nPierceAmount > 0 then
@@ -298,23 +299,22 @@ function applyArmor(rSource, rTarget, nTotal, sStat, sDamageType, bPiercing, nPi
 		end
 	end
 
-	-- if the adjusted armor is reduced to below 0
-	-- then we return all the damage
-	if nArmorAdjust <= 0 then
-		return nTotal;
+	-- If any amount of armor was applied, then we add a notification
+	if nArmorAdjust < 0 then -- Less than 0
+		table.insert(aNotifications, "[VULNERABLE]");
+	elseif nArmorAdjust == 0 then -- Equal to 0
+		-- Do nothing
+	elseif nArmorAdjust < nTotal then -- Greater than 0 but less than damage
+		table.insert(aNotifications, "[PARTIALLY RESISTED]");
+	elseif nArmorAdjust >= 0 then -- Equal or greater than damage
+		table.insert(aNotifications, "[RESISTED]");		
 	end
 
 	-- Apply the adjusted armor value to the total damage
-	nTotal = nTotal - nArmorAdjust;
+	-- Damage cannot fall below 0 though, otherwise that's healing
+	nTotal = math.max(nTotal - nArmorAdjust, 0);
 
-	-- If any amount of armor was applied, then we add a notification
-	if nTotal <= 0 then
-		table.insert(aNotifications, "[RESISTED]");
-	else
-		table.insert(aNotifications, "[PARTIALLY RESISTED]");
-	end
-
-	return nTotal
+	return nTotal 
 end
 
 function applyDamageToPc(rSource, rTarget, nDamage, sStat, sDamageType, aNotifications)

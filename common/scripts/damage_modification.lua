@@ -11,7 +11,7 @@ function migrate()
     -- Migrate the armor from "amount" node to "armor" node
     if amountNode then
         local nAmount = DB.getValue(amountNode);
-        DB.setValue(node, "armor", nAmount);
+        DB.setValue(node, "armor", "number", nAmount);
         DB.deleteNode(amountNode);
     end
 
@@ -37,6 +37,5 @@ end
 
 function update(bReadOnly)
     damagetype.setReadOnly(bReadOnly);
-    type.setReadOnly(bReadOnly);
-    amount.setReadOnly(bReadOnly);
+    armor.setReadOnly(bReadOnly);
 end

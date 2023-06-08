@@ -558,7 +558,7 @@ function decodeStat(rRoll, bPersist)
 	-- If there's no stat found with the STAT tag
 	-- Then look for it in the parenthesis in the roll type tag
 	if (sStat or "") == "" then
-		sStat = string.match(rRoll.sDesc, "^%[.- %((%w-)[.]-%)%]");
+		sStat = string.match(rRoll.sDesc, "^%[.-%s%((%w+),?%s?.-%)%]");
 	end
 	rRoll.sDesc = sText;
 
