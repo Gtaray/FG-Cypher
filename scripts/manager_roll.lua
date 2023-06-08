@@ -74,8 +74,9 @@ function applyDesktopAdjustments(rActor, rAction)
 end
 
 function addMaxAssetsToAction(rActor, rAction, aFilter)
-	-- if there's no stat, then we can't apply any effort or edge (no stat pool to pull from)
-	if not rActor or not ActorManager.isPC(rActor) or (rAction.sStat or "") == "" then
+	-- If for some reason there's no actor, default to 2.
+	if not rActor or not ActorManager.isPC(rActor) then
+		rAction.nMaxAssets = 2;
 		return;
 	end
 
