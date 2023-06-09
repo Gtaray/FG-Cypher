@@ -9,7 +9,7 @@
 	<windowclass name="charsheet_main">
 		<script file="campaign/scripts/char_main.lua" />
 		<sheetdata>
-			<!-- Overview -->
+			<!-- ADVANCEMENT -->
 			<frame_char name="overviewframe">
 				<bounds>15,0,480,50</bounds>
 			</frame_char>
@@ -132,93 +132,149 @@
 				<font>sheetlabelmini</font>
 				<static textres="char_label_adv_skill" />
 			</stringcontrol>
+
+			<!-- TYPE / FOCUS / DESCRIPTOR -->
+			<frame_char name="characterframe">
+				<bounds>165,50,328,190</bounds>
+			</frame_char>
+			<genericcontrol name="charanchor">
+				<anchored to="characterframe">
+					<top offset="15" />
+					<left offset="20" />
+				</anchored>
+				<invisible />
+			</genericcontrol>
+
+			<string_labeled_character_newline name="name">
+				<anchored width="244" />
+				<labelres>char_label_name</labelres>
+				<readonly />
+			</string_labeled_character_newline>
+			<label_character_overview name="label_is_a">
+				<anchored to="name" />
+				<static textres="char_label_main1" />
+			</label_character_overview>
+
+			<stringu_descriptor name="descriptor" source="class.descriptor" />
+			<linkfield_char_detail name="descriptorlink" source="class.descriptorlink">
+				<anchored to="descriptor" />
+				<description field="descriptor" />
+				<target>descriptor</target>
+			</linkfield_char_detail>
+
+			<stringu_ancestry name="ancestry" source="class.ancestry" />
+			<linkfield_char_detail name="ancestrylink" source="class.ancestrylink">
+				<anchored to="ancestry" />
+				<description field="ancestry" />
+				<target>ancestry</target>
+			</linkfield_char_detail>
+
+			<stringu_flavor name="flavor" source="class.flavor" />
+			<linkfield_char_detail name="flavorlink" source="class.flavorlink">
+				<anchored to="flavor" />
+				<description field="flavor" />
+				<target>flavor</target>
+			</linkfield_char_detail>
+
+			<label_character_overview name="label_flavor">
+				<anchored to="flavor">
+					<top />
+					<left offset="0" />
+				</anchored>
+				<static textres="char_label_main3" />
+			</label_character_overview>
+
+			<stringu_type name="type" source="class.type" />
+			<linkfield_char_detail name="typelink" source="class.typelink">
+				<anchored to="type" />
+				<description field="type" />
+				<target>type</target>
+			</linkfield_char_detail>
+
+			<label_character_overview name="label_who">
+				<anchored to="type" />
+				<static textres="char_label_main2" />
+			</label_character_overview>
+
+			<stringu_focus name="focus" source="class.focus" />
+			<linkfield_char_detail name="focuslink" source="class.focuslink">
+				<anchored to="focus" />
+				<description field="focus" />
+				<target>focus</target>
+			</linkfield_char_detail>
 			
 			<!-- STATS -->
 			<frame_char name="mightframe">
-				<bounds>15,50,150,120</bounds>
+				<bounds>15,50,150,130</bounds>
 			</frame_char>
 			<number_charabilitymax name="mightmax" source="abilities.might.max">
-				<anchored to="mightframe" position="insidetopright" offset="20,22" width="30" height="20" />
+				<anchored to="mightframe" />
 				<target>mightpool</target>
 			</number_charabilitymax>
 			<label_fieldtop>
 				<anchored to="mightmax" />
 				<static textres="char_label_statmax" />
 			</label_fieldtop>
-			<basicnumber name="mightedge" source="abilities.might.edge">
-				<anchored to="mightmax" position="belowleft" offset="0,15" width="30" height="20" />
-				<min>0</min>
-				<max>6</max>
-			</basicnumber>
+			<number_charedge name="mightedge" source="abilities.might.edge">
+				<anchored to="mightmax" />
+			</number_charedge>
 			<label_fieldtop>
 				<anchored to="mightedge" />
 				<static textres="char_label_statedge" />
 			</label_fieldtop>
 			<number_charabilitypool name="mightpool" source="abilities.might.current">
-				<anchored to="mightframe" position="insidetopleft" offset="20,30" width="60" height="45" />
+				<anchored to="mightframe" />
 				<stat>might</stat>
 			</number_charabilitypool>
-			<stringcontrol>
-				<anchored to="mightpool" position="above" offset="3,6" />
+			<label_charabilitypool>
+				<anchored to="mightpool" />
 				<static textres="char_label_might" />
-				<font>sheetlabel</font>
-				<center />
-			</stringcontrol>
+			</label_charabilitypool>
 
 			<button_defenseroll name="mightdefroll">
-				<anchored to="mightpool" position="belowleft" offset="-5,8" />
+				<anchored to="mightpool" />
 				<stat>might</stat>
 				<tooltip textres="char_tooltip_mightdef" />
 			</button_defenseroll>
-			<label name="mightdeflabel">
-				<anchored to="mightdefroll" position="righthigh" offset="3,2" />
-				<static textres="char_label_statdef" />
-			</label>
-			<button_skill name="mightdefskill" source="abilities.might.def.training">
-				<anchored to="mightdeflabel" position="righthigh" offset="7,0" width="15" height="20" />
-				<default>1</default>
-			</button_skill>
-			<basicnumber name="mightdefasset" source="abilities.might.def.asset">
-				<anchored to="mightdefskill" position="righthigh" offset="7,0" width="15" height="20" />
-				<tooltip textres="assets" />
-				<min>0</min>
-				<max>2</max>
-			</basicnumber>
-			<basicnumber name="mightdefmod" source="abilities.might.def.misc">
-				<anchored to="mightdefasset" position="righthigh" offset="7,0" width="15" height="20" />
-				<tooltip textres="modifier" />
-			</basicnumber>
+			<label_defenseroll name="mightdeflabel">
+				<anchored to="mightdefroll" />
+			</label_defenseroll>
+			<button_defensetraining name="mightdefskill" source="abilities.might.def.training">
+				<anchored to="mightdeflabel" />
+			</button_defensetraining>
+			<number_defenseasset name="mightdefasset" source="abilities.might.def.asset">
+				<anchored to="mightdefskill" />
+			</number_defenseasset>
+			<number_defensemod name="mightdefmod" source="abilities.might.def.misc">
+				<anchored to="mightdefasset" />
+			</number_defensemod>
 			
 			<frame_char name="speedframe">
-				<bounds>15,170,150,120</bounds>
+				<bounds>15,180,150,130</bounds>
 			</frame_char>
 			<number_charabilitymax name="speedmax" source="abilities.speed.max">
-				<anchored to="speedframe" position="insidetopright" offset="20,22" width="30" height="20" />
+				<anchored to="speedframe" />
 				<target>speedpool</target>
 			</number_charabilitymax>
 			<label_fieldtop>
 				<anchored to="speedmax" />
 				<static textres="char_label_statmax" />
 			</label_fieldtop>
-			<basicnumber name="speededge" source="abilities.speed.edge">
-				<anchored to="speedmax" position="belowleft" offset="0,15" width="30" height="20" />
-				<min>0</min>
-				<max>6</max>
-			</basicnumber>
+			<number_charedge name="speededge" source="abilities.speed.edge">
+				<anchored to="speedmax" />
+			</number_charedge>
 			<label_fieldtop>
 				<anchored to="speededge" />
 				<static textres="char_label_statedge" />
 			</label_fieldtop>
 			<number_charabilitypool name="speedpool" source="abilities.speed.current">
-				<anchored to="speedframe" position="insidetopleft" offset="20,30" width="60" height="45" />
+				<anchored to="speedframe" />
 				<stat>speed</stat>
 			</number_charabilitypool>
-			<stringcontrol>
-				<anchored to="speedpool" position="above" offset="3,6" />
+			<label_charabilitypool>
+				<anchored to="speedpool" />
 				<static textres="char_label_speed" />
-				<font>sheetlabel</font>
-				<center />
-			</stringcontrol>
+			</label_charabilitypool>
 			
 			<genericcontrol name="speedarmor_notice">
 				<anchored to="speedpool" position="righthigh" offset="-3,-5" width="10" height="10" />
@@ -239,87 +295,71 @@
 			</hn>
 
 			<button_defenseroll name="speeddefroll">
-				<anchored to="speedpool" position="belowleft" offset="-5,8" />
+				<anchored to="speedpool" />
 				<stat>speed</stat>
 				<tooltip textres="char_tooltip_speeddef" />
 			</button_defenseroll>
-			<label name="speeddeflabel">
-				<anchored to="speeddefroll" position="righthigh" offset="3,2" />
-				<static textres="char_label_statdef" />
-			</label>
-			<button_skill name="speeddefskill" source="abilities.speed.def.training">
-				<anchored to="speeddeflabel" position="righthigh" offset="7,0" width="15" height="20" />
-				<default>1</default>
-			</button_skill>
-			<basicnumber name="speeddefasset" source="abilities.speed.def.asset">
-				<anchored to="speeddefskill" position="righthigh" offset="7,0" width="15" height="20" />
-				<tooltip textres="assets" />
-				<min>0</min>
-				<max>2</max>
-			</basicnumber>
-			<basicnumber name="speeddefmod" source="abilities.speed.def.misc">
-				<anchored to="speeddefasset" position="righthigh" offset="7,0" width="15" height="20" />
-				<tooltip textres="modifier" />
-			</basicnumber>
+			<label_defenseroll name="speeddeflabel">
+				<anchored to="speeddefroll" />
+			</label_defenseroll>
+			<button_defensetraining name="speeddefskill" source="abilities.speed.def.training">
+				<anchored to="speeddeflabel" />
+			</button_defensetraining>
+			<number_defenseasset name="speeddefasset" source="abilities.speed.def.asset">
+				<anchored to="speeddefskill" />
+			</number_defenseasset>
+			<number_defensemod name="speeddefmod" source="abilities.speed.def.misc">
+				<anchored to="speeddefasset" />
+			</number_defensemod>
 			
 			<frame_char name="intellectframe">
-				<bounds>15,290,150,120</bounds>
+				<bounds>15,310,150,130</bounds>
 			</frame_char>
 			<number_charabilitymax name="intellectmax" source="abilities.intellect.max">
-				<anchored to="intellectframe" position="insidetopright" offset="20,22" width="30" height="20" />
+				<anchored to="intellectframe" />
 				<target>intellectpool</target>
 			</number_charabilitymax>
 			<label_fieldtop>
 				<anchored to="intellectmax" />
 				<static textres="char_label_statmax" />
 			</label_fieldtop>
-			<basicnumber name="intellectedge" source="abilities.intellect.edge">
-				<anchored to="intellectmax" position="belowleft" offset="0,15" width="30" height="20" />
-				<min>0</min>
-				<max>6</max>
-			</basicnumber>
+			<number_charedge name="intellectedge" source="abilities.intellect.edge">
+				<anchored to="intellectmax" />
+			</number_charedge>
 			<label_fieldtop>
 				<anchored to="intellectedge" />
 				<static textres="char_label_statedge" />
 			</label_fieldtop>
 			<number_charabilitypool name="intellectpool" source="abilities.intellect.current">
-				<anchored to="intellectframe" position="insidetopleft" offset="20,30" width="60" height="45" />
+				<anchored to="intellectframe" />
 				<stat>intellect</stat>
 			</number_charabilitypool>
-			<stringcontrol>
-				<anchored to="intellectpool" position="above" offset="3,6" />
+			<label_charabilitypool>
+				<anchored to="intellectpool" />
 				<static textres="char_label_intellect" />
-				<font>sheetlabel</font>
-				<center />
-			</stringcontrol>
+			</label_charabilitypool>
 			
 			<button_defenseroll name="intellectdefroll">
-				<anchored to="intellectpool" position="belowleft" offset="-5,8" />
+				<anchored to="intellectpool" />
 				<stat>intellect</stat>
 				<tooltip textres="char_tooltip_intellectdef" />
 			</button_defenseroll>
-			<label name="intellectdeflabel">
-				<anchored to="intellectdefroll" position="righthigh" offset="3,2" />
-				<static textres="char_label_statdef" />
-			</label>
-			<button_skill name="intellectdefskill" source="abilities.intellect.def.training">
-				<anchored to="intellectdeflabel" position="righthigh" offset="7,0" width="15" height="20" />
-				<default>1</default>
-			</button_skill>
-			<basicnumber name="intellectdefasset" source="abilities.intellect.def.asset">
-				<anchored to="intellectdefskill" position="righthigh" offset="7,0" width="15" height="20" />
-				<tooltip textres="assets" />
-				<min>0</min>
-				<max>2</max>
-			</basicnumber>
-			<basicnumber name="intellectdefmod" source="abilities.intellect.def.misc">
-				<anchored to="intellectdefasset" position="righthigh" offset="7,0" width="15" height="20" />
-				<tooltip textres="modifier" />
-			</basicnumber>
+			<label_defenseroll name="intellectdeflabel">
+				<anchored to="intellectdefroll" />
+			</label_defenseroll>
+			<button_defensetraining name="intellectdefskill" source="abilities.intellect.def.training">
+				<anchored to="intellectdeflabel" />
+			</button_defensetraining>
+			<number_defenseasset name="intellectdefasset" source="abilities.intellect.def.asset">
+				<anchored to="intellectdefskill" />
+			</number_defenseasset>
+			<number_defensemod name="intellectdefmod" source="abilities.intellect.def.misc">
+				<anchored to="intellectdefasset" />
+			</number_defensemod>
 
 			<!-- ARMOR -->
 			<frame_char name="armorframe">
-				<bounds>165,220,328,-81</bounds>
+				<bounds>165,240,328,-81</bounds>
 			</frame_char>
 			<label name="armor_label">
 				<anchored to="armorframe" height="20" width="40">

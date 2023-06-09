@@ -25,6 +25,7 @@
 					nLast = nNewMax;
 				end
 			</script>
+			<anchored position="insidetopright" offset="20,25" width="30" height="20" />
 		</basicnumber>
 	</template>
 	<template name="number_charabilitypool">
@@ -38,14 +39,55 @@
 			</droptypes>
 			<rollable />
 			<script file="campaign/scripts/number_char_ability_pool.lua" />
+			<anchored position="insidetopleft" offset="20,35" width="60" height="45" />
 		</number_dropadd>
+	</template>
+	<template name="label_charabilitypool">
+		<stringcontrol>
+			<anchored position="above" offset="3,6" />
+			<font>sheetlabel</font>
+			<center />
+		</stringcontrol>
+	</template>
+	<template name="number_charedge">
+		<basicnumber>
+			<anchored position="belowleft" offset="0,20" width="30" height="20" />
+			<min>0</min>
+			<max>6</max>
+		</basicnumber>
 	</template>
 
 	<template name="button_defenseroll">
 		<button_roll>
-			<anchored width="25" height="25" />
+			<anchored position="belowleft" offset="-5,15" width="25" height="25" />
 			<script file="campaign/scripts/button_defenseroll.lua" />
 		</button_roll>
+	</template>
+	<template name="label_defenseroll">
+		<label>
+			<anchored position="righthigh" offset="3,2" />
+			<static textres="char_label_statdef" />
+		</label>
+	</template>
+	<template name="button_defensetraining">
+		<button_skill>
+			<anchored position="righthigh" offset="7,0" width="15" height="20" />
+			<default>1</default>
+		</button_skill>
+	</template>
+	<template name="number_defenseasset">
+		<basicnumber>
+			<anchored position="righthigh" offset="7,0" width="15" height="20" />
+			<tooltip textres="assets" />
+			<min>0</min>
+			<max>2</max>
+		</basicnumber>
+	</template>
+	<template name="number_defensemod">
+		<basicnumber>
+			<anchored position="righthigh" offset="7,0" width="15" height="20" />
+			<tooltip textres="modifier" />
+		</basicnumber>
 	</template>
 	
 	<template name="button_stat">
@@ -176,7 +218,7 @@
 
 	<template name="sub_charsheet_overview">
 		<subwindow>
-			<bounds>15,20,-30,100</bounds>
+			<bounds>15,20,-30,50</bounds>
 			<activate />
 			<fastinit />
 			<class>charsheet_overview</class>
@@ -184,7 +226,7 @@
 	</template>
 	<template name="sub_charsheet">
 		<subwindow>
-			<bounds>0,100,-1,-20</bounds>
+			<bounds>0,70,-1,-20</bounds>
 		</subwindow>
 	</template>
 
@@ -214,5 +256,145 @@
 				end
 			</script>
 		</windowlist>
+	</template>
+
+	<!-- TEMPLATES FOR CHARACTER TYPE, FOCUS, DESRIPTION, FLAVOR, ANCESTRY -->
+	<template name="string_labeled_character">
+		<string_labeled>
+			<script file="campaign/scripts/string_labeled_character.lua" />
+			<anchored height="20">
+				<top />
+				<left anchor="right" offset="10" />
+			</anchored>
+		</string_labeled>
+	</template>
+	<template name="string_labeled_character_newline">
+		<string_labeled_character>
+			<anchored to="charanchor">
+				<top anchor="bottom" relation="relative" offset="10" />
+				<left />
+			</anchored>
+		</string_labeled_character>
+	</template>
+	<template name="label_character_overview">
+		<label>
+			<anchored height="20">
+				<top />
+				<left anchor="right" relation="relative" offset="5" />
+			</anchored>
+		</label>
+	</template>
+
+	<template name="stringu_descriptor">
+		<string_labeled_character_newline>
+			<anchored width="104" />
+			<labelres>char_label_descriptor</labelres>
+		</string_labeled_character_newline>
+	</template>
+	<template name="stringu_ancestry">
+		<string_labeled_character>
+			<anchored to="descriptorlink" width="146" />
+			<labelres>char_label_ancestry</labelres>
+			<hidewhenempty />
+			<script>
+				function onValueChanged()
+					super.onValueChanged();
+					window.type.updateAnchor();
+				end
+			</script>
+		</string_labeled_character>
+	</template>
+	<template name="stringu_flavor">
+		<string_labeled_character_newline>
+			<anchored width="102" />
+			<labelres>char_label_flavor</labelres>
+			<hidewhenempty />
+			<label>label_flavor</label>
+			<script>
+				function onValueChanged()
+					super.onValueChanged();
+					window.type.updateAnchor();
+				end
+			</script>
+		</string_labeled_character_newline>
+	</template>
+	<template name="stringu_type">
+		<string_labeled_character>
+			<script>
+				function onInit()
+					super.onInit();
+					updateAnchor();
+				end
+				function updateAnchor()
+					resetAnchor("top");
+					resetAnchor("left");
+					if window.label_flavor.isVisible() then
+						setAnchor("top", "label_flavor", "top", "absolute", 0);
+						setAnchor("left", "label_flavor", "right", "absolute", 0);
+						return;
+					end
+
+					if window.ancestry.isVisible() then
+						setAnchor("top", "charanchor", "bottom", "relative", 10);
+						setAnchor("left", "charanchor", "left", "absolute", 10);
+						return;
+					end
+
+					setAnchor("top", "descriptorlink", "top", "absolute", 0);
+					setAnchor("left", "descriptorlink", "right", "absolute", 10);
+				end
+			</script>
+			<anchored to="descriptorlink" width="115" />
+			<labelres>char_label_type</labelres>
+		</string_labeled_character>
+	</template>
+	<template name="stringu_focus">
+		<string_labeled_character_newline>
+			<anchored width="265" />
+			<labelres>char_label_focus</labelres>
+		</string_labeled_character_newline>
+	</template>
+
+	<template name="linkfield_char_detail">
+		<linkfield_statich>
+			<!-- This bit of script is a little janky, but I do this because the 
+			character fields can be re-ordered and this is the simplest way to handle
+			dynamically adding a link without throwing off the alignment -->
+			<script>
+				local nWidth;
+				function onInit()
+					if target and target[1] and window[target[1]] then
+						nWidth = window[target[1]].getSize();
+					end
+					registerMenuItem(Interface.getString("char_menu_clear"), "delete", 5)
+					super.onInit();
+				end
+				function onValueChanged()
+					super.onValueChanged();
+					if target and target[1] and window[target[1]] and nWidth then
+						if isVisible() then
+							window[target[1]].setAnchoredWidth(nWidth - 20);
+						else
+							window[target[1]].setAnchoredWidth(nWidth);
+						end
+					end
+				end
+				function onMenuSelection(selection)
+					if selection == 5 then
+
+						if target and target[1] and window[target[1]] then
+							window[target[1]].setValue("");
+							setValue("", "");
+							window[target[1]].onValueChanged();
+						end
+					end
+				end
+			</script>
+			<anchored width="20" height="20">
+				<top />
+				<left anchor="right" relation="relative" offset="5" />
+			</anchored>
+			<closetoggle />
+		</linkfield_statich>
 	</template>
 </root>

@@ -73,9 +73,12 @@
 	<!-- Character - Main -->
 	<string name="char_label_main1">is a</string>
 	<string name="char_label_main2">who</string>
+	<string name="char_label_main3">&#x2014;</string>
 	<string name="char_label_descriptor">DESCRIPTOR</string>
 	<string name="char_label_type">TYPE</string>
 	<string name="char_label_focus">FOCUS</string>
+	<string name="char_label_ancestry">ANCESTRY</string>
+	<string name="char_label_flavor">FLAVOR</string>
 	<string name="char_label_tier">TIER</string>
 	<string name="char_label_effort">EFFORT</string>
 	<string name="char_label_hero">HERO PTS</string>
@@ -107,6 +110,14 @@
 	<string name="char_label_armorspeedcost">Speed Effort Cost</string>
 	<string name="char_tooltip_armorspeedcost">Increase to the cost of spending effort on speed tests due to wearing armor.</string>
 	<string name="char_header_special_defenses">Special Defenses</string>
+
+	<string name="char_message_add_type">Type '%s' added to '%s'</string>
+	<string name="char_message_add_descriptor">Descriptor '%s' added to '%s'</string>
+	<string name="char_message_add_focus">Focus '%s' added to '%s'</string>
+	<string name="char_message_add_ancestry">Ancestry '%s' added to '%s'</string>
+	<string name="char_message_add_flavor">Flavor '%s' added to '%s'</string>
+
+	<string name="char_menu_clear">Clear</string>
 
 	<!-- Character - Skills -->
 	<string name="power_label_training">Training</string>
@@ -285,6 +296,16 @@
 	<string name="library_recordtype_label_focus">Foci</string>
 	<string name="library_recordtype_empty_focus">&#171; New Focus &#187;</string>
 	<string name="library_recordtype_ref_focus">Focus</string>
+
+	<!-- Flavor -->
+	<string name="library_recordtype_label_flavor">Flavors</string>
+	<string name="library_recordtype_empty_flavor">&#171; New Flavor &#187;</string>
+	<string name="library_recordtype_ref_flavor">Flavor</string>
+
+	<!-- Ancestry -->
+	<string name="library_recordtype_label_ancestry">Ancestries</string>
+	<string name="library_recordtype_empty_ancestry">&#171; New Ancestry &#187;</string>
+	<string name="library_recordtype_ref_ancestry">Ancestry</string>
     
 	<!-- NPCs -->
 	<string name="npc_label_level">Level</string>

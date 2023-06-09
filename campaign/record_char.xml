@@ -70,53 +70,16 @@
 	<windowclass name="charsheet_overview" merge="join">
 		<sheetdata>
 			<frame_char name="overviewframe">
-				<anchored height="80" />
-			</frame_char>
-
-			<!-- <linkfield_statich name="typelink" source="class.typelink">
-				<anchored to="overviewframe" width="20" height="20">
-					<top offset="15" />
-					<left offset="65" />
-				</anchored>
-				<description field="chartype" />
-				<closetoggle />
-			</linkfield_statich> -->
-			<string_labeled name="chartype" source="class.type" insertbefore="name">
-				<anchored to="overviewframe" position="insidetopright" offset="15,10" width="50" height="20">
-					<!-- <right parent="typelink" anchor="left" offset="-5" /> -->
-				</anchored>
-				<labelres>char_label_type</labelres>
-				<tabtarget next="charfocus" prev="chardescriptor" />
-			</string_labeled>
-
-			<string_labeled name="chardescriptor" source="class.descriptor" insertbefore="name">
-				<anchored to="chartype" position="lefthigh" offset="5,0" width="100" height="20" />
-				<labelres>char_label_descriptor</labelres>
-				<tabtarget next="chartype" prev="name" />
-			</string_labeled>
-			<label name="overview_label" insertbefore="name">
-				<anchored to="chardescriptor" position="lefthigh" offset="5,0" />
-				<static textres="char_label_main1" />
-			</label>
+				<anchored height="50" />
+			</frame_char>			
 
 			<string_labeled name="name" merge="replace">
-				<anchored to="overview_label" position="lefthigh" offset="5,0" height="20">
-					<left parent="overviewframe" anchor="left" offset="15"/>
+				<anchored to="overviewframe" height="20">
+					<left offset="15" />
+					<bottom offset="-20" />
+					<right offset="-15" />
 				</anchored>
 				<labelres>char_label_name</labelres>
-				<tabtarget next="chardescriptor" />
-			</string_labeled>
-			<label name="overview_label2">
-				<anchored to="name" position="belowleft" offset="10,10" />
-				<static textres="char_label_main2" />
-			</label>
-
-			<string_labeled name="charfocus" source="class.focus">
-				<anchored to="overview_label2" position="righthigh" offset="5,0" height="20">
-					<right parent="overviewframe" offset="-15" />
-				</anchored>
-				<labelres>char_label_focus</labelres>
-				<tabtarget next="main" prev="chartype" />
 			</string_labeled>
 		</sheetdata>
 	</windowclass>

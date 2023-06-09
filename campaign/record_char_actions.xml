@@ -72,7 +72,7 @@
 
 			<!-- STATS -->
 			<number_charabilitypool name="mightpool" source="abilities.might.current">
-				<anchored to="armorframe" width="50" height="30">
+				<anchored to="armorframe" width="50" height="30" merge="replace">
 					<left offset="25" />
 					<bottom offset="-10" />
 				</anchored>
@@ -83,7 +83,7 @@
 				<static textres="char_label_might" />
 			</label_fieldtop>
 			<button_defenseroll name="mightdefroll">
-				<anchored to="mightpool">
+				<anchored to="mightpool" height="25" width="25" merge="replace">
 					<bottom />
 					<left anchor="right" offset="5" />
 				</anchored>
@@ -96,7 +96,7 @@
 			</label_fieldtop>
 
 			<number_charabilitypool name="speedpool" source="abilities.speed.current">
-				<anchored to="mightdefroll" width="50" height="30">
+				<anchored to="mightdefroll" width="50" height="30" merge="replace">
 					<bottom />
 					<left anchor="right" offset="30" />
 				</anchored>
@@ -107,7 +107,7 @@
 				<static textres="char_label_speed" />
 			</label_fieldtop>
 			<button_defenseroll name="speeddefroll">
-				<anchored to="speedpool">
+				<anchored to="speedpool" height="25" width="25" merge="replace">
 					<bottom />
 					<left anchor="right" offset="5" />
 				</anchored>
@@ -120,7 +120,7 @@
 			</label_fieldtop>
 
 			<number_charabilitypool name="intellectpool" source="abilities.intellect.current">
-				<anchored to="speeddefroll" width="50" height="30">
+				<anchored to="speeddefroll" width="50" height="30" merge="replace">
 					<bottom />
 					<left anchor="right" offset="30" />
 				</anchored>
@@ -131,7 +131,7 @@
 				<static textres="char_label_intellect" />
 			</label_fieldtop>
 			<button_defenseroll name="intellectdefroll">
-				<anchored to="intellectpool">
+				<anchored to="intellectpool" height="25" width="25" merge="replace">
 					<bottom />
 					<left anchor="right" offset="5" />
 				</anchored>

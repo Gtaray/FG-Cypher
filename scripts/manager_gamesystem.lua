@@ -59,6 +59,18 @@ aRecordOverrides = {
 		aDataMap = { "focus", "reference.focus" },
 		sRecordDisplayClass = "focus",
 		sSidebarCategory = "create",
+	},
+	["flavor"] = {
+		bExport = true,
+		aDataMap = { "flavor", "reference.flavor" },
+		sRecordDisplayClass = "flavor",
+		sSidebarCategory = "create",
+	},
+	["ancestry"] = {
+		bExport = true,
+		aDataMap = { "ancestry", "reference.ancestry" },
+		sRecordDisplayClass = "ancestry",
+		sSidebarCategory = "create",
 	}
 }
 

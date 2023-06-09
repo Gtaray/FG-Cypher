@@ -7,6 +7,62 @@ function onInit()
 	ItemManager.setCustomCharAdd(onCharItemAdd);
 end
 
+function outputUserMessage(sResource, ...)
+	local sFormat = Interface.getString(sResource);
+	local sMsg = string.format(sFormat, ...);
+	ChatManager.SystemMessage(sMsg);
+end
+
+-------------------------------------------------------------------------------
+-- Character sheet drops
+-------------------------------------------------------------------------------
+function addInfoDB(nodeChar, sClass, sRecord)
+	-- Validate parameters
+	if not nodeChar then
+		return false;
+	end
+	
+	if sClass == "type" then
+		CharTypeManager.addTypeDrop(nodeChar, sClass, sRecord);
+	elseif sClass == "descriptor" then
+		CharDescriptorManager.addDescriptorDrop(nodeChar, sClass, sRecord);
+	elseif sClass == "focus" then
+		CharFocusManager.addFocusDrop(nodeChar, sClass, sRecord);
+	elseif sClass == "ancestry" then
+		CharAncestryManager.addAncestryDrop(nodeChar, sClass, sRecord);
+	elseif sClass ==  "flavor" then
+		CharFlavorManager.addFlavorDrop(nodeChar, sClass, sRecord);
+	else
+		return false;
+	end
+	
+	return true;
+end
+
+function helperBuildAddStructure(nodeChar, sClass, sRecord)
+	if not nodeChar or ((sClass or "") == "") or ((sRecord or "") == "") then
+		return nil;
+	end
+
+	local rAdd = { };
+	rAdd.nodeSource = DB.findNode(sRecord);
+	if not rAdd.nodeSource then
+		return nil;
+	end
+
+	rAdd.sSourceClass = sClass;
+	rAdd.sSourceName = StringManager.trim(DB.getValue(rAdd.nodeSource, "name", ""));
+	rAdd.nodeChar = nodeChar;
+	rAdd.sCharName = StringManager.trim(DB.getValue(nodeChar, "name", ""));
+
+	rAdd.sSourceType = StringManager.simplify(rAdd.sSourceName);
+	if rAdd.sSourceType == "" then
+		rAdd.sSourceType = DB.getName(rAdd.nodeSource);
+	end
+
+	return rAdd;
+end
+
 -------------------------------------------------------------------------------
 -- ADVANCEMENTS
 -------------------------------------------------------------------------------
