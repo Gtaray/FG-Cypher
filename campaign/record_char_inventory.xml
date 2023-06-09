@@ -92,6 +92,12 @@
 		</sheetdata>
 	</windowclass>
 
+	<windowclass name="char_currency" merge="join">
+		<sheetdata>
+			<basicnumber name="coinother" merge="delete" />
+		</sheetdata>
+	</windowclass>
+
 	<windowclass name="char_invitem" merge="join">
 		<sheetdata>
 			<button_char_inv_carried name="carried" merge="delete" />
