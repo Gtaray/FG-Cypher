@@ -96,7 +96,6 @@
 	<string name="char_tooltip_mightdef">Might Defense</string>
 	<string name="char_tooltip_speeddef">Speed Defense</string>
 	<string name="char_tooltip_intellectdef">Intellect Defense</string>
-	<string name="char_label_skills">SKILLS</string>
 	
 	<string name="char_label_status">DAMAGE TRACK</string>
 	<string name="char_label_recovery">RECOVERY</string>
@@ -120,6 +119,7 @@
 	<string name="char_menu_clear">Clear</string>
 
 	<!-- Character - Skills -->
+	<string name="char_label_skills">Skills</string>
 	<string name="power_label_training">Training</string>
 	<string name="char_label_skillmodifier">Mod</string>
 	<string name="char_label_skillassets">Assets</string>
@@ -139,7 +139,7 @@
 	<string name="char_message_not_enough_xp">You do not have enough XP for an advancement.</string>
 	<string name="char_message_advancement_taken">%s took an advancement to %s.</string>
 	<string name="char_message_tier_increase">%s advanced to tier %s.</string>
-	
+
 	<!-- Character - Actions -->
 	<string name="char_label_attacks">Attacks</string>
 	<string name="char_title_attack_editor">Attack Editor</string>
@@ -153,6 +153,9 @@
 	<string name="char_label_weapontype_heavy">Heavy</string>
 
 	<string name="char_label_abilityname">Abilities</string>
+	<string name="char_menu_hideability">Hide ability from the Action tab</string>
+	<string name="char_menu_showability">Show ability on the Action tab</string>
+	<string name="char_menu_confirm">Confirm</string>
 
 	<!-- Character - Inventory -->
 	<string name="char_label_invtype">Type</string>

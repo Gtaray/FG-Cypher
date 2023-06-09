@@ -18,9 +18,11 @@ function onInit()
 		DB.deleteNode(DB.getChild(node, "statcost"));
 	end
 
-
 	PowerManagerCore.registerDefaultPowerMenu(self);
 	PowerManagerCore.handleDefaultPowerInitParse(node);
+
+	registerMenuItem(Interface.getString("char_menu_hideability"), "tokenvisibility", 7);
+	registerMenuItem(Interface.getString("char_menu_confirm"), "tokenvisibility", 7, 7);
 
 	self.updateDetailButton();
 	self.toggleDetail();
@@ -36,6 +38,7 @@ function onInit()
 		onUsePeriodChanged();
 	end
 end
+
 function onClose()
 	if super and super.onClose then
 		super.onClose();
@@ -51,6 +54,10 @@ function getCharNode()
 end
 
 function onMenuSelection(...)
+	local args = { ... }
+	if args[1] == 7 and args[2] == 7 then
+		DB.setValue(getDatabaseNode(), "actionTabVisibility", "string", "hide")
+	end
 	PowerManagerCore.onDefaultPowerMenuSelection(self, ...)
 end
 

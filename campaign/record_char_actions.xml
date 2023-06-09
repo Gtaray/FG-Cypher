@@ -213,6 +213,7 @@
 				<allowcreate />
 				<allowdelete />
 				<sortby><control>name</control></sortby>
+				<script file="campaign/scripts/list_abilityactions.lua" />
 			</list_text>
 			<scrollbar>
 				<anchored to="abilitylist" />

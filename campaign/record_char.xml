@@ -31,6 +31,9 @@
 			<sub_charsheet name="inventory">
 				<class>charsheet_inventory</class>
 			</sub_charsheet>
+			<sub_charsheet name="abilities">
+				<class>charsheet_abilities</class>
+			</sub_charsheet>
 			<sub_charsheet name="notes">
 				<class>charsheet_notes</class>
 			</sub_charsheet>
@@ -50,6 +53,10 @@
 				<tab>
 					<icon>tab_inventory</icon>
 					<subwindow>inventory</subwindow>
+				</tab>
+				<tab>
+					<icon>tab_abilities</icon>
+					<subwindow>abilities</subwindow>
 				</tab>
 				<tab>
 					<icon>tab_notes</icon>

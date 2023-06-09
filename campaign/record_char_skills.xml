@@ -100,14 +100,11 @@
 			</scrollbar>
 
 			<button_iedit name="skills_iedit">
-				<anchored to="header_skills">
-					<top />
-					<right anchor="right" offset="-30" />
-				</anchored>
+				<anchored to="skills" position="aboveright" offset="-13,30" />
 				<target>skills</target>
 			</button_iedit>
 			<button_iadd name="skills_iadd">
-				<anchored to="skills_iedit" position="lefthigh" offset="5,0" />
+				<anchored to="skills_iedit" position="lefthigh" offset="3,0" />
 				<target>skills</target>
 			</button_iadd>
 		</sheetdata>
