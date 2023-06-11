@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<root>
+	<!-- HEAL -->
+	<windowclass name="power_action_heal">
+		<margins control="0,0,0,2" />
+		<script>
+			function onInit()
+				self.onDataChanged();
+				DB.addHandler(getDatabaseNode(), "onChildUpdate", self.onDataChanged);
+			end
+			function onClose()
+				DB.removeHandler(getDatabaseNode(), "onChildUpdate", self.onDataChanged);
+			end
+			function onDataChanged()
+				healview.setValue(PowerActionManagerCore.getActionText(getDatabaseNode()));
+			end
+			function performAction(draginfo, sSubRoll)
+				PowerActionManagerCore.performAction(draginfo, getDatabaseNode(), { sSubRoll = sSubRoll });
+			end
+		</script>
+		<sheetdata>
+			<button_poweraction name="healbutton">
+				<anchored position="insidetopleft" offset="2,2" />
+				<icon normal="button_action_heal" pressed="button_action_heal_down" />
+			</button_poweraction>
+			<label name="heallabel">
+				<anchored to="healbutton" position="righthigh" offset="5,0" width="40" />
+				<static textres="power_label_heal" />
+			</label>
+			<button_iconcycler name="healtargeting">
+				<anchored to="heallabel" position="righthigh" offset="5,5" width="30" height="10" />
+				<parameters>
+					<icons>button_toggle_self</icons>
+					<values>self</values>
+					<tooltipsres>power_tooltip_targetself</tooltipsres>
+					<defaulticon>button_toggle_trgt</defaulticon>
+					<defaulttooltipres>power_tooltip_targetnormal</defaulttooltipres>
+				</parameters>
+			</button_iconcycler>
+			<string_poweractionview name="healview">
+				<anchored to="heallabel" position="righthigh" offset="40,0">
+					<right parent="" offset="-5" />
+				</anchored>
+			</string_poweractionview>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="power_action_editor_heal">
+		<script>
+			function onInit()
+				updateCostType();
+			end
+			function updateCostType()
+				local sSource = PowerManager.getActionNodeSource(getDatabaseNode());
+				local bNPC = sSource == "npc";
+
+				local bFixed = DB.getValue(getDatabaseNode(), "costtype", "") == "fixed";
+				header_cost.setVisible(not bNPC);
+				costtype_label.setVisible(not bNPC);
+				costtype.setVisible(not bNPC);
+
+				costtext1.setVisible(not bNPC and bFixed);
+				cost.setVisible(not bNPC and bFixed);
+				cost_label.setVisible(not bNPC and bFixed);
+				costtext2.setVisible(not bNPC and bFixed);
+				coststat.setVisible(not bNPC and bFixed);
+				coststat_label.setVisible(not bNPC and bFixed);				
+				costtext3.setVisible(not bNPC and bFixed);
+			end
+		</script>
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+			
+			<label_column name="name_label">
+				<static textres="power_label_name" />
+			</label_column>
+			<stringc_column name="name" />
+
+			<header_column name="header_heal">
+				<static textres="power_header_heal" />
+				<center />
+			</header_column>
+
+			<label_column name="healtext1">
+				<anchored width="21">
+					<top offset="20" />
+				</anchored>
+				<static textres="power_label_heal_text_1" />
+			</label_column>
+			<column_stat name="stat">
+				<anchored width="65">
+					<top offset="20" />
+					<left parent="healtext1" anchor="right" relation="relative" offset="10" />
+				</anchored>
+			</column_stat>
+			<label_fieldtop name="stat_label">
+				<anchored to="stat" />
+				<static textres="power_label_stat" />
+			</label_fieldtop>
+			<label name="healtext2">
+				<anchored to="stat" width="45">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_heal_text_2" />
+			</label>
+			<button_stringcycler name="healtargeting">
+				<anchored to="stat" width="60" height="20">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<parameters>
+					<defaultlabelres>power_label_targetnormal</defaultlabelres>
+					<labelsres>power_label_targetself</labelsres>
+					<values>self</values>
+				</parameters>
+			</button_stringcycler>
+			<label_fieldtop name="healtargeting_label">
+				<static textres="power_label_targeting" />
+				<anchored to="healtargeting" />
+			</label_fieldtop>
+			<label name="healtext3">
+				<anchored to="stat" width="18">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_heal_text_3" />
+			</label>
+			<basicnumber name="heal">
+				<anchored to="stat" width="30" height="20">
+					<top  />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<min>0</min>
+			</basicnumber>
+			<label_fieldtop>
+				<anchored to="heal" />
+				<static textres="power_label_healamount" />
+			</label_fieldtop>
+			<button_stat name="healstat">
+				<anchored to="stat" width="70" height="20">
+					<top  />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<tooltip textres="power_tooltip_healstat" />
+			</button_stat>
+			<label_fieldtop>
+				<anchored to="healstat" />
+				<static textres="power_label_healstat" />
+			</label_fieldtop>
+
+			<header_column name="header_cost">
+				<static textres="power_header_cost" />
+				<center />
+			</header_column>
+			<label_column name="costtype_label">
+				<static textres="power_label_costtype" />
+			</label_column>
+			<cycler_costtype name="costtype" />
+			
+			<label_column name="costtext1">
+				<anchored>
+					<top offset="20" />
+				</anchored>
+				<static textres="power_label_cost_texft_1" />
+			</label_column>
+			<number_column name="cost">
+				<anchored to="costtext1" width="25" height="20">
+					<top offset="20" />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<min>0</min>
+			</number_column>
+			<label_fieldtop name="cost_label">
+				<anchored to="cost" />
+				<static textres="power_label_cost" />
+			</label_fieldtop>
+			<label name="costtext2">
+				<anchored to="cost" width="93">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_cost_texft_2" />
+			</label>
+			<button_stat name="coststat">
+				<anchored to="cost" width="70" height="20">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<tooltip textres="power_tooltip_coststat" />
+			</button_stat>
+			<label_fieldtop name="coststat_label">
+				<anchored to="coststat" />
+				<static textres="power_label_coststat" />
+			</label_fieldtop>
+			<label name="costtext3">
+				<anchored to="cost" width="40">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_cost_texft_3" />
+			</label>
+
+			<sub_action_editor_cypher name="cypheradjustments" />
+		</sheetdata>
+	</windowclass>
+</root>

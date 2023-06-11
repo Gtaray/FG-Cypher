@@ -5,7 +5,18 @@ end
 function onItemTransfer(rSource, rTemp, rTarget)
 	-- Handle automatically rolling levels for cyphers
 	if rSource.sType == "item" and (rTarget.sType == "treasureparcel" or rTarget.sType == "charsheet" or rTarget.sType == "partysheet") then
-		ItemManagerCypher.generateCypherLevel(rTemp.node, false);
+		CypherManager.generateCypherLevel(rTemp.node, false);
+	end
+end
+
+function onPostItemTransfer(rSourceItem, rTargetItem)
+	-- Only handle items added to PC sheet
+	if not rSourceItem.sType == "item" or not rTargetItem.sType == "charsheet" then
+		return;
+	end
+
+	if DB.getChildCount(rSourceItem.node, "actions") > 0 then
+		
 	end
 end
 
@@ -146,33 +157,4 @@ function getWeaponPiercing(itemNode)
 	-- If piercing is disabled, then we return a negative value
 	-- because a 0 means ignore all armor
 	return -1;
-end
-
-----------------------------------------------------------------------
--- CYPHER
-----------------------------------------------------------------------
-
-function generateCypherLevel(itemNode, bOverrideLevel)
-	-- No matter what, we don't do this for non-cyphers
-	if not ItemManagerCypher.isItemCypher(itemNode) then
-		return 0;
-	end
-
-	-- Only set the level if nLevel is 0 OR if bOverrideLevel is true
-	-- This tests the negative case of that
-	local nLevel = DB.getValue(itemNode, "level", 0);
-	if not bOverrideLevel and nLevel ~= 0 then
-		return nLevel;
-	end
-
-	-- We can only roll the level if the levelroll value is actually a dice string
-	local sLevelRoll = DB.getValue(itemNode, "levelroll", "");
-	if not StringManager.isDiceString(sLevelRoll) then
-		return nLevel;
-	end
-
-	nLevel = StringManager.evalDiceString(sLevelRoll, true);
-	DB.setValue(itemNode, "level", "number", nLevel);
-
-	return nLevel;
 end

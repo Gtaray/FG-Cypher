@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<root>
+	<!-- STAT / SKILL -->
+	<windowclass name="power_action_stat">
+		<margins control="0,0,0,2" />
+		<script>
+			function onInit()				
+				self.onDataChanged();
+				DB.addHandler(getDatabaseNode(), "onChildUpdate", self.onDataChanged);
+			end
+			function onClose()
+				DB.removeHandler(getDatabaseNode(), "onChildUpdate", self.onDataChanged);
+			end
+			function onDataChanged()
+				rollview.setValue(PowerActionManagerCore.getActionText(getDatabaseNode()));
+			end
+			function performAction(draginfo, sSubRoll)
+				PowerActionManagerCore.performAction(draginfo, getDatabaseNode(), { sSubRoll = sSubRoll });
+			end
+		</script>
+		<sheetdata>			
+			<button_poweraction name="rollbutton">
+				<anchored position="insidetopleft" offset="2,2" />
+				<icon normal="button_roll" pressed="button_roll_down" />
+			</button_poweraction>
+			<label name="rollviewlabel">
+				<anchored to="rollbutton" position="righthigh" offset="5,0" width="40" />
+				<static textres="power_label_roll" />
+			</label>
+			<string_poweractionview name="rollview">
+				<anchored to="rollviewlabel" position="righthigh" offset="10,0">
+					<right parent="" offset="-5" />
+				</anchored>
+			</string_poweractionview>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="power_action_editor_stat">
+		<script>
+			function updateCostType()
+				local sSource = PowerManager.getActionNodeSource(getDatabaseNode());
+				local bNPC = sSource == "npc";
+
+				local bFixed = DB.getValue(getDatabaseNode(), "costtype", "") == "fixed";
+				header_cost.setVisible(not bNPC);
+				costtype_label.setVisible(not bNPC);
+				costtype.setVisible(not bNPC);
+
+				costtext1.setVisible(not bNPC and bFixed);
+				cost.setVisible(not bNPC and bFixed);
+				cost_label.setVisible(not bNPC and bFixed);
+				costtext2.setVisible(not bNPC and bFixed);
+				coststat.setVisible(not bNPC and bFixed);
+				coststat_label.setVisible(not bNPC and bFixed);				
+				costtext3.setVisible(not bNPC and bFixed);
+			end
+		</script>
+
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+			
+			<label_column name="name_label">
+				<static textres="power_label_name" />
+			</label_column>
+			<stringc_column name="name" />
+
+			<header_column name="header_stat">
+				<static textres="power_header_stat" />
+				<center />
+			</header_column>
+
+			<button_stat name="stat">
+				<anchored width="80" height="20">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="20" />
+					<left offset="5" />
+				</anchored>
+			</button_stat>
+			<label_fieldtop>
+				<anchored to="stat" />
+				<static textres="power_label_stat" />
+			</label_fieldtop>
+
+			<cycler_training name="training">
+				<anchored to="stat" position="righthigh" offset="10,0" width="80" height="20" />
+			</cycler_training>
+			<label_fieldtop>
+				<anchored to="training" />
+				<static textres="power_label_training" />
+			</label_fieldtop>
+
+			<basicnumber name="asset">
+				<anchored to="training" position="righthigh" offset="10,0" width="25" height="20" />
+				<hideonvalue value="0" />
+			</basicnumber>
+			<label_fieldtop>
+				<anchored to="asset" />
+				<static textres="power_label_asset" />
+			</label_fieldtop>
+
+			<basicnumber name="modifier">
+				<anchored to="asset" position="righthigh" offset="10,0" width="25" height="20" />
+				<hideonvalue value="0" />
+			</basicnumber>
+			<label_fieldtop>
+				<anchored to="modifier" />
+				<static textres="power_label_modifier" />
+			</label_fieldtop>
+
+			<header_column name="header_cost">
+				<static textres="power_header_cost" />
+				<center />
+			</header_column>
+			<label_column name="costtype_label">
+				<static textres="power_label_costtype" />
+			</label_column>
+			<cycler_costtype name="costtype" />
+			
+			<label_column name="costtext1">
+				<anchored>
+					<top offset="20" />
+				</anchored>
+				<static textres="power_label_cost_texft_1" />
+			</label_column>
+			<number_column name="cost">
+				<anchored to="costtext1" width="25" height="20">
+					<top offset="20" />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<min>0</min>
+			</number_column>
+			<label_fieldtop name="cost_label">
+				<anchored to="cost" />
+				<static textres="power_label_cost" />
+			</label_fieldtop>
+			<label name="costtext2">
+				<anchored to="cost" width="93">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_cost_texft_2" />
+			</label>
+			<button_stat name="coststat">
+				<anchored to="cost" width="70" height="20">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<tooltip textres="power_tooltip_coststat" />
+			</button_stat>
+			<label_fieldtop name="coststat_label">
+				<anchored to="coststat" />
+				<static textres="power_label_coststat" />
+			</label_fieldtop>
+			<label name="costtext3">
+				<anchored to="cost" width="40">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_cost_texft_3" />
+			</label>
+
+			<sub_action_editor_cypher name="cypheradjustments" />
+		</sheetdata>
+	</windowclass>
+</root>

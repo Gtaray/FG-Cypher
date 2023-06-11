@@ -331,9 +331,16 @@ function getPowerAction(nodeAction)
 	elseif sCostType == "fixed" then
 		costnode = nodeAction;
 	end
+
 	if costnode then
 		rAction.nCost = DB.getValue(costnode, "cost", 0);
 		rAction.sCostStat = DB.getValue(costnode, "coststat", "");
+	end
+
+	-- Very specific fix for items. Because items also have a 'cost', but 
+	-- in that case its the price of the item and is a string
+	if type(rAction.nCost) == "string" then
+		rAction.nCost = 0;
 	end
 
 	return rAction, rActor

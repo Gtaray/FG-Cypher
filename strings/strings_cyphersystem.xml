@@ -263,6 +263,12 @@
 	<string name="power_tooltip_healstat">Heal which stat pool?</string>
 
 	<string name="power_header_description">DESCRIPTION</string>
+
+	<!-- Power adjustment by Cypher Level -->
+	<string name="power_header_cypher">Adjustments by Cypher Level</string>
+	<string name="power_label_cypher_text_1">Set</string>
+	<string name="power_label_cypher_text_2">to</string>
+	<string name="power_label_cypher_text_3">when cypher level is</string>
     
 	<!-- Ability -->
 	<string name="library_recordtype_label_ability">Abilities</string>

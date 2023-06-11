@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<root>	
+	<!-- EFFECTS -->
+	<windowclass name="power_action_effect">
+		<margins control="0,0,0,2" />
+		<script>
+			function onInit()
+				self.onDataChanged();
+				DB.addHandler(getDatabaseNode(), "onChildUpdate", self.onDataChanged);
+			end
+			function onClose()
+				DB.removeHandler(getDatabaseNode(), "onChildUpdate", self.onDataChanged);
+			end
+			function onDataChanged()
+				local nodeAction = getDatabaseNode();
+				
+				local sLabel = PowerActionManagerCore.getActionText(nodeAction);
+				local sDuration = PowerActionManagerCore.getActionText(nodeAction, { sSubRoll = "duration" });
+
+				effectview.setValue(sLabel);
+				durationview.setValue(sDuration);
+			end
+			function performAction(draginfo, sSubRoll)
+				PowerActionManagerCore.performAction(draginfo, getDatabaseNode(), { sSubRoll = sSubRoll });
+			end
+		</script>
+		<sheetdata>
+			<button_poweraction name="effectbutton">
+				<anchored position="insidetopleft" offset="2,2" />
+				<icon normal="button_action_effect" pressed="button_action_effect_down" />
+			</button_poweraction>
+			<label name="effectlabel">
+				<anchored to="effectbutton" position="righthigh" offset="5,0" width="40" />
+				<static textres="power_label_effect" />
+			</label>
+			<button_iconcycler name="targeting">
+				<anchored to="effectlabel" position="righthigh" offset="5,5" width="30" height="10" />
+				<parameters>
+					<icons>button_toggle_self</icons>
+					<values>self</values>
+					<tooltipsres>power_tooltip_targetself</tooltipsres>
+					<defaulticon>button_toggle_trgt</defaulticon>
+					<defaulttooltipres>power_tooltip_targetnormal</defaulttooltipres>
+				</parameters>
+			</button_iconcycler>
+			<string_poweractionview name="effectview">
+				<anchored to="effectlabel" position="righthigh" offset="40,0">
+					<right parent="" offset="-65" />
+				</anchored>
+			</string_poweractionview>
+			<string_poweractionview name="durationview">
+				<anchored to="effectview" position="righthigh" offset="10,0" width="50" />
+			</string_poweractionview>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="power_action_editor_effect">
+		<script>
+			function onInit()
+				updateCostType();
+			end
+			function updateCostType()
+				local sSource = PowerManager.getActionNodeSource(getDatabaseNode());
+				local bNPC = sSource == "npc";
+
+				local bFixed = DB.getValue(getDatabaseNode(), "costtype", "") == "fixed";
+				header_cost.setVisible(not bNPC);
+				costtype_label.setVisible(not bNPC);
+				costtype.setVisible(not bNPC);
+
+				costtext1.setVisible(not bNPC and bFixed);
+				cost.setVisible(not bNPC and bFixed);
+				cost_label.setVisible(not bNPC and bFixed);
+				costtext2.setVisible(not bNPC and bFixed);
+				coststat.setVisible(not bNPC and bFixed);
+				coststat_label.setVisible(not bNPC and bFixed);				
+				costtext3.setVisible(not bNPC and bFixed);
+			end
+		</script>
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+			
+			<label_column name="name_label">
+				<static textres="power_label_name" />
+			</label_column>
+			<stringc_column name="name" />
+
+			<header_column name="header_label">
+				<static textres="power_header_effect" />
+				<center />
+			</header_column>
+			<string_column_full name="label" />
+			
+			<header_column name="header_duration">
+				<static textres="power_header_effect_duration" />
+				<center />
+			</header_column>
+			<basicnumber name="durmod">
+				<anchored width="30" height="20">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+					<left offset="5" />
+				</anchored>
+				<hideonvalue value="0" />
+			</basicnumber>
+			<button_stringcycler name="durunit">
+				<anchored to="durmod" position="righthigh" offset="10,0" width="40" height="20" />
+				<parameters>
+					<defaultlabelres>effect_label_durunitrnd</defaultlabelres>
+					<labelsres>effect_label_durunitmin|effect_label_durunithr|effect_label_durunitday</labelsres>
+					<values>minute|hour|day</values>
+				</parameters>
+			</button_stringcycler>
+			
+			<header_column name="header_other">
+				<static textres="power_header_effect_other" />
+				<center />
+			</header_column>
+			
+			<label_column name="targeting_label">
+				<static textres="power_label_targeting" />
+			</label_column>
+			<button_stringcycler name="targeting">
+				<anchored width="60" height="20">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+					<left offset="97" />
+				</anchored>
+				<parameters>
+					<defaultlabelres>power_label_targetnormal</defaultlabelres>
+					<labelsres>power_label_targetself</labelsres>
+					<values>self</values>
+				</parameters>
+			</button_stringcycler>
+			
+			<label_column name="apply_label">
+				<static textres="power_label_effect_apply" />
+			</label_column>
+			<button_stringcycler name="apply">
+				<anchored width="120" height="20">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+					<left offset="97" />
+				</anchored>
+				<parameters>
+					<defaultlabelres>power_label_effect_applyall</defaultlabelres>
+					<labelsres>power_label_effect_applyaction|power_label_effect_applyroll|power_label_effect_applysingle</labelsres>
+					<values>action|roll|single</values>
+				</parameters>
+			</button_stringcycler>
+
+			<header_column name="header_cost">
+				<static textres="power_header_cost" />
+				<center />
+			</header_column>
+			<label_column name="costtype_label">
+				<static textres="power_label_costtype" />
+			</label_column>
+			<cycler_costtype name="costtype" />
+			
+			<label_column name="costtext1">
+				<anchored>
+					<top offset="20" />
+				</anchored>
+				<static textres="power_label_cost_texft_1" />
+			</label_column>
+			<number_column name="cost">
+				<anchored to="costtext1" width="25" height="20">
+					<top offset="20" />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<min>0</min>
+			</number_column>
+			<label_fieldtop name="cost_label">
+				<anchored to="cost" />
+				<static textres="power_label_cost" />
+			</label_fieldtop>
+			<label name="costtext2">
+				<anchored to="cost" width="93">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_cost_texft_2" />
+			</label>
+			<button_stat name="coststat">
+				<anchored to="cost" width="70" height="20">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<tooltip textres="power_tooltip_coststat" />
+			</button_stat>
+			<label_fieldtop name="coststat_label">
+				<anchored to="coststat" />
+				<static textres="power_label_coststat" />
+			</label_fieldtop>
+			<label name="costtext3">
+				<anchored to="cost" width="40">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_cost_texft_3" />
+			</label>
+
+			<sub_action_editor_cypher name="cypheradjustments" />
+		</sheetdata>
+	</windowclass>
+</root>

@@ -44,7 +44,12 @@
 	<includefile source="campaign/record_char_actions.xml" />
 	<includefile source="campaign/record_char_actions_attack.xml" />
 	<includefile source="campaign/record_char_actions_power.xml" />
-	<includefile source="campaign/record_power_roll.xml" />
+	<includefile source="campaign/record_power_roll_stat.xml" />
+	<includefile source="campaign/record_power_roll_attack.xml" />
+	<includefile source="campaign/record_power_roll_damage.xml" />
+	<includefile source="campaign/record_power_roll_heal.xml" />
+	<includefile source="campaign/record_power_roll_effect.xml" />
+	<includefile source="campaign/record_power_roll_cypher.xml" />
 	<includefile source="campaign/record_ability.xml" />
 	<includefile source="campaign/record_type.xml" />
 	<includefile source="campaign/record_descriptor.xml" />
@@ -88,6 +93,7 @@
 	<script name="EffectManagerCypher" file="scripts/manager_effect_cypher.lua" />
 	<script name="CombatManagerCypher" file="scripts/manager_combat_cypher.lua" />
 	<script name="ItemManagerCypher" file="scripts/manager_item_cypher.lua" />
+	<script name="CypherManager" file="scripts/manager_cypher.lua" />
 	<script name="RollManager" file="scripts/manager_roll.lua"/>
 	<script name="PowerManager" file="scripts/manager_power.lua" />
 	<script name="PromptManager" file="scripts/manager_prompt.lua" />

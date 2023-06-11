@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<root>
+	<!-- DAMAGE -->
+	<windowclass name="power_action_damage">
+		<margins control="0,0,0,2" />
+		<script>
+			function onInit()
+				self.onDataChanged();
+				local node = getDatabaseNode();
+				local abilityNode = DB.getChild(node, "...");
+				local nodeActor = PowerManagerCore.getPowerActorNode(abilityNode);
+
+				DB.addHandler(node, "onChildUpdate", self.onDataChanged);
+				DB.addHandler(DB.getPath(abilityNode, "useequipped"), "onUpdate", onDataChanged);
+				DB.addHandler(DB.getPath(nodeActor, "attacklist.*"), "onChildUpdate", onDataChanged);
+			end
+			function onClose()
+				local node = getDatabaseNode();
+				local abilityNode = DB.getChild(node, "...");
+				local nodeActor = PowerManagerCore.getPowerActorNode(abilityNode);
+
+				DB.removeHandler(node, "onChildUpdate", self.onDataChanged);
+				DB.removeHandler(DB.getPath(abilityNode, "useequipped"), "onUpdate", onDataChanged);
+				DB.removeHandler(DB.getPath(nodeActor, "attacklist.*"), "onChildUpdate", onDataChanged);
+			end
+			function onDataChanged()
+				damageview.setValue(PowerActionManagerCore.getActionText(getDatabaseNode()));
+			end
+			function performAction(draginfo, sSubRoll)
+				PowerActionManagerCore.performAction(draginfo, getDatabaseNode(), { sSubRoll = sSubRoll });
+			end
+		</script>
+		<sheetdata>
+			<button_poweraction name="damagebutton">
+				<anchored position="insidetopleft" offset="2,2" />
+				<icon normal="button_action_damage" pressed="button_action_damage_down" />
+			</button_poweraction>
+			<label name="damagelabel">
+				<anchored to="damagebutton" position="righthigh" offset="5,0" width="40" />
+				<static textres="power_label_dmg" />
+			</label>
+			<string_poweractionview name="damageview">
+				<anchored to="damagelabel" position="righthigh" offset="10,0">
+					<right parent="" offset="-5" />
+				</anchored>
+			</string_poweractionview>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="power_action_editor_damage">
+		<script>
+			function onInit()
+				local sSource = PowerManager.getActionNodeSource(getDatabaseNode());
+				local bNPC = sSource == "npc";
+				
+				ambient.setVisible(bNPC);
+				ambient_label.setVisible(bNPC);
+
+				updateCostType();
+				onPierceChanged();
+			end
+			function updateCostType()
+				local sSource = PowerManager.getActionNodeSource(getDatabaseNode());
+				local bNPC = sSource == "npc";
+				local bRef = sSource == "ref";
+
+				local bFixed = DB.getValue(getDatabaseNode(), "costtype", "") == "fixed";
+				header_cost.setVisible(not bNPC);
+				costtype_label.setVisible(not bNPC);
+				costtype.setVisible(not bNPC);
+
+				costtext1.setVisible(not bNPC and bFixed);
+				cost.setVisible(not bNPC and bFixed);
+				cost_label.setVisible(not bNPC and bFixed);
+				costtext2.setVisible(not bNPC and bFixed);
+				coststat.setVisible(not bNPC and bFixed);
+				coststat_label.setVisible(not bNPC and bFixed);				
+				costtext3.setVisible(not bNPC and bFixed);
+			end
+			function onPierceChanged()
+				pierceamount.setVisible(pierce.getValue() == "Yes");
+			end
+		</script>
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+			
+			<label_column name="name_label">
+				<static textres="power_label_name" />
+			</label_column>
+			<stringc_column name="name" />
+
+			<header_column name="header_damage">
+				<static textres="power_header_damage" />
+				<center />
+			</header_column>
+
+			<label_column name="damagetext1">
+				<anchored width="21">
+					<top offset="20" />
+				</anchored>
+				<static textres="power_label_damage_text_1" />
+			</label_column>
+			<column_stat name="stat">
+				<anchored width="65">
+					<top offset="20" />
+					<left parent="damagetext1" anchor="right" relation="relative" offset="10" />
+				</anchored>
+			</column_stat>
+			<label_fieldtop name="stat_label">
+				<anchored to="stat" />
+				<static textres="power_label_stat" />
+			</label_fieldtop>
+			<label name="damagetext2">
+				<anchored to="stat" width="42">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_damage_text_2" />
+			</label>
+			<basicnumber name="damage">
+				<anchored to="stat" width="25" height="20">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+			</basicnumber>
+			<label_fieldtop name="damage_label">
+				<anchored to="damage" />
+				<static textres="power_label_damage" />
+			</label_fieldtop>
+			<label name="damagetext3">
+				<anchored to="stat" width="138">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_damage_text_3" />
+			</label>
+			<button_stat name="damagestat">
+				<anchored to="stat" width="65" height="20">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<tooltip textres="power_tooltip_damagestat" />
+			</button_stat>
+			<label_fieldtop name="damagestat_label">
+				<anchored to="damagestat" />
+				<static textres="power_label_damagestat" />
+			</label_fieldtop>
+			<label_column name="damagetype_label">
+				<static textres="power_label_damagetype" />
+			</label_column>
+			<stringu_damagetype_autocomplete name="damagetype">
+				<anchored height="20">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+					<left offset="97" />
+					<right offset="-10" />
+				</anchored>
+			</stringu_damagetype_autocomplete>
+			<label_column name="pierce_label">
+				<static textres="power_label_pierce_armor" />
+			</label_column>
+			<cycler_column_pierce name="pierce">
+			</cycler_column_pierce>
+			<number_pierce_amount name="pierceamount">
+			</number_pierce_amount>
+
+			<label_column name="ambient_label">
+				<static textres="power_label_ambient" />
+			</label_column>
+			<cycler_column name="ambient">
+				<anchored width="80" />
+				<parameters>
+					<labelsres>yes</labelsres>
+					<values>yes</values>
+					<defaultlabel>No</defaultlabel>
+				</parameters>
+				<tooltip textres="power_tooltip_ambient" />
+			</cycler_column>
+
+			<header_column name="header_cost">
+				<static textres="power_header_cost" />
+				<center />
+			</header_column>
+			<label_column name="costtype_label">
+				<static textres="power_label_costtype" />
+			</label_column>
+			<cycler_costtype name="costtype" />
+			
+			<label_column name="costtext1">
+				<anchored>
+					<top offset="20" />
+				</anchored>
+				<static textres="power_label_cost_texft_1" />
+			</label_column>
+			<number_column name="cost">
+				<anchored to="costtext1" width="25" height="20">
+					<top offset="20" />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<min>0</min>
+			</number_column>
+			<label_fieldtop name="cost_label">
+				<anchored to="cost" />
+				<static textres="power_label_cost" />
+			</label_fieldtop>
+			<label name="costtext2">
+				<anchored to="cost" width="93">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_cost_texft_2" />
+			</label>
+			<button_stat name="coststat">
+				<anchored to="cost" width="70" height="20">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<tooltip textres="power_tooltip_coststat" />
+			</button_stat>
+			<label_fieldtop name="coststat_label">
+				<anchored to="coststat" />
+				<static textres="power_label_coststat" />
+			</label_fieldtop>
+			<label name="costtext3">
+				<anchored to="cost" width="40">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_cost_texft_3" />
+			</label>
+
+			<sub_action_editor_cypher name="cypheradjustments" />
+		</sheetdata>
+	</windowclass>
+</root>
