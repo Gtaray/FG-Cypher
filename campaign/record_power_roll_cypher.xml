@@ -63,6 +63,7 @@
 				</anchored>
 				<listdirection>down</listdirection>
 				<unsorted />
+				<tooltip textres="power_tooltip_cypher_property" />
 				<script>
 					function onInit()
 						super.onInit();
@@ -85,6 +86,7 @@
 
 			<combobox_valuesource name="valuesource">
 				<anchored to="lineOne" />
+				<tooltip textres="power_tooltip_cypher_valuesource" />
 				<default>cypher level</default>
 				<script>	
 					function onValueChanged()
@@ -99,6 +101,7 @@
 					<left anchor="right" relation="relative" offset="10" />
 					<right parent="" anchor="right" offset="-50" />
 				</anchored>
+				<tooltip textres="power_tooltip_cypher_value_string" />
 			</stringu>
 			<combobox name="value_training">
 				<anchored to="lineOne" width="80" height="20">
@@ -113,9 +116,11 @@
 						addItems({ "", "trained", "specialized", "inability" });
 					end
 				</script>
+				<tooltip textres="power_tooltip_cypher_value_training" />
 			</combobox>
 			<number_operand name="value_number">
 				<anchored to="lineOne" />
+				<tooltip textres="power_tooltip_cypher_value_number" />
 			</number_operand>
 
 			<!-- LINE TWO -->
@@ -138,15 +143,18 @@
 						addItems({ "", "plus", "minus", "multiplied by", "divided by" });
 					end
 				</script>
+				<tooltip textres="power_tooltip_cypher_operation" />
 			</combobox>
 
 			<combobox_valuesource name="operationsource">
 				<anchored to="lineTwo" />
 				<default>fixed value</default>
+				<tooltip textres="power_tooltip_cypher_operationsource" />
 			</combobox_valuesource>
 
 			<number_operand name="operand">
 				<anchored to="lineTwo" />
+				<tooltip textres="power_tooltip_cypher_operand" />
 			</number_operand>
 
 			<!-- LINE THREE -->
@@ -178,6 +186,7 @@
 						window.threshold.setVisible(getValue() ~= "");
 					end
 				</script>
+				<tooltip textres="power_tooltip_cypher_thresholdtype" />
 			</combobox>
 
 			<basicnumber name="threshold">
@@ -188,6 +197,7 @@
 				<min>1</min>
 				<max>10</max>
 				<default>1</default>
+				<tooltip textres="power_tooltip_cypher_threshold" />
 			</basicnumber>
 
 			<button_idelete name="idelete">

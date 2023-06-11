@@ -269,6 +269,16 @@
 	<string name="power_label_cypher_text_1">Set</string>
 	<string name="power_label_cypher_text_2">to</string>
 	<string name="power_label_cypher_text_3">when cypher level is</string>
+	<string name="power_tooltip_cypher_property">Property to adjust</string>
+	<string name="power_tooltip_cypher_valuesource">What kind of value to set the property to. "Cypher level" will set the property to match the cypher level. "Fixed Value" will take a single set value.</string>
+	<string name="power_tooltip_cypher_value_string">Value that is assigned to the selected property</string>
+	<string name="power_tooltip_cypher_value_number">Value that is assigned to the selected property</string>
+	<string name="power_tooltip_cypher_value_training">Value that is assigned to the selected property</string>
+	<string name="power_tooltip_cypher_operation">Modify the value with the selected operation</string>
+	<string name="power_tooltip_cypher_operationsource">The value is modified by this kind of number.</string>
+	<string name="power_tooltip_cypher_operand">The amount by which the value is modified by the selected operation</string>
+	<string name="power_tooltip_cypher_thresholdtype">Limits when the modification is applied to this action by comparing the cypher level to a specific value</string>
+	<string name="power_tooltip_cypher_threshold">The cypher level is compared to this number to determine whether this modification should be applied.</string>
     
 	<!-- Ability -->
 	<string name="library_recordtype_label_ability">Abilities</string>
