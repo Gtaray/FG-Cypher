@@ -93,6 +93,16 @@ function applyCypherLevelToAction(nodeAction)
 			DB.deleteChild(nodeAction, "adjustments");
 		end
 	end
+
+	-- Replace {cypherlevel} in effect text with the actual cypher level
+	if DB.getValue(nodeAction, "type", "") == "effect" then
+		local sEffectText = DB.getValue(nodeAction, "label", "");
+
+		if (rAdjustments.nCypherLevel or 0) > 0 then
+			sEffectText = sEffectText:gsub("{cypherlevel}", rAdjustments.nCypherLevel);
+			DB.setValue(nodeAction, "label", "string", sEffectText);
+		end
+	end
 end
 
 function shouldApplyModification(rMod)
@@ -147,9 +157,10 @@ end
 
 function getAllAdjustmentsForAction(nodeAction)
 	rAdjustments = {};
+	rAdjustments.nCypherLevel = DB.getValue(nodeAction, "...level", 0);
 
 	for _, nodeAdjust in ipairs(DB.getChildList(nodeAction, "adjustments")) do
-		local rModification = CypherManager.buildModificationTable(nodeAdjust);
+		local rModification = CypherManager.buildModificationTable(nodeAdjust, rAdjustments.nCypherLevel);
 
 		if rModification then
 			rAdjustments[rModification.nOrder] = rModification;
@@ -160,7 +171,12 @@ function getAllAdjustmentsForAction(nodeAction)
 end
 
 -- Builds a table representing a single modification rule for an action
-function buildModificationTable(nodeMod)
+function buildModificationTable(nodeMod, nCypherLevel)
+	-- Don't process if the cypher level is 0
+	if nCypherLevel <= 0 then
+		return;
+	end
+	
 	local rMod = {};
 
 	rMod.sProperty = DB.getValue(nodeMod, "property", "");
@@ -177,28 +193,23 @@ function buildModificationTable(nodeMod)
 	-- We do this after getting property type because that's how the tables are set up
 	rMod.sProperty = CypherManager.getPropertySource(rMod.sProperty);
 
-	rMod.nCypherLevel = DB.getValue(nodeMod, ".....level", 0);
-
-	-- Don't process if the cypher level is 0
-	if rMod.nCypherLevel <= 0 then
-		return;
-	end
-
 	if rMod.sPropertyType == "number" then
 		if DB.getValue(nodeMod, "valuesource", "") == "cypher level" then
-			rMod.vValue = rMod.nCypherLevel;
+			rMod.vValue = nCypherLevel;
 		else
 			rMod.vValue = DB.getValue(nodeMod, "value_number", 0);	
 		end
 
 		rMod.sOperation = DB.getValue(nodeMod, "operation", "");
 		if DB.getValue(nodeMod, "operationsource", "") == "cypher level" then
-			rMod.nOperand = rMod.nCypherLevel;
+			rMod.nOperand = nCypherLevel;
 		else
 			rMod.nOperand = DB.getValue(nodeMod, "operand", 0);
 		end
+
 	elseif rMod.sPropertyType == "string" then
 		rMod.vValue = DB.getValue(nodeMod, "value_string", "");
+
 	elseif rMod.sPropertyType == "training" then
 		rMod.vValue = DB.getValue(nodeMod, "value_training", "");
 		rMod.sPropertyType = "string"; -- Change the property, because at this point it's just a string
