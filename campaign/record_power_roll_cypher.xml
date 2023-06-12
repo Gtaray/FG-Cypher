@@ -118,6 +118,21 @@
 				</script>
 				<tooltip textres="power_tooltip_cypher_value_training" />
 			</combobox>
+			<combobox name="value_attackrange">
+				<anchored to="lineOne" width="80" height="20">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<listdirection>down</listdirection>
+				<unsorted />
+				<script>
+					function onInit()
+						super.onInit();
+						addItems({ "immediate", "short", "long", "very long" });
+					end
+				</script>
+				<tooltip textres="power_tooltip_cypher_value_training" />
+			</combobox>
 			<number_operand name="value_number">
 				<anchored to="lineOne" />
 				<tooltip textres="power_tooltip_cypher_value_number" />

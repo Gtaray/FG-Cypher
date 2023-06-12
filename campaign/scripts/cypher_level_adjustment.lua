@@ -36,4 +36,5 @@ function onValueSourceChanged()
 	value_number.setVisible(bShowNumberValue and sType == "number");
 	value_string.setVisible(sType == "string");
 	value_training.setComboBoxVisible(sType == "training");
+	value_attackrange.setComboBoxVisible(sType == "atkrange")
 end

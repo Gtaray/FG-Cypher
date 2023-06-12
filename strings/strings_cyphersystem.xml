@@ -214,8 +214,8 @@
 	<string name="power_label_attackrange">Range</string>
 	<string name="power_label_rangeimmediate">Immediate</string>
 	<string name="power_label_rangeshort">Short</string>
-	<string name="power_label_rangelong">Far</string>
-	<string name="power_label_range200">Very Far</string>
+	<string name="power_label_rangelong">Long</string>
+	<string name="power_label_range200">Very Long</string>
 	<string name="power_label_training">Training</string>
 	<string name="power_label_asset">Asset</string>
 	<string name="power_label_modifier">Mod</string>

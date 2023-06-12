@@ -119,6 +119,17 @@ function getPowerAttackActionText(nodeAction)
 	local sAttack = "";
 	local rAction, rActor = PowerManager.getPowerAction(nodeAction);
 
+	-- A little migration work to force far/very far ranges to long/very long
+	-- Normally I would put this migration code at the source, but because
+	-- attack text is displayed separate from its source, we need to update it here
+	if rAction.sAttackRange == "Far" then
+		DB.setValue(nodeAction, "atkrange", "string", "Long")
+		rAction.sAttackRange = "Long"
+	elseif rAction.sAttackRange == "Very Far" then
+		DB.setValue(nodeAction, "atkrange", "string", "Very Long")
+		rAction.sAttackRange = "Very Long"
+	end
+
 	if rAction then		
 		sAttack = PowerManager.getPCAttackText(rAction);
 	end

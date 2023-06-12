@@ -144,10 +144,24 @@
 
 	<template name="cycler_range">
 		<button_stringcycler>
+			<script>
+				function onInit()
+					if super and super.onInit then
+						super.onInit()
+					end
+
+					local sVal = DB.getValue(getDatabaseNode())
+					if sVal == "Far" then
+						setStringValue("Long")
+					elseif sVal == "Very Far" then
+						setStringValue("Very Long")
+					end
+				end
+			</script>
 			<parameters>
 				<defaultlabelres>dash</defaultlabelres>
 				<labelsres>power_label_rangeimmediate|power_label_rangeshort|power_label_rangelong|power_label_range200</labelsres>
-				<values>Immediate|Short|Far|Very Far</values>
+				<values>Immediate|Short|Long|Very Long</values>
 			</parameters>
 		</button_stringcycler>
 	</template>

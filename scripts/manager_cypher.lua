@@ -32,7 +32,7 @@ end
 -------------------------------------------------------------------------------
 local tProperties = {
 	["stat"] = { "training", "asset", "modifier", "cost" },
-	["attack"] = { "training", "asset", "modifier", "cost" },
+	["attack"] = { "training", "asset", "modifier", "range", "cost" },
 	["damage"] = { "damage", "damage type", "armor piercing", "cost" },
 	["heal"] = { "healing", "cost" },
 	["effect"] = { "duration", "effect text", "cost" },
@@ -45,11 +45,13 @@ local tPropertySources = {
 	["armor piercing"] = "pierceamount",
 	["healing"] = "heal",
 	["duration"] = "durmod",
-	["effect text"] = "label"
+	["effect text"] = "label",
+	["range"] = "atkrange"
 }
 
 local tPropertyTypes = {
 	["training"] = "training",
+	["range"] = "atkrange",
 	["asset"] = "number",
 	["modifier"] = "number",
 	["cost"] = "number",
@@ -87,7 +89,7 @@ function applyCypherLevelToAction(nodeAction)
 	local rAdjustments = CypherManager.getAllAdjustmentsForAction(nodeAction);
 
 	for i, rMod in ipairs(rAdjustments) do
-		if CypherManager.shouldApplyModification(rMod) then
+		if CypherManager.shouldApplyModification(rMod, rAdjustments.nCypherLevel) then
 			CypherManager.applyModification(nodeAction, rMod);
 			-- We're done here, delete the list of adjustments.
 			DB.deleteChild(nodeAction, "adjustments");
@@ -105,22 +107,22 @@ function applyCypherLevelToAction(nodeAction)
 	end
 end
 
-function shouldApplyModification(rMod)
+function shouldApplyModification(rMod, nCypherLevel)
 	-- If the threshold type isn't set, return true
-	if rMod.sThresholdType == "" then
+	if rMod.sThresholdType == "" or (nCypherLevel or 0) == 0 then
 		return true;
 	end
 
 	if rMod.sThresholdType == "equal to" then
-		return rMod.nCypherLevel == rMod.nThreshold;
+		return nCypherLevel == rMod.nThreshold;
 	elseif rMod.sThresholdType == "greater than" then
-		return  rMod.nCypherLevel > rMod.nThreshold;
+		return nCypherLevel > rMod.nThreshold;
 	elseif rMod.sThresholdType == "less than" then
-		return  rMod.nCypherLevel < rMod.nThreshold;
+		return nCypherLevel < rMod.nThreshold;
 	elseif rMod.sThresholdType == "at least" then
-		return  rMod.nCypherLevel >= rMod.nThreshold;
+		return nCypherLevel >= rMod.nThreshold;
 	elseif rMod.sThresholdType == "at most" then
-		return  rMod.nCypherLevel <= rMod.nThreshold;
+		return nCypherLevel <= rMod.nThreshold;
 	end
 
 	return true;
@@ -213,6 +215,10 @@ function buildModificationTable(nodeMod, nCypherLevel)
 	elseif rMod.sPropertyType == "training" then
 		rMod.vValue = DB.getValue(nodeMod, "value_training", "");
 		rMod.sPropertyType = "string"; -- Change the property, because at this point it's just a string
+
+	elseif rMod.sPropertyType == "atkrange" then
+		rMod.vValue = DB.getValue(nodeMod, "value_attackrange", "");
+		rMod.sPropertyType = "string";
 	end
 
 	rMod.sThresholdType = DB.getValue(nodeMod, "thresholdtype", "");
