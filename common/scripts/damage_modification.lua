@@ -26,9 +26,9 @@ function migrate()
             -- Do nothing, armor stays the same
         elseif sType == "vuln" then
             -- Flip armor to negative
-            DB.setValue(node, "armor", nArmor * -1);
+            DB.setValue(node, "armor", "number", nArmor * -1);
         elseif sType == "immune" then
-            DB.setValue(node, "armor", 0);
+            DB.setValue(node, "armor", "number", 0);
         end
 
         DB.deleteNode(typeNode);

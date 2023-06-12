@@ -67,9 +67,10 @@ function applyDesktopAdjustments(rActor, rAction)
 
 	-- We don't care about limiting the amount of effort or the amount of assets appplied here because
 	-- we will limit them later, taking into account effects that modify max effort and max assets
-	rAction.nEffort = (rAction.nEffort or 0) or _panelWindow.effort.getValue();
+	rAction.nEffort = (rAction.nEffort or 0) + _panelWindow.effort.getValue();
 	rAction.nAssets = (rAction.nAssets or 0) + _panelWindow.assets.getValue();
 	rAction.bDisableEdge = (_panelWindow.disableedge.getValue() == 1);
+
 	self.resetDifficultyPanel();
 end
 

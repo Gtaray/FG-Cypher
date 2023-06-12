@@ -33,6 +33,32 @@
 				<acceptdrop>
 					<class>ability</class>
 				</acceptdrop>
+				<script>
+					function onInit()
+						local charnode = UtilityManager.getTopWindow(window).getDatabaseNode();
+						DB.addHandler(DB.getPath(charnode, "inventorylist.*.isidentified"), "onUpdate", onItemIdUpdated)
+					end
+
+					function onClose()
+						local charnode = UtilityManager.getTopWindow(window).getDatabaseNode();
+						DB.removeHandler(DB.getPath(charnode, "inventorylist.*.isidentified"), "onUpdate", onItemIdUpdated)
+					end
+					function onItemIdUpdated()
+						applyFilter()
+					end
+					function onFilter(w)
+						local attacknode = w.getDatabaseNode();
+						local _, sRecord = DB.getValue(attacknode, "itemlink");
+						local itemnode = DB.findNode(sRecord or "");
+
+						-- if this ability is tied to an item, and that item is unidentified, then do not display this.
+						if itemnode and DB.getValue(itemnode, "isidentified", 1) ~= 1 then
+							return false;
+						end
+
+						return true;
+					end
+				</script>
 			</list_text>
 			<scrollbar_list>
 				<anchored to="abilities" />

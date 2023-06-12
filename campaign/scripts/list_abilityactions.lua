@@ -1,11 +1,16 @@
 function onInit()
 	local node = getDatabaseNode();
+	local charnode = UtilityManager.getTopWindow(window).getDatabaseNode();
+
 	DB.addHandler(DB.getPath(node, "*"), "onChildUpdate", onAbilityDataChanged)
+	DB.addHandler(DB.getPath(charnode, "inventorylist.*.isidentified"), "onUpdate", onItemIdUpdated)
 end
 
 function onClose()
 	local node = getDatabaseNode();
+	local charnode = UtilityManager.getTopWindow(window).getDatabaseNode();
 	DB.removeHandler(DB.getPath(node, "*"), "onChildUpdate", onAbilityDataChanged)
+	DB.removeHandler(DB.getPath(charnode, "inventorylist.*.isidentified"), "onUpdate", onItemIdUpdated)
 end
 
 function addEntry(bFocus)
@@ -27,8 +32,22 @@ function onAbilityDataChanged()
 	applyFilter();
 end
 
+function onItemIdUpdated()
+	applyFilter();
+end
+
 function onFilter(w)
 	local abilitynode = w.getDatabaseNode();
+
+	local _, sRecord = DB.getValue(abilitynode, "itemlink");
+	local itemnode = DB.findNode(sRecord or "");
+
+	-- if this ability is tied to an item, and that item is unidentified, then do not display this.
+	if itemnode then
+		if DB.getValue(itemnode, "isidentified", 1) ~= 1 then
+			return false;
+		end
+	end
 
 	if DB.getValue(abilitynode, "actionTabVisibility", "") == "show" then
 		return true;

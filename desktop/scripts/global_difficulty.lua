@@ -18,6 +18,6 @@ end
 
 function onDifficultyChanged()
 	local nDiff = DifficultyManager.getGlobalDifficulty();
-	local iconName = string.format("task%d", nDiff);
+	local iconName = string.format("task%s", nDiff);
 	setIcon(iconName)
 end

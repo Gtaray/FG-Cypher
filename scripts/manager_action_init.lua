@@ -106,6 +106,8 @@ function onRoll(rSource, rTarget, rRoll)
 	-- Convert difficulty adjustments to their equivalent flat bonus
 	RollManager.updateMessageWithConvertedTotal(rRoll, rMessage);
 
+	local nTotal = ActionsManager.total(rRoll);
+
 	Comm.deliverChatMessage(rMessage);
 	notifyApplyInit(rSource, nTotal);
 end
