@@ -7,6 +7,18 @@ function onInit()
 	if sRecord then
 		addLinkDbHandler(sRecord);
 	end
+
+	-- Hide 'tier' and 'given' controls based on windowlist properties
+	-- If tiers are hidden, we fore the value to 0 so that it doesn't affect
+	-- future automation
+	if windowlist.hidetier then
+		tier.setValue(0);
+		tier.setVisible(false);
+	end
+
+	if windowlist.hidegiven then
+		given.setVisible(false)
+	end
 end
 
 function onClose()
@@ -41,4 +53,9 @@ function onLinkUpdated()
 
 	name.setValue(DB.getValue(abilitynode, "name", ""));
 	addLinkDbHandler(sRecord);
+end
+
+function update(bReadOnly)
+	tier.setReadOnly(bReadOnly);
+	given.setReadOnly(bReadOnly);
 end

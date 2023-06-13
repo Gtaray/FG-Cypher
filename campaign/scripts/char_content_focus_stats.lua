@@ -1,3 +1,7 @@
+function onInit()
+	update();
+end
+
 function onDrop(x, y, draginfo)
 	if draginfo.isType("shortcut") then
 		local sClass, sRecord = draginfo.getShortcutData();
@@ -7,4 +11,10 @@ function onDrop(x, y, draginfo)
 			return true;
 		end
 	end
+end
+
+function update()
+	local bReadOnly = WindowManager.getReadOnlyState(getDatabaseNode());
+	Debug.chat('update()', bReadOnly);
+	abilities.update(bReadOnly);
 end

@@ -289,24 +289,24 @@
 	<string name="ability_usetype_action">Action</string>
 	<string name="ability_label_type">Type</string>
 
+	<string name="ref_ability_tooltip_ability_given">If checked, this ability will be given to the character. If unchecked, this ability will be listed as an optional ability for the character to select for its tier.</string>
+	<string name="ref_ability_tooltip_ability_tier">Tier this ability is offered at</string>
+
 	<!-- Type -->
 	<string name="library_recordtype_label_type">Types</string>
 	<string name="library_recordtype_empty_type">&#171; New Type &#187;</string>
 	<string name="library_recordtype_ref_type">Type</string>
 	<string name="type_header_starting_features">Starting Features</string>
 	<string name="type_label_starting_stats">Stats</string>
-	<string name="type_label_starting_edge">Edge</string>
 	<string name="type_label_might">Might</string>
 	<string name="type_label_speed">Speed</string>
 	<string name="type_label_intellect">Intellect</string>
-	<string name="type_label_floating_stats">Floating</string>
+	<string name="type_label_floating_stats">Flex</string>
 	<string name="type_tooltip_floatingstats">The number of additional points to divide among stat pools.</string>
 	<string name="type_label_starting_effort">Effort</string>
+	<string name="type_header_edge">Starting Edge</string>
 	<string name="type_label_cypher_use">Cypher Use</string>
-
 	<string name="type_header_abilities">Abilities</string>
-	<string name="type_tooltip_ability_given">If checked, this ability will be given to the character. If unchecked, this ability will be listed as an optional ability for the character to select for its tier.</string>
-	<string name="type_tooltip_ability_tier">Tier this ability is offered at</string>
 
 	<!-- Descriptor -->
 	<string name="library_recordtype_label_descriptor">Descriptors</string>
@@ -318,15 +318,29 @@
 	<string name="library_recordtype_empty_focus">&#171; New Focus &#187;</string>
 	<string name="library_recordtype_ref_focus">Focus</string>
 
+	<string name="focus_header_abilities">Abilities</string>
+
 	<!-- Flavor -->
 	<string name="library_recordtype_label_flavor">Flavors</string>
 	<string name="library_recordtype_empty_flavor">&#171; New Flavor &#187;</string>
 	<string name="library_recordtype_ref_flavor">Flavor</string>
 
+	<string name="flavor_header_abilities">Abilities</string>
+
 	<!-- Ancestry -->
 	<string name="library_recordtype_label_ancestry">Ancestries</string>
 	<string name="library_recordtype_empty_ancestry">&#171; New Ancestry &#187;</string>
 	<string name="library_recordtype_ref_ancestry">Ancestry</string>
+
+	<!-- Character Modifications -->
+	<string name="char_mod_edge_label">Option</string>
+	<string name="char_mod_edge_might">Might</string>
+	<string name="char_mod_edge_speed">Speed</string>
+	<string name="char_mod_edge_intellect">Intellect</string>
+	<string name="char_mod_edge_might_or_speed">Might or Speed</string>
+	<string name="char_mod_edge_might_or_intellect">Might or Intellect</string>
+	<string name="char_mod_edge_speed_or_intellect">Speed or Intellect</string>
+	<string name="char_mod_edge_any">One of Any Stat</string>
     
 	<!-- NPCs -->
 	<string name="npc_label_level">Level</string>

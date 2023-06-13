@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<template name="combobox_edge">
+		<combobox_column>
+			<listdirection>down</listdirection>
+			<unsorted />
+			<script>
+				function onInit()
+					super.onInit();
+					addItems({
+						Interface.getString("char_mod_edge_might"),
+						Interface.getString("char_mod_edge_speed"),
+						Interface.getString("char_mod_edge_intellect"),
+						Interface.getString("char_mod_edge_might_or_speed"),
+						Interface.getString("char_mod_edge_might_or_intellect"),
+						Interface.getString("char_mod_edge_speed_or_intellect"),
+						Interface.getString("char_mod_edge_any"),
+					});
+				end
+			</script>
+		</combobox_column>
+	</template>
+</root>

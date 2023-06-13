@@ -19,18 +19,18 @@
 			<ft_record name="text">
 				<anchored to="contentframe" position="over" />
 			</ft_record>
-			<!-- <subwindow_record name="content">
+			<subwindow_record name="content">
 				<class>focus_stats</class>
-			</subwindow_record> -->
+			</subwindow_record>
 
 			<scrollbar_record>
 				<target>text</target>
 			</scrollbar_record>
-			<!-- <scrollbar_record>
+			<scrollbar_record>
 				<target>content</target>
-			</scrollbar_record> -->
+			</scrollbar_record>
 
-			<!-- <tabs_recordsheet name="tabs">
+			<tabs_recordsheet name="tabs">
 				<tab>
 					<icon>tab_main</icon>
 					<subwindow>text</subwindow>
@@ -39,7 +39,7 @@
 					<icon>tab_other</icon>
 					<subwindow>content</subwindow>
 				</tab>
-			</tabs_recordsheet> -->
+			</tabs_recordsheet>
 
 			<resize_referencepage />
 			<close_referencepage />
@@ -67,10 +67,17 @@
 
 	<windowclass name="focus_stats">
 		<margins control="0,0,0,2" />
-		<script>
-		</script>
+		<script file="campaign/scripts/char_content_focus_stats.lua" />
 		<sheetdata>
 			<anchor_column name="columnanchor" />
+
+			<header_column name="abilities_header">
+				<static textres="focus_header_abilities"/>
+				<center />
+			</header_column>
+			<list_ref_ability name="abilities">
+				<datasource>.abilities</datasource>
+			</list_ref_ability>
 		</sheetdata>
 	</windowclass>
 </root>
