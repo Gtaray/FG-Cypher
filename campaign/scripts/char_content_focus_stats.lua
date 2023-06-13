@@ -15,6 +15,5 @@ end
 
 function update()
 	local bReadOnly = WindowManager.getReadOnlyState(getDatabaseNode());
-	Debug.chat('update()', bReadOnly);
 	abilities.update(bReadOnly);
 end
