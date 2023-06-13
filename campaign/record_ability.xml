@@ -8,6 +8,13 @@
 <root>
 	<windowclass name="ability" copy="record_window">
 		<minimize>minimized_reference</minimize>
+		<placement>
+			<size width="375" height="400" />
+		</placement>
+		<sizelimits>
+			<minimum width="375" height="350" />
+			<dynamic />
+		</sizelimits>
 		<script>
 			function onLockChanged()
 				super.onLockChanged();
@@ -98,7 +105,11 @@
 					<values>Enabler|Action</values>
 					<defaultlabelres>dash</defaultlabelres>
 				</parameters>
-				<tooltip textres="power_tooltip_useequipped" />
+				<script>
+					function onValueChanged()
+						window.update();
+					end
+				</script>
 			</cycler_column>
 			<label_column name="useequipped_label">
 				<static textres="power_label_useequipped" />

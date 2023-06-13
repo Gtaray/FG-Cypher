@@ -21,27 +21,27 @@
 			<ft_record name="text">
 				<anchored to="contentframe" position="over" />
 			</ft_record>
-			<!-- <subwindow_record name="content">
+			<subwindow_record name="stats">
 				<class>type_stats</class>
-			</subwindow_record> -->
+			</subwindow_record>
 
 			<scrollbar_record>
 				<target>text</target>
 			</scrollbar_record>
-			<!-- <scrollbar_record>
-				<target>content</target>
-			</scrollbar_record> -->
+			<scrollbar_record>
+				<target>stats</target>
+			</scrollbar_record>
 
-			<!-- <tabs_recordsheet name="tabs">
+			<tabs_recordsheet name="tabs">
 				<tab>
 					<icon>tab_main</icon>
 					<subwindow>text</subwindow>
 				</tab>
 				<tab>
 					<icon>tab_other</icon>
-					<subwindow>content</subwindow>
+					<subwindow>stats</subwindow>
 				</tab>
-			</tabs_recordsheet> -->
+			</tabs_recordsheet>
 
 			<resize_referencepage />
 			<close_referencepage />
@@ -69,10 +69,7 @@
 
 	<windowclass name="type_stats">
 		<margins control="0,0,0,2" />
-		<script>
-			function update()
-			end
-		</script>
+		<script file="campaign/scripts/type_stats.lua" />
 		<sheetdata>
 			<anchor_column name="columnanchor" />
 
@@ -181,10 +178,110 @@
 				<default>2</default>
 			</number_column>
 
-			<header_column name="tiers_header">
-				<static textres="type_header_tiers"/>
+			<header_column name="abilities_header">
+				<static textres="type_header_abilities"/>
 				<center />
 			</header_column>
+			<list_column name="abilities">
+				<script>
+					function onSortCompare(w1, w2)
+						if w1.tier.getValue() ~= w2.tier.getValue() then
+							return w1.tier.getValue() &gt; w2.tier.getValue()
+						end
+						if w1.given.getValue() ~= w2.given.getValue() then
+							return w1.given.getValue() &lt; w2.given.getValue()
+						end
+						return w1.name.getValue() &gt; w2.name.getValue()
+					end
+					function addEntry(sClass, sRecord)
+						local w = createWindow();
+						if w then
+							w.link.setValue(sClass, sRecord);
+						end
+						return w;
+					end
+				</script>
+				<datasource>.abilities</datasource>
+				<class>type_ability_item</class>
+			</list_column>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="type_ability_item">
+		<margins control="0,0,0,2" />
+		<script file="campaign/scripts/type_ability_item.lua" />
+		<sheetdata>
+			<genericcontrol name="leftanchor">
+				<anchored width="0" height="0">
+					<top />
+					<left />
+				</anchored>
+				<invisible />
+			</genericcontrol>
+			<button_checkbox name="given">
+				<anchored to="leftanchor" width="12" height="12">
+					<top offset="4" />
+					<left relation="relative" />
+				</anchored>
+				<tooltip textres="type_tooltip_ability_given" />
+				<script>
+					function onValueChanged()
+						window.windowlist.applySort()
+					end
+				</script>
+			</button_checkbox>
+			<basicnumber name="tier">
+				<anchored to="leftanchor" height="18" width="20">
+					<left relation="relative" offset="5" />
+					<top offset="1" />
+				</anchored>
+				<min>1</min>
+				<max>6</max>
+				<default>1</default>
+				<tooltip textres="type_tooltip_ability_tier" />
+				<script>
+					function onValueChanged()
+						window.windowlist.applySort()
+					end
+				</script>
+			</basicnumber>
+
+			<genericcontrol name="rightanchor">
+				<anchored width="0" height="0">
+					<top />
+					<right />
+				</anchored>
+				<invisible />
+			</genericcontrol>
+			<button_idelete name="idelete">
+				<anchored width="20" height="20">
+					<top offset="2" />
+					<right parent="rightanchor" anchor="left" relation="relative" offset="0" />
+				</anchored>
+			</button_idelete>
+			<linkfield name="link">
+				<anchored width="20" height="20">
+					<top offset="2" />
+					<right parent="rightanchor" anchor="left" relation="relative" offset="-2" />
+				</anchored>
+				<class>ability</class>
+				<readonly />
+			</linkfield>
+
+			<string_textlistitem name="name">
+				<anchored height="20">
+					<top offset="2" />
+					<left parent="leftanchor" anchor="right" relation="relative" offset="7" />
+					<right parent="rightanchor" anchor="left" relation="current" offset="-5" />
+				</anchored>
+				<empty textres="library_recordtype_empty_ability"></empty>
+				<script>
+					function onValueChanged()
+						window.windowlist.applySort()
+					end
+				</script>
+				<readonly />
+			</string_textlistitem>
 		</sheetdata>
 	</windowclass>
 
