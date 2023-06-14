@@ -30,9 +30,6 @@
 				<newfocus>name</newfocus>
 				<datasource>.abilitylist</datasource>
 				<class>char_ability</class>
-				<acceptdrop>
-					<class>ability</class>
-				</acceptdrop>
 				<script>
 					function onInit()
 						local charnode = UtilityManager.getTopWindow(window).getDatabaseNode();

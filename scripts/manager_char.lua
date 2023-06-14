@@ -245,6 +245,8 @@ function addItemAsWeapon(itemnode)
 
 	DB.setValue(attacknode, "itemlink", "windowreference", "item", DB.getPath(itemnode));
 	DB.setValue(itemnode, "attacklink", "windowreference", "attack", DB.getPath(attacknode));
+
+	return attacknode;
 end
 
 function addItemAsAbility(itemnode)
@@ -282,10 +284,7 @@ function addItemAsAbility(itemnode)
 	DB.setValue(abilitynode, "itemlink", "windowreference", "item", DB.getPath(itemnode));
 	DB.setValue(itemnode, "abilitylink", "windowreference", "ability", DB.getPath(abilitynode));
 
-	-- Go through each action and update fields that care about cypher level
-	for _, action in ipairs(DB.getChildList(abilitynode, "actions")) do
-		-- TODO: adjust actions
-	end
+	return abilitynode;
 end
 
 function removeAttackLinkedToRecord(noderecord)
