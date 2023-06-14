@@ -292,6 +292,8 @@
 	<string name="ref_ability_tooltip_ability_given">If checked, this ability will be given to the character. If unchecked, this ability will be listed as an optional ability for the character to select for its tier.</string>
 	<string name="ref_ability_tooltip_ability_tier">Tier this ability is offered at</string>
 
+	<string name="ability_header_features">Features</string>
+
 	<!-- Type -->
 	<string name="library_recordtype_label_type">Types</string>
 	<string name="library_recordtype_empty_type">&#171; New Type &#187;</string>

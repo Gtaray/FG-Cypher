@@ -36,12 +36,18 @@
 			<subwindow_record name="actions">
 				<class>tab_actions</class>
 			</subwindow_record>
+			<subwindow_record name="content">
+				<class>ability_stats</class>
+			</subwindow_record>
 
 			<scrollbar_record>
 				<target>main</target>
 			</scrollbar_record>
 			<scrollbar_record>
 				<target>actions</target>
+			</scrollbar_record>
+			<scrollbar_record>
+				<target>content</target>
 			</scrollbar_record>
 
 			<tabs_recordsheet name="tabs">
@@ -53,6 +59,10 @@
 				<tab>
 					<icon>tab_actions</icon>
 					<subwindow>actions</subwindow>
+				</tab>
+				<tab>
+					<icon>tab_other</icon>
+					<subwindow>content</subwindow>
 				</tab>
 			</tabs_recordsheet>
 			
@@ -220,6 +230,28 @@
 				</script>
 				<tabtarget prev="modifier" />
 			</basicft>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="ability_stats">
+		<margins control="0,0,0,2" />
+		<script file="campaign/scripts/char_content_ability_stats.lua" />
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+
+			<header_column name="features_header">
+				<static textres="ability_header_features"/>
+				<center />
+			</header_column>
+			<list_char_mod name="features" />
+			<button_iedit name="features_iedit">
+				<anchored to="features_header" position="righthigh" offset="-15,0" />
+				<edittarget>features</edittarget>
+			</button_iedit>
+			<button_iadd name="features_iadd">
+				<anchored to="features_iedit" position="lefthigh" offset="3,0" />
+				<target>features</target>
+			</button_iadd>
 		</sheetdata>
 	</windowclass>
 
