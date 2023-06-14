@@ -4,8 +4,9 @@ end
 
 function update()
 	local bReadOnly = WindowManager.getReadOnlyState(getDatabaseNode());
+	local bAction = usetype.getValue() == "Action";
 	local bHasCost = cost.getValue() ~= 0 and coststat.getValue() ~= "-";
-	local bShowCost = bHasCost or not bReadOnly;
+	local bShowCost = bAction and (bHasCost or not bReadOnly);
 	local bHasType = type.getValue() ~= "";
 	local bHasRecharge = period.getValue() ~= "-";
 	local bHasUseType = usetype.getValue() ~= "-";
@@ -20,14 +21,14 @@ function update()
 	usetype_label.setVisible(bHasUseType or not bReadOnly);
 
 	useequipped.setReadOnly(bReadOnly);
-	useequipped.setVisible(bHasType or not bReadonly);
+	useequipped.setVisible(bAction and (bHasType or not bReadonly));
 	useequipped_label.setReadOnly(bReadOnly);
-	useequipped_label.setVisible(bHasType or not bReadonly);
+	useequipped_label.setVisible(bAction and (bHasType or not bReadonly));
 
 	period.setReadOnly(bReadOnly);
-	period.setVisible(bHasRecharge or not bReadOnly);
+	period.setVisible(bAction and (bHasRecharge or not bReadOnly));
 	period_label.setReadOnly(bReadOnly);
-	period_label.setVisible(bHasRecharge or not bReadOnly);
+	period_label.setVisible(bAction and (bHasRecharge or not bReadOnly));
 
 	header_cost.setVisible(bShowCost);
 	costtext1.setVisible(bShowCost);

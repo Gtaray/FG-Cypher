@@ -57,7 +57,7 @@ function modRoll(rSource, rTarget, rRoll)
 	local nEffort = RollManager.decodeEffort(rRoll, true);
 
 	-- Adjust mod based on effort
-	nEffort = nEffort + RollManager.processEffort(rSource, rTarget, sStat, { "heal", "healing" }, nEffort);
+	nEffort = nEffort + RollManager.processEffort(rSource, rTarget, { "heal", "healing", sStat }, nEffort);
 	if (nEffort or 0) > 0 then
 		rRoll.nMod = rRoll.nMod + (nEffort * 3);
 	end

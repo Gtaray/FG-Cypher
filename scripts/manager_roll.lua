@@ -50,6 +50,8 @@ end
 	-- bAmbient = boolean (flags whether a damage roll is ambient damage)
 	-- nHeal = number (amount healed)
 	-- nHealStat = string (might|speed|intellect. Stat that's healed with ability)
+	-- nEase = number (reduces the difficulty of the roll by x stages)
+	-- nHinder = number (increases the difficulty of the roll by x stages)
 -- }
 -----------------------------------------------------------------------
 -- ACTION ADJUSTMENTS
@@ -57,7 +59,7 @@ end
 -- Applies the effort, assets, and edge flag from the desktop mod window
 function applyDesktopAdjustments(rActor, rAction)
 	if not _panelWindow or (rAction.sStat == "") then
-		rAction.nEffort = 0;
+		rAction.nEffort = (rAction.nEffort or 0);
 		rAction.nAssets = (rAction.nAssets or 0);
 		rAction.bDisableEdge = false;
 		return;
@@ -65,15 +67,17 @@ function applyDesktopAdjustments(rActor, rAction)
 
 	-- We don't care about limiting the amount of effort or the amount of assets appplied here because
 	-- we will limit them later, taking into account effects that modify max effort and max assets
-	rAction.nEffort = _panelWindow.effort.getValue();
+	rAction.nEffort = (rAction.nEffort or 0) + _panelWindow.effort.getValue();
 	rAction.nAssets = (rAction.nAssets or 0) + _panelWindow.assets.getValue();
 	rAction.bDisableEdge = (_panelWindow.disableedge.getValue() == 1);
+
 	self.resetDifficultyPanel();
 end
 
 function addMaxAssetsToAction(rActor, rAction, aFilter)
-	-- if there's no stat, then we can't apply any effort or edge (no stat pool to pull from)
-	if not rActor or not ActorManager.isPC(rActor) or (rAction.sStat or "") == "" then
+	-- If for some reason there's no actor, default to 2.
+	if not rActor or not ActorManager.isPC(rActor) then
+		rAction.nMaxAssets = 2;
 		return;
 	end
 
@@ -284,19 +288,26 @@ function resolveMaximumAssets(rActor, rAction, aFilter)
 	rAction.nAssets = math.min(rAction.nAssets, rAction.nMaxAssets);
 end
 
-function resolveEaseHindrance(rSource, rTarget, aFilter)
-	local bEase, bHinder = false, false;
+function resolveEaseHindrance(rSource, rTarget, rRoll, aFilter)
+	local nEase, nHinder = 0, 0;
+	local nEaseModifier, nHinderModifier = 0, 0;
 	if type(aFilter) == "string" then
 		aFilter = { aFilter }
 	end
 
-	local aEaseEffects = EffectManagerCypher.getEffectsByType(rSource, "EASE", aFilter, rTarget)
-	local aHinderEffects = EffectManagerCypher.getEffectsByType(rSource, "HINDER", aFilter, rTarget)
+	bEase, bHinder = RollManager.decodeEaseHindrance(rRoll, true);
 
-	bEase = #aEaseEffects > 0 or ModifierManager.getKey("EASE");
-	bHinder = #aHinderEffects > 0 or ModifierManager.getKey("HINDER");
+	local nEaseEffects = EffectManagerCypher.getEffectsBonusByType(rSource, "EASE", aFilter, rTarget)
+	local nHinderEffects = EffectManagerCypher.getEffectsBonusByType(rSource, "HINDER", aFilter, rTarget)
 
-	return bEase, bHinder;
+	if ModifierManager.getKey("EASE") then
+		nEaseModifier = 1;
+	end
+	if ModifierManager.getKey("HINDER") then
+		nHinderModifier = 1;
+	end
+
+	return nEase + nEaseEffects + nEaseModifier, nHinder + nHinderEffects + nHinderModifier;
 end
 
 -- Converts a training cycler's value (a number) to a string that's used by the action rollers
@@ -313,6 +324,21 @@ end
 -----------------------------------------------------------------------
 -- ROLL PROCESSING
 -----------------------------------------------------------------------
+function getBaseRollDifficulty(rSource, rTarget, aFilter)
+	if not rTarget then
+		-- Get global difficulty
+		return DifficultyManager.getGlobalDifficulty();
+	end
+
+	-- if the target is an NPC, return that creature's level
+	if not ActorManager.isPC(rTarget) then
+		return ActorManagerCypher.getCreatureLevel(rTarget, rSource, aFilter);
+	end
+
+	-- target is a PC, so set difficulty to 0.
+	return 0;
+end
+
 function processFlatModifiers(rSource, rTarget, rRoll, aEffects, aFilter)
 	if not rRoll.nMod then
 		rRoll.nMod = 0;
@@ -394,7 +420,13 @@ function processPiercing(rSource, rTarget, bPiercing, nPierceAmount, aFilter)
 	return bPiercing, nPierceAmount;
 end
 
+-- Returns: bSuccess, bAutomaticSuccess
 function processRollSuccesses(rSource, rTarget, rRoll, rMessage, aAddIcons)
+	local bSuccess = false;
+	local bAutomaticSuccess = false;
+	local nSuccess = 0;
+	local bPvP = ActorManager.isPC(rSource) and ActorManager.isPC(rTarget);
+
 	if #(rRoll.aDice) == 1 and rRoll.aDice[1].type == "d20" then		
 		local nDifficulty = tonumber(rRoll.nDifficulty) or 0;
 		
@@ -402,54 +434,57 @@ function processRollSuccesses(rSource, rTarget, rRoll, rMessage, aAddIcons)
 		-- We don't account for assets or effort here becuase assets were already used to adjust the 	
 		-- difficulty in the modRoll function
 		local nTotal = ActionsManager.total(rRoll);
-		local nSuccess = math.floor(nTotal / 3);
-		nSuccess = math.max(0, math.min(10, nSuccess));
+		nSuccess = math.max(0, math.min(10, math.floor(nTotal / 3)));
 		
-		-- A bit of jank, but if there's no target, then we need to display the actual difficulty we 
-		-- beat. There's no nDifficulty to reduce, so we invert the difficulty mod and use that as our 
-		-- bonus
-		if rTarget then
-			if ActorManager.isPC(rTarget) then
-				-- For PC vs PC, we need to invert any difficulty adjustments
-				-- This converts every difficulty reduction into a +3, and difficulty increase to a -3
-				nSuccesses = nTotal + RollManager.convertDifficultyAdjustmentToFlatBonus(nDifficulty);
-			else
-				-- If we have a target, then we want the icon to display the difficulty
-				-- of the target after all of the calc
-				nDifficulty = math.min(math.max(nDifficulty, 0), 10);
-				table.insert(aAddIcons, "task" .. nDifficulty)
-			end
-		else
-			-- For rolls without targets, we subtract the difficulty of the roll
-			-- since difficulty bonuses for the PC are negative, this inverts it so nSuccesses
-			-- Will show what difficulty our roll would have beat
-			nSuccess = math.min(math.max(nSuccess - nDifficulty, 0), 10);
-			table.insert(aAddIcons, "task" .. nSuccess);
-		end
-		
-		if #aAddIcons > 0 then
-			rMessage.icon = { rMessage.icon };
-			for _,v in ipairs(aAddIcons) do
-				table.insert(rMessage.icon, v);
-			end
-		end
+		-- Only track success flags for non pvp rolls
+		if not bPvP then
+			nDifficulty = math.min(math.max(nDifficulty, 0), 10);
+			table.insert(aAddIcons, "task" .. nDifficulty)
 
-		if rTarget and nDifficulty >= 0 then
 			if nDifficulty == 0 then
-				return true, true;
-			elseif nSuccess >= nDifficulty then
-				return true, false;
+				bAutomaticSuccess = true;
+			end
+			if nSuccess >= nDifficulty then
+				bSuccess = true;
 			end
 		end
 	end
 
-	return false, false;
+	return bSuccess, bAutomaticSuccess, nSuccess;
+end
+
+function updateRollMessageIcons(rMessage, aAddIcons, sFirstIcon)
+	-- First, convert a singular icon to a table of icons
+	if type(rMessage.icon) ~= "table" then
+		rMessage.icon = { rMessage.icon };
+	end
+
+	-- if the first icon needs updating, then udpate it
+	-- we guarantee that rMessage.icon is a table at this point
+	if (sFirstIcon or "") ~= "" then
+		rMessage.icon[1] = sFirstIcon
+	end
+
+	-- Add the rest of the icons
+	for _,v in ipairs(aAddIcons) do
+		table.insert(rMessage.icon, v);
+	end
+end
+
+function updateMessageWithConvertedTotal(rRoll, rMessage)
+	if rMessage.dice and rMessage.dice[1] and rMessage.dice[1].value then
+		rMessage.dice[1].value = RollManager.getConvertedTotal(rRoll)
+	end
+end
+
+function getConvertedTotal(rRoll)
+	return ActionsManager.total(rRoll) + RollManager.convertDifficultyAdjustmentToFlatBonus(rRoll.nDifficulty or 0)
 end
 
 -- This function simply converts a flat difficulty adjustment to the equivalent flat bonus
 -- e.g. minus 1 difficulty = +3 to the roll; plus 1 difficulty = -3 to the roll
 function convertDifficultyAdjustmentToFlatBonus(nDifficulty)
-	return nDifficulty * -3;
+	return (nDifficulty or 0) * -3;
 end
 
 -----------------------------------------------------------------------
@@ -525,7 +560,7 @@ function decodeStat(rRoll, bPersist)
 	-- If there's no stat found with the STAT tag
 	-- Then look for it in the parenthesis in the roll type tag
 	if (sStat or "") == "" then
-		sStat = string.match(rRoll.sDesc, "^%[.- %((%w-)[.]-%)%]");
+		sStat = string.match(rRoll.sDesc, "^%[.-%s%((%w+),?%s?.-%)%]");
 	end
 	rRoll.sDesc = sText;
 
@@ -758,6 +793,7 @@ function decodeDamageType(rRoll)
 		"^%[DAMAGE %(.-, (.-)%)]",
 		true
 	);
+	
 	return sDamageType;
 end
 
@@ -874,37 +910,37 @@ function decodeTarget(rRoll, rTarget, bPersist)
 	return rTarget;
 end
 
-function encodeEaseHindrance(rRoll, bEase, bHinder)
-	if bEase then
+function encodeEaseHindrance(rRoll, nEase, nHinder)
+	if nEase > 0 then
 		rRoll.sDesc = RollManager.addOrOverwriteText(
 			rRoll.sDesc,
-			"%[EASED%]",
-			"[EASED]"
+			"%[EASE%s%d+%]",
+			string.format("[EASE %s]", nEase)
 		);
 	end
-	if bHinder then
+	if nHinder > 0 then
 		rRoll.sDesc = RollManager.addOrOverwriteText(
 			rRoll.sDesc,
-			"%[HINDERED%]",
-			"[HINDERED]"
+			"%[HINDER%s%d+%]",
+			string.format("[HINDER %s]", nHinder)
 		);
 	end
 end
 function decodeEaseHindrance(rRoll, bPersist)
-	local bEase = RollManager.decodeTextAsBoolean(
+	local nEase = RollManager.decodeTextAsNumber(
 		rRoll.sDesc,
-		"%[EASED%]",
-		nil,
+		"%[EASE%s?%d+%]",
+		"%[EASE%s?(%d+)%]",
 		bPersist
 	);
-	local bHinder = RollManager.decodeTextAsBoolean(
+	local nHinder = RollManager.decodeTextAsNumber(
 		rRoll.sDesc,
-		"%[HINDERED%]",
-		nil,
+		"%[HINDER%s?%d+%]",
+		"%[HINDER%s?%(d+)%]",
 		bPersist
 	);
 
-	return bEase, bHinder
+	return nEase, nHinder
 end
 
 function encodeEffects(rRoll, nRollMod)

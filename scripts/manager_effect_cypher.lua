@@ -178,6 +178,11 @@ function getEffectsByType(rActor, sEffectType, aFilter, rFilterActor, bTargetedO
 							if #(rEffectComp.remainder) > 0 then
 								-- Match against all effect tags, or don't match at all
 								for _,tag in pairs(rEffectComp.remainder) do
+									if tag:lower() == "all" then
+										bMatch = true;
+										break;
+									end
+									
 									if not StringManager.contains(aFilter, tag:lower()) then
 										bMatch = false;
 										break;
@@ -187,6 +192,147 @@ function getEffectsByType(rActor, sEffectType, aFilter, rFilterActor, bTargetedO
 							if not bMatch then
 								comp_match = false;
 							end
+						end
+					end
+
+					-- Match!
+					if comp_match then
+						nMatch = kEffectComp;
+						if nActive == 1 then
+							table.insert(results, rEffectComp);
+						end
+					end
+				end -- END EFFECT COMPONENT LOOP
+
+				-- Remove one shot effects
+				if nMatch > 0 then
+
+					if nActive == 2 then
+						DB.setValue(v, "isactive", "number", 1);
+					else
+						if sApply == "action" then
+							EffectManager.notifyExpire(v, 0);
+						elseif sApply == "roll" then
+							EffectManager.notifyExpire(v, 0, true);
+						elseif sApply == "single" then
+							EffectManager.notifyExpire(v, nMatch, true);
+						end
+					end
+				end
+			end -- END TARGET CHECK
+		end  -- END ACTIVE CHECK
+	end  -- END EFFECT LOOP
+	
+	-- RESULTS
+	return results;
+end
+
+function getArmorEffectBonusForDamageType(rActor, sStat, sDamageType, rFilterActor, bTargetedOnly)
+	if not rActor then
+		return 0, 0;
+	end
+	
+	-- PER EFFECT TYPE VARIABLES
+	local results = {};
+	local nEffectCount = 0;
+
+	local aArmorEffects = getArmorEffectsForDamageType(rActor, sStat, sDamageType, rFilterActor, bTargetedOnly);
+
+	-- ITERATE THROUGH EFFECTS THAT MATCHED
+	for k,v in pairs(aArmorEffects) do
+		-- {type = STAT, remainder = {}, original = STATS: +1, dice = {}, mod = 1}
+
+		-- Add matched effect to results table
+		table.insert(results, v)
+
+		-- ADD TO EFFECT COUNT
+		nEffectCount = nEffectCount + 1;
+	end
+
+	local nBonus = 0;
+	for k,v in pairs(results) do
+		nBonus = nBonus + v.mod;
+	end
+
+	return nBonus, nEffectCount;
+end
+
+function getArmorEffectsForDamageType(rActor, sStat, sDamageType, rFilterActor, bTargetedOnly)
+	if not rActor then
+		return {};
+	end
+	local results = {};
+	sStat = sStat:lower();
+	sDamageType = sDamageType:lower();
+	
+	-- Iterate through effects
+	for _,v in pairs(DB.getChildList(ActorManager.getCTNode(rActor), "effects")) do
+		-- Check active
+		local nActive = DB.getValue(v, "isactive", 0);
+
+		if (nActive ~= 0) then
+			local sLabel = DB.getValue(v, "label", "");
+			local sApply = DB.getValue(v, "apply", "");
+
+			-- IF COMPONENT WE ARE LOOKING FOR SUPPORTS TARGETS, THEN CHECK AGAINST OUR TARGET
+			local bTargeted = EffectManager.isTargetedEffect(v);
+			if not bTargeted or EffectManager.isEffectTarget(v, rFilterActor) then
+				local aEffectComps = EffectManager.parseEffect(sLabel);
+
+				-- Look for type/subtype match
+				local nMatch = 0;
+				for kEffectComp,sEffectComp in ipairs(aEffectComps) do
+					local rEffectComp = EffectManager.parseEffectCompSimple(sEffectComp);
+										
+					-- Check for match
+					local comp_match = false;
+					if rEffectComp.type:lower() == "armor" then
+
+						-- Check effect targeting
+						if bTargetedOnly and not bTargeted then
+							comp_match = false;
+						else
+							comp_match = true;
+						end
+
+						-- Match against all effect tags, or don't match at all
+						local bMatch = true;
+
+						-- If there's no remainders, but the damage type is set to some type
+						-- then we do not match.
+						if #(rEffectComp.remainder) == 0 and sDamageType ~= "untyped" then
+							bMatch = false;
+						end
+
+						for _,tag in pairs(rEffectComp.remainder) do
+							tag = tag:lower();
+
+							if tag == "all" then
+								bMatch = true;
+								break;
+							end
+
+							--
+							if DamageTypeManager.isDamageType(tag) then	
+								-- If the effect has a damage type tag, but the damage being dealt is untyped
+								-- then there isn't a match.
+								if sDamageType == "untyped" then
+									bMatch = false;
+
+								-- Otherwise if the tag doesn't match the given damage type, then this effect doesn't match.
+								elseif tag ~= sDamageType then
+									bMatch = false;
+								end
+							else
+								-- tag isn't a damage type, so it must be a stat
+								if tag ~= sStat then
+									bMatch = false;
+								end
+							end
+						end
+
+						if not bMatch then
+							comp_match = false;
 						end
 					end
 

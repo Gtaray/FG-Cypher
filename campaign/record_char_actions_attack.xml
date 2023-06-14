@@ -207,20 +207,6 @@
 				<static textres="power_label_attack_text_1" />
 			</label_column>
 			<column_stat name="stat">
-				<script>
-					function onInit()
-						if super and super.onInit then
-							super.onInit();
-						end
-						onValueChanged();
-					end
-					function onValueChanged()
-						if super and super.onValueChanged then
-							super.onValueChanged();
-						end
-						window.stat2.setStringValue(getStringValue());
-					end
-				</script>
 				<anchored to="attacktext1" width="70" height="20">
 					<top offset="20"/>
 					<left anchor="right" relation="relative" offset="10" />
@@ -299,6 +285,22 @@
 			</label_column>
 			<!-- Stat2 is only used for display purposes, and is edited in the attack section -->
 			<column_stat name="stat2">
+				<script>
+					function onInit()
+						super.onInit();
+						DB.addHandler(DB.getPath(window.getDatabaseNode(), "stat"), "onUpdate", updateValue)
+						updateValue();
+					end
+					function onClose()
+						super.onClose();
+						DB.removeHandler(DB.getPath(window.getDatabaseNode(), "stat"), "onUpdate", updateValue)
+					end
+					function updateValue()
+						node = window.getDatabaseNode();
+						local sVal = DB.getValue(node, "stat", "");
+						DB.setValue(node, "stat2", "string", sVal);
+					end
+				</script>
 				<anchored width="65">
 					<top offset="20" />
 					<left parent="damagetext1" anchor="right" relation="relative" offset="10" />

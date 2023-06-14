@@ -9,7 +9,7 @@
 	<windowclass name="prompt_defense">
 		<frame>referencelist</frame>
 		<placement>
-			<size width="300" height="240" />
+			<size width="300" height="300" />
 		</placement>
 		<nodelete />
 		<script file="utility/scripts/defense_prompt.lua"/>
@@ -17,16 +17,17 @@
 			<windowtitlebar name="reftitle">
 				<resource>defense_prompt_window_title</resource>
 			</windowtitlebar>
-			<frame_char name="header">
-				<anchored height="100">
+			<frame_char name="frame">
+				<anchored>
 					<top offset="40"/>
 					<left offset="15" />
 					<right offset="-15" />
+					<bottom offset="-15" />
 				</anchored>
 			</frame_char>
 
 			<stringcontrol name="description">
-				<anchored to="header">
+				<anchored to="frame">
 					<right anchor="right" offset="-15" />
 					<left anchor="left" offset="15"/>
 					<top anchor="top" offset="15" />
@@ -37,15 +38,78 @@
 				<readonly />
 			</stringcontrol>
 
-			<subwindow name="effort">
-				<anchored width="210" height="52">
-					<top parent="description" anchor="bottom" offset="10" />
-					<left anchor="center" offset="-105" />
+			<label name="effort_label">
+				<static textres="diffadj_label_effort" />
+				<anchored width="60" height="22">
+					<top parent="description" anchor="bottom" relation="current" offset="10" />
+					<right parent="frame" anchor="center" offset="-10" />
 				</anchored>
-				<class>difficultyadjust</class>
-				<activate />
-				<fastinit />
-			</subwindow>
+			</label>
+			<basicnumber name="effort">
+				<anchored width="40" height="22">
+					<top parent="description" anchor="bottom" relation="relative" offset="10" />
+					<left parent="frame" anchor="center" offset="10" />
+				</anchored>
+				<min>0</min>
+				<max>6</max>
+				<script>
+					function onValueChanged()
+						window.updateDifficulty();
+					end
+				</script>
+			</basicnumber>
+
+			<label name="assets_label">
+				<static textres="diffadj_label_assets" />
+				<anchored width="60" height="22">
+					<top parent="description" anchor="bottom" relation="current" offset="10" />
+					<right parent="frame" anchor="center" offset="-10" />
+				</anchored>
+			</label>
+			<basicnumber name="assets">
+				<anchored width="40" height="22">
+					<top parent="description" anchor="bottom" relation="relative" offset="10" />
+					<left parent="frame" anchor="center" offset="10" />
+				</anchored>
+				<min>0</min>
+				<max>2</max>
+				<script>
+					function onValueChanged()
+						window.updateDifficulty();
+					end
+				</script>
+			</basicnumber>
+
+			<buttoncontrol name="ease">
+				<anchored width="60" height="22">
+					<top parent="description" anchor="bottom" relation="current" offset="10" />
+					<right parent="frame" anchor="center" offset="-10" />
+				</anchored>
+				<state frame="buttonup" frameoffset="5,5,5,5" />
+				<state frame="buttondown" frameoffset="5,5,5,5" offset="1,1" />
+				<font>button-white</font>
+				<textres>defense_prompt_ease</textres>
+				<script>
+					function onValueChanged()
+						window.updateDifficulty();
+					end
+				</script>
+			</buttoncontrol>
+			<buttoncontrol name="hinder">
+				<anchored width="60" height="22">
+					<top parent="description" anchor="bottom" relation="relative" offset="10" />
+					<left parent="frame" anchor="center" offset="10" />
+				</anchored>
+				<state frame="buttonup" frameoffset="5,5,5,5" />
+				<state frame="buttondown" frameoffset="5,5,5,5" offset="1,1" />
+				<font>button-white</font>
+				<textres>defense_prompt_hinder</textres>
+				<script>
+					function onValueChanged()
+						window.updateDifficulty();
+					end
+				</script>
+			</buttoncontrol>
 
 			<button_text name="roll">
 				<script>
@@ -57,10 +121,24 @@
 					end
 				</script>
 				<anchored height="22" width="160">
-					<bottom parent="" anchor="bottom" offset="-25" />
-					<right parent="" anchor="right" offset="-25" />
+					<bottom parent="frame" anchor="bottom" offset="-20" />
+					<right parent="frame" anchor="right" offset="-20" />
 				</anchored>
 				<textres>defense_prompt_button_roll</textres>
+			</button_text>
+
+			<button_text name="close">
+				<script>
+					function onButtonPress()
+						window.closeWindow();
+					end
+				</script>
+				<anchored height="22">
+					<bottom parent="frame" anchor="bottom" offset="-20" />
+					<left parent="frame" anchor="left" offset="20" />
+					<right parent="roll" anchor="left" offset="-10" />
+				</anchored>
+				<textres>defense_prompt_button_close</textres>
 			</button_text>
 		</sheetdata>
 	</windowclass>

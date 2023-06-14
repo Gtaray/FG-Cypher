@@ -8,6 +8,15 @@ function onInit()
 		registerMenuItem(Interface.getString("menu_rest"), "lockvisibilityon", 7);
 		registerMenuItem(Interface.getString("menu_restovernight"), "pointer_circle", 7, 6);
 	end
+
+	-- I'm not entirely where else to put this, so it goes here.
+	DB.addHandler(DB.getPath(getDatabaseNode(), "abilitylist.*"), "onDelete", onAbilityDeleted)
+	DB.addHandler(DB.getPath(getDatabaseNode(), "attacklist.*"), "onDelete", onAttackDeleted)
+end
+
+function onClose()
+	DB.removeHandler(DB.getPath(getDatabaseNode(), "abilitylist.*"), "onDelete", onAbilityDeleted)
+	DB.removeHandler(DB.getPath(getDatabaseNode(), "attacklist.*"), "onDelete", onAttackDeleted)
 end
 
 function onMenuSelection(selection, subselection)
@@ -40,4 +49,12 @@ function onDrop(x, y, draginfo)
 	elseif sClass == "focus" then
 		return CharManager.addFocusToCharater(getDatabaseNode(), node);
 	end
+end
+
+function onAbilityDeleted(abilitynode)
+	CharManager.removeItemLinkedToRecord(abilitynode);
+end
+
+function onAttackDeleted(attacknode)
+	CharManager.removeItemLinkedToRecord(attacknode);
 end

@@ -12,7 +12,7 @@ function onInit()
 	CharEncumbranceManager.addCustomCalc(function() end);
 
 	OptionsManager.registerCallback("DMGTYPES", updateDamageTypeOption);
-	updateDamageTypeOption();
+	OptionsManager.registerButton("library_recordtype_label_damagetypes", "damagetypes", "damagetypes");
 end
 
 function onClose()
@@ -31,8 +31,6 @@ function registerOptions()
 
 	OptionsManager.registerOption2("EXPF", false, "option_header_houserule", "option_label_EXPF", "option_entry_cycler", 
 			{ labels = "option_val_yes", values = "yes", baselabel = "option_val_no", baseval = "no", default = "no" });
-	OptionsManager.registerOption2("DMGTYPES", false, "option_header_houserule", "option_label_DMGTYPES", "option_entry_cycler", 
-			{ labels = "option_val_yes", values = "yes", baselabel = "option_val_no", baseval = "no", default = "no" });
 	OptionsManager.registerOption2("HRXP", false, "option_header_houserule", "option_label_HRXP", "option_entry_cycler", 
 			{ labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "off" });
 end
@@ -45,21 +43,9 @@ function calcEncumbrance(nodeChar)
 	CharEncumbranceManagerCnC.updateEncumbranceState(nodeChar);
 end
 
-function updateDamageTypeOption()
-	if OptionsManagerCypher.replaceArmorWithDamageTypes() then
-		OptionsManager.registerButton("library_recordtype_label_damagetypes", "damagetypes", "damagetypes");
-	else
-		OptionsManager.unregisterButton("library_recordtype_label_damagetypes");
-	end
-end
-
 -------------------------------------------------------------------------------
 -- FEATURE FLAGS
 -------------------------------------------------------------------------------
 function areExperimentalFeaturesEnabled()
 	return OptionsManager.getOption("EXPF") == "yes"
-end
-
-function replaceArmorWithDamageTypes()
-	return OptionsManager.getOption("DMGTYPES") == "yes"
 end

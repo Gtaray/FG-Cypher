@@ -45,7 +45,6 @@
 	<string name="option_label_INITNPC">Init: NPC</string>
 	<string name="option_label_EXPF">Enable Experimental Features</string>
 	<string name="option_label_HRXP">Hero Points (Intrusion XP)</string>
-	<string name="option_label_DMGTYPES">Replace Armor with individual damage types (requires reloading the campaign to take effect)</string>
 
 	<string name="option_val_yes">Yes</string>
 	<string name="option_val_no">No</string>
@@ -74,9 +73,12 @@
 	<!-- Character - Main -->
 	<string name="char_label_main1">is a</string>
 	<string name="char_label_main2">who</string>
+	<string name="char_label_main3">&#x2014;</string>
 	<string name="char_label_descriptor">DESCRIPTOR</string>
 	<string name="char_label_type">TYPE</string>
 	<string name="char_label_focus">FOCUS</string>
+	<string name="char_label_ancestry">ANCESTRY</string>
+	<string name="char_label_flavor">FLAVOR</string>
 	<string name="char_label_tier">TIER</string>
 	<string name="char_label_effort">EFFORT</string>
 	<string name="char_label_hero">HERO PTS</string>
@@ -94,7 +96,6 @@
 	<string name="char_tooltip_mightdef">Might Defense</string>
 	<string name="char_tooltip_speeddef">Speed Defense</string>
 	<string name="char_tooltip_intellectdef">Intellect Defense</string>
-	<string name="char_label_skills">SKILLS</string>
 	
 	<string name="char_label_status">DAMAGE TRACK</string>
 	<string name="char_label_recovery">RECOVERY</string>
@@ -104,11 +105,31 @@
 	<string name="char_label_recovery10hr">10 Hours</string>
 	<string name="char_label_recoveryused">Used</string>
 
+	<string name="char_label_armor">Armor</string>
+	<string name="char_label_armorspeedcost">Speed Effort Cost</string>
+	<string name="char_tooltip_armorspeedcost">Increase to the cost of spending effort on speed tests due to wearing armor.</string>
+	<string name="char_header_special_defenses">Special Defenses</string>
+
+	<string name="char_message_add_type">Type '%s' added to '%s'</string>
+	<string name="char_message_add_descriptor">Descriptor '%s' added to '%s'</string>
+	<string name="char_message_add_focus">Focus '%s' added to '%s'</string>
+	<string name="char_message_add_ancestry">Ancestry '%s' added to '%s'</string>
+	<string name="char_message_add_flavor">Flavor '%s' added to '%s'</string>
+
+	<string name="char_menu_clear">Clear</string>
+
+	<!-- Character - Skills -->
+	<string name="char_label_skills">Skills</string>
 	<string name="power_label_training">Training</string>
-	<string name="char_label_skillinability">In</string>
+	<string name="char_label_skillmodifier">Mod</string>
+	<string name="char_label_skillassets">Assets</string>
+	<string name="char_label_skilltraining">Training</string>
+	<string name="char_label_skillstat">Stat</string>
+	<string name="char_label_skillname">Name</string>
+	<string name="char_label_skillinability">Inability</string>
 	<string name="char_label_skilluntrained">-</string>
-	<string name="char_label_skilltrained">T</string>
-	<string name="char_label_skillspecialized">S</string>
+	<string name="char_label_skilltrained">Trained</string>
+	<string name="char_label_skillspecialized">Specialized</string>
 	<string name="char_tooltip_skillinability">Inability</string>
 	<string name="char_tooltip_skilluntrained">Untrained</string>
 	<string name="char_tooltip_skilltrained">Trained</string>
@@ -118,10 +139,8 @@
 	<string name="char_message_not_enough_xp">You do not have enough XP for an advancement.</string>
 	<string name="char_message_advancement_taken">%s took an advancement to %s.</string>
 	<string name="char_message_tier_increase">%s advanced to tier %s.</string>
-	
-	<!-- Character - Actions -->
-	<string name="char_label_armorspeedcost">Speed Effort Cost</string>
 
+	<!-- Character - Actions -->
 	<string name="char_label_attacks">Attacks</string>
 	<string name="char_title_attack_editor">Attack Editor</string>
 	
@@ -134,6 +153,9 @@
 	<string name="char_label_weapontype_heavy">Heavy</string>
 
 	<string name="char_label_abilityname">Abilities</string>
+	<string name="char_menu_hideability">Hide ability from the Action tab</string>
+	<string name="char_menu_showability">Show ability on the Action tab</string>
+	<string name="char_menu_confirm">Confirm</string>
 
 	<!-- Character - Inventory -->
 	<string name="char_label_invtype">Type</string>
@@ -192,8 +214,8 @@
 	<string name="power_label_attackrange">Range</string>
 	<string name="power_label_rangeimmediate">Immediate</string>
 	<string name="power_label_rangeshort">Short</string>
-	<string name="power_label_rangelong">Far</string>
-	<string name="power_label_range200">Very Far</string>
+	<string name="power_label_rangelong">Long</string>
+	<string name="power_label_range200">Very Long</string>
 	<string name="power_label_training">Training</string>
 	<string name="power_label_asset">Asset</string>
 	<string name="power_label_modifier">Mod</string>
@@ -241,6 +263,22 @@
 	<string name="power_tooltip_healstat">Heal which stat pool?</string>
 
 	<string name="power_header_description">DESCRIPTION</string>
+
+	<!-- Power adjustment by Cypher Level -->
+	<string name="power_header_cypher">Adjustments by Cypher Level</string>
+	<string name="power_label_cypher_text_1">Set</string>
+	<string name="power_label_cypher_text_2">to</string>
+	<string name="power_label_cypher_text_3">when cypher level is</string>
+	<string name="power_tooltip_cypher_property">Property to adjust</string>
+	<string name="power_tooltip_cypher_valuesource">What kind of value to set the property to. "Cypher level" will set the property to match the cypher level. "Fixed Value" will take a single set value.</string>
+	<string name="power_tooltip_cypher_value_string">Value that is assigned to the selected property</string>
+	<string name="power_tooltip_cypher_value_number">Value that is assigned to the selected property</string>
+	<string name="power_tooltip_cypher_value_training">Value that is assigned to the selected property</string>
+	<string name="power_tooltip_cypher_operation">Modify the value with the selected operation</string>
+	<string name="power_tooltip_cypher_operationsource">The value is modified by this kind of number.</string>
+	<string name="power_tooltip_cypher_operand">The amount by which the value is modified by the selected operation</string>
+	<string name="power_tooltip_cypher_thresholdtype">Limits when the modification is applied to this action by comparing the cypher level to a specific value</string>
+	<string name="power_tooltip_cypher_threshold">The cypher level is compared to this number to determine whether this modification should be applied.</string>
     
 	<!-- Ability -->
 	<string name="library_recordtype_label_ability">Abilities</string>
@@ -251,10 +289,86 @@
 	<string name="ability_usetype_action">Action</string>
 	<string name="ability_label_type">Type</string>
 
+	<string name="ref_ability_tooltip_ability_given">If checked, this ability will be given to the character. If unchecked, this ability will be listed as an optional ability for the character to select for its tier.</string>
+	<string name="ref_ability_tooltip_ability_tier">Tier this ability is offered at</string>
+
 	<!-- Type -->
 	<string name="library_recordtype_label_type">Types</string>
 	<string name="library_recordtype_empty_type">&#171; New Type &#187;</string>
 	<string name="library_recordtype_ref_type">Type</string>
+	<string name="type_header_starting_features">Starting Features</string>
+	<string name="type_label_starting_stats">Stats</string>
+	<string name="type_label_might">Might</string>
+	<string name="type_label_speed">Speed</string>
+	<string name="type_label_intellect">Intellect</string>
+	<string name="type_label_floating_stats">Flex</string>
+	<string name="type_tooltip_floatingstats">The number of additional points to divide among stat pools.</string>
+	<string name="type_label_starting_effort">Effort</string>
+	<string name="type_header_edge">Starting Edge</string>
+	<string name="type_label_cypher_use">Cypher Use</string>
+	<string name="type_header_abilities">Abilities</string>
+
+	<!-- Descriptor -->
+	<string name="library_recordtype_label_descriptor">Descriptors</string>
+	<string name="library_recordtype_empty_descriptor">&#171; New Descriptor &#187;</string>
+	<string name="library_recordtype_ref_descriptor">Descriptor</string>
+
+	<string name="descriptor_header_features">Features</string>
+
+	<!-- Focus -->
+	<string name="library_recordtype_label_focus">Foci</string>
+	<string name="library_recordtype_empty_focus">&#171; New Focus &#187;</string>
+	<string name="library_recordtype_ref_focus">Focus</string>
+
+	<string name="focus_header_abilities">Abilities</string>
+
+	<!-- Flavor -->
+	<string name="library_recordtype_label_flavor">Flavors</string>
+	<string name="library_recordtype_empty_flavor">&#171; New Flavor &#187;</string>
+	<string name="library_recordtype_ref_flavor">Flavor</string>
+
+	<string name="flavor_header_abilities">Abilities</string>
+
+	<!-- Ancestry -->
+	<string name="library_recordtype_label_ancestry">Ancestries</string>
+	<string name="library_recordtype_empty_ancestry">&#171; New Ancestry &#187;</string>
+	<string name="library_recordtype_ref_ancestry">Ancestry</string>
+
+	<string name="ancestry_header_features">Features</string>
+
+	<!-- Character Modifications -->
+	<string name="char_mod_empty_summary">&#171; New Modification &#187;</string>
+	<string name="char_mod_property_label">Property</string>
+
+	<string name="char_mod_header_stats">Stat Pool</string>
+	<string name="char_mod_header_skill">Skill</string>
+	<string name="char_mod_header_defense">Defense</string>
+	<string name="char_mod_header_armor">Armor</string>
+	<string name="char_mod_header_initiative">Initiative</string>
+	<string name="char_mod_header_ability">Ability</string>
+	<string name="char_mod_header_recovery">Recovery</string>
+	<string name="char_mod_header_edge">Edge</string>
+	<string name="char_mod_header_effort">Effort</string>
+	<string name="char_mod_header_item">Item</string>
+	<string name="char_mod_header_cypher">Cypher Limit</string>
+
+	<string name="char_mod_label_stat">Stat</string>
+	<string name="char_mod_label_skill">Skill</string>
+	<string name="char_mod_label_training">Training</string>
+	<string name="char_mod_label_assets">Asset</string>
+	<string name="char_mod_label_mod">Mod</string>
+	<string name="char_mod_label_dmgtype">Dmg Type</string>
+	<string name="char_mod_label_link">Link</string>
+	<string name="char_mod_link_empty">Drop record here to assign</string>
+
+	<string name="char_mod_edge_label">Option</string>
+	<string name="char_mod_edge_might">Might</string>
+	<string name="char_mod_edge_speed">Speed</string>
+	<string name="char_mod_edge_intellect">Intellect</string>
+	<string name="char_mod_edge_might_or_speed">Might or Speed</string>
+	<string name="char_mod_edge_might_or_intellect">Might or Intellect</string>
+	<string name="char_mod_edge_speed_or_intellect">Speed or Intellect</string>
+	<string name="char_mod_edge_any">One of Any Stat</string>
     
 	<!-- NPCs -->
 	<string name="npc_label_level">Level</string>
@@ -319,15 +433,19 @@
 	<string name="depletion_tag">DEPLETION</string>
 
 	<!-- Damage Modifications -->
-	<string name="header_damage_modifications">Resistances &amp; Vulnerabilities</string>
-	<string name="damage_modification_resistance">Resistance</string>
-	<string name="damage_modification_immunity">Immunity</string>
-	<string name="damage_modification_vulnerability">Vulnerability</string>
+	<string name="header_damage_modifications">Special Defenses &amp; Armor</string>
+	<string name="damage_modification_tooltip_name">Damage Type (fire, cold, lightning, etc.)</string>
+	<string name="damage_modification_tooltip_armor">Armor value applied against the specified damage type. Positive armor reduces damage taken. Negative armor increases damage taken. A value of 0 indicates immunity to the damage type.</string>
 
 	<!-- Defense Prompt -->
 	<string name="defense_prompt_window_title">Defend Thyself</string>
 	<string name="defense_prompt_button_roll">Roll</string>
+	<string name="defense_prompt_button_close">Close</string>
 	<string name="defense_prompt_description">%s is attacking you, defend yourself with %s!\nDifficulty: %s</string>
+	<string name="defense_prompt_effort">Effort:</string>
+	<string name="defense_prompt_assets">Assets:</string>
+	<string name="defense_prompt_ease">Ease</string>
+	<string name="defense_prompt_hinder">Hinder</string>
 
 	<!-- Desktop -->
 	<string name="diffadj_label_effort">Effort</string>
@@ -335,4 +453,5 @@
 	<string name="diffadj_label_edge">Use Edge?</string>
 	<string name="modifier_label_EASE">Ease</string>
 	<string name="modifier_label_HINDER">Hinder</string>
+	<string name="desktop_tooltip_difficulty">Difficulty that all non-targeted rolls are made against. Use the scroll wheel to increase or decrease this value.</string>
 </root>

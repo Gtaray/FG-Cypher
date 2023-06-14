@@ -28,6 +28,9 @@
 	<icon name="task9" file="graphics/icons/task9.png" />
 	<icon name="task10" file="graphics/icons/task10.png" />
 
+	<!-- Global target -->
+	<icon name="global_target" file="graphics/icons/global_target.png" />
+
 	<!-- Radial -->
 	<icon name="radial_power_action_stat" file="graphics/radial/icon_dice_custom.png" />
 
@@ -61,4 +64,6 @@
 	<icon name="sidebar_icon_recordtype_type" file="graphics/sidebar/sidebar_icon_class.png" />
 	<icon name="sidebar_icon_recordtype_descriptor" file="graphics/sidebar/sidebar_icon_background.png" />
 	<icon name="sidebar_icon_recordtype_focus" file="graphics/sidebar/sidebar_icon_feat.png" />
+	<icon name="sidebar_icon_recordtype_ancestry" file="graphics/sidebar/sidebar_icon_race.png" />
+	<icon name="sidebar_icon_recordtype_flavor" file="graphics/sidebar/sidebar_icon_potion.png" />
 </root>

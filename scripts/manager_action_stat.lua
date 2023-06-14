@@ -41,6 +41,7 @@ function getRoll(rActor, rAction)
 	RollManager.encodeAssets(rAction, rRoll);
 	RollManager.encodeEdge(rAction, rRoll);
 	RollManager.encodeEffort(rAction, rRoll);
+	RollManager.encodeEaseHindrance(rRoll, (rAction.nEase or 0), (rAction.nHinder or 0));
 
 	return rRoll;
 end
@@ -51,9 +52,7 @@ function modRoll(rSource, rTarget, rRoll)
 	local nAssets = RollManager.decodeAssets(rRoll, true);
 	local bInability, bTrained, bSpecialized = RollManager.decodeTraining(rRoll, true);
 
-	if rTarget and not ActorManager.isPC(rTarget) then
-		rRoll.nDifficulty = ActorManagerCypher.getCreatureLevel(rTarget, rSource, { "stat", "stats", sStat });
-	end
+	rRoll.nDifficulty = RollManager.getBaseRollDifficulty(rSource, rTarget, { "stat", "stats", sStat });
 
 	--Adjust raw modifier, converting every increment of 3 to a difficultly modifier
 	local nAssetMod, nEffectMod = RollManager.processFlatModifiers(rSource, rTarget, rRoll, { "stat", "stats" }, { sStat })
@@ -66,7 +65,7 @@ function modRoll(rSource, rTarget, rRoll)
 	nEffort = nEffort + RollManager.processEffort(rSource, rTarget, { "stat", "stats", sStat }, nEffort);
 
 	-- Get ease/hinder effects
-	local bEase, bHinder = RollManager.resolveEaseHindrance(rSource, rTarget, { "stat", "stats", sStat });
+	local nEase, nHinder = RollManager.resolveEaseHindrance(rSource, rTarget, rRoll, { "stat", "stats", sStat });
 
 	-- Process conditions
 	local nConditionEffects = RollManager.processStandardConditions(rSource, rTarget);
@@ -75,21 +74,16 @@ function modRoll(rSource, rTarget, rRoll)
 	local nTrainingMod = RollManager.processTraining(bInability, bTrained, bSpecialized)
 
 	-- Roll up all the level/mod adjustments and apply them to the difficulty here
-	rRoll.nDifficulty = rRoll.nDifficulty - nAssets - nEffort - nTrainingMod - nConditionEffects;
-	if bEase then 
-		rRoll.nDifficulty = rRoll.nDifficulty - 1;
-	end
-	if bHinder then
-		rRoll.nDifficulty = rRoll.nDifficulty + 1;
-	end
+	rRoll.nDifficulty = rRoll.nDifficulty - nAssets - nEffort - nTrainingMod - nConditionEffects - nEase + nHinder;
 
 	RollManager.encodeEffort(nEffort, rRoll)
 	RollManager.encodeAssets(nAssets, rRoll);
-	RollManager.encodeEaseHindrance(rRoll, bEase, bHinder);
+	RollManager.encodeEaseHindrance(rRoll, nEase, nHinder);
 	RollManager.encodeEffects(rRoll, nEffectMod);
 end
 
 function onRoll(rSource, rTarget, rRoll)
+	local bPvP = ActorManager.isPC(rSource) and ActorManager.isPC(rTarget);
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 	rMessage.icon = "action_roll";
 
@@ -99,20 +93,12 @@ function onRoll(rSource, rTarget, rRoll)
 
 	local aAddIcons = {};
 	local nFirstDie = rRoll.aDice[1].result or 0;
-	if nFirstDie >= 20 then
-		rMessage.text = rMessage.text .. " [MAJOR EFFECT]";
-		table.insert(aAddIcons, "roll20");
-	elseif nFirstDie == 19 then
-		rMessage.text = rMessage.text .. " [MINOR EFFECT]";
-		table.insert(aAddIcons, "roll19");
-	elseif nFirstDie == 1 then
-		rMessage.text = rMessage.text .. " [GM INTRUSION]";
-		table.insert(aAddIcons, "roll1");
-	end
-	
 	local bSuccess, bAutomaticSuccess = RollManager.processRollSuccesses(rSource, rTarget, rRoll, rMessage, aAddIcons);
 
-	if rTarget then
+	if bPvP then
+		RollManager.updateMessageWithConvertedTotal(rRoll, rMessage);
+		
+	else
 		if bAutomaticSuccess then
 			rMessage.text = rMessage.text .. " [AUTOMATIC SUCCESS]";
 		elseif bSuccess then
@@ -121,6 +107,22 @@ function onRoll(rSource, rTarget, rRoll)
 			rMessage.text = rMessage.text .. " [FAILED]";
 		end
 	end
-	
+
+	-- Since players technically shouldn't roll if the difficulty is reduced to 0
+	-- they also don't have the chance to get major/minor/intrusion effects, so don't put them here.
+	if not bAutomaticSuccess then
+		if nFirstDie >= 20 then
+			rMessage.text = rMessage.text .. " [MAJOR EFFECT]";
+			table.insert(aAddIcons, "roll20");
+		elseif nFirstDie == 19 then
+			rMessage.text = rMessage.text .. " [MINOR EFFECT]";
+			table.insert(aAddIcons, "roll19");
+		elseif nFirstDie == 1 then
+			rMessage.text = rMessage.text .. " [GM INTRUSION]";
+			table.insert(aAddIcons, "roll1");
+		end
+	end
+
+	RollManager.updateRollMessageIcons(rMessage, aAddIcons);
 	Comm.deliverChatMessage(rMessage);
 end

@@ -34,12 +34,11 @@ function performRoll(draginfo, rActor, rAction)
 end
 
 function getRoll(rActor, rAction)
-	local bUseDmgTypes = OptionsManagerCypher.replaceArmorWithDamageTypes();
 	local rRoll = {}
 	rRoll.sType = "damage"
 
 	local sDamageDetails = StringManager.capitalize(rAction.sDamageStat or "");
-	if bUseDmgTypes and (rAction.sDamageType or "") ~= "" then
+	if (rAction.sDamageType or "") ~= "" then
 		sDamageDetails = string.format("%s, %s", sDamageDetails, rAction.sDamageType)
 	end
 	rRoll.sDesc = string.format(
@@ -74,7 +73,7 @@ function modRoll(rSource, rTarget, rRoll)
 		rRoll.nMod = rRoll.nMod + (nEffort * 3);
 	end
 
-	bPiercing, nPierceAmount = RollManager.processPiercing(rSource, rTarget, bPiercing, nPierceAmount, { sDamageType });
+	bPiercing, nPierceAmount = RollManager.processPiercing(rSource, rTarget, bPiercing, nPierceAmount, { sDamageType }); -- Eventually the filter param here will include sDamageType
 
 	local nDmgBonus = EffectManagerCypher.getEffectsBonusByType(rSource, { "damage", "dmg" }, { sStat, sDamageType }, rTarget)
 	if nDmgBonus ~= 0 then
@@ -115,7 +114,7 @@ function buildRollResult(rSource, rTarget, rRoll)
 	rResult.bSourceNPC = (rSource and not ActorManager.isPC(rSource)) or false;
 	rResult.bTargetNPC = (rTarget and not ActorManager.isPC(rTarget)) or false;
 	rResult.sStat = RollManager.decodeStat(rRoll, true);
-	rResult.sDamageType = RollManager.decodeDamageType(rRoll);
+	rResult.sDamageType = (RollManager.decodeDamageType(rRoll) or ""):lower();
 	rResult.bPiercing, rResult.nPierceAmount = RollManager.decodePiercing(rRoll, true);
 	rResult.bAmbient = RollManager.decodeAmbientDamage(rRoll, true);
 	
@@ -169,9 +168,8 @@ end
 function applyDamage(rSource, rTarget, bSecret, rResult)
 	local sStat = RollManager.decodeStat(rResult, false);
 	local bPiercing, nPierceAmount = RollManager.decodePiercing(rResult, true);
-	local sDamageType = rResult.sDamageType
+	local sDamageType = rResult.sDamageType;
 	local nTotal = rResult.nTotal;
-	local bUseDamageTypes = OptionsManagerCypher.replaceArmorWithDamageTypes()
 
 	-- Remember current health status
 	local sOriginalStatus = ActorHealthManager.getHealthStatus(rTarget);
@@ -184,28 +182,16 @@ function applyDamage(rSource, rTarget, bSecret, rResult)
 		return;
 	end
 
-	-- If using damage types, we don't need to apply armor or care about ambient damage
-	if bUseDamageTypes then 
-		nTotal = ActionDamage.applyDamageModifications(
+	if not bAmbient then
+		nTotal = ActionDamage.applyArmor(
 			rSource, 
 			rTarget, 
 			nTotal, 
 			sStat, 
-			sDamageType, 
-			bPiercing,
-			nPierceAmount,
-			aNotifications)
-	else
-		if not bAmbient then
-			nTotal = ActionDamage.applyArmor(
-				rSource, 
-				rTarget, 
-				nTotal, 
-				sStat, 
-				bPiercing, 
-				nPierceAmount, 
-				aNotifications);
-		end
+			sDamageType,
+			bPiercing, 
+			nPierceAmount, 
+			aNotifications);
 	end
 	
 
@@ -281,14 +267,29 @@ function applyDamage(rSource, rTarget, bSecret, rResult)
 	ActionsManager.outputResult(bSecret, rSource, rTarget, msgLong, msgShort);
 end
 
-function applyArmor(rSource, rTarget, nTotal, sStat, bPiercing, nPierceAmount, aNotifications)
+function applyArmor(rSource, rTarget, nTotal, sStat, sDamageType, bPiercing, nPierceAmount, aNotifications)
+	-- If for some reason the amount of damage is negative, then we don't need to do any processing
+	-- Because it's handling as healing
 	if nTotal < 0 then
 		return nTotal;
 	end
 
-	local nArmorAdjust = ActorManagerCypher.getArmor(rTarget, rSource, sStat);
+	-- if damage type is not specified, then we make sure it has
+	-- the untyped value here. This makes all of the calcs easier
+	if (sDamageType or "") == "" then
+		sDamageType = "untyped";
+	end
+	
+	if ActorManagerCypher.isImmune(rTarget, rSource, { sDamageType, sDamageStat }) then
+		table.insert(aNotifications, "[IMMUNE]");
+		return 0;
+	end
 
-	if bPiercing then
+	local nArmorAdjust = ActorManagerCypher.getArmor(rTarget, rSource, sStat, sDamageType);
+
+	-- only apply piercing if the armor adjustment is positive. 
+	-- negative armor adjust means there's a vulnerability to a dmg type
+	if bPiercing and nArmorAdjust > 0 then
 		-- if pierce amount is 0 (but bPierce is true), then pierce all armor
 		-- Otherwise it's a flat reduction
 		if nPierceAmount > 0 then
@@ -297,80 +298,23 @@ function applyArmor(rSource, rTarget, nTotal, sStat, bPiercing, nPierceAmount, a
 			nArmorAdjust = 0;
 		end
 	end
-	nTotal = nTotal - nArmorAdjust;
-
-	if nArmorAdjust <= 0 then
-		return nTotal;
-	end
 
 	-- If any amount of armor was applied, then we add a notification
-	if nTotal <= 0 then
-		table.insert(aNotifications, "[RESISTED]");
-	else
-		table.insert(aNotifications, "[PARTIALLY RESISTED]");
-	end
-
-	return nTotal
-end
-
-function applyDamageModifications(rSource, rTarget, nDamage, sDamageStat, sDamageType, bPiercing, nPierceAmount, aNotifications)
-	if ActorManagerCypher.isImmune(rTarget, rSource, { sDamageType, sDamageStat }) then
-		table.insert(aNotifications, "[IMMUNE]");
-		return 0;
-	end
-
-	local bResist, nResistAmount = ActorManagerCypher.isResistant(rTarget, rSource, { sDamageType, sDamageStat })
-	nDamage = ActionDamage.applyResistPiercing(nDamage, bResist, nResistAmount, bPiercing, nPierceAmount, aNotifications);
-
-	local bVuln, nVulnAmount = ActorManagerCypher.isVulnerable(rTarget, rSource, {sDamageType, sDamageStat});
-	if bVuln and nVulnAmount >= 0 then
-		if nVulnAmount == 0 then
-			nDamage = nDamage * 2;
-		else
-			nDamage = nDamage + nVulnAmount;
-		end
+	if nArmorAdjust < 0 then -- Less than 0
 		table.insert(aNotifications, "[VULNERABLE]");
+	elseif nArmorAdjust == 0 then -- Equal to 0
+		-- Do nothing
+	elseif nArmorAdjust < nTotal then -- Greater than 0 but less than damage
+		table.insert(aNotifications, "[PARTIALLY RESISTED]");
+	elseif nArmorAdjust >= 0 then -- Equal or greater than damage
+		table.insert(aNotifications, "[RESISTED]");		
 	end
 
-	return nDamage;
-end
+	-- Apply the adjusted armor value to the total damage
+	-- Damage cannot fall below 0 though, otherwise that's healing
+	nTotal = math.max(nTotal - nArmorAdjust, 0);
 
-function applyResistPiercing(nDamage, bResist, nResistAmount, bPiercing, nPierceAmount, aNotifications)
-	local nAdjustedDamage = nDamage;
-	-- If there's no resistance, then we don't need to do any work
-	if not bResist or nResistAmount < 0 then
-		return nAdjustedDamage;
-	end
-
-	-- if piercing is 0, then it pierces all resistance
-	if bPiercing and nPierceAmount == 0 then
-		return nAdjustedDamage;
-	end
-
-	-- At this point, if nPierceAmount is not 0, but we're not supposed to
-	-- pierce damage, then set the pierce to 0
-	if not bPiercing and nPierceAmount > 0 then
-		nPierceAmount = 0;
-	end
-
-	-- Resist half if amount is 0, otherwise flat reduction
-	-- nPierceAmount is positive if it should be applied, and 0 if it should be ignored
-	if nResistAmount == 0 then
-		nAdjustedDamage = nPierceAmount + math.floor((nDamage - nPierceAmount) / 2);
-	elseif nResistAmount > 0 then
-		nResistAmount = nResistAmount - nPierceAmount;
-		nAdjustedDamage = math.max(0, nDamage - nResistAmount);
-	end
-
-	if nAdjustedDamage == nDamage then
-		-- Do nothing here
-	elseif nAdjustedDamage > 0 then
-		table.insert(aNotifications, "[PARTIALLY RESISTED]")
-	else
-		table.insert(aNotifications, "[RESISTED]")
-	end
-
-	return nAdjustedDamage;
+	return nTotal 
 end
 
 function applyDamageToPc(rSource, rTarget, nDamage, sStat, sDamageType, aNotifications)

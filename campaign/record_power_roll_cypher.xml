@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<root>
+	<windowclass name="power_action_editor_cypher">
+		<script file="campaign/scripts/power_action_editor_cypher.lua" />
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+			
+			<header_column name="header_cypher">
+				<static textres="power_header_cypher" />
+				<center />
+			</header_column>
+
+			<list_column name="adjustments">
+				<datasource>.adjustments</datasource>
+				<class>cypher_level_adjustment</class>
+				<sortby merge="delete" />
+				<child merge="delete" />
+				<sortby><field>order</field></sortby>
+				<noscroll />
+			</list_column>
+
+			<button_iedit name="adjustments_iedit">
+				<anchored to="header_cypher">
+					<top />
+					<right anchor="right" offset="-5" />
+				</anchored>
+				<edittarget>adjustments</edittarget>
+			</button_iedit>
+			<button_iadd name="adjustments_iadd">
+				<anchored to="adjustments_iedit" position="lefthigh" offset="3,0" />
+				<target>adjustments</target>
+			</button_iadd>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="cypher_level_adjustment">
+		<margins control="0,0,0,4" />
+		<script file="campaign/scripts/cypher_level_adjustment.lua" />
+		<sheetdata>
+			<genericcontrol name="lineanchor">
+				<anchored>
+					<top offset="5" />
+					<left />
+				</anchored>
+			</genericcontrol>
+
+			<!-- LINE ONE -->
+			<newline name="lineOne">
+				<anchored>
+					<top offset="0" />
+				</anchored>
+			</newline>
+
+			<label_line name="label_set">
+				<anchored to="lineOne" width="20" />
+				<static textres="power_label_cypher_text_1" />
+			</label_line>
+
+			<combobox name="property">
+				<anchored to="lineOne" width="105" height="20">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<listdirection>down</listdirection>
+				<unsorted />
+				<tooltip textres="power_tooltip_cypher_property" />
+				<script>
+					function onInit()
+						super.onInit();
+						local sType = window.getType();
+						addItems(CypherManager.getActionProperties(sType));
+					end
+
+					function onValueChanged()
+						window.onActionPropertyChanged();
+					end
+				</script>
+			</combobox>
+
+			<label_line name="label_to">
+				<anchored to="lineOne" width="15">
+					<left offset="8" />
+				</anchored>
+				<static textres="power_label_cypher_text_2" />
+			</label_line>
+
+			<combobox_valuesource name="valuesource">
+				<anchored to="lineOne" />
+				<tooltip textres="power_tooltip_cypher_valuesource" />
+				<default>cypher level</default>
+				<script>	
+					function onValueChanged()
+						window.onValueSourceChanged();
+					end
+				</script>
+			</combobox_valuesource>
+
+			<stringu name="value_string">
+				<anchored to="lineOne">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+					<right parent="" anchor="right" offset="-50" />
+				</anchored>
+				<tooltip textres="power_tooltip_cypher_value_string" />
+			</stringu>
+			<combobox name="value_training">
+				<anchored to="lineOne" width="80" height="20">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<listdirection>down</listdirection>
+				<unsorted />
+				<script>
+					function onInit()
+						super.onInit();
+						addItems({ "", "trained", "specialized", "inability" });
+					end
+				</script>
+				<tooltip textres="power_tooltip_cypher_value_training" />
+			</combobox>
+			<combobox name="value_attackrange">
+				<anchored to="lineOne" width="80" height="20">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<listdirection>down</listdirection>
+				<unsorted />
+				<script>
+					function onInit()
+						super.onInit();
+						addItems({ "immediate", "short", "long", "very long" });
+					end
+				</script>
+				<tooltip textres="power_tooltip_cypher_value_training" />
+			</combobox>
+			<number_operand name="value_number">
+				<anchored to="lineOne" />
+				<tooltip textres="power_tooltip_cypher_value_number" />
+			</number_operand>
+
+			<!-- LINE TWO -->
+			<newline name="lineTwo">
+				<anchored>
+					<left offset="20" />
+				</anchored>
+			</newline>
+
+			<combobox name="operation">
+				<anchored to="lineTwo" width="100" height="20">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<listdirection>down</listdirection>
+				<unsorted />
+				<script>
+					function onInit()
+						super.onInit();
+						addItems({ "", "plus", "minus", "multiplied by", "divided by" });
+					end
+				</script>
+				<tooltip textres="power_tooltip_cypher_operation" />
+			</combobox>
+
+			<combobox_valuesource name="operationsource">
+				<anchored to="lineTwo" />
+				<default>fixed value</default>
+				<tooltip textres="power_tooltip_cypher_operationsource" />
+			</combobox_valuesource>
+
+			<number_operand name="operand">
+				<anchored to="lineTwo" />
+				<tooltip textres="power_tooltip_cypher_operand" />
+			</number_operand>
+
+			<!-- LINE THREE -->
+			<newline name="lineThree">
+				<anchored>
+					<left offset="20" />
+				</anchored>
+			</newline>
+
+			<label_line name="label_when">
+				<anchored to="lineThree" width="125" />
+				<static textres="power_label_cypher_text_3" />
+			</label_line>
+
+			<combobox name="thresholdtype">
+				<anchored to="lineThree" width="100" height="20">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<listdirection>down</listdirection>
+				<unsorted />
+				<script>
+					function onInit()
+						super.onInit();
+						addItems({ "", "equal to", "greater than", "less than", "at least", "at most" });
+						self.onValueChanged();
+					end
+					function onValueChanged()
+						window.threshold.setVisible(getValue() ~= "");
+					end
+				</script>
+				<tooltip textres="power_tooltip_cypher_thresholdtype" />
+			</combobox>
+
+			<basicnumber name="threshold">
+				<anchored to="lineThree" width="30" height="20">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<min>1</min>
+				<max>10</max>
+				<default>1</default>
+				<tooltip textres="power_tooltip_cypher_threshold" />
+			</basicnumber>
+
+			<button_idelete name="idelete">
+				<anchored>
+					<top />
+					<right offset="-5" />
+				</anchored>
+				<editmode>adjustments_iedit</editmode>
+			</button_idelete>
+			<button_ireorder name="ireorder">
+				<anchored to="idelete">
+					<top />
+					<right anchor="left" offset="-5" />
+				</anchored>
+				<editmode>adjustments_iedit</editmode>
+			</button_ireorder>
+
+			<genericcontrol>
+				<anchored height="3">
+					<top parent="lineanchor" anchor="bottom" relation="relative" offset="24" />
+					<left />
+					<right />
+				</anchored>
+				<frame name="separatorline" />
+				<disabled />
+			</genericcontrol>
+		</sheetdata>
+	</windowclass>
+
+	<template name="sub_action_editor_cypher">
+		<subwindow name="cypher_level_adjustment_editor">
+			<script>
+				function onInit()
+					local recordlist = DB.getChild(window.getDatabaseNode(), "....");
+
+					-- Only show the cypher adjustment editor window on items that exist in the library
+					-- not on abilities, or items that exist elsewhere. Only items in the library
+					setVisible((DB.getName(recordlist) or "") == "item");				
+				end
+			</script>
+			<anchored>
+				<left />
+				<top parent="columnanchor" anchor="bottom" relation="relative" offset="10" />
+				<right />
+				<bottom />
+			</anchored>
+			<activate />
+			<fastinit />
+			<noscroll />
+			<class>power_action_editor_cypher</class>
+		</subwindow>
+	</template>
+
+	<template name="newline">
+		<genericcontrol>
+			<anchored to="lineanchor">
+				<top anchor="bottom" relation="relative" offset="25" />
+				<left offset="0" />
+			</anchored>
+		</genericcontrol>
+	</template>
+
+	<template name="label_line">
+		<label>
+			<anchored height="20">
+				<top />
+				<left anchor="right" relation="relative" offset="5" />
+			</anchored>
+		</label>
+	</template>
+
+	<template name="combobox_valuesource">
+		<combobox>
+			<anchored width="80" height="20">
+				<top />
+				<left anchor="right" relation="relative" offset="10" />
+			</anchored>
+			<listdirection>down</listdirection>
+			<unsorted />
+			<script>
+				function onInit()
+					super.onInit();
+
+					addItems({ "cypher level", "fixed value" });
+
+					if default and default[1] and getValue() == "" then
+						setListValue(default[1]);
+					end
+
+					if self.onValueChanged then
+						self.onValueChanged();
+					end
+				end
+			</script>
+		</combobox>
+	</template>
+
+	<template name="number_operand">
+		<basicnumber>
+			<anchored width="30" height="20">
+				<top />
+				<left anchor="right" relation="relative" offset="10" />
+			</anchored>
+		</basicnumber>
+	</template>
+</root>

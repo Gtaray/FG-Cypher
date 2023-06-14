@@ -8,8 +8,13 @@
 <root>
 	<windowclass name="type" copy="record_window">
 		<minimize>minimized_reference</minimize>
-		<script>
-		</script>
+		<placement>
+			<size width="370" height="400" />
+		</placement>
+		<sizelimits>
+			<minimum width="370" height="350" />
+			<dynamic />
+		</sizelimits>
 		<sheetdata>
 			<sub_record_header name="header">
 				<class>type_header</class>
@@ -18,7 +23,6 @@
 			<frame_record_content_tabbed name="contentframe" />
 			<ft_record name="text">
 				<anchored to="contentframe" position="over" />
-				<invisible />
 			</ft_record>
 			<subwindow_record name="content">
 				<class>type_stats</class>
@@ -52,7 +56,7 @@
 		<script file="common/scripts/record_header_simple.lua" />
 		<sheetdata>
 			<link_record_header>
-				<class>ability</class>
+				<class>type</class>
 			</link_record_header>
 
 			<anchor_record_header_right />
@@ -68,10 +72,144 @@
 
 	<windowclass name="type_stats">
 		<margins control="0,0,0,2" />
+		<script file="campaign/scripts/char_content_type_stats.lua" />
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+
+			<header_column name="starting_features_header">
+				<static textres="type_header_starting_features"/>
+				<center />
+			</header_column>
+
+			<label_column name="stats_label">
+				<anchored>
+					<top offset="20" />
+				</anchored>
+				<static textres="type_label_starting_stats" />
+			</label_column>
+
+			<number_column name="mightpool">
+				<anchored>
+					<top offset="20" />
+				</anchored>
+				<min>0</min>
+				<default>10</default>
+			</number_column>
+			<label_fieldtop name="label_mightpool">
+				<anchored to="mightpool" />
+				<static textres="type_label_might" />
+			</label_fieldtop>
+
+			<number_column_extended name="speedpool">
+				<anchored to="mightpool" />
+				<min>0</min>
+				<default>10</default>
+			</number_column_extended>
+			<label_fieldtop name="label_speedpool">
+				<anchored to="speedpool" />
+				<static textres="type_label_speed" />
+			</label_fieldtop>
+
+			<number_column_extended name="intellectpool">
+				<anchored to="mightpool" />	
+				<min>0</min>
+				<default>10</default>
+			</number_column_extended>
+			<label_fieldtop name="label_intellectpool">
+				<anchored to="intellectpool" />
+				<static textres="type_label_intellect" />
+			</label_fieldtop>
+
+			<number_column_extended name="floatingstats">
+				<anchored to="mightpool" />	
+				<min>0</min>
+				<default>6</default>
+				<tooltip textres="type_tooltip_floatingstats" />
+			</number_column_extended>
+			<label_fieldtop name="label_floatingstats">
+				<anchored to="floatingstats" />
+				<static textres="type_label_floating_stats" />
+			</label_fieldtop>
+
+			<label_column name="effort_label">
+				<static textres="type_label_starting_effort" />
+			</label_column>
+			<number_column name="effort">
+				<min>0</min>
+				<default>1</default>
+			</number_column>
+
+			<header_column name="starting_edge_header">
+				<static textres="type_header_edge"/>
+				<center />
+			</header_column>
+			<list_column name="edge">
+				<script>
+					function update(bReadOnly)
+						for _,w in ipairs(getWindows()) do
+							w.update(bReadOnly);
+						end
+					end
+				</script>
+				<class>list_edge_item</class>
+				<datasource>.edge</datasource>
+				<noscroll />
+			</list_column>
+			<button_iedit name="edge_iedit">
+				<anchored to="starting_edge_header" position="righthigh" offset="-15,0" />
+				<edittarget>edge</edittarget>
+			</button_iedit>
+			<button_iadd name="edge_iadd">
+				<anchored to="edge_iedit" position="lefthigh" offset="3,0" />
+				<target>edge</target>
+			</button_iadd>
+
+			<header_column name="abilities_header">
+				<static textres="type_header_abilities"/>
+				<center />
+			</header_column>
+			<list_ref_ability name="abilities">
+				<datasource>.abilities</datasource>
+			</list_ref_ability>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="list_edge_item">
+		<margins control="0,0,0,2" />
 		<script>
+			function update(bReadOnly)
+				option.setComboBoxReadOnly(bReadOnly);
+			end
 		</script>
 		<sheetdata>
 			<anchor_column name="columnanchor" />
+
+			<button_idelete name="idelete">
+				<anchored width="20" height="20">
+					<top />
+					<right anchor="right" offset="0" />
+				</anchored>
+				<editmode>edge_iedit</editmode>
+			</button_idelete>
+
+			<label_column name="option_label">
+				<static textres="char_mod_edge_label" />
+			</label_column>
+			<combobox_edge name="option">
+				<anchored>
+					<left offset="97" />
+					<right parent="idelete" anchor="left" offset="-5" />
+				</anchored>
+			</combobox_edge>
 		</sheetdata>
 	</windowclass>
+
+	<template name="number_column_extended">
+		<basicnumber name="speed">
+			<anchored width="40" height="20">
+				<top anchor="top" />
+				<left anchor="right" relation="relative" offset="10" />
+			</anchored>
+		</basicnumber>
+	</template>
 </root>

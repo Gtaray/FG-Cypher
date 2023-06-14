@@ -5,6 +5,63 @@
 
 function onInit()
 	ItemManager.setCustomCharAdd(onCharItemAdd);
+	ItemManager.setCustomCharRemove(onCharItemRemoved);
+end
+
+function outputUserMessage(sResource, ...)
+	local sFormat = Interface.getString(sResource);
+	local sMsg = string.format(sFormat, ...);
+	ChatManager.SystemMessage(sMsg);
+end
+
+-------------------------------------------------------------------------------
+-- Character sheet drops
+-------------------------------------------------------------------------------
+function addInfoDB(nodeChar, sClass, sRecord)
+	-- Validate parameters
+	if not nodeChar then
+		return false;
+	end
+	
+	if sClass == "type" then
+		CharTypeManager.addTypeDrop(nodeChar, sClass, sRecord);
+	elseif sClass == "descriptor" then
+		CharDescriptorManager.addDescriptorDrop(nodeChar, sClass, sRecord);
+	elseif sClass == "focus" then
+		CharFocusManager.addFocusDrop(nodeChar, sClass, sRecord);
+	elseif sClass == "ancestry" then
+		CharAncestryManager.addAncestryDrop(nodeChar, sClass, sRecord);
+	elseif sClass ==  "flavor" then
+		CharFlavorManager.addFlavorDrop(nodeChar, sClass, sRecord);
+	else
+		return false;
+	end
+	
+	return true;
+end
+
+function helperBuildAddStructure(nodeChar, sClass, sRecord)
+	if not nodeChar or ((sClass or "") == "") or ((sRecord or "") == "") then
+		return nil;
+	end
+
+	local rAdd = { };
+	rAdd.nodeSource = DB.findNode(sRecord);
+	if not rAdd.nodeSource then
+		return nil;
+	end
+
+	rAdd.sSourceClass = sClass;
+	rAdd.sSourceName = StringManager.trim(DB.getValue(rAdd.nodeSource, "name", ""));
+	rAdd.nodeChar = nodeChar;
+	rAdd.sCharName = StringManager.trim(DB.getValue(nodeChar, "name", ""));
+
+	rAdd.sSourceType = StringManager.simplify(rAdd.sSourceName);
+	if rAdd.sSourceType == "" then
+		rAdd.sSourceType = DB.getName(rAdd.nodeSource);
+	end
+
+	return rAdd;
 end
 
 -------------------------------------------------------------------------------
@@ -135,11 +192,24 @@ end
 -- ITEM MANAGEMENT
 -------------------------------------------------------------------------------
 function onCharItemAdd(nodeItem)
-	self.addWeaponToAttackList(nodeItem);
+	if ItemManagerCypher.isItemWeapon(nodeItem) then
+		CharManager.addItemAsWeapon(nodeItem);
+	end
+
+	-- If the item being added to the PC's inventory has actions, create
+	-- an entry in the ability list for it
+	if DB.getChildCount(nodeItem, "actions") > 0 then
+		CharManager.addItemAsAbility(nodeItem)
+	end
+end
+
+function onCharItemRemoved(nodeItem)
+	CharManager.removeAbilityLinkedToRecord(nodeItem);
+	CharManager.removeAttackLinkedToRecord(nodeItem);
 end
 
 -- Adds a item (that is a weapon) to the character's attacklist
-function addWeaponToAttackList(itemnode)
+function addItemAsWeapon(itemnode)
 	-- Parameter validation
 	if not ItemManagerCypher.isItemWeapon(itemnode) then
 		return;
@@ -173,7 +243,73 @@ function addWeaponToAttackList(itemnode)
 		DB.setValue(attacknode, "pierceamount", "number", nPiercing);
 	end
 
-	DB.setValue(attacknode, "source", "windowreference", "item", DB.getPath(itemnode));
+	DB.setValue(attacknode, "itemlink", "windowreference", "item", DB.getPath(itemnode));
+	DB.setValue(itemnode, "attacklink", "windowreference", "attack", DB.getPath(attacknode));
+end
+
+function addItemAsAbility(itemnode)
+	-- Get the weapon list we are going to add to
+	local nodeChar = DB.getChild(itemnode, "...");
+	local nodeAbilities = DB.createChild(nodeChar, "abilitylist");
+	if not nodeAbilities then
+		return;
+	end
+
+	local abilitynode = DB.createChild(nodeAbilities);
+	if not abilitynode then
+		return;
+	end
+
+	local sItemType = StringManager.capitalize(ItemManagerCypher.getItemType(itemnode) or "");
+	local sName = ItemManagerCypher.getItemName(itemnode);
+	if sItemType ~= "" then
+		sName = string.format("%s: %s", sItemType, sName);
+		DB.setValue(abilitynode, "type", "string", sItemType);
+	end
+
+	DB.setValue(abilitynode, "name", "string", sName);
+	if ItemManagerCypher.isItemWeapon(itemnode) then
+		DB.setValue(abilitynode, "useequipped", "string", "yes");
+	end
+
+	local actions = DB.getChild(itemnode, "actions");
+	if actions then
+		DB.copyNode(actions, DB.createChild(abilitynode, "actions"));
+	end
+
+	-- Save links between the item and ability
+	-- These are used so that if one is deleted, so is the other.
+	DB.setValue(abilitynode, "itemlink", "windowreference", "item", DB.getPath(itemnode));
+	DB.setValue(itemnode, "abilitylink", "windowreference", "ability", DB.getPath(abilitynode));
+
+	-- Go through each action and update fields that care about cypher level
+	for _, action in ipairs(DB.getChildList(abilitynode, "actions")) do
+		-- TODO: adjust actions
+	end
+end
+
+function removeAttackLinkedToRecord(noderecord)
+	CharManager.removeLinkedRecord(noderecord, "attacklink");
+end
+
+function removeAbilityLinkedToRecord(noderecord)
+	CharManager.removeLinkedRecord(noderecord, "abilitylink");	
+end
+
+function removeItemLinkedToRecord(noderecord)
+	CharManager.removeLinkedRecord(noderecord, "itemlink");
+end
+
+function removeLinkedRecord(sourcenode, sPath)
+	local _, sRecord = DB.getValue(sourcenode, sPath);
+	if (sRecord or "") == "" then
+		return;
+	end
+
+	local linkednode = DB.findNode(sRecord);
+	if linkednode then
+		DB.deleteNode(linkednode);
+	end
 end
 
 function updateCyphers(nodeChar)

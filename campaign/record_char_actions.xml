@@ -70,34 +70,11 @@
 				</anchored>
 			</frame_char>
 
-			<!-- ARMOR -->
-			<basicnumber name="armor">
-				<anchored to="armorframe" width="30" height="30">
-					<bottom offset="-10" />
-					<left offset="10" />
-				</anchored>
-			</basicnumber>
-			<label_fieldtop>
-				<anchored to="armor" />
-				<static textres="char_label_armor" />
-			</label_fieldtop>
-			<basicnumber name="armorspeedcost">
-				<anchored to="armor" width="20" height="20">
-					<left anchor="right" offset="10" />
-					<bottom />
-				</anchored>
-				<tooltip textres="char_tooltip_armorspeedcost" />
-			</basicnumber>
-			<label_fieldtop>
-				<anchored to="armorspeedcost" />
-				<static textres="char_label_armorspeedcost" />
-			</label_fieldtop>
-
 			<!-- STATS -->
 			<number_charabilitypool name="mightpool" source="abilities.might.current">
-				<anchored to="armorspeedcost" width="45" height="30">
-					<bottom />
-					<left anchor="right" offset="15" />
+				<anchored to="armorframe" width="50" height="30" merge="replace">
+					<left offset="25" />
+					<bottom offset="-10" />
 				</anchored>
 				<stat>might</stat>
 			</number_charabilitypool>
@@ -106,7 +83,7 @@
 				<static textres="char_label_might" />
 			</label_fieldtop>
 			<button_defenseroll name="mightdefroll">
-				<anchored to="mightpool">
+				<anchored to="mightpool" height="25" width="25" merge="replace">
 					<bottom />
 					<left anchor="right" offset="5" />
 				</anchored>
@@ -119,9 +96,9 @@
 			</label_fieldtop>
 
 			<number_charabilitypool name="speedpool" source="abilities.speed.current">
-				<anchored to="mightdefroll" width="45" height="30">
+				<anchored to="mightdefroll" width="50" height="30" merge="replace">
 					<bottom />
-					<left anchor="right" offset="15" />
+					<left anchor="right" offset="30" />
 				</anchored>
 				<stat>speed</stat>
 			</number_charabilitypool>
@@ -130,7 +107,7 @@
 				<static textres="char_label_speed" />
 			</label_fieldtop>
 			<button_defenseroll name="speeddefroll">
-				<anchored to="speedpool">
+				<anchored to="speedpool" height="25" width="25" merge="replace">
 					<bottom />
 					<left anchor="right" offset="5" />
 				</anchored>
@@ -143,9 +120,9 @@
 			</label_fieldtop>
 
 			<number_charabilitypool name="intellectpool" source="abilities.intellect.current">
-				<anchored to="speeddefroll" width="45" height="30">
+				<anchored to="speeddefroll" width="50" height="30" merge="replace">
 					<bottom />
-					<left anchor="right" offset="15" />
+					<left anchor="right" offset="30" />
 				</anchored>
 				<stat>intellect</stat>
 			</number_charabilitypool>
@@ -154,7 +131,7 @@
 				<static textres="char_label_intellect" />
 			</label_fieldtop>
 			<button_defenseroll name="intellectdefroll">
-				<anchored to="intellectpool">
+				<anchored to="intellectpool" height="25" width="25" merge="replace">
 					<bottom />
 					<left anchor="right" offset="5" />
 				</anchored>
@@ -191,6 +168,33 @@
 				<allowcreate />
 				<allowdelete />
 				<sortby><control>name</control></sortby>
+				<script>
+					function onInit()
+						local charnode = UtilityManager.getTopWindow(window).getDatabaseNode();
+						DB.addHandler(DB.getPath(charnode, "inventorylist.*.isidentified"), "onUpdate", onItemIdUpdated)
+					end
+
+					function onClose()
+						local charnode = UtilityManager.getTopWindow(window).getDatabaseNode();
+						DB.removeHandler(DB.getPath(charnode, "inventorylist.*.isidentified"), "onUpdate", onItemIdUpdated)
+					end
+					function onItemIdUpdated()
+						applyFilter()
+					end
+					function onFilter(w)
+						local attacknode = w.getDatabaseNode();
+						local _, sRecord = DB.getValue(attacknode, "itemlink");
+						local itemnode = DB.findNode(sRecord or "");
+
+						-- if this ability is tied to an item, and that item is unidentified, then do not display this.
+						if itemnode and DB.getValue(itemnode, "isidentified", 1) ~= 1 then
+							DB.setValue(attacknode, "equipped", "number", 0);
+							return false;
+						end
+
+						return true;
+					end
+				</script>
 			</list_text>
 			<scrollbar>
 				<anchored to="attacklist" />
@@ -236,6 +240,7 @@
 				<allowcreate />
 				<allowdelete />
 				<sortby><control>name</control></sortby>
+				<script file="campaign/scripts/list_abilityactions.lua" />
 			</list_text>
 			<scrollbar>
 				<anchored to="abilitylist" />

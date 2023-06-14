@@ -42,12 +42,36 @@ aRecordOverrides = {
 			["Use"] = { sField = "usetype" }
 		}
 	},
-	-- ["type"] = {
-	-- 	bExport = true,
-	-- 	aDataMap = { "type", "reference.type" },
-	-- 	sRecordDisplayClass = "type",
-	-- 	sSidebarCategory = "create",
-	-- }
+	["type"] = {
+		bExport = true,
+		aDataMap = { "type", "reference.type" },
+		sRecordDisplayClass = "type",
+		sSidebarCategory = "create",
+	},
+	["descriptor"] = {
+		bExport = true,
+		aDataMap = { "descriptor", "reference.descriptor" },
+		sRecordDisplayClass = "descriptor",
+		sSidebarCategory = "create",
+	},
+	["focus"] = {
+		bExport = true,
+		aDataMap = { "focus", "reference.focus" },
+		sRecordDisplayClass = "focus",
+		sSidebarCategory = "create",
+	},
+	["flavor"] = {
+		bExport = true,
+		aDataMap = { "flavor", "reference.flavor" },
+		sRecordDisplayClass = "flavor",
+		sSidebarCategory = "create",
+	},
+	["ancestry"] = {
+		bExport = true,
+		aDataMap = { "ancestry", "reference.ancestry" },
+		sRecordDisplayClass = "ancestry",
+		sSidebarCategory = "create",
+	}
 }
 
 currencies = { };

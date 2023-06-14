@@ -8,6 +8,13 @@
 <root>
 	<windowclass name="ability" copy="record_window">
 		<minimize>minimized_reference</minimize>
+		<placement>
+			<size width="375" height="400" />
+		</placement>
+		<sizelimits>
+			<minimum width="375" height="350" />
+			<dynamic />
+		</sizelimits>
 		<script>
 			function onLockChanged()
 				super.onLockChanged();
@@ -98,7 +105,11 @@
 					<values>Enabler|Action</values>
 					<defaultlabelres>dash</defaultlabelres>
 				</parameters>
-				<tooltip textres="power_tooltip_useequipped" />
+				<script>
+					function onValueChanged()
+						window.update();
+					end
+				</script>
 			</cycler_column>
 			<label_column name="useequipped_label">
 				<static textres="power_label_useequipped" />
@@ -209,6 +220,99 @@
 				</script>
 				<tabtarget prev="modifier" />
 			</basicft>
+		</sheetdata>
+	</windowclass>
+
+	<!-- ABILITY LIST TEMPLATES -->
+	<template name="list_ref_ability">
+		<list_column name="abilities">
+			<script file="campaign/scripts/list_ref_ability.lua" />
+			<class>list_ref_ability_item</class>
+		</list_column>
+	</template>
+	<template name="list_ref_ability_flavor">
+		<list_column name="abilities">
+			<script file="campaign/scripts/list_ref_ability.lua" />
+			<class>list_ref_ability_item</class>
+			<hidegiven />
+		</list_column>
+	</template>
+
+	<windowclass name="list_ref_ability_item">
+		<margins control="0,0,0,2" />
+		<script file="campaign/scripts/list_ref_ability_item.lua" />
+		<sheetdata>
+			<genericcontrol name="leftanchor">
+				<anchored width="0" height="0">
+					<top />
+					<left />
+				</anchored>
+				<invisible />
+			</genericcontrol>
+			<button_checkbox name="given">
+				<anchored to="leftanchor" width="12" height="12">
+					<top offset="4" />
+					<left relation="relative" />
+				</anchored>
+				<tooltip textres="ref_ability_tooltip_ability_given" />
+				<script>
+					function onValueChanged()
+						window.windowlist.applySort()
+					end
+				</script>
+			</button_checkbox>
+			<basicnumber name="tier">
+				<anchored to="leftanchor" height="18" width="20">
+					<left relation="relative" offset="5" />
+					<top offset="1" />
+				</anchored>
+				<min>1</min>
+				<max>6</max>
+				<default>1</default>
+				<tooltip textres="ref_ability_tooltip_ability_tier" />
+				<script>
+					function onValueChanged()
+						window.windowlist.applySort()
+					end
+				</script>
+			</basicnumber>
+
+			<genericcontrol name="rightanchor">
+				<anchored width="0" height="0">
+					<top />
+					<right />
+				</anchored>
+				<invisible />
+			</genericcontrol>
+			<button_idelete name="idelete">
+				<anchored width="20" height="20">
+					<top offset="2" />
+					<right parent="rightanchor" anchor="left" relation="relative" offset="0" />
+				</anchored>
+			</button_idelete>
+			<linkfield name="link">
+				<anchored width="20" height="20">
+					<top offset="2" />
+					<right parent="rightanchor" anchor="left" relation="relative" offset="-2" />
+				</anchored>
+				<class>ability</class>
+				<readonly />
+			</linkfield>
+
+			<string_textlistitem name="name">
+				<anchored height="20">
+					<top offset="2" />
+					<left parent="leftanchor" anchor="right" relation="relative" offset="7" />
+					<right parent="rightanchor" anchor="left" relation="current" offset="-5" />
+				</anchored>
+				<empty textres="library_recordtype_empty_ability"></empty>
+				<script>
+					function onValueChanged()
+						window.windowlist.applySort()
+					end
+				</script>
+				<readonly />
+			</string_textlistitem>
 		</sheetdata>
 	</windowclass>
 </root>

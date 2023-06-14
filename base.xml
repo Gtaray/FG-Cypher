@@ -37,15 +37,26 @@
 	<includefile source="campaign/template_char.xml" />
 	<includefile source="campaign/record_char.xml" />
 	<includefile source="campaign/record_char_main.xml" />
+	<includefile source="campaign/record_char_skills.xml" />
 	<includefile source="campaign/record_char_inventory.xml" />
+	<includefile source="campaign/record_char_abilities.xml" />
 	<includefile source="campaign/record_char_notes.xml" />
 	<includefile source="campaign/record_char_actions.xml" />
 	<includefile source="campaign/record_char_actions_attack.xml" />
 	<includefile source="campaign/record_char_actions_power.xml" />
-	<includefile source="campaign/record_power_roll.xml" />
+	<includefile source="campaign/record_char_modification.xml" />
+	<includefile source="campaign/record_power_roll_stat.xml" />
+	<includefile source="campaign/record_power_roll_attack.xml" />
+	<includefile source="campaign/record_power_roll_damage.xml" />
+	<includefile source="campaign/record_power_roll_heal.xml" />
+	<includefile source="campaign/record_power_roll_effect.xml" />
+	<includefile source="campaign/record_power_roll_cypher.xml" />
 	<includefile source="campaign/record_ability.xml" />
-	<!-- <includefile source="campaign/record_type.xml" /> -->
-	<script name="CharManager" file="campaign/scripts/manager_char.lua" />
+	<includefile source="campaign/record_type.xml" />
+	<includefile source="campaign/record_descriptor.xml" />
+	<includefile source="campaign/record_focus.xml" />
+	<includefile source="campaign/record_ancestry.xml" />
+	<includefile source="campaign/record_flavor.xml" />
 
 	<includefile source="campaign/record_item.xml" />
 	<includefile source="campaign/record_parcel.xml" />
@@ -72,14 +83,24 @@
 	<script name="GameSystem" file="scripts/manager_gamesystem.lua" />
 	<script name="OptionsManagerCypher" file="scripts/data_options_cyphersystem.lua" />
 	
+	<script name="CharManager" file="scripts/manager_char.lua" />
+	<script name="CharTypeManager" file="scripts/manager_char_type.lua" />
+	<script name="CharDescriptorManager" file="scripts/manager_char_descriptor.lua" />
+	<script name="CharFocusManager" file="scripts/manager_char_focus.lua" />
+	<script name="CharAncestryManager" file="scripts/manager_char_ancestry.lua" />
+	<script name="CharFlavorManager" file="scripts/manager_char_flavor.lua" />
+	<script name="CharModificationManager" file="scripts/manager_char_modification.lua" />
+
 	<script name="ActorManagerCypher" file="scripts/manager_actor_cypher.lua" />
 	<script name="EffectManagerCypher" file="scripts/manager_effect_cypher.lua" />
 	<script name="CombatManagerCypher" file="scripts/manager_combat_cypher.lua" />
 	<script name="ItemManagerCypher" file="scripts/manager_item_cypher.lua" />
+	<script name="CypherManager" file="scripts/manager_cypher.lua" />
 	<script name="RollManager" file="scripts/manager_roll.lua"/>
 	<script name="PowerManager" file="scripts/manager_power.lua" />
 	<script name="PromptManager" file="scripts/manager_prompt.lua" />
 	<script name="DamageTypeManager" file="scripts/manager_damage_types.lua" />
+	<script name="DifficultyManager" file="scripts/manager_difficulty.lua" />
 
 	<script name="ActionGeneral" file="scripts/manager_action_general.lua" />
 	<script name="ActionStat" file="scripts/manager_action_stat.lua" />

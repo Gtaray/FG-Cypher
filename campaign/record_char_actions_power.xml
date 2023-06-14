@@ -99,6 +99,7 @@
 					<left parent="leftanchor" anchor="right" relation="relative" offset="7" />
 					<right parent="rightanchor" anchor="left" relation="current" offset="-5" />
 				</anchored>
+				<empty textres="library_recordtype_empty_ability"></empty>
 			</string_textlistitem>
 
 			<list_poweraction name="actions">
