@@ -6,6 +6,66 @@
 -->
 
 <root>
+	<!-- Character modification list and items -->
+	<template name="list_char_mod">
+		<list_column name="features">
+			<script>
+				function update(bReadOnly)
+					for _,w in ipairs(getWindows()) do
+						w.update(bReadOnly);
+					end
+				end
+				function addEntry(sClass, sRecord)
+					local w = createWindow();
+					if w then
+						w.setLink(sClass, sRecord);
+					end
+					return w;
+				end
+			</script>
+			<class>list_char_mod_item</class>
+			<datasource>.features</datasource>
+			<noscroll />
+		</list_column>
+	</template>
+	<windowclass name="list_char_mod_item">
+		<script file="campaign/scripts/char_content_mod_item.lua" />
+		<sheetdata>			
+			<genericcontrol name="rightanchor">
+				<anchored width="0" height="0">
+					<top />
+					<right />
+				</anchored>
+				<invisible />
+			</genericcontrol>
+			<button_idelete name="idelete">
+				<anchored width="20" height="20">
+					<top offset="4" />
+					<right parent="rightanchor" anchor="left" relation="relative" offset="-2" />
+				</anchored>
+				<editmode>features_iedit</editmode>
+			</button_idelete>
+			<linkcontrol name="shortcut">
+				<anchored width="20" height="20">
+					<top offset="2" />
+					<right parent="rightanchor" anchor="left" relation="relative" offset="-2" />
+				</anchored>
+				<class>record_char_modification</class>
+				<readonly />
+			</linkcontrol>
+			<simplestringc name="summary">
+				<anchored height="20">
+					<top parent="rightanchor" />
+					<left anchor="left" />
+					<right parent="rightanchor" anchor="left" relation="relative" offset="-5" />
+				</anchored>
+				<readonly />
+				<empty textres="char_mod_empty_summary" />
+			</simplestringc>
+		</sheetdata>
+	</windowclass>
+
+	<!-- Charater modification editor -->
 	<windowclass name="record_char_modification">
 		<frame>charsheethelper</frame>
 		<placement>

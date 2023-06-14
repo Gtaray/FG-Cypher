@@ -27,7 +27,7 @@ function onDrop(x, y, draginfo)
 			local node = DB.findNode(sRecord)
 			if node then
 				link.setValue(sClass, sRecord);
-				linkname.setValue(DB.getValue(node, "name", ""));
+				updateLinkName();
 			end			
 			return true;
 		end
@@ -86,6 +86,18 @@ function update()
 	link_label.setVisible(bAbility or bItem)
 	linkname.setVisible(bAbility or bItem);
 	link.setVisible(bAbility or bItem)
+
+	updateLinkName();
+end
+
+function updateLinkName()
+	local sClass, sRecord = link.getValue()
+	local node = DB.findNode(sRecord);
+	if not node then
+		return;
+	end
+
+	linkname.setValue(DB.getValue(node, "name", ""));
 end
 
 function updateCombobox(sControl, bHide)

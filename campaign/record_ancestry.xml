@@ -19,18 +19,18 @@
 			<ft_record name="text">
 				<anchored to="contentframe" position="over" />
 			</ft_record>
-			<!-- <subwindow_record name="content">
-				<class>focus_stats</class>
-			</subwindow_record> -->
+			<subwindow_record name="content">
+				<class>ancestry_stats</class>
+			</subwindow_record>
 
 			<scrollbar_record>
 				<target>text</target>
 			</scrollbar_record>
-			<!-- <scrollbar_record>
+			<scrollbar_record>
 				<target>content</target>
-			</scrollbar_record> -->
+			</scrollbar_record>
 
-			<!-- <tabs_recordsheet name="tabs">
+			<tabs_recordsheet name="tabs">
 				<tab>
 					<icon>tab_main</icon>
 					<subwindow>text</subwindow>
@@ -39,7 +39,7 @@
 					<icon>tab_other</icon>
 					<subwindow>content</subwindow>
 				</tab>
-			</tabs_recordsheet> -->
+			</tabs_recordsheet>
 
 			<resize_referencepage />
 			<close_referencepage />
@@ -51,7 +51,7 @@
 		<script file="common/scripts/record_header_simple.lua" />
 		<sheetdata>
 			<link_record_header>
-				<class>focus</class>
+				<class>ancestry</class>
 			</link_record_header>
 
 			<anchor_record_header_right />
@@ -67,10 +67,23 @@
 
 	<windowclass name="ancestry_stats">
 		<margins control="0,0,0,2" />
-		<script>
-		</script>
+		<script file="campaign/scripts/char_content_ancestry_stats.lua" />
 		<sheetdata>
 			<anchor_column name="columnanchor" />
+
+			<header_column name="features_header">
+				<static textres="ancestry_header_features"/>
+				<center />
+			</header_column>
+			<list_char_mod name="features" />
+			<button_iedit name="features_iedit">
+				<anchored to="features_header" position="righthigh" offset="-15,0" />
+				<edittarget>features</edittarget>
+			</button_iedit>
+			<button_iadd name="features_iadd">
+				<anchored to="features_iedit" position="lefthigh" offset="3,0" />
+				<target>features</target>
+			</button_iadd>
 		</sheetdata>
 	</windowclass>
 </root>

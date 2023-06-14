@@ -334,6 +334,8 @@
 	<string name="library_recordtype_empty_ancestry">&#171; New Ancestry &#187;</string>
 	<string name="library_recordtype_ref_ancestry">Ancestry</string>
 
+	<string name="ancestry_header_features">Features</string>
+
 	<!-- Character Modifications -->
 	<string name="char_mod_empty_summary">&#171; New Modification &#187;</string>
 	<string name="char_mod_property_label">Property</string>
