@@ -6,6 +6,158 @@
 -->
 
 <root>
+	<windowclass name="record_char_modification">
+		<frame>charsheethelper</frame>
+		<placement>
+			<size width="350" height="350" />
+		</placement>
+		<sizelimits>
+			<minimum width="350" height="350" />
+		</sizelimits>
+		<minimize>minimized_reference</minimize>
+		<sheetdata>
+			<anchor_title_charsheethelper name="contentanchor">
+				<anchored height="0" merge="replace">
+					<top parent="" anchor="top" offset="20" />
+					<left parent="" anchor="left" offset="20" />
+					<right parent="" anchor="right" offset="-20" />
+				</anchored>
+			</anchor_title_charsheethelper>
+			<genericcontrol name="contentframe">
+				<anchored to="contentanchor">
+					<top anchor="bottom" offset="10" />
+					<left offset="10" />
+					<right offset="-15" />
+					<bottom parent="" offset="-25" />
+				</anchored>
+				<frame name="groupbox" offset="15,10,15,10" />
+			</genericcontrol>
+
+			<subwindow_record name="content">
+				<class>record_char_modification_content</class>
+				<activate />
+			</subwindow_record>
+			<scrollbar_record>
+				<target>content</target>
+			</scrollbar_record>
+
+			<close_charsheethelper />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="record_char_modification_content">
+		<script file="campaign/scripts/char_content_modification.lua" />
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+
+			<label_column name="property_label">
+				<static textres="char_mod_property_label" />
+			</label_column>
+			<combobox_column name="property">
+				<listdirection>down</listdirection>
+				<unsorted />
+				<script>
+					function onInit()
+						super.onInit();
+						addItems(window.getProperties());
+					end
+					function onValueChanged()
+						window.onPropertyChanged();
+					end
+				</script>
+			</combobox_column>
+
+			<!-- HEADERS -->
+			<header_column name="stats_header">
+				<static textres="char_mod_header_stats"/>
+				<center />
+			</header_column>
+			<header_column name="skills_header">
+				<static textres="char_mod_header_skill"/>
+				<center />
+			</header_column>
+			<header_column name="defense_header">
+				<static textres="char_mod_header_defense"/>
+				<center />
+			</header_column>
+			<header_column name="armor_header">
+				<static textres="char_mod_header_armor"/>
+				<center />
+			</header_column>
+			<header_column name="initiative_header">
+				<static textres="char_mod_header_initiative"/>
+				<center />
+			</header_column>
+			<header_column name="ability_header">
+				<static textres="char_mod_header_ability"/>
+				<center />
+			</header_column>
+			<header_column name="recovery_header">
+				<static textres="char_mod_header_recovery"/>
+				<center />
+			</header_column>
+			<header_column name="edge_header">
+				<static textres="char_mod_header_edge"/>
+				<center />
+			</header_column>
+			<header_column name="effort_header">
+				<static textres="char_mod_header_effort"/>
+				<center />
+			</header_column>
+			<header_column name="item_header">
+				<static textres="char_mod_header_item"/>
+				<center />
+			</header_column>
+			<header_column name="cypher_header">
+				<static textres="char_mod_header_cypher"/>
+				<center />
+			</header_column>
+
+			<label_column name="skill_label">
+				<static textres="char_mod_label_skill" />
+			</label_column>
+			<string_columnh name="skill" />
+			
+			<label_column name="stat_label">
+				<static textres="char_mod_label_stat" />
+			</label_column>
+			<combobox_stat name="stat" />
+
+			<label_column name="training_label">
+				<static textres="char_mod_label_training" />
+			</label_column>
+			<combobox_training name="training" />
+
+			<label_column name="asset_label">
+				<static textres="char_mod_label_assets" />
+			</label_column>
+			<number_columnh name="asset" />
+
+			<label_column name="mod_label">
+				<static textres="char_mod_label_mod" />
+			</label_column>
+			<number_columnh name="mod" />
+
+			<label_column name="dmgtype_label">
+				<static textres="char_mod_label_dmgtype" />
+			</label_column>
+			<string_columnh name="dmgtype" />
+
+			<label_column name="link_label">
+				<static textres="char_mod_label_link" />
+			</label_column>
+			<string_columnh name="linkname">
+				<anchored>
+					<top parent="columnanchor" anchor="bottom" relation="current" offset="7" />
+					<right parent="" offset="-35" />
+				</anchored>
+				<empty textres="char_mod_link_empty" />
+				<readonly />
+			</string_columnh>
+			<linkfield_column name="link" />
+		</sheetdata>
+	</windowclass>
+
 	<template name="combobox_edge">
 		<combobox_column>
 			<listdirection>down</listdirection>
@@ -25,5 +177,46 @@
 				end
 			</script>
 		</combobox_column>
+	</template>
+
+	<template name="combobox_stat">
+		<combobox_column>
+			<listdirection>down</listdirection>
+			<unsorted />
+			<script>
+				function onInit()
+					super.onInit();
+					addItems({ "", "Might", "Speed", "Intellect" });
+				end
+				function onValueChanged()
+					window.onPropertyChanged();
+				end
+			</script>
+		</combobox_column>
+	</template>
+
+	<template name="combobox_training">
+		<combobox_column>
+			<listdirection>down</listdirection>
+			<unsorted />
+			<script>
+				function onInit()
+					super.onInit();
+					addItems({ "", "Trained", "Specialized", "Inability" });
+				end
+				function onValueChanged()
+					window.onPropertyChanged();
+				end
+			</script>
+		</combobox_column>
+	</template>
+
+	<template name="linkfield_column">
+		<linkfield>
+			<anchored width="20" height="20">
+				<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+				<right parent="" offset="-5" />
+			</anchored>
+		</linkfield>
 	</template>
 </root>

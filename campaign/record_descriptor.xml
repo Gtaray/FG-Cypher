@@ -19,18 +19,18 @@
 			<ft_record name="text">
 				<anchored to="contentframe" position="over" />
 			</ft_record>
-			<!-- <subwindow_record name="content">
+			<subwindow_record name="content">
 				<class>descriptor_stats</class>
-			</subwindow_record> -->
+			</subwindow_record>
 
 			<scrollbar_record>
 				<target>text</target>
 			</scrollbar_record>
-			<!-- <scrollbar_record>
+			<scrollbar_record>
 				<target>content</target>
-			</scrollbar_record> -->
+			</scrollbar_record>
 
-			<!-- <tabs_recordsheet name="tabs">
+			<tabs_recordsheet name="tabs">
 				<tab>
 					<icon>tab_main</icon>
 					<subwindow>text</subwindow>
@@ -39,7 +39,7 @@
 					<icon>tab_other</icon>
 					<subwindow>content</subwindow>
 				</tab>
-			</tabs_recordsheet> -->
+			</tabs_recordsheet>
 
 			<resize_referencepage />
 			<close_referencepage />
@@ -67,10 +67,71 @@
 
 	<windowclass name="descriptor_stats">
 		<margins control="0,0,0,2" />
-		<script>
-		</script>
+		<script file="campaign/scripts/char_content_descriptor_stats.lua" />
 		<sheetdata>
 			<anchor_column name="columnanchor" />
+
+			<header_column name="features_header">
+				<static textres="descriptor_header_features"/>
+				<center />
+			</header_column>
+			<list_column name="features">
+				<script>
+					function update(bReadOnly)
+						for _,w in ipairs(getWindows()) do
+							w.update(bReadOnly);
+						end
+					end
+				</script>
+				<class>list_char_mod_item</class>
+				<datasource>.features</datasource>
+				<noscroll />
+			</list_column>
+			<button_iedit name="features_iedit">
+				<anchored to="features_header" position="righthigh" offset="-15,0" />
+				<edittarget>features</edittarget>
+			</button_iedit>
+			<button_iadd name="features_iadd">
+				<anchored to="features_iedit" position="lefthigh" offset="3,0" />
+				<target>features</target>
+			</button_iadd>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="list_char_mod_item">
+		<script file="campaign/scripts/char_content_mod_item.lua" />
+		<sheetdata>			
+			<genericcontrol name="rightanchor">
+				<anchored width="0" height="0">
+					<top />
+					<right />
+				</anchored>
+				<invisible />
+			</genericcontrol>
+			<button_idelete name="idelete">
+				<anchored width="20" height="20">
+					<top offset="4" />
+					<right parent="rightanchor" anchor="left" relation="relative" offset="-2" />
+				</anchored>
+				<editmode>features_iedit</editmode>
+			</button_idelete>
+			<linkcontrol name="shortcut">
+				<anchored width="20" height="20">
+					<top offset="2" />
+					<right parent="rightanchor" anchor="left" relation="relative" offset="-2" />
+				</anchored>
+				<class>record_char_modification</class>
+				<readonly />
+			</linkcontrol>
+			<simplestringc name="summary">
+				<anchored height="20">
+					<top parent="rightanchor" />
+					<left anchor="left" />
+					<right parent="rightanchor" anchor="left" relation="relative" offset="-5" />
+				</anchored>
+				<readonly />
+				<empty textres="char_mod_empty_summary" />
+			</simplestringc>
 		</sheetdata>
 	</windowclass>
 </root>

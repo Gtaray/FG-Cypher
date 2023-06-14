@@ -89,6 +89,7 @@
 	<script name="CharFocusManager" file="scripts/manager_char_focus.lua" />
 	<script name="CharAncestryManager" file="scripts/manager_char_ancestry.lua" />
 	<script name="CharFlavorManager" file="scripts/manager_char_flavor.lua" />
+	<script name="CharModificationManager" file="scripts/manager_char_modification.lua" />
 
 	<script name="ActorManagerCypher" file="scripts/manager_actor_cypher.lua" />
 	<script name="EffectManagerCypher" file="scripts/manager_effect_cypher.lua" />
