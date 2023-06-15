@@ -130,6 +130,12 @@ function getSkillModSummary(rMod)
 		sDisplay, 
 		rMod.sSkill)
 
+	if (rMod.sStat or "" ~= "") then
+		sDisplay = string.format("%s (%s)", 
+			sDisplay, 
+			rMod.sStat)
+	end
+
 	return sDisplay
 end
 
