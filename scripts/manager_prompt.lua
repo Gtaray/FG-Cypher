@@ -1,14 +1,26 @@
 OOB_MSG_TYPE_INITIATEDEFPRMOPT = "initiatedefprompt";
 OOB_MSGTYPE_PROMPTDEFENSE = "promptdefense";
-OOB_MSGTYPE_PROMPTCOST = "promptcost";
 
 function onInit()
 	OOBManager.registerOOBMsgHandler(OOB_MSG_TYPE_INITIATEDEFPRMOPT, handleInitiateDefensePrompt);
 	OOBManager.registerOOBMsgHandler(OOB_MSGTYPE_PROMPTDEFENSE, handlePromptDefenseRoll);
-	-- OOBManager.registerOOBMsgHandler(OOB_MSGTYPE_PROMPTCOST, handlePromptCost);
 end
 
--- We need a double OOB here so that the GM is the one sending out the defense prompt OOB
+function getUser(rPlayer)
+	for _,sIdentity in pairs(User.getAllActiveIdentities()) do
+		local sName = User.getIdentityLabel(sIdentity);
+		if sName == rPlayer.sName then
+			return User.getIdentityOwner(sIdentity)
+		end
+	end
+end
+
+-------------------------------------------------------------------------------
+-- DEFENSE PROMPT
+-------------------------------------------------------------------------------
+
+-- We need a double OOB here so that the GM is the one sending out the 
+-- defense prompt OOB
 function initiateDefensePrompt(rSource, rPlayer, rResult)
 	local msgOOB = {};
 	msgOOB.type = OOB_MSG_TYPE_INITIATEDEFPRMOPT;
@@ -43,12 +55,6 @@ end
 function promptDefenseRoll(rSource, rPlayer, rResult)
 	-- Gets the username of the player who owns rPlayer
 	local sUser = getUser(rPlayer);
-
-	-- ADD THIS BACK IN ONCE TESTING IS COMPLETE
-	-- This is only here so I can test as a GM
-	-- if sUser == nil then
-	-- 	return false;
-	-- end
 
 	local msgOOB = {};
 	msgOOB.type = OOB_MSGTYPE_PROMPTDEFENSE;
@@ -85,24 +91,4 @@ function getActionFromOobMsg(rSource, rTarget, msgOOB)
 	rAction.label = StringManager.capitalize(rAction.sStat);
 
 	return rAction
-end
-
-function promptCostWindow(rSource, vTarget, rRolls)
-	-- Don't use an OOB for this because we always want the prompt to happen on the client
-	-- that clicks the action button
-	if rSource and #rRolls > 0 then
-		local window = Interface.openWindow("cost_prompt", "");
-		window.setData(rSource, vTarget, rRolls);
-	end
-	
-	return true;
-end
-
-function getUser(rPlayer)
-	for _,sIdentity in pairs(User.getAllActiveIdentities()) do
-		local sName = User.getIdentityLabel(sIdentity);
-		if sName == rPlayer.sName then
-			return User.getIdentityOwner(sIdentity)
-		end
-	end
 end

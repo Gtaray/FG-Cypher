@@ -5,6 +5,7 @@
 
 function onInit()
 	local node = getDatabaseNode();
+	local charnode = DB.getChild(node, "...");
 
 	-- Migrate "statcost" to "cost"
 	local sStat = DB.getValue(node, "stat", "");
@@ -21,8 +22,10 @@ function onInit()
 	PowerManagerCore.registerDefaultPowerMenu(self);
 	PowerManagerCore.handleDefaultPowerInitParse(node);
 
-	registerMenuItem(Interface.getString("char_menu_hideability"), "tokenvisibility", 7);
-	registerMenuItem(Interface.getString("char_menu_confirm"), "tokenvisibility", 7, 7);
+	if ActorManager.isPC(charnode) then
+		registerMenuItem(Interface.getString("char_menu_hideability"), "tokenvisibility", 7);
+		registerMenuItem(Interface.getString("char_menu_confirm"), "tokenvisibility", 7, 7);
+	end
 
 	self.updateDetailButton();
 	self.toggleDetail();

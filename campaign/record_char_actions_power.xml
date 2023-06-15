@@ -104,13 +104,17 @@
 
 			<list_poweraction name="actions">
 				<invisible />
+				<class>pc_power_action</class>
 			</list_poweraction>
 		</sheetdata>
 	</windowclass>
 
 	<!-- Entry in a power_item's list_poweraction list -->
-	<windowclass name="power_action" merge="join">
+	<windowclass name="pc_power_action" copy="power_action">
 		<sheetdata>
+			<button_idelete name="idelete" mergerule="resetandadd">
+				<editmode>abilitylist_iedit</editmode>
+			</button_idelete>
 			<button_ireorder name="ireorder" mergerule="resetandadd">
 				<editmode>abilitylist_iedit</editmode>
 			</button_ireorder>

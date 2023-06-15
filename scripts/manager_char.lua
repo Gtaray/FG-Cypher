@@ -236,6 +236,7 @@ function addItemAsWeapon(itemnode)
 	DB.setValue(attacknode, "modifier", "number", ItemManagerCypher.getWeaponModifier(itemnode));
 	DB.setValue(attacknode, "damage", "number", ItemManagerCypher.getWeaponDamage(itemnode));
 	DB.setValue(attacknode, "damagestat", "string", ItemManagerCypher.getWeaponDamageStat(itemnode));
+	DB.setValue(attacknode, "damagetype", "string", ItemManagerCypher.getWeaponDamageType(itemnode));
 
 	local nPiercing = ItemManagerCypher.getWeaponPiercing(itemnode);
 	if nPiercing >= 0 then

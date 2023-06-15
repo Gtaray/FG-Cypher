@@ -9,15 +9,8 @@ function onItemTransfer(rSource, rTemp, rTarget)
 	end
 end
 
-function onPostItemTransfer(rSourceItem, rTargetItem)
-	-- Only handle items added to PC sheet
-	if not rSourceItem.sType == "item" or not rTargetItem.sType == "charsheet" then
-		return;
-	end
-
-	if DB.getChildCount(rSourceItem.node, "actions") > 0 then
-		
-	end
+function hasActions(itemnode)
+	return (DB.getChildCount(itemnode, "actions") or 0) > 0;
 end
 
 function getItemType(itemNode)
@@ -142,6 +135,14 @@ function getWeaponDamage(itemNode)
 	end
 
 	return DB.getValue(itemNode, "damage", 0);
+end
+
+function getWeaponDamageType(itemNode)
+	if not ItemManagerCypher.isItemWeapon(itemNode) then
+		return "";
+	end
+
+	return DB.getValue(itemNode, "damagetype", "");
 end
 
 function getWeaponPiercing(itemNode)
