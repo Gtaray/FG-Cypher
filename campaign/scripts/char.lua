@@ -12,6 +12,8 @@ function onInit()
 	-- I'm not entirely where else to put this, so it goes here.
 	DB.addHandler(DB.getPath(getDatabaseNode(), "abilitylist.*"), "onDelete", onAbilityDeleted)
 	DB.addHandler(DB.getPath(getDatabaseNode(), "attacklist.*"), "onDelete", onAttackDeleted)
+
+	migrateAttackTraining();
 end
 
 function onClose()
@@ -57,4 +59,21 @@ end
 
 function onAttackDeleted(attacknode)
 	CharManager.removeItemLinkedToRecord(attacknode);
+end
+
+function migrateAttackTraining()
+	for _, attacknode in ipairs(DB.getChildList(getDatabaseNode(), "attacklist")) do
+		local vTraining = DB.getValue(attacknode, "training");
+		if type(vTraining) == "number" then
+			DB.deleteChild(attacknode, "training");
+
+			if vTraining == 2 then
+				DB.setValue(attacknode, "training", "string", "trained");
+			elseif vTraining == 3 then
+				DB.setValue(attacknode, "training", "string", "specialized");
+			elseif vTraining == 0 then
+				DB.setValue(attacknode, "training", "string", "inability");
+			end
+		end
+	end
 end
