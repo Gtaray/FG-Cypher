@@ -18,6 +18,7 @@ actions = {
 	["recovery"] = { sIcon = "action_heal" },
 	["heal"] = { sIcon = "action_heal", sTargeting = "each", bUseModStack = true },
 	["depletion"] = { },
+	["cost"] = { sIcon = "action_damage", bUseModStack = "true" },
 };
 
 targetactions = {
