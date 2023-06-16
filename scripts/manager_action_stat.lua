@@ -3,24 +3,17 @@ function onInit()
 	ActionsManager.registerResultHandler("stat", onRoll);
 end
 
-function performRoll(draginfo, rActor, rAction)
-	local aFilter = { "stat", "stats", rAction.sStat };
+function payCostAndRoll(draginfo, rActor, rAction)
+	rAction.sSourceRollType = "stat";
 
-	RollManager.addEdgeToAction(rActor, rAction, aFilter);
-	RollManager.addWoundedToAction(rActor, rAction, "stat");
-	RollManager.addArmorCostToAction(rActor, rAction);
-	RollManager.applyDesktopAdjustments(rActor, rAction);
-	RollManager.resolveMaximumEffort(rActor, rAction, aFilter);
-	RollManager.resolveMaximumAssets(rActor, rAction, aFilter);
-	RollManager.calculateBaseEffortCost(rActor, rAction);
-	RollManager.adjustEffortCostWithEffects(rActor, rAction, aFilter);
-
-	local bCanRoll = RollManager.spendPointsForRoll(rActor, rAction);
-
-	if bCanRoll then
-		local rRoll = ActionStat.getRoll(rActor, rAction);
-		ActionsManager.performAction(draginfo, rActor, rRoll);
+	if not ActionCost.performRoll(draginfo, rActor, rAction) then
+		ActionStat.performRoll(draginfo, rActor, rAction);
 	end
+end
+
+function performRoll(draginfo, rActor, rAction)
+	local rRoll = ActionStat.getRoll(rActor, rAction);
+	ActionsManager.performAction(draginfo, rActor, rRoll);
 end
 
 function getRoll(rActor, rAction)
@@ -29,84 +22,94 @@ function getRoll(rActor, rAction)
 	rRoll.aDice = { "d20" };
 	rRoll.nMod = rAction.nModifier or 0;
 
-	local sStat = "";
-	if (rAction.sStat or "") ~= "" then
-		sStat = string.format(" (%s)", StringManager.capitalize(rAction.sStat));
+	rRoll.sLabel = rAction.label;
+	rRoll.sStat = rAction.sStat;
+	rRoll.sDesc = "[STAT"
+
+	if (rRoll.sStat or "") ~= "" then
+		local sStat = StringManager.capitalize(rRoll.sStat);
+
+		-- This prevents double-writing the stat used to chat
+		if rAction.label ~= sStat then
+			rRoll.sDesc = string.format("%s (%s)", rRoll.sDesc, sStat);
+		end
 	end
 
-	rRoll.sDesc = string.format("[STAT%s] %s", sStat, rAction.label or "");
+	rRoll.sDesc = string.format("%s] %s", rRoll.sDesc, rRoll.sLabel or "");
 	rRoll.nDifficulty = rAction.nDifficulty or 0;
+	rRoll.sTraining = rAction.sTraining;
+	rRoll.nAssets = rAction.nAssets or 0;
+	rRoll.nEffort = rAction.nEffort or 0;
+	rRoll.nEase = rAction.nEase or 0;
+	rRoll.nHinder = rAction.nHinder or 0;
 
-	RollManager.encodeTraining(rAction, rRoll);
-	RollManager.encodeAssets(rAction, rRoll);
-	RollManager.encodeEdge(rAction, rRoll);
-	RollManager.encodeEffort(rAction, rRoll);
-	RollManager.encodeEaseHindrance(rRoll, (rAction.nEase or 0), (rAction.nHinder or 0));
+	-- RollManager.encodeTraining(rAction, rRoll);
+	-- RollManager.encodeAssets(rAction, rRoll);
+	-- RollManager.encodeEffort(rAction, rRoll);
+	-- RollManager.encodeEaseHindrance(rRoll, (rAction.nEase or 0), (rAction.nHinder or 0));
 
 	return rRoll;
 end
 
 function modRoll(rSource, rTarget, rRoll)
-	local sStat = rRoll.sDesc:match("%[STAT%] (%w+)");
-	local nEffort = RollManager.decodeEffort(rRoll, true);
-	local nAssets = RollManager.decodeAssets(rRoll, true);
-	local bInability, bTrained, bSpecialized = RollManager.decodeTraining(rRoll, true);
-
-	rRoll.nDifficulty = RollManager.getBaseRollDifficulty(rSource, rTarget, { "stat", "stats", sStat });
+	local aFilter = { "stat", "stats", rRoll.sStat }
 
 	--Adjust raw modifier, converting every increment of 3 to a difficultly modifier
-	local nAssetMod, nEffectMod = RollManager.processFlatModifiers(rSource, rTarget, rRoll, { "stat", "stats" }, { sStat })
-	nAssets = nAssets + nAssetMod;
-
-	-- Adjust difficulty based on assets
-	nAssets = nAssets + RollManager.processAssets(rSource, rTarget, { "stat", "stats", sStat }, nAssets);
+	local nAssetMod, nEffectMod = RollManager.processFlatModifiers(rSource, rTarget, rRoll, aFilter, { rRoll.sStat })
+	rRoll.nAssets = rRoll.nAssets + nAssetMod + RollManager.getAssetsFromDifficultyPanel();
+	rRoll.nAssets = rRoll.nAssets + RollManager.processAssets(rSource, rTarget, aFilter, rRoll.nAssets);
 
 	-- Adjust difficulty based on effort
-	nEffort = nEffort + RollManager.processEffort(rSource, rTarget, { "stat", "stats", sStat }, nEffort);
+	rRoll.nEffort = rRoll.nEffort + RollManager.processEffort(rSource, rTarget, aFilter, rRoll.nEffort, rRoll.nMaxEffort);
 
 	-- Get ease/hinder effects
-	local nEase, nHinder = RollManager.resolveEaseHindrance(rSource, rTarget, rRoll, { "stat", "stats", sStat });
+	rRoll.nEase = rRoll.nEase + EffectManagerCypher.getEffectsBonusByType(rSource, "EASE", aFilter, rTarget);
+	if ModifierManager.getKey("EASE") then
+		rRoll.nEase = rRoll.nEase + 1;
+	end
+
+	rRoll.nHinder = rRoll.nHinder + EffectManagerCypher.getEffectsBonusByType(rSource, "HINDER", aFilter, rTarget);
+	if ModifierManager.getKey("HINDER") then
+		rRoll.nHinder = rRoll.nHinder + 1;
+	end
 
 	-- Process conditions
-	local nConditionEffects = RollManager.processStandardConditions(rSource, rTarget);
-
-	-- Adjust difficulty based on training
-	local nTrainingMod = RollManager.processTraining(bInability, bTrained, bSpecialized)
+	-- TODO: Refactor this so it only looks at a single actor. We only modify the source data
+	-- here. Adjusting difficulty for target occurs later.
+	rRoll.nConditionMod = RollManager.processStandardConditionsForActor(rSource);
 
 	-- Roll up all the level/mod adjustments and apply them to the difficulty here
-	rRoll.nDifficulty = rRoll.nDifficulty - nAssets - nEffort - nTrainingMod - nConditionEffects - nEase + nHinder;
+	-- TODO: Move this to the applyRoll() function. We're only collecting
+	-- modifiers here
+	--rRoll.nDifficulty = rRoll.nDifficulty - nAssets - nEffort - nTrainingMod - nConditionEffects - nEase + nHinder;
 
-	RollManager.encodeEffort(nEffort, rRoll)
-	RollManager.encodeAssets(nAssets, rRoll);
-	RollManager.encodeEaseHindrance(rRoll, nEase, nHinder);
-	RollManager.encodeEffects(rRoll, nEffectMod);
+	RollManager.encodeTraining(rRoll.sTraining, rRoll);
+	RollManager.encodeEffort(rRoll.nEffort, rRoll);
+	RollManager.encodeAssets(rRoll.nAssets, rRoll);
+	RollManager.encodeEaseHindrance(rRoll, rRoll.nEase, rRoll.nHinder);
+
+	-- TODO: go back to more explicitly defined effect mods
+	-- to support rebuilding the roll when dragging from the chat window
+	if nEffectMod > 0 or rRoll.nConditionMod > 0 then
+		rRoll.sDesc = string.format("%s [EFFECTS]", rRoll.sDesc)
+	end
 end
 
 function onRoll(rSource, rTarget, rRoll)
-	local bPvP = ActorManager.isPC(rSource) and ActorManager.isPC(rTarget);
+	-- TODO: Rebuild detail fields if dragging from chat window
+
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 	rMessage.icon = "action_roll";
 
-	if rTarget then
-		rMessage.text = rMessage.text .. " [at " .. ActorManager.getDisplayName(rTarget) .. "]";
-	end
+	-- We need to process the roll result (success/failure) before printing
+	-- anything to chat, because our messages require us to know if 
+	-- the roll was an automatic success or not.
+	rRoll.nDifficulty = RollManager.getBaseRollDifficulty(rSource, rTarget, { "stat", "stats", rRoll.sStat });
+	RollManager.calculateDifficultyForRoll(rSource, rTarget, rRoll);
 
 	local aAddIcons = {};
 	local nFirstDie = rRoll.aDice[1].result or 0;
-	local bSuccess, bAutomaticSuccess = RollManager.processRollSuccesses(rSource, rTarget, rRoll, rMessage, aAddIcons);
-
-	if bPvP then
-		RollManager.updateMessageWithConvertedTotal(rRoll, rMessage);
-		
-	else
-		if bAutomaticSuccess then
-			rMessage.text = rMessage.text .. " [AUTOMATIC SUCCESS]";
-		elseif bSuccess then
-			rMessage.text = rMessage.text .. " [SUCCESS]";
-		else
-			rMessage.text = rMessage.text .. " [FAILED]";
-		end
-	end
+	local bAutomaticSuccess = rRoll.nDifficulty <= 0;
 
 	-- Since players technically shouldn't roll if the difficulty is reduced to 0
 	-- they also don't have the chance to get major/minor/intrusion effects, so don't put them here.
@@ -125,4 +128,61 @@ function onRoll(rSource, rTarget, rRoll)
 
 	RollManager.updateRollMessageIcons(rMessage, aAddIcons);
 	Comm.deliverChatMessage(rMessage);
+
+	ActionStat.applyRoll(rSource, rTarget, rRoll)
+end
+
+function applyRoll(rSource, rTarget, rRoll)
+	local aAddIcons = {};
+	local nTotal, bSuccess, bAutomaticSuccess = RollManager.processRollResult(rSource, rTarget, rRoll, rMessage, aAddIcons);
+	local bPvP = ActorManager.isPC(rSource) and ActorManager.isPC(rTarget);
+	local msgShort = { font = "msgfont", icon = "task" .. (rRoll.nDifficulty or 0) };
+	local msgLong = { font = "msgfont", icon = "task" .. (rRoll.nDifficulty or 0) };
+
+	msgShort.text = "[Stat";
+	msgLong.text = "[Stat";
+
+	if (rRoll.sLabel or ""):lower() ~= (rRoll.sStat or ""):lower() then
+		msgShort.text = string.format("%s (%s)", msgShort.text, rRoll.sStat);
+		msgLong.text = string.format("%s (%s)", msgShort.text, rRoll.sStat);
+	end
+
+	msgShort.text = string.format("%s]", msgShort.text);
+	msgLong.text = string.format("%s]", msgLong.text);
+
+	if (rRoll.sLabel or "") ~= "" then
+		msgShort.text = string.format("%s %s", msgShort.text, rRoll.sLabel or "");
+		msgLong.text = string.format("%s %s", msgLong.text, rRoll.sLabel or "");
+	end
+	msgLong.text = string.format("%s [%d]", msgLong.text, nTotal or 0);
+
+	-- Targeting information
+	msgShort.text = string.format("%s ->", msgShort.text);
+	msgLong.text = string.format("%s ->", msgLong.text);
+	if rTarget then
+		local sTargetName = ActorManager.getDisplayName(rTarget);
+		msgShort.text = string.format("%s [at %s]", msgShort.text, sTargetName);
+		msgLong.text = string.format("%s [at %s]", msgLong.text, sTargetName);
+	else
+		msgShort.text = string.format("%s [at global level]", msgShort.text);
+		msgLong.text = string.format("%s [at global level]", msgLong.text);
+	end
+
+	-- Add icons for difficulty
+
+	if bPvP then
+		RollManager.updateMessageWithConvertedTotal(rRoll, msgShort);
+		RollManager.updateMessageWithConvertedTotal(rRoll, msgLong);
+		
+	else
+		if bAutomaticSuccess then
+			msgLong.text = string.format("%s [AUTOMATIC]", msgLong.text);
+		elseif bSuccess then
+			msgLong.text = string.format("%s [SUCCESS]", msgLong.text);
+		else
+			msgLong.text = string.format("%s [FAILED]", msgLong.text);
+		end
+	end
+
+	ActionsManager.outputResult(rRoll.bSecret, rSource, rTarget, msgLong, msgShort);
 end

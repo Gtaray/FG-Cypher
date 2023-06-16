@@ -430,7 +430,7 @@ function performAction(node, tData)
 
 	if rAction.type == "stat" then
 		if bPC then
-			ActionStat.performRoll(draginfo, rActor, rAction);
+			ActionStat.payCostAndRoll(draginfo, rActor, rAction);
 		else
 			Comm.addChatMessage({ text = "This action is not available for NPCs.", font = "systemfont" });
 		end

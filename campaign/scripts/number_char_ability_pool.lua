@@ -38,7 +38,7 @@ function action(draginfo)
 	}
 	
 	local rActor = ActorManager.resolveActor(window.getDatabaseNode())
-	ActionStat.performRoll(draginfo, rActor, rAction);
+	ActionStat.payCostAndRoll(draginfo, rActor, rAction);
 end
 
 function onDoubleClick(x, y)
