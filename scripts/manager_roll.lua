@@ -543,11 +543,6 @@ function processRollResult(rSource, rTarget, rRoll)
 	local nSuccess = 0;
 	local bPvP = ActorManager.isPC(rSource) and ActorManager.isPC(rTarget);
 
-	-- Only process rolls comprised of a single d20 roll
-	if not (#(rRoll.aDice) == 1 and rRoll.aDice[1].type == "d20") then		
-		return false, false, 0;
-	end
-
 	local nDifficulty = tonumber(rRoll.nDifficulty) or 0;
 	
 	-- Calculate the total number of successes in this roll
@@ -676,10 +671,19 @@ function decodeStat(rRoll, bPersist)
 		"%[STAT: (%w-)%]",
 		bPersist
 	);
+
 	-- If there's no stat found with the STAT tag
 	-- Then look for it in the parenthesis in the roll type tag
 	if (sStat or "") == "" then
 		sStat = string.match(rRoll.sDesc, "^%[.-%s%((%w+),?%s?.-%)%]");
+	end
+	-- If sStat is still not found, we finally check rRoll.sLabel
+	if (sStat or "") == "" and (rRoll.sLabel or "") ~= "" then
+		if  rRoll.sLabel:lower() == "might" or
+			rRoll.sLabel:lower() == "speed" or 
+			rRoll.sLabel:lower() == "intellect" then
+			sStat = rRoll.sLabel:lower();
+		end
 	end
 	rRoll.sDesc = sText;
 
@@ -1084,6 +1088,16 @@ function decodeEffects(rRoll, bPersist)
 		rRoll.sDesc,
 		"%[EFFECTS:%s-[+-]?%d+%]",
 		"%[EFFECTS:%s-+?([-]?d-)%]",
+		bPersist
+	);
+
+	return nResult;
+end
+function decodeConditionMod(rRoll, bPersist)
+	local nResult, sText = RollManager.decodeTextAsNumber(
+		rRoll.sDesc,
+		"%[EFFECTS%s-[+-]?%d+%]",
+		"%[EFFECTS%s-+?([-]?d-)%]",
 		bPersist
 	);
 

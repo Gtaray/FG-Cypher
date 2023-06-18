@@ -168,6 +168,8 @@ function modRoll(rSource, rTarget, rRoll)
 end
 
 function onRoll(rSource, rTarget, rRoll)
+	-- TODO: actually deduct the cost from stat pool
+	
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 	rMessage.icon = "roll_damage";
 

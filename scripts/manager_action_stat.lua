@@ -43,15 +43,17 @@ function getRoll(rActor, rAction)
 	rRoll.nEase = rAction.nEase or 0;
 	rRoll.nHinder = rAction.nHinder or 0;
 
-	-- RollManager.encodeTraining(rAction, rRoll);
-	-- RollManager.encodeAssets(rAction, rRoll);
-	-- RollManager.encodeEffort(rAction, rRoll);
-	-- RollManager.encodeEaseHindrance(rRoll, (rAction.nEase or 0), (rAction.nHinder or 0));
-
 	return rRoll;
 end
 
 function modRoll(rSource, rTarget, rRoll)
+	-- Rebuild roll data from a chat message in the case of drag/drop
+	-- from the chat window. If we rebuild a roll from chat, we do not want to
+	-- process any other modifiers
+	if ActionStat.rebuildRoll(rSource, rTarget, rRoll) then
+		return;
+	end
+
 	local aFilter = { "stat", "stats", rRoll.sStat }
 
 	--Adjust raw modifier, converting every increment of 3 to a difficultly modifier
@@ -74,30 +76,23 @@ function modRoll(rSource, rTarget, rRoll)
 	end
 
 	-- Process conditions
-	-- TODO: Refactor this so it only looks at a single actor. We only modify the source data
-	-- here. Adjusting difficulty for target occurs later.
 	rRoll.nConditionMod = RollManager.processStandardConditionsForActor(rSource);
-
-	-- Roll up all the level/mod adjustments and apply them to the difficulty here
-	-- TODO: Move this to the applyRoll() function. We're only collecting
-	-- modifiers here
-	--rRoll.nDifficulty = rRoll.nDifficulty - nAssets - nEffort - nTrainingMod - nConditionEffects - nEase + nHinder;
 
 	RollManager.encodeTraining(rRoll.sTraining, rRoll);
 	RollManager.encodeEffort(rRoll.nEffort, rRoll);
 	RollManager.encodeAssets(rRoll.nAssets, rRoll);
 	RollManager.encodeEaseHindrance(rRoll, rRoll.nEase, rRoll.nHinder);
 
-	-- TODO: go back to more explicitly defined effect mods
-	-- to support rebuilding the roll when dragging from the chat window
-	if nEffectMod > 0 or rRoll.nConditionMod > 0 then
-		rRoll.sDesc = string.format("%s [EFFECTS]", rRoll.sDesc)
+	-- We only need to encode the condition mods because all other effect handling
+	-- is stored in the asset, ease, hinder, and effort tags
+	-- Might want to consider adding a basic "EFFECTS" tag if there were effects that 
+	-- modified assets, effort, ease, or hinder
+	if rRoll.nConditionMod > 0 then
+		rRoll.sDesc = string.format("%s [EFFECTS %s]", rRoll.sDesc, rRoll.nConditionMod)
 	end
 end
 
 function onRoll(rSource, rTarget, rRoll)
-	-- TODO: Rebuild detail fields if dragging from chat window
-
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 	rMessage.icon = "action_roll";
 
@@ -108,22 +103,27 @@ function onRoll(rSource, rTarget, rRoll)
 	RollManager.calculateDifficultyForRoll(rSource, rTarget, rRoll);
 
 	local aAddIcons = {};
-	local nFirstDie = rRoll.aDice[1].result or 0;
 	local bAutomaticSuccess = rRoll.nDifficulty <= 0;
 
-	-- Since players technically shouldn't roll if the difficulty is reduced to 0
-	-- they also don't have the chance to get major/minor/intrusion effects, so don't put them here.
-	if not bAutomaticSuccess then
-		if nFirstDie >= 20 then
-			rMessage.text = rMessage.text .. " [MAJOR EFFECT]";
-			table.insert(aAddIcons, "roll20");
-		elseif nFirstDie == 19 then
-			rMessage.text = rMessage.text .. " [MINOR EFFECT]";
-			table.insert(aAddIcons, "roll19");
-		elseif nFirstDie == 1 then
-			rMessage.text = rMessage.text .. " [GM INTRUSION]";
-			table.insert(aAddIcons, "roll1");
-		end
+	-- Only assign these booleans if we have dice. If there are no dice, then the 
+	-- rebuildRoll() function will assign these booleans
+	if #(rRoll.aDice) == 1 then
+		local nFirstDie = rRoll.aDice[1].result or 0;
+		
+		rRoll.bMajorEffect = not bAutomaticSuccess and nFirstDie == 20;
+		rRoll.bMinorEffect = not bAutomaticSuccess and nFirstDie == 19;
+		rRoll.bGmIntrusion = not bAutomaticSuccess and nFirstDie == 1;
+	end
+
+	if rRoll.bMajorEffect then
+		rMessage.text = rMessage.text .. " [MAJOR EFFECT]";
+		table.insert(aAddIcons, "roll20");
+	elseif rRoll.bMinorEffect then
+		rMessage.text = rMessage.text .. " [MINOR EFFECT]";
+		table.insert(aAddIcons, "roll19");
+	elseif rRoll.bGmIntrusion then
+		rMessage.text = rMessage.text .. " [GM INTRUSION]";
+		table.insert(aAddIcons, "roll1");
 	end
 
 	RollManager.updateRollMessageIcons(rMessage, aAddIcons);
@@ -185,4 +185,46 @@ function applyRoll(rSource, rTarget, rRoll)
 	end
 
 	ActionsManager.outputResult(rRoll.bSecret, rSource, rTarget, msgLong, msgShort);
+end
+
+--------------------------------------------------------------------------------
+-- HELPERS
+--------------------------------------------------------------------------------
+-- Returns boolean determining whether the roll was rebuilt from a chat message
+function rebuildRoll(rSource, rTarget, rRoll)
+	local bRebuilt = false;
+
+	if not rRoll.sLabel then
+		rRoll.sLabel = StringManager.trim(rRoll.sDesc:match("%[STAT.*%]([^%[]+)"));
+		bRebuilt = true;
+	end
+	if not rRoll.sStat then
+		rRoll.sStat = RollManager.decodeStat(rRoll, true);
+	end
+	if not rRoll.nAssets then
+		rRoll.nAssets = RollManager.decodeAssets(rRoll, true);
+	end
+	if not rRoll.nEffort then
+		rRoll.nEffort = RollManager.decodeEffort(rRoll, true);
+	end
+	if not rRoll.nEase and not rRoll.nHinder then
+		rRoll.nEase, rRoll.nHinder = RollManager.decodeEaseHindrance(rRoll, true)
+	end
+	if not rRoll.nConditionMod then
+		rRoll.nConditionMod = RollManager.decodeConditionMod(rRoll, true);
+	end
+	if not rRoll.sTraining then
+		rRoll.sTraining = RollManager.decodeTraining(rRoll, true);
+	end
+	if rRoll.bMajorEffect == nil then
+		rRoll.bMajorEffect = rRoll.sDesc:match("%[MAJOR EFFECT%]") ~= nil;
+	end
+	if rRoll.bMinorEffect == nil then
+		rRoll.bMinorEffect = rRoll.sDesc:match("%[MINOR EFFECT%]") ~= nil;
+	end
+	if rRoll.bGmIntrusion == nil then
+		rRoll.bGmIntrusion = rRoll.sDesc:match("%[GM INTRUSION%]") ~= nil;
+	end
+
+	return bRebuilt;
 end
