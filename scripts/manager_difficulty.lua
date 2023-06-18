@@ -7,22 +7,25 @@ DIFFICULTY_DEFAULT = 3
 DIFFICULTY_MINIMUM = 1
 DIFFICULTY_MAXIMUM = 10
 DIFFICULTY_PATH = "global.difficulty";
-local node = nil;
 
 function onInit()
+	if not Session.IsHost then
+		return
+	end
 	initializeGlobalDifficulty()
 end
 
 function initializeGlobalDifficulty()
-	node = DB.findNode(DifficultyManager.DIFFICULTY_PATH);
+	local node = DB.findNode(DifficultyManager.DIFFICULTY_PATH);
 
-	if Session.IsHost and not node then
+	if not node then
 		node = DB.createNode(DifficultyManager.DIFFICULTY_PATH, "number");
 		DB.setValue(node, "", "number", DifficultyManager.DIFFICULTY_DEFAULT)
 	end
 
 	if node then
 		local globalnode = DB.getParent(node);
+		DB.setPublic(node, true);
 		DB.setPublic(globalnode, true);
 	end
 end
@@ -32,7 +35,7 @@ function addUpdateHandler(fHandler)
 end
 
 function getGlobalDifficulty()
-	return DB.getValue(node, "", DifficultyManager.DIFFICULTY_DEFAULT);
+	return DB.getValue(DifficultyManager.DIFFICULTY_PATH, DifficultyManager.DIFFICULTY_DEFAULT);
 end
 
 function setGlobalDifficulty(nDifficulty)
@@ -43,7 +46,7 @@ function setGlobalDifficulty(nDifficulty)
 			nDifficulty), 
 		DifficultyManager.DIFFICULTY_MAXIMUM
 	)
-	DB.setValue(node, "", "number", nDifficulty);
+	DB.setValue(DifficultyManager.DIFFICULTY_PATH, "number", nDifficulty);
 end
 
 function adjustGlobalDifficulty(nIncrement)
