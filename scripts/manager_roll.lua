@@ -375,7 +375,7 @@ function processTraining(bInability, bTrained, bSpecialized)
 	else return 0 end
 end
 
-function processStandardConditions(rSource, rTarget)
+function processStandardConditions(rSource, rTarget, sStat)
 	local nLevelAdjust = 0;
 	-- Dazed doesn't stack with the other conditions
 	if EffectManager.hasCondition(rSource, "Dazed") or 

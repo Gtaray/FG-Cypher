@@ -36,6 +36,8 @@ function getRoll(rActor, rAction)
 		sDescription,
 		rAction.label);
 
+	rRoll.sDefenseStat = rAction.sDefenseStat;
+
 	RollManager.encodeStat(rAction.DefenseStat, rRoll);
 	RollManager.encodeLevel(rAction, rRoll);
 
@@ -43,15 +45,13 @@ function getRoll(rActor, rAction)
 end
 
 function modRoll(rSource, rTarget, rRoll)
-	local sStat = RollManager.decodeStat(rRoll, true);
-
 	-- Get difficulty
 	rRoll.nDifficulty = ActorManagerCypher.getCreatureLevel(rSource, rTarget, { "attack", "atk" });
 	rRoll.sDesc = string.format("%s (Lvl %s)", rRoll.sDesc, rRoll.nDifficulty);
 end
 
 function onRoll(rSource, rTarget, rRoll)
-	local sStat = RollManager.decodeStat(rRoll, false);
+	local sStat = rRoll.sDefenseStat;
 
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 	rMessage.icon = "roll_attack";
