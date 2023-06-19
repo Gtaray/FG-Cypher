@@ -85,7 +85,7 @@ function actionAttack(draginfo)
 	local rActor = ActorManager.resolveActor(nodeActor);
 	local rAction = self.getAttackAction();
 
-	ActionAttack.performRoll(draginfo, rActor, rAction)
+	ActionAttack.payCostAndRoll(draginfo, rActor, rAction)
 end
 
 function actionDamage(draginfo)

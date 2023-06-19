@@ -32,9 +32,14 @@ function updateDifficulty()
 
 	nDiffMod = math.min(math.max(nDiffMod, 0), 6);
 
+	local sDisplayName = ActorManager.getDisplayName(rAttacker);
+	if (sDisplayName or "") == "" then
+		sDisplayName = "A creature"
+	end
+
 	local sDesc = string.format(
 		Interface.getString("defense_prompt_description"), 
-		ActorManager.getDisplayName(rAttacker),
+		sDisplayName,
 		self.sStat,
 		nDiffMod);
 
@@ -64,7 +69,5 @@ function roll()
 		rAction.nDifficulty = self.nDifficulty
 	end
 
-	local bRolled = ActionDefense.performRoll(nil, rTarget, rAction);
-
-	return bRolled;
+	ActionDefense.payCostAndRoll(nil, rTarget, rAction);
 end

@@ -22,61 +22,99 @@ function getRoll(rActor, rAction)
 	rRoll.aDice = {};
 	rRoll.nMod = 0;
 
-	-- This is the base difficulty of the defense task
-	-- This is here for display purposes. The difficulty will be re-calced
-	-- when the player makes a defense roll
-	rRoll.nDifficulty = rAction.nLevel or 0;
-	
-	local sDescription = StringManager.capitalize(rAction.sDefenseStat);
-	if (rAction.sAttackRange or "") ~= "" then
-		sDescription = string.format("%s, %s", rAction.sAttackRange, sDescription);
-	end
-	rRoll.sDesc = string.format(
-		"[ATTACK (%s)] %s", 
-		sDescription,
-		rAction.label);
-
+	rRoll.sLabel = rAction.label;
+	rRoll.nLevel = rAction.nLevel or 0;
+	rRoll.sStat = rAction.sStat;
 	rRoll.sDefenseStat = rAction.sDefenseStat;
 
-	RollManager.encodeStat(rAction.DefenseStat, rRoll);
-	RollManager.encodeLevel(rAction, rRoll);
+	rRoll.sDesc = "[ATTACK (";
+	if (rRoll.sAttackRange or "") ~= "" then
+		rRoll.sDesc = string.format("%s%s, ", rRoll.sDesc, rRoll.sAttackRange);
+	end
+	rRoll.sDesc = string.format(
+		"%s%s)] %s vs %s", 
+		rRoll.sDesc, 
+		rRoll.sStat, 
+		rRoll.sLabel,
+		StringManager.capitalize(rRoll.sDefenseStat)
+	);
 
 	return rRoll;
 end
 
 function modRoll(rSource, rTarget, rRoll)
-	-- Get difficulty
-	rRoll.nDifficulty = ActorManagerCypher.getCreatureLevel(rSource, rTarget, { "attack", "atk" });
-	rRoll.sDesc = string.format("%s (Lvl %s)", rRoll.sDesc, rRoll.nDifficulty);
+	if ActionDefenseVs.rebuildRoll(rSource, rTarget, rRoll) then
+		return;
+	end
+
+	-- This has to go here because it requires a source and target
+	rRoll.nDifficulty = rRoll.nLevel + RollManager.getBaseRollDifficulty(rTarget, rSource, { "attack", "atk", rRoll.sStat });
 end
 
 function onRoll(rSource, rTarget, rRoll)
-	local sStat = rRoll.sDefenseStat;
-
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
-	rMessage.icon = "roll_attack";
+
+	if not rRoll.bRebuilt then
+		rMessage.text = string.format("%s (Lvl %s)", rMessage.text, rRoll.nDifficulty);
+	end
+	rMessage.icon = "action_attack";
+
 	if rTarget then
-		rMessage.text = rMessage.text .. " -> " .. ActorManager.getDisplayName(rTarget)
+		rMessage.text = string.format(
+			"%s -> %s", 
+			rMessage.text, 
+			ActorManager.getDisplayName(rTarget));
 	end
 	Comm.deliverChatMessage(rMessage);
 
-	if ActorManager.isPC(rTarget) then
-		local rAction = {};
-		rAction.nDifficulty = rRoll.nDifficulty;
-		rAction.sStat = sStat;
-		rAction.rTarget = rSource;
-		rAction.sTraining, rAction.nAssets, rAction.nModifier = ActorManagerCypher.getDefense(rTarget, sStat);
+	ActionDefenseVs.applyRoll(rSource, rTarget, rRoll);
+end
 
-		-- Attempt to prompt the target to defend
-		-- if there's no one controlling the defending PC, then automatically roll defense
-		if Session.IsHost then
-			local bPrompt = PromptManager.promptDefenseRoll(rSource, rTarget, rAction);
-
-			if not bPrompt then
-				ActionDefense.performRoll(nil, rTarget, rAction);
-			end
-		else
-			PromptManager.initiateDefensePrompt(rSource, rTarget, rAction);
-		end
+function applyRoll(rSource, rTarget, rRoll)
+	if not ActorManager.isPC(rTarget) then
+		return;
 	end
+
+	local rAction = {};
+	rAction.nDifficulty = rRoll.nDifficulty;
+	rAction.sStat = rRoll.sDefenseStat;
+	rAction.rTarget = rSource;
+	rAction.sTraining, rAction.nAssets, rAction.nModifier = ActorManagerCypher.getDefense(rTarget, rRoll.sDefenseStat);
+
+	-- Attempt to prompt the target to defend
+	-- if there's no one controlling the defending PC, then automatically roll defense
+	if Session.IsHost then
+		local bPrompt = PromptManager.promptDefenseRoll(rSource, rTarget, rAction);
+
+		if not bPrompt then
+			ActionDefense.payCostAndRoll(nil, rTarget, rAction);
+		end
+	else
+		PromptManager.initiateDefensePrompt(rSource, rTarget, rAction);
+	end
+end
+
+--------------------------------------------------------------------------------
+-- HELPERS
+--------------------------------------------------------------------------------
+-- Returns boolean determining whether the roll was rebuilt from a chat message
+function rebuildRoll(rSource, rTarget, rRoll)
+	local bRebuilt = false;
+
+	if not rRoll.sLabel then
+		rRoll.sLabel = StringManager.trim(rRoll.sDesc:match("%[ATTACK.*%]([^%[]+)"));
+		bRebuilt = true;
+	end
+	if not rRoll.sStat then
+		rRoll.sStat = RollManager.decodeStat(rRoll, true);
+	end
+	if not rRoll.sDefenseStat then
+		rRoll.sDefenseStat = StringManager.trim(rRoll.sDesc:match("%[ATTACK.-%][^%[]+ vs ([^]%s]*)") or "");
+	end
+	if not rRoll.nDifficulty then
+		rRoll.nDifficulty = tonumber(rRoll.sDesc:match("%(Lvl (%d+)%)") or "0");
+	end
+
+	rRoll.bRebuilt = bRebuilt;
+	return bRebuilt;
 end

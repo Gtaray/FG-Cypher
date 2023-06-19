@@ -401,7 +401,7 @@ function processAssets(rSource, rTarget, aFilter, nAssets)
 	local nAssetEffect = EffectManagerCypher.getEffectsBonusByType(rSource, "ASSET", aFilter, rTarget)
 	local nMaxAssets = ActorManagerCypher.getMaxAssets(rSource, aFilter);
 
-	return math.min(nAssetEffect, nMaxAssets - nAssets);
+	return math.min(nAssetEffect, nMaxAssets - nAssets), nMaxAssets;
 end
 
 function processEffort(rSource, rTarget, aFilter, nEffort, nMaxEffort)
@@ -531,10 +531,14 @@ function calculateDifficultyForRoll(rSource, rTarget, rRoll)
 	nMod = nMod + (rRoll.nHinder or 0);
 	nMod = nMod + (rRoll.nConditionMod or 0);
 
+	if rRoll.bLightWeapon then
+		nMod = nMod - 1;
+	end
+
 	-- Modify based on target's conditions
 	nMod = nMod - RollManager.processStandardConditionsForActor(rTarget)
 
-	rRoll.nDifficulty = math.min(math.max(rRoll.nDifficulty + nMod, 0), 10);
+	rRoll.nDifficulty = rRoll.nDifficulty + nMod;
 end
 
 function processRollResult(rSource, rTarget, rRoll)
@@ -675,8 +679,9 @@ function decodeStat(rRoll, bPersist)
 	-- If there's no stat found with the STAT tag
 	-- Then look for it in the parenthesis in the roll type tag
 	if (sStat or "") == "" then
-		sStat = string.match(rRoll.sDesc, "^%[.-%s%((%w+),?%s?.-%)%]");
+		sStat = string.match(rRoll.sDesc, "^%[.-%s%(%w+,?%s?(.-)%)%]");
 	end
+
 	-- If sStat is still not found, we finally check rRoll.sLabel
 	if (sStat or "") == "" and (rRoll.sLabel or "") ~= "" then
 		if  rRoll.sLabel:lower() == "might" or
@@ -685,6 +690,7 @@ function decodeStat(rRoll, bPersist)
 			sStat = rRoll.sLabel:lower();
 		end
 	end
+
 	rRoll.sDesc = sText;
 
 	return (sStat or ""):lower();
@@ -758,7 +764,15 @@ function decodeTraining(rRoll, bPersist)
 		bPersist
 	);
 
-	return bInability, bTrained, bSpecialized;
+	if bInability then
+		return "inability";
+	elseif bTrained then
+		return "trained";
+	elseif bSpecialized then
+		return "specialized";
+	end
+
+	return "";
 end
 
 function encodeEdge(rAction, vRoll)

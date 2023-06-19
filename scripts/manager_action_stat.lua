@@ -43,6 +43,10 @@ function getRoll(rActor, rAction)
 	rRoll.nEase = rAction.nEase or 0;
 	rRoll.nHinder = rAction.nHinder or 0;
 
+	-- We have to encode to string here because table
+	-- values are stripped out of the rRoll table.
+	RollManager.encodeTarget(rAction.rTarget, rRoll);
+
 	return rRoll;
 end
 
@@ -54,6 +58,7 @@ function modRoll(rSource, rTarget, rRoll)
 		return;
 	end
 
+	rTarget = RollManager.decodeTarget(rRoll, rTarget, true);
 	local aFilter = { "stat", "stats", rRoll.sStat }
 
 	--Adjust raw modifier, converting every increment of 3 to a difficultly modifier
@@ -93,6 +98,8 @@ function modRoll(rSource, rTarget, rRoll)
 end
 
 function onRoll(rSource, rTarget, rRoll)
+	rTarget = RollManager.decodeTarget(rRoll, rTarget);
+	
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 	rMessage.icon = "action_roll";
 
@@ -116,13 +123,19 @@ function onRoll(rSource, rTarget, rRoll)
 	end
 
 	if rRoll.bMajorEffect then
-		rMessage.text = rMessage.text .. " [MAJOR EFFECT]";
+		if not rRoll.bRebuilt then
+			rMessage.text = rMessage.text .. " [MAJOR EFFECT]";
+		end
 		table.insert(aAddIcons, "roll20");
 	elseif rRoll.bMinorEffect then
-		rMessage.text = rMessage.text .. " [MINOR EFFECT]";
+		if not rRoll.bRebuilt then
+			rMessage.text = rMessage.text .. " [MINOR EFFECT]";
+		end
 		table.insert(aAddIcons, "roll19");
 	elseif rRoll.bGmIntrusion then
-		rMessage.text = rMessage.text .. " [GM INTRUSION]";
+		if not rRoll.bRebuilt then
+			rMessage.text = rMessage.text .. " [GM INTRUSION]";
+		end
 		table.insert(aAddIcons, "roll1");
 	end
 
@@ -133,8 +146,7 @@ function onRoll(rSource, rTarget, rRoll)
 end
 
 function applyRoll(rSource, rTarget, rRoll)
-	local aAddIcons = {};
-	local nTotal, bSuccess, bAutomaticSuccess = RollManager.processRollResult(rSource, rTarget, rRoll, rMessage, aAddIcons);
+	local nTotal, bSuccess, bAutomaticSuccess = RollManager.processRollResult(rSource, rTarget, rRoll);
 	local bPvP = ActorManager.isPC(rSource) and ActorManager.isPC(rTarget);
 	local msgShort = { font = "msgfont", icon = "task" .. (rRoll.nDifficulty or 0) };
 	local msgLong = { font = "msgfont", icon = "task" .. (rRoll.nDifficulty or 0) };
@@ -144,7 +156,7 @@ function applyRoll(rSource, rTarget, rRoll)
 
 	if (rRoll.sLabel or ""):lower() ~= (rRoll.sStat or ""):lower() then
 		msgShort.text = string.format("%s (%s)", msgShort.text, rRoll.sStat);
-		msgLong.text = string.format("%s (%s)", msgShort.text, rRoll.sStat);
+		msgLong.text = string.format("%s (%s)", msgLong.text, rRoll.sStat);
 	end
 
 	msgShort.text = string.format("%s]", msgShort.text);
@@ -226,5 +238,6 @@ function rebuildRoll(rSource, rTarget, rRoll)
 		rRoll.bGmIntrusion = rRoll.sDesc:match("%[GM INTRUSION%]") ~= nil;
 	end
 
+	rRoll.bRebuilt = bRebuilt;
 	return bRebuilt;
 end

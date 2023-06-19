@@ -103,7 +103,7 @@ function getRoll(rActor, rAction)
 	-- i.e. a skill roll normally never has a cost, but if effort is applied 
 	-- then it will. So we need to know if effort was applied here, and not
 	-- in modRoll()
-	rRoll.nEffort = RollManager.getEffortFromDifficultyPanel();
+	rRoll.nEffort = (rAction.nEffort or 0) + RollManager.getEffortFromDifficultyPanel();
 
 	return rRoll;
 end
@@ -181,6 +181,9 @@ function onRoll(rSource, rTarget, rRoll)
 		-- Make sure to update the relevant properties
 		rAction.nEffort = rRoll.nEffort;
 		rAction.nMaxEffort = rRoll.nMaxEffort;
+		if rTarget then
+			rAction.rTarget = rTarget;
+		end
 
 		ActionCost.invokeSourceAction(rSource, rAction);
 		ActionCost.clearLastAction();

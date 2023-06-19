@@ -17,5 +17,5 @@ function action(draginfo)
 	rAction.nAssets = DB.getValue(nodeSkill, "asset", 0);
 	rAction.nModifier = DB.getValue(nodeSkill, "misc", 0);
 
-	ActionSkill.performRoll(draginfo, rActor, rAction);
+	ActionSkill.payCostAndRoll(draginfo, rActor, rAction);
 end

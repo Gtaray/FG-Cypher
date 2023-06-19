@@ -437,7 +437,7 @@ function performAction(node, tData)
 
 	elseif rAction.type == "attack" then
 		if bPC then
-			ActionAttack.performRoll(draginfo, rActor, rAction);
+			ActionAttack.payCostAndRoll(draginfo, rActor, rAction);
 		else
 			ActionDefenseVs.performRoll(draginfo, rActor, rAction);
 		end

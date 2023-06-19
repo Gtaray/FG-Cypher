@@ -44,7 +44,7 @@ function handleInitiateDefensePrompt(msgOOB)
 	-- if there's no user, then auto-roll
 	if sUser == nil then
 		local rAction = getActionFromOobMsg(msgOOB);
-		ActionDefense.performRoll(nil, rPlayer, rAction);
+		ActionDefense.payCostAndRoll(nil, rPlayer, rAction);
 	end
 
 	-- Change the type and forward the OOB msg
@@ -78,7 +78,7 @@ function handlePromptDefenseRoll(msgOOB)
 		window.setData(rSource, rTarget, sStat, nDifficulty);
 	else
 		local rAction = getActionFromOobMsg(rSource, rTarget, msgOOB);
-		ActionDefense.performRoll(nil, rTarget, rAction);
+		ActionDefense.payCostAndRoll(nil, rTarget, rAction);
 	end
 end
 

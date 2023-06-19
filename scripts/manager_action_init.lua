@@ -12,23 +12,17 @@ function onInit()
 	ActionsManager.registerResultHandler("init", onRoll);
 end
 
-function performRoll(draginfo, rActor, rAction)
-	local aFilter = { "initiative", "init", rAction.sStat};
+function payCostAndRoll(draginfo, rActor, rAction)
+	rAction.sSourceRollType = "init";
 
-	RollManager.addEdgeToAction(rActor, rAction, aFilter);
-	RollManager.addWoundedToAction(rActor, rAction, "init");
-	RollManager.addArmorCostToAction(rActor, rAction);
-	RollManager.applyDesktopAdjustments(rActor, rAction);
-	RollManager.resolveMaximumEffort(rActor, rAction, aFilter);
-	RollManager.resolveMaximumAssets(rActor, rAction, aFilter);
-	RollManager.calculateBaseEffortCost(rActor, rAction);
-	RollManager.adjustEffortCostWithEffects(rActor, rAction, aFilter);
-
-	local bCanRoll = RollManager.spendPointsForRoll(ActorManager.getCreatureNode(rActor), rAction);
-	if bCanRoll then
-		local rRoll = ActionInit.getRoll(rActor, rAction);
-		ActionsManager.performAction(draginfo, rActor, rRoll);
+	if not ActionCost.performRoll(draginfo, rActor, rAction) then
+		ActionInit.performRoll(draginfo, rActor, rAction);
 	end
+end
+
+function performRoll(draginfo, rActor, rAction)
+	local rRoll = ActionInit.getRoll(rActor, rAction);
+	ActionsManager.performAction(draginfo, rActor, rRoll);
 end
 
 function getRoll(rActor, rAction)
@@ -36,80 +30,96 @@ function getRoll(rActor, rAction)
 	rRoll.sType = "init";
 	rRoll.aDice = { "d20" };
 	rRoll.nMod = rAction.nModifier or 0;
-	rRoll.nDifficulty = rAction.nDifficulty or 0;
+
+	rRoll.sLabel = rAction.label;
+	rRoll.sStat = (rAction.sStat or ""):lower();
 	rRoll.sDesc = string.format(
 		"[INIT] %s", 
-		StringManager.capitalize(rAction.sStat)
+		StringManager.capitalize(rRoll.sStat)
 	);
 
-	RollManager.encodeStat(rAction, rRoll);
-	RollManager.encodeTraining(rAction, rRoll);
-	RollManager.encodeAssets(rAction, rRoll);
-	RollManager.encodeEdge(rAction, rRoll);
-	RollManager.encodeEffort(rAction, rRoll);
-	RollManager.encodeEaseHindrance(rRoll, (rAction.nEase or 0), (rAction.nHinder or 0));
+	rRoll.nDifficulty = rAction.nDifficulty or 0;
+	rRoll.sTraining = rAction.sTraining;
+	rRoll.nAssets = rAction.nAssets or 0;
+	rRoll.nEffort = rAction.nEffort or 0;
+	rRoll.nEase = rAction.nEase or 0;
+	rRoll.nHinder = rAction.nHinder or 0;
 
 	return rRoll;
 end
 
 function modRoll(rSource, rTarget, rRoll)
-	local sStat = RollManager.decodeStat(rRoll, false);
-	local nAssets = RollManager.decodeAssets(rRoll, true);
-	local nEffort = RollManager.decodeEffort(rRoll, true);
-	local bInability, bTrained, bSpecialized = RollManager.decodeTraining(rRoll, true);
+	local aFilter = { "initiative", "init", rRoll.sStat }
 
-	-- Initiative rolls don't care about difficulty
 	--Adjust raw modifier, converting every increment of 3 to a difficultly modifier
-	local nAssetMod, nEffectMod = RollManager.processFlatModifiers(rSource, rTarget, rRoll, { "initiative", "init", sStat }, { sStat })
-	nAssets = nAssets + nAssetMod;
-
-	-- Adjust difficulty based on assets
-	nAssets = nAssets + RollManager.processAssets(rSource, rTarget, { "initiative", "init", sStat }, nAssets);
+	local nAssetMod, nEffectMod = RollManager.processFlatModifiers(rSource, rTarget, rRoll, aFilter, { rRoll.sStat })
+	rRoll.nAssets = rRoll.nAssets + nAssetMod + RollManager.getAssetsFromDifficultyPanel();
+	rRoll.nAssets = rRoll.nAssets + RollManager.processAssets(rSource, rTarget, aFilter, rRoll.nAssets);
 
 	-- Adjust difficulty based on effort
-	nEffort = nEffort + RollManager.processEffort(rSource, rTarget, { "initiative", "init", sStat }, nEffort);
+	rRoll.nEffort = rRoll.nEffort + RollManager.processEffort(rSource, rTarget, aFilter, rRoll.nEffort, rRoll.nMaxEffort);
 
 	-- Get ease/hinder effects
-	local nEase, nHinder = RollManager.resolveEaseHindrance(rSource, rTarget, rRoll, { "initiative", "init", sStat });
+	rRoll.nEase = rRoll.nEase + EffectManagerCypher.getEffectsBonusByType(rSource, "EASE", aFilter, rTarget);
+	if ModifierManager.getKey("EASE") then
+		rRoll.nEase = rRoll.nEase + 1;
+	end
+
+	rRoll.nHinder = rRoll.nHinder + EffectManagerCypher.getEffectsBonusByType(rSource, "HINDER", aFilter, rTarget);
+	if ModifierManager.getKey("HINDER") then
+		rRoll.nHinder = rRoll.nHinder + 1;
+	end
 
 	-- Process conditions
-	local nConditionEffects = RollManager.processStandardConditions(rSource, rTarget);
+	rRoll.nConditionMod = RollManager.processStandardConditionsForActor(rSource);
 
-	-- Adjust difficulty based on training
-	local nTrainingMod = RollManager.processTraining(bInability, bTrained, bSpecialized)
+	RollManager.encodeTraining(rRoll.sTraining, rRoll);
+	RollManager.encodeEffort(rRoll.nEffort, rRoll);
+	RollManager.encodeAssets(rRoll.nAssets, rRoll);
+	RollManager.encodeEaseHindrance(rRoll, rRoll.nEase, rRoll.nHinder);
 
-	rRoll.nDifficulty = rRoll.nDifficulty - nAssets - nEffort - nTrainingMod - nConditionEffects - nEase + nHinder;
-
-	RollManager.encodeEffort(nEffort, rRoll);
-	RollManager.encodeAssets(nAssets, rRoll);
-	RollManager.encodeEaseHindrance(rRoll, nEase, nHinder);
-	RollManager.encodeEffects(rRoll, nEffectMod);
+	-- We only need to encode the condition mods because all other effect handling
+	-- is stored in the asset, ease, hinder, and effort tags
+	-- Might want to consider adding a basic "EFFECTS" tag if there were effects that 
+	-- modified assets, effort, ease, or hinder
+	if rRoll.nConditionMod > 0 then
+		rRoll.sDesc = string.format("%s [EFFECTS %s]", rRoll.sDesc, rRoll.nConditionMod)
+	end
 end
 
 function onRoll(rSource, rTarget, rRoll)
+	RollManager.calculateDifficultyForRoll(rSource, rTarget, rRoll)
+
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
+	local aAddIcons = {};
+
 	rMessage.icon = "action_roll";
 
-	local aAddIcons = {};
-	local nFirstDie = rRoll.aDice[1].result or 0;
-	if nFirstDie >= 20 then
+	if #(rRoll.aDice) == 1 then
+		local nFirstDie = rRoll.aDice[1].result or 0;
+		
+		rRoll.bMajorEffect = nFirstDie == 20;
+		rRoll.bMinorEffect = nFirstDie == 19;
+		rRoll.bGmIntrusion = nFirstDie == 1;
+	end
+
+	if rRoll.bMajorEffect then
 		rMessage.text = rMessage.text .. " [MAJOR EFFECT]";
 		table.insert(aAddIcons, "roll20");
-	elseif nFirstDie == 19 then
+	elseif rRoll.bMinorEffect then
 		rMessage.text = rMessage.text .. " [MINOR EFFECT]";
 		table.insert(aAddIcons, "roll19");
-	elseif nFirstDie == 1 then
+	elseif rRoll.bGmIntrusion then
 		rMessage.text = rMessage.text .. " [GM INTRUSION]";
 		table.insert(aAddIcons, "roll1");
 	end
 
 	-- Convert difficulty adjustments to their equivalent flat bonus
 	RollManager.updateMessageWithConvertedTotal(rRoll, rMessage);
-
-	local nTotal = ActionsManager.total(rRoll);
+	RollManager.updateRollMessageIcons(rMessage, aAddIcons);
 
 	Comm.deliverChatMessage(rMessage);
-	notifyApplyInit(rSource, nTotal);
+	notifyApplyInit(rSource, ActionsManager.total(rRoll));
 end
 
 function notifyApplyInit(rSource, nTotal)

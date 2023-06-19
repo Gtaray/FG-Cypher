@@ -33,7 +33,7 @@
 						local rAction = {};
 						rAction.sStat = "speed";
 						rAction.sTraining, rAction.nAssets, rAction.nModifier = ActorManagerCypher.getInitiative(rActor);
-						ActionInit.performRoll(draginfo, rActor, rAction);
+						ActionInit.payCostAndRoll(draginfo, rActor, rAction);
 					end
 
 					function onButtonPress(x, y)
