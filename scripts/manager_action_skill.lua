@@ -74,7 +74,7 @@ function modRoll(rSource, rTarget, rRoll)
 	local nTrainingMod = RollManager.processTraining(bInability, bTrained, bSpecialized)
 
 	-- Roll up all the level/mod adjustments and apply them to the difficulty here
-	rRoll.nDifficulty = rRoll.nDifficulty - nAssets - nEffort - nTrainingMod - nConditionEffects - nEase + nHinder;
+	rRoll.nDifficulty = rRoll.nDifficulty - nAssets - nEffort - nTrainingMod + nConditionEffects - nEase + nHinder;
 
 	RollManager.encodeEffort(nEffort, rRoll);
 	RollManager.encodeAssets(nAssets, rRoll);

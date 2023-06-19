@@ -423,7 +423,7 @@ function processTraining(bInability, bTrained, bSpecialized)
 	else return 0 end
 end
 
-function processStandardConditions(rSource, rTarget)
+function processStandardConditions(rSource, rTarget, sStat)
 	local nLevelAdjust = 0;
 	-- Dazed doesn't stack with the other conditions
 	if EffectManager.hasCondition(rSource, "Dazed") or 
@@ -1026,7 +1026,7 @@ function decodeTarget(rRoll, rTarget, bPersist)
 	rRoll.sDesc = sText;
 
 	-- Don't overwrite rTarget unless rTarget is null
-	if not rTarget or not rTarget.sCTNode then
+	if not rTarget or not ActorManager.getCTNode(rTarget) then
 		rTarget = ActorManager.resolveActor(sTarget);
 	end
 

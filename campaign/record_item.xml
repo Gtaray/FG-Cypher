@@ -27,6 +27,11 @@
 					actions.subwindow.update();
 				end
 			end
+			function onIDChanged()
+				if content.subwindow then
+					content.subwindow.update();
+				end
+			end
 		</script>
 		<sheetdata>
 			<sub_record_header name="header">

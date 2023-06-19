@@ -77,13 +77,13 @@ function modRoll(rSource, rTarget, rRoll)
 	local nEase, nHinder = RollManager.resolveEaseHindrance(rSource, rTarget, rRoll, { "attack", "atk", sStat });
 
 	-- Process conditions
-	local nConditionEffects = RollManager.processStandardConditions(rSource, rTarget);
+	local nConditionEffects = RollManager.processStandardConditions(rSource, rTarget, sStat);
 
 	-- Adjust difficulty based on training
 	local nTrainingMod = RollManager.processTraining(bInability, bTrained, bSpecialized)
 
 	-- Roll up all the level/mod adjustments and apply them to the difficulty here
-	rRoll.nDifficulty = rRoll.nDifficulty - nAssets - nEffort - nTrainingMod - nConditionEffects - nEase + nHinder;
+	rRoll.nDifficulty = rRoll.nDifficulty - nAssets - nEffort - nTrainingMod + nConditionEffects - nEase + nHinder;
 
 	RollManager.encodeEffort(nEffort, rRoll)
 	RollManager.encodeAssets(nAssets, rRoll);
