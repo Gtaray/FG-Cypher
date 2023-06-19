@@ -903,7 +903,7 @@ function decodeTarget(rRoll, rTarget, bPersist)
 	rRoll.sDesc = sText;
 
 	-- Don't overwrite rTarget unless rTarget is null
-	if not rTarget or not rTarget.sCTNode then
+	if not rTarget or not ActorManager.getCTNode(rTarget) then
 		rTarget = ActorManager.resolveActor(sTarget);
 	end
 
