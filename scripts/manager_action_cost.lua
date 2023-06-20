@@ -201,5 +201,9 @@ function invokeSourceAction(rSource, rAction)
 		ActionAttack.performRoll(nil, rSource, rAction)
 	elseif rAction.sSourceRollType == "init" then
 		ActionInit.performRoll(nil, rSource, rAction)
+	elseif rAction.sSourceRollType == "damage" then
+		ActionDamage.performRoll(nil, rSource, rAction);
+	elseif rAction.sSourceRollType == "heal" then
+		ActionHeal.performRoll(nil, rSource, rAction);
 	end
 end

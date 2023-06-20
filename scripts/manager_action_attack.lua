@@ -32,14 +32,13 @@ function getRoll(rActor, rAction)
 	rRoll.sDefenseStat = rAction.sDefenseStat:lower();
 	rRoll.sAttackRange = rAction.sAttackRange;
 
-	rRoll.sDesc = "[ATTACK (";
-	if (rRoll.sAttackRange or "") ~= "" then
-		rRoll.sDesc = string.format("%s%s, ", rRoll.sDesc, rRoll.sAttackRange);
+	rRoll.sDesc = string.format("[ATTACK (%s", StringManager.capitalize(rRoll.sStat));
+	if (rAction.sAttackRange or "") ~= "" then
+		rRoll.sDesc = string.format("%s, %s", rRoll.sDesc, rAction.sAttackRange)
 	end
 	rRoll.sDesc = string.format(
-		"%s%s)] %s vs %s", 
+		"%s)] %s vs %s", 
 		rRoll.sDesc, 
-		rRoll.sStat, 
 		rRoll.sLabel,
 		StringManager.capitalize(rRoll.sDefenseStat)
 	);

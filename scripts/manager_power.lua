@@ -443,10 +443,10 @@ function performAction(node, tData)
 		end
 		
 	elseif rAction.type == "damage" then
-		ActionDamage.performRoll(draginfo, rActor, rAction);
+		ActionDamage.payCostAndRoll(draginfo, rActor, rAction);
 		
 	elseif rAction.type == "heal" then
-		ActionHeal.performRoll(draginfo, rActor, rAction);
+		ActionHeal.payCostAndRoll(draginfo, rActor, rAction);
 		
 	elseif rAction.type == "effect" then
 		ActionEffect.performRoll(draginfo, rActor, rAction);

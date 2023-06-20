@@ -3,6 +3,14 @@ function onInit()
 	ActionsManager.registerResultHandler("heal", onRoll);
 end
 
+function payCostAndRoll(draginfo, rActor, rAction)
+	rAction.sSourceRollType = "heal";
+
+	if not ActionCost.performRoll(draginfo, rActor, rAction) then
+		actionHeal.performRoll(draginfo, rActor, rAction);
+	end
+end
+
 function performRoll(draginfo, rActor, rAction)
 	local aFilter = { "heal" };
 
