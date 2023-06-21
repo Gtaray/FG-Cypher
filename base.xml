@@ -85,12 +85,14 @@
 	<script name="OptionsManagerCypher" file="scripts/data_options_cyphersystem.lua" />
 	
 	<script name="CharManager" file="scripts/manager_char.lua" />
+	<script name="CharAbilityManager" file="scripts/manager_char_ability.lua" />
 	<script name="CharTypeManager" file="scripts/manager_char_type.lua" />
 	<script name="CharDescriptorManager" file="scripts/manager_char_descriptor.lua" />
 	<script name="CharFocusManager" file="scripts/manager_char_focus.lua" />
 	<script name="CharAncestryManager" file="scripts/manager_char_ancestry.lua" />
 	<script name="CharFlavorManager" file="scripts/manager_char_flavor.lua" />
-	<script name="CharModificationManager" file="scripts/manager_char_modification.lua" />
+	<script name="CharModManager" file="scripts/manager_char_modification.lua" />
+	<script name="CharTrackerManager" file="scripts/manager_char_tracker.lua" />
 
 	<script name="ActorManagerCypher" file="scripts/manager_actor_cypher.lua" />
 	<script name="EffectManagerCypher" file="scripts/manager_effect_cypher.lua" />

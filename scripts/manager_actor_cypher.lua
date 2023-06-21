@@ -134,6 +134,30 @@ function getDamageTrack(rActor)
 	return DB.getValue(nodeActor, "wounds", 0);
 end
 
+function addToStatMax(rActor, sStat, nValue)
+	local nodeActor;
+	if type(rActor) == "databasenode" then
+		nodeActor = rActor;
+	else
+		nodeActor = ActorManager.getCreatureNode(rActor);
+	end
+	if not nodeActor or (sStat or "") == "" or nValue == 0 then
+		return 0;
+	end
+
+	sStat = sStat:lower();
+
+	local sPath = "abilities." .. sStat;
+	local nCur, nMax = ActorManagerCypher.getStatPool(rActor, sStat)
+
+	-- New stat pool maximum
+	nMax = nMax + nValue;
+	DB.setValue(nodeActor, sPath .. ".max", "number", nMax);
+
+	-- Modify the current amount by the same amount
+	ActorManagerCypher.addToStatPool(rActor, sStat, nValue);
+end
+
 function addToStatPool(rActor, sStat, nValue)
 	local nodeActor;
 	if type(rActor) == "databasenode" then

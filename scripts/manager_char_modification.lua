@@ -3,40 +3,59 @@
 -- attribution and copyright information.
 --
 
-function getCharacterModificationSummary(modNode)
-	local rMod = CharModificationManager.getCharacterModificationData(modNode);
-	if not rMod then
-		return "";
+---------------------------------------------------------------
+-- APPLY MODS TO CHAR
+---------------------------------------------------------------
+
+function addModificationToChar(rActor, vMod)
+	if not rActor and not vMod then
+		return;
 	end
 
-	if rMod.sProperty == "stat" then
-		return CharModificationManager.getStatModSummary(rMod);
-	elseif rMod.sProperty == "skill" then
-		return CharModificationManager.getSkillModSummary(rMod);
-	elseif rMod.sProperty == "defense" then
-		return CharModificationManager.getDefenseModSummary(rMod);
-	elseif rMod.sProperty == "armor" then
-		return CharModificationManager.getArmorModSummary(rMod);
-	elseif rMod.sProperty == "initiative" then
-		return CharModificationManager.getInitiativeModSummary(rMod);
-	elseif rMod.sProperty == "recovery" then
-		return CharModificationManager.getRecoveryModSummary(rMod);
-	elseif rMod.sProperty == "edge" then
-		return CharModificationManager.getEdgeModSummary(rMod);
-	elseif rMod.sProperty == "effort" then
-		return CharModificationManager.getEffortModSummary(rMod);
-	elseif rMod.sProperty == "cypherlimit" then
-		return CharModificationManager.getCypherLimitModSummary(rMod);
-	elseif rMod.sProperty == "ability" then
-		return CharModificationManager.getAbilityModSummary(rMod);
-	elseif rMod.sProperty == "item" then
-		return CharModificationManager.getItemModSummary(rMod);
+	local rData = vMod;
+	if type(vMod == "databasenode") then
+		rData = CharModManager.getModificationData(vMod);
 	end
 
-	return "";
+	local nodeChar = ActorManager.getCreatureNode(rActor)
+
+	-- Keeps track of the actual changes to occur
+	-- This is here because while most mods only change a single property
+	-- defenses, skills, initiative and armor, can all change multiple properties
+	-- (training, assets, mods, etc).
+	local aMods = {}
+
+	if rData.sProperty == "stat" then
+		CharModManager.applyStatModification(
+			nodeChar, 
+			rData.sStat, 
+			rData.nMod);
+
+	elseif rData.sProperty == "skill" then
+	elseif rData.sProperty == "defense" then
+	elseif rData.sProperty == "armor" then
+	elseif rData.sProperty == "initiative" then
+	elseif rData.sProperty == "ability" then
+	elseif rData.sProperty == "recovery" then
+	elseif rData.sProperty == "edge" then
+	elseif rData.sProperty == "effort" then
+	elseif rData.sProperty == "item" then
+	elseif rData.sProperty == "cypherlimit" then
+	end
+
+	-- Add to tracker
+	CharTrackerManager.addToStracker(rActor);
 end
 
-function getCharacterModificationData(modNode)
+function applyStatModification(nodeChar, sStat, nValue)
+	ActorManagerCypher.addToStatMax(nodeChar, sStat, nValue);
+end
+
+---------------------------------------------------------------
+-- GET MOD DATA TABLE
+---------------------------------------------------------------
+
+function getModificationData(modNode)
 	if not modNode then
 		return;
 	end
@@ -47,6 +66,11 @@ function getCharacterModificationData(modNode)
 	if rMod.sProperty == "" then
 		return;
 	end
+
+	-- Gets the parent object that contains this list of mods
+	-- Currently this can be either abilities, descriptors, or ancestries
+	local sourcenode = DB.getChild(modNode, "...")
+	rMod.sSourceNode = DB.getPath(sourcenode)
 
 	if rMod.sProperty == "Stat Pool" then
 		rMod.sProperty = "stat"
@@ -108,6 +132,49 @@ function getCharacterModificationData(modNode)
 	return rMod;
 end
 
+---------------------------------------------------------------
+-- CHAR MOD SUMMARIES
+---------------------------------------------------------------
+
+function getCharacterModificationSummary(vMod)
+	local rMod;
+	if type(vMod) == "databasenode" then
+		rMod = CharModManager.getModificationData(modNode);
+	elseif type(vMod) == "table" then
+		rMod = vMod;
+	end
+	
+	if not rMod then
+		return "";
+	end
+
+	if rMod.sProperty == "stat" then
+		return CharModManager.getStatModSummary(rMod);
+	elseif rMod.sProperty == "skill" then
+		return CharModManager.getSkillModSummary(rMod);
+	elseif rMod.sProperty == "defense" then
+		return CharModManager.getDefenseModSummary(rMod);
+	elseif rMod.sProperty == "armor" then
+		return CharModManager.getArmorModSummary(rMod);
+	elseif rMod.sProperty == "initiative" then
+		return CharModManager.getInitiativeModSummary(rMod);
+	elseif rMod.sProperty == "recovery" then
+		return CharModManager.getRecoveryModSummary(rMod);
+	elseif rMod.sProperty == "edge" then
+		return CharModManager.getEdgeModSummary(rMod);
+	elseif rMod.sProperty == "effort" then
+		return CharModManager.getEffortModSummary(rMod);
+	elseif rMod.sProperty == "cypherlimit" then
+		return CharModManager.getCypherLimitModSummary(rMod);
+	elseif rMod.sProperty == "ability" then
+		return CharModManager.getAbilityModSummary(rMod);
+	elseif rMod.sProperty == "item" then
+		return CharModManager.getItemModSummary(rMod);
+	end
+
+	return "";
+end
+
 function getStatModSummary(rMod)
 	if not rMod then
 		return "";
@@ -124,7 +191,7 @@ function getSkillModSummary(rMod)
 		return "";
 	end
 
-	local sDisplay = CharModificationManager.getAssetModifierTrainingFormat(rMod.nAsset, rMod.nMod, rMod.sTraining);
+	local sDisplay = CharModManager.getAssetModifierTrainingFormat(rMod.nAsset, rMod.nMod, rMod.sTraining);
 
 	sDisplay = string.format("%s %s", 
 		sDisplay, 
@@ -144,7 +211,7 @@ function getDefenseModSummary(rMod)
 		return "";
 	end
 
-	local sDisplay = CharModificationManager.getAssetModifierTrainingFormat(rMod.nAsset, rMod.nMod, rMod.sTraining);
+	local sDisplay = CharModManager.getAssetModifierTrainingFormat(rMod.nAsset, rMod.nMod, rMod.sTraining);
 
 	sDisplay = string.format("%s %s Defense rolls", 
 		sDisplay, 
@@ -174,7 +241,7 @@ function getInitiativeModSummary(rMod)
 		return "";
 	end
 
-	local sDisplay = CharModificationManager.getAssetModifierTrainingFormat(rMod.nAsset, rMod.nMod, rMod.sTraining);
+	local sDisplay = CharModManager.getAssetModifierTrainingFormat(rMod.nAsset, rMod.nMod, rMod.sTraining);
 
 	sDisplay = string.format("%s Initiative rolls", sDisplay)
 
@@ -232,7 +299,7 @@ function getAbilityModSummary(rMod)
 end
 
 function getItemModSummary(rMod)
-	return CharModificationManager.getAbilityModSummary(rMod);
+	return CharModManager.getAbilityModSummary(rMod);
 end
 
 function getAssetModifierTrainingFormat(nAsset, nMod, sTraining)

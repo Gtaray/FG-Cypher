@@ -23,7 +23,9 @@ function addInfoDB(nodeChar, sClass, sRecord)
 		return false;
 	end
 	
-	if sClass == "type" then
+	if sClass == "ability" then
+		CharAbilityManager.addAbilityDrop(nodeChar, sClass, sRecord);
+	elseif sClass == "type" then
 		CharTypeManager.addTypeDrop(nodeChar, sClass, sRecord);
 	elseif sClass == "descriptor" then
 		CharDescriptorManager.addDescriptorDrop(nodeChar, sClass, sRecord);

@@ -110,6 +110,7 @@
 	<string name="char_tooltip_armorspeedcost">Increase to the cost of spending effort on speed tests due to wearing armor.</string>
 	<string name="char_header_special_defenses">Special Defenses</string>
 
+	<string name="char_message_add_ability">Ability '%s' added to '%s'</string>
 	<string name="char_message_add_type">Type '%s' added to '%s'</string>
 	<string name="char_message_add_descriptor">Descriptor '%s' added to '%s'</string>
 	<string name="char_message_add_focus">Focus '%s' added to '%s'</string>
@@ -177,6 +178,8 @@
     <!-- Character - Dialog Boxes -->
     <string name="dialog_recovery_title">Recovery</string>
     <string name="label_recovery_remaining">Recovery Remaining</string>
+
+	<!-- Character Tracker -->
 
 	<!-- Powers -->
 	<string name="power_title_stat">Spell/Ability Roll</string>
