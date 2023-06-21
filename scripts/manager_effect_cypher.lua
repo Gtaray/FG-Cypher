@@ -100,7 +100,7 @@ function getEffectsBonusByType(rActor, aEffectType, aFilter, rFilterActor, bTarg
 	if type(aEffectType) ~= "table" then
 		aEffectType = { aEffectType };
 	end
-	if type(aFilter) ~= "table" then
+	if type(aFilter) ~= "table" and type(aFilter) == "string" then
 		aFilter = { aFilter:lower() };
 	end
 	
@@ -369,7 +369,7 @@ end
 
 function toLower(aList)
 	local temp = {};
-	for k,v in ipairs(aList) do
+	for k,v in ipairs(aList or {}) do
 		temp[k] = v:lower();
 	end
 	return temp;

@@ -69,9 +69,9 @@ function modRoll(rSource, rTarget, rRoll)
 		rRoll.nMod = rRoll.nMod + (rRoll.nEffort * 3);
 	end
 
-	rRoll.bPiercing, rRoll.nPierceAmount = RollManager.processPiercing(rSource, rTarget, bPiercing, nPierceAmount, { sDamageType });
+	rRoll.bPiercing, rRoll.nPierceAmount = RollManager.processPiercing(rSource, rTarget, bPiercing, nPierceAmount, { rRoll.sDamageType });
 
-	local nDmgBonus = EffectManagerCypher.getEffectsBonusByType(rSource, aFilter, { sStat, sDamageType }, rTarget)
+	local nDmgBonus = EffectManagerCypher.getEffectsBonusByType(rSource, aFilter, { rRoll.sStat, rRoll.sDamageType }, rTarget)
 	if nDmgBonus ~= 0 then
 		rRoll.nMod = rRoll.nMod + nDmgBonus;
 	end
@@ -86,6 +86,11 @@ function modRoll(rSource, rTarget, rRoll)
 end
 
 -- Returns boolean determining whether the roll was rebuilt from a chat message
+-- It's important to note here that we do not need to rebuild the stat that the PC
+-- used, because that stat is only ever used to get modifiers in the modRoll()
+-- function. Since that function has already been called when the roll was first made
+-- (this function only applies when drag/dropping chat messages), the effects
+-- are already baked in
 function rebuildRoll(rSource, rTarget, rRoll)
 	local bRebuilt = false;
 
@@ -93,8 +98,8 @@ function rebuildRoll(rSource, rTarget, rRoll)
 		rRoll.sLabel = StringManager.trim(rRoll.sDesc:match("%[DAMAGE.*%]([^%[]+)"));
 		bRebuilt = true;
 	end
-	if not rRoll.sStat then
-		rRoll.sStat = RollManager.decodeStat(rRoll, true);
+	if not rRoll.sDamageStat then
+		rRoll.sDamageStat = RollManager.decodeStat(rRoll, true);
 	end
 	if not rRoll.nEffort then
 		rRoll.nEffort = RollManager.decodeEffort(rRoll, true);
@@ -133,7 +138,7 @@ function buildRollResult(rSource, rTarget, rRoll)
 	rResult.bTargetPC = (rTarget and ActorManager.isPC(rTarget)) or false;
 	rResult.bSourceNPC = (rSource and not ActorManager.isPC(rSource)) or false;
 	rResult.bTargetNPC = (rTarget and not ActorManager.isPC(rTarget)) or false;
-	rResult.sStat = rRoll.sStat
+	rResult.sDamageStat = rRoll.sDamageStat
 	rResult.sDamageType = (rRoll.sDamageType or ""):lower()
 	rResult.bPiercing = rRoll.bPiercing;
 	rResult.nPierceAmount = rRoll.nPierceAmount
@@ -253,33 +258,34 @@ function applyDamage(rSource, rTarget, bSecret, rResult)
 
 		-- Report positive values only
 		nTotal = math.abs(nTotal);
-		msgLong.text = string.format("[%s healing", nTotal)
-		if (sStat or "") ~= "" then
-			msgLong.text = string.format("%s %s", msgLong.text, sStat)
-		end
-		msgLong.text = string.format("%s]", msgLong.text)
+		msgShort.text = string.format("[heal %s]", nTotal);
+		msgLong.text = string.format("[heal %s]", nTotal);
 		
 	else
 		msgShort.icon = "roll_damage";
 		msgLong.icon = "roll_damage";
 
-		if sDamageType then
+		if (sDamageType or "") ~= "" then
+			msgShort.text = string.format("[%s %s damage]", nTotal, sDamageType);
 			msgLong.text = string.format("[%s %s damage]", nTotal, sDamageType);
 		else
+			msgShort.text = string.format("[%s damage]", nTotal);
 			msgLong.text = string.format("[%s damage]", nTotal);
 		end
 	end
 
-	msgLong.text = string.format("%s ->", msgLong.text);
 	if rTarget then
-		msgLong.text = string.format("%s [to %s", msgLong.text, ActorManager.getDisplayName(rTarget));
+		msgShort.text = string.format("%s -> [to %s", msgShort.text, ActorManager.getDisplayName(rTarget));
+		msgLong.text = string.format("%s -> [to %s", msgLong.text, ActorManager.getDisplayName(rTarget));
 	end
 
 	if ActorManager.isPC(rTarget) and (sStat or "") ~= "" then
+		msgShort.text = string.format("%s's %s", msgShort.text, sStat);
 		msgLong.text = string.format("%s's %s", msgLong.text, sStat);
 	end
+
+	msgShort.text = msgShort.text .. "]";
 	msgLong.text = msgLong.text .. "]";
-	msgShort.text = msgLong.text;
 	
 	if #aNotifications > 0 then
 		msgLong.text = string.format("%s %s", msgLong.text, table.concat(aNotifications, " "));

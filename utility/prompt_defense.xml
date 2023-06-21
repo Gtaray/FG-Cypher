@@ -115,7 +115,6 @@
 				<script>
 					function onButtonPress()
 						window.roll();
-						window.close();
 					end
 				</script>
 				<anchored height="22" width="160">

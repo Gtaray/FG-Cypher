@@ -8,6 +8,12 @@ end
 -------------------------------------------------------------------------------
 local rLastAction;
 function setLastAction(rAction)
+	-- If this action doesn't have a source roll type, then we bail
+	-- currently the only place this occurs is if a COST roll is made
+	-- on its own, not as part of any other roll.
+	if not rAction.sSourceRollType then
+		return;
+	end
 	rLastAction = rAction;
 end
 
@@ -29,13 +35,18 @@ local rRollTypeFilters = {
 	["defense"] = { "defense", "def" },
 	["heal"] = { "heal" },
 	["initiative"] = { "initiative", "init" },
-	["skill"] = { "skill", "skills" },
+	["skill"] = { "skill", "skills" }
 }
 
 function getEffectFilter(rRoll)
-	local aFilters = rRollTypeFilters[rRoll.sSourceRollType];
+	local sType = rRoll.sSourceRollType;
+	if not sType then
+		sType = "cost";
+	end
+
+	local aFilters = rRollTypeFilters[sType];
 	if not aFilters then
-		return {};
+		aFilters = { };
 	end
 
 	local aResult = UtilityManager.copyDeep(aFilters);
@@ -63,6 +74,12 @@ end
 -- returns true if a the cost roll is made
 -- returns false if no roll is made
 function performRoll(draginfo, rActor, rAction)
+	-- NPCs always just move on through and don't pay cost
+	-- could be neat if they could in the future though
+	if not ActorManager.isPC(rActor) then
+		return false;
+	end
+
 	local rRoll = ActionCost.getRoll(rActor, rAction);
 
 	if rRoll.nMod > 0 or rRoll.nEffort > 0 then
@@ -82,6 +99,7 @@ function getRoll(rActor, rAction)
 
 	RollManager.resolveStatUsedForCost(rAction); -- resolve the cost stat first
 	rRoll.sCostStat = rAction.sCostStat;
+	rRoll.sLabel = rAction.label or "";
 	
 	rRoll.sDesc = "[COST"
 	if (rRoll.sCostStat or "") ~= "" then
@@ -92,7 +110,7 @@ function getRoll(rActor, rAction)
 			rRoll.sDesc = string.format("%s (%s)", rRoll.sDesc, sStat);
 		end
 	end
-	rRoll.sDesc = string.format("%s] %s", rRoll.sDesc, rAction.label or "");
+	rRoll.sDesc = string.format("%s] %s", rRoll.sDesc, rRoll.sLabel);
 
 	if rAction.sSourceRollType then
 		rRoll.sSourceRollType = rAction.sSourceRollType;
@@ -109,6 +127,10 @@ function getRoll(rActor, rAction)
 end
 
 function modRoll(rSource, rTarget, rRoll)
+	if ActionCost.rebuildRoll(rSource, rTarget, rRoll) then
+		return;
+	end
+
 	local aFilter = ActionCost.getEffectFilter(rRoll);
 
 	-- Add base effort from mod panel
@@ -167,13 +189,49 @@ function modRoll(rSource, rTarget, rRoll)
 	end
 end
 
+-- Not entirely necessary, but for completeness' sake
+function rebuildRoll(rSource, rTarget, rRoll)
+	local bRebuilt = false;
+
+	if not rRoll.sLabel then
+		rRoll.sLabel = StringManager.trim(rRoll.sDesc:match("%[COST.*%]([^%[]+)"));
+		bRebuilt = true;
+	end
+	if not rRoll.sCostStat then
+		rRoll.sCostStat = RollManager.decodeStat(rRoll, true);
+	end
+	if not rRoll.nEffort then
+		rRoll.nEffort = RollManager.decodeEffort(rRoll, true);
+	end
+
+	rRoll.bRebuilt = bRebuilt;
+	return bRebuilt;
+end
+
 function onRoll(rSource, rTarget, rRoll)
-	-- TODO: actually deduct the cost from stat pool
-	
+	-- dragging from chat results in a nil rSource, but there is the drop target
+	-- so we just set one to the other
+	if not rSource then
+		rSource = rTarget;
+	end
+
+	local nCurStat = ActorManagerCypher.getStatPool(rSource, rRoll.sCostStat);
+	local nTotal = ActionsManager.total(rRoll);
+	local bNotEnoughStats = nCurStat < nTotal;
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 	rMessage.icon = "roll_damage";
 
+	if bNotEnoughStats then
+		rMessage.text = rMessage.text .. " [INSUFFICIENT STATS]";
+	end
+
 	Comm.deliverChatMessage(rMessage);
+
+	if bNotEnoughStats then
+		return;
+	end
+
+	ActorManagerCypher.addToStatPool(rSource, rRoll.sCostStat, -nTotal)
 
 	local rAction = ActionCost.getLastAction();
 	
@@ -185,6 +243,7 @@ function onRoll(rSource, rTarget, rRoll)
 			rAction.rTarget = rTarget;
 		end
 
+		PromptManager.closeDefensePromptWindow(rSource);
 		ActionCost.invokeSourceAction(rSource, rAction);
 		ActionCost.clearLastAction();
 	end
@@ -205,5 +264,7 @@ function invokeSourceAction(rSource, rAction)
 		ActionDamage.performRoll(nil, rSource, rAction);
 	elseif rAction.sSourceRollType == "heal" then
 		ActionHeal.performRoll(nil, rSource, rAction);
+	elseif rAction.sSourceRollType == "effect" then
+		ActionEffect.performRoll(nil, rSource, rAction);
 	end
 end

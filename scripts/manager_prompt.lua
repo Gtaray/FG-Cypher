@@ -19,6 +19,18 @@ end
 -- DEFENSE PROMPT
 -------------------------------------------------------------------------------
 
+-- This is used when a PC is prompted to make a defense roll
+-- Since we only want to close the window if the roll was completed
+function closeDefensePromptWindow(rSource)
+	if not DB.isOwner(ActorManager.getCreatureNodeName(rSource)) then
+		return;
+	end
+
+	for _, w in ipairs(Interface.getWindows("prompt_defense")) do
+		w.close();
+	end
+end
+
 -- We need a double OOB here so that the GM is the one sending out the 
 -- defense prompt OOB
 function initiateDefensePrompt(rSource, rPlayer, rResult)

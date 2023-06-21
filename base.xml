@@ -115,4 +115,5 @@
 	<script name="ActionRecovery" file="scripts/manager_action_recovery.lua" />
 	<script name="ActionHeal" file="scripts/manager_action_heal.lua" />
 	<script name="ActionCost" file="scripts/manager_action_cost.lua" />
+	<script name="ActionEffectCypher" file="scripts/manager_action_effect_cypher.lua" />
 </root>

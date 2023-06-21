@@ -983,7 +983,7 @@ function decodePiercing(vRoll, bPersist)
 end
 
 function encodeAmbientDamage(rAction, rRoll)
-	if rAction.bAmbient then
+	if rAction.bAmbient == true then
 		-- Place the text in the roll description
 		rRoll.sDesc = RollManager.addOrOverwriteText(
 			rRoll.sDesc,

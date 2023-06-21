@@ -40,8 +40,12 @@
 
 			<stringcontrol name="statcostview">
 				<script>
+					function onDragStart(button, x, y, draginfo)
+						window.initiateCostRoll(draginfo);
+						return true;
+					end
 					function onDoubleClick(x, y)
-						window.onCostDoubleClicked();
+						window.initiateCostRoll();
 					end
 				</script>
 				<anchored height="20">

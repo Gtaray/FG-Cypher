@@ -7,6 +7,7 @@ function payCostAndRoll(draginfo, rActor, rAction)
 	rAction.sSourceRollType = "defense";
 
 	if not ActionCost.performRoll(draginfo, rActor, rAction) then
+		PromptManager.closeDefensePromptWindow(rActor);
 		ActionDefense.performRoll(draginfo, rActor, rAction);
 	end
 end

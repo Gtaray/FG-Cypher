@@ -449,7 +449,7 @@ function performAction(node, tData)
 		ActionHeal.payCostAndRoll(draginfo, rActor, rAction);
 		
 	elseif rAction.type == "effect" then
-		ActionEffect.performRoll(draginfo, rActor, rAction);
+		ActionEffectCypher.payCostAndRoll(draginfo, rActor, rAction);
 	end
 
 	return true;
