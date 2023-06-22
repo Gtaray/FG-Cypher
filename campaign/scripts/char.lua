@@ -32,24 +32,13 @@ function onMenuSelection(selection, subselection)
 end
 
 function onDrop(x, y, draginfo)
-	if not draginfo.isType("shortcut") then
-		return;
-	end
+	if draginfo.isType("shortcut") then
+		local sClass, sRecord = draginfo.getShortcutData();
 
-	local sClass, sNodeName = draginfo.getShortcutData();
-	local node = draginfo.getDatabaseNode();
-
-	if not node then
-		return;
-	end
-	if sClass == "ability" then
-		return CharManager.addAbilityToCharacter(getDatabaseNode(), node);
-	elseif sClass == "type" then
-		return CharManager.addTypeToCharater(getDatabaseNode(), node);
-	elseif sClass == "descriptor" then
-		return CharManager.addDescriptorToCharater(getDatabaseNode(), node);
-	elseif sClass == "focus" then
-		return CharManager.addFocusToCharater(getDatabaseNode(), node);
+		if StringManager.contains({"ability", "type", "descriptor", "focus", "flavor", "ancestry"}, sClass) then
+			CharManager.addInfoDB(getDatabaseNode(), sClass, sRecord);
+			return true;
+		end
 	end
 end
 

@@ -180,6 +180,9 @@
     <string name="label_recovery_remaining">Recovery Remaining</string>
 
 	<!-- Character Tracker -->
+	<string name="char_header_tracker">Progression Tracker</string>
+	<string name="char_tooltip_tracker">Open the progression tracker</string>
+	<string name="char_tracker_label_source">Source:</string>
 
 	<!-- Powers -->
 	<string name="power_title_stat">Spell/Ability Roll</string>

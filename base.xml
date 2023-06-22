@@ -45,6 +45,7 @@
 	<includefile source="campaign/record_char_actions_attack.xml" />
 	<includefile source="campaign/record_char_actions_power.xml" />
 	<includefile source="campaign/record_char_modification.xml" />
+	<includefile source="campaign/record_char_tracker.xml" />
 	<includefile source="campaign/record_power_roll_stat.xml" />
 	<includefile source="campaign/record_power_roll_attack.xml" />
 	<includefile source="campaign/record_power_roll_damage.xml" />

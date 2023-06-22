@@ -13,42 +13,69 @@ function addModificationToChar(rActor, vMod)
 	end
 
 	local rData = vMod;
-	if type(vMod == "databasenode") then
+	if type(vMod) == "databasenode" then
 		rData = CharModManager.getModificationData(vMod);
 	end
 
-	local nodeChar = ActorManager.getCreatureNode(rActor)
-
-	-- Keeps track of the actual changes to occur
-	-- This is here because while most mods only change a single property
-	-- defenses, skills, initiative and armor, can all change multiple properties
-	-- (training, assets, mods, etc).
-	local aMods = {}
+	rData.sSummary = CharModManager.getCharacterModificationSummary(rData);
 
 	if rData.sProperty == "stat" then
 		CharModManager.applyStatModification(
-			nodeChar, 
-			rData.sStat, 
-			rData.nMod);
+			rActor, 
+			rData);
 
 	elseif rData.sProperty == "skill" then
 	elseif rData.sProperty == "defense" then
 	elseif rData.sProperty == "armor" then
 	elseif rData.sProperty == "initiative" then
 	elseif rData.sProperty == "ability" then
+		CharModManager.applyAbilityModification(
+			rActor,
+			rData);
+
 	elseif rData.sProperty == "recovery" then
 	elseif rData.sProperty == "edge" then
 	elseif rData.sProperty == "effort" then
 	elseif rData.sProperty == "item" then
 	elseif rData.sProperty == "cypherlimit" then
 	end
-
-	-- Add to tracker
-	CharTrackerManager.addToStracker(rActor);
 end
 
-function applyStatModification(nodeChar, sStat, nValue)
-	ActorManagerCypher.addToStatMax(nodeChar, sStat, nValue);
+function applyStatModification(rActor, rData)
+	ActorManagerCypher.addToStatMax(rActor, rData.sStat, rData.nMod);
+
+	rData.sSummary = "Stats: " .. rData.sSummary;
+	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
+end
+
+function applySkillModification(rActor, rData)
+	rData.sSummary = "Skill: " .. rData.sSummary;
+	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
+end
+
+function applyAbilityModification(rActor, rData)
+	-- Add ability to list
+	local charnode = ActorManager.getCreatureNode(rActor);
+    local abilitylist = DB.createChild(charnode, "abilitylist");
+    local abilitynode = DB.createChild(abilitylist);
+	local sourcenode = DB.findNode(rData.sLinkRecord);
+
+	if not (abilitynode or sourcenode) then
+		return;
+	end
+
+    DB.copyNode(sourcenode, abilitynode);
+
+	-- Save the ability name for later
+	local sAbilityName = rData.sSummary or "";
+	rData.sSummary = "Ability: " .. rData.sSummary;
+	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
+
+	for _, modnode in ipairs(DB.getChildList(sourcenode, "features")) do
+		local rMod = CharModManager.getModificationData(modnode)
+		rMod.sSource = string.format("%s (Ability)", sAbilityName);
+		CharModManager.addModificationToChar(rActor, rMod);
+	end
 end
 
 ---------------------------------------------------------------
@@ -139,7 +166,7 @@ end
 function getCharacterModificationSummary(vMod)
 	local rMod;
 	if type(vMod) == "databasenode" then
-		rMod = CharModManager.getModificationData(modNode);
+		rMod = CharModManager.getModificationData(vMod);
 	elseif type(vMod) == "table" then
 		rMod = vMod;
 	end

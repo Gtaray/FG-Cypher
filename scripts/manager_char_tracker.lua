@@ -14,10 +14,10 @@ function getTrackerNode(rActor)
     return DB.createChild(charnode, CharTrackerManager.TRACKER_PATH); 
 end
 
--- TODO: Pull getModificationSummary outof this functino
--- it won't work for types/foci/descriptors
-function addToTracker(rActor, rMod)
-    if not rActor or not rMod then
+function addToTracker(rActor, sSummary, sSource)
+	rActor = ActorManager.resolveActor(rActor);
+
+    if not rActor or (sSummary or "") == "" then
         return;
     end
 
@@ -33,18 +33,14 @@ function addToTracker(rActor, rMod)
         return;
     end
     DB.setValue(modnode, "order", "number", nOrder);
-
-    local sSummary = CharModManager.getModificationSummary(rMod);
     DB.setValue(modnode, "summary", "string", sSummary);
 
     local sSourceText = "";
-    if (rMod.sSourceClass or "") ~= "" then
-        sSourceText = string.format("%s: ", StringManager.capitalize(rMod.sSourceClass))
+    if (sSource or "") ~= "" then
+        sSourceText = StringManager.capitalize(sSource);
     end
-    sSourceText = sSourceText .. StringManager.capitalize(rMod.sSourceName)
 
-    DB.setValue(modnode, "source", "string", DB.getPath(rMod.nodeSource))
-    DB.setValue(modnode, "sourcetext", "string", sSourceText)
+    DB.setValue(modnode, "source", "string", sSourceText)
 end
 
 function getMaxOrder(rActor)
