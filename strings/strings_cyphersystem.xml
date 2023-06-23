@@ -312,8 +312,17 @@
 	<string name="type_label_floating_stats">Flex</string>
 	<string name="type_tooltip_floatingstats">The number of additional points to divide among stat pools.</string>
 	<string name="type_label_starting_effort">Effort</string>
+	<string name="type_label_cypherlimit">Cypher Use</string>
 	<string name="type_header_edge">Starting Edge</string>
-	<string name="type_label_cypher_use">Cypher Use</string>
+	<string name="type_header_ability_amount">Number of Abilities</string>
+	<string name="type_label_tier123">Tier 1, 2, and 3</string>
+	<string name="type_label_tier456">Tier 4, 5, and 6</string>
+	<string name="type_tooltip_ability_t1">How many tier 1 abilities can a player select</string>
+	<string name="type_tooltip_ability_t2">How many tier 2 abilities can a player select</string>
+	<string name="type_tooltip_ability_t3">How many tier 3 abilities can a player select</string>
+	<string name="type_tooltip_ability_t4">How many tier 4 abilities can a player select</string>
+	<string name="type_tooltip_ability_t5">How many tier 5 abilities can a player select</string>
+	<string name="type_tooltip_ability_t6">How many tier 6 abilities can a player select</string>
 	<string name="type_header_abilities">Abilities</string>
 
 	<!-- Descriptor -->
@@ -454,6 +463,10 @@
 	<string name="defense_prompt_assets">Assets:</string>
 	<string name="defense_prompt_ease">Ease</string>
 	<string name="defense_prompt_hinder">Hinder</string>
+
+	<!-- Character Builder Dialog Boxes -->
+	<string name="dialog_select_type_title">Type Options</string>
+	<string name="label_stats_remaining">Stats Remaining</string>
 
 	<!-- Desktop -->
 	<string name="diffadj_label_effort">Effort</string>

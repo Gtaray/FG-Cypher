@@ -20,24 +20,37 @@ function addModificationToChar(rActor, vMod)
 	rData.sSummary = CharModManager.getCharacterModificationSummary(rData);
 
 	if rData.sProperty == "stat" then
-		CharModManager.applyStatModification(
-			rActor, 
-			rData);
+		CharModManager.applyStatModification(rActor, rData);
 
 	elseif rData.sProperty == "skill" then
+		CharModManager.applySkillModification(rActor, rData);
+
 	elseif rData.sProperty == "defense" then
+		CharModManager.applyDefenseModification(rActor, rData);
+
 	elseif rData.sProperty == "armor" then
+		CharModManager.applyArmorModification(rActor, rData);
+
 	elseif rData.sProperty == "initiative" then
+		CharModManager.applyInitiativeModification(rActor, rData);
+
 	elseif rData.sProperty == "ability" then
-		CharModManager.applyAbilityModification(
-			rActor,
-			rData);
+		CharModManager.applyAbilityModification(rActor, rData);
 
 	elseif rData.sProperty == "recovery" then
+		CharModManager.applyRecoveryModification(rActor, rData);
+
 	elseif rData.sProperty == "edge" then
+		CharModManager.applyEdgeModification(rActor, rData);
+
 	elseif rData.sProperty == "effort" then
+		CharModManager.applyEffortModification(rActor, rData);
+
 	elseif rData.sProperty == "item" then
+		CharModManager.applyItemModification(rActor, rData);
+
 	elseif rData.sProperty == "cypherlimit" then
+		CharModManager.applyCypherLimitModification(rActor, rData);
 	end
 end
 
@@ -49,7 +62,125 @@ function applyStatModification(rActor, rData)
 end
 
 function applySkillModification(rActor, rData)
+	local charnode = ActorManager.getCreatureNode(rActor);
+	local skilllist = DB.createChild(charnode, "skilllist");
+	local sSkill = StringManager.trim(rData.sSkill or ""):lower();
+	local matchnode;
+	for _, skillnode in ipairs(DB.getChildList(skilllist)) do
+		local sCurSkill = StringManager.trim(DB.getValue(skillnode, "name", "")):lower();
+
+		if sSkill == sCurSkill then
+			matchnode = skillnode;
+			break;
+		end
+	end
+
+	-- If there's no matched skill in the list, then we create one
+	if not matchnode then
+		matchnode = DB.createChild(skilllist);
+		DB.setValue(matchnode, "name", "string", rData.sSkill);
+	end
+
+	-- Only change the stat if the skill doesn't have a stat set
+	if (rData.sStat or "") ~= "" and DB.getValue(matchnode, "stat", "") == "" then
+		DB.setValue(matchnode, "stat", "string", rData.sStat);
+	end
+	
+	CharModManager.applyModToTrainingNode(matchnode, "training", rData.sTraining);
+	CharModManager.applyModToAssetNode(matchnode, "asset", rData.sTraining);
+	CharModManager.applyModToModifierNode(matchnode, "misc", rData.sTraining);
+
 	rData.sSummary = "Skill: " .. rData.sSummary;
+	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
+end
+
+function applyDefenseModification(rActor, rData)
+	local charnode = ActorManager.getCreatureNode(rActor);
+	local sPath = "abilities." .. rData.sStat;
+	local statnode = DB.getChild(charnode, sPath)
+	if not statnode then
+		return;
+	end
+
+
+
+	CharModManager.applyModToTrainingNode(defnode, "training", rData.sTraining);
+	CharModManager.applyModToAssetNode(defnode, "asset", rData.nAsset);
+	CharModManager.applyModToModifierNode(defnode, "misc", rData.nMod);
+
+	rData.sSummary = "Defense: " .. rData.sSummary;
+	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
+end
+
+function applyArmorModification(rActor, rData)
+	local charnode = ActorManager.getCreatureNode(rActor);
+	local resistances = DB.getChild(charnode, "resistances");
+	local sDmgType = StringManager.trim(rData.sDamageType or ""):lower();
+
+	rData.sSummary = "Armor: " .. rData.sSummary;
+
+	-- First we handle the case where the damage type is empty
+	-- thus we place the armor in the character's Armor node
+	if (sDmgType or "") == "" then
+		nCurArmor = DB.getValue(charnode, "armor", 0);
+		DB.setValue(charnode, "armor", "number", nCurArmor + rData.nMod);
+
+		CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
+		return;
+	end
+
+	-- Now we handle the case where there is a damage type, and thus
+	-- it should go in the resistances list
+	local matchnode;
+	for _, resistnode in ipairs(DB.getChildList(resistances)) do
+		local sCurDmgType = StringManager.trim(DB.getValue(resistnode, "damagetype", "")):lower();
+
+		if sDmgType == sCurDmgType then
+			matchnode = resistnode;
+			break;
+		end
+	end
+
+	-- If there's no matched armor type in the list, then we create one
+	if not matchnode then
+		matchnode = DB.createChild(resistances);
+		DB.setValue(matchnode, "damagetype", "string", rData.sDamageType);
+	end
+
+	-- if the given value is 0, then overwrite any other value 
+	-- because 0 means immunity
+	if rData.nMod == 0 then
+		DB.setValue(matchnode, "armor", "number", 0);
+
+		rData.sSummary = rData.sSummary .. " (Immunity)";
+		CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
+		return;
+	end
+
+	-- There's some tricky bits here becasue an armor value of 0 means immunity
+	-- which means that if modified amount totals to 0, we need to delete
+	-- the matched node
+	-- And if the value in rData.nMod is 0, it needs to overwrite any other value
+	local nNewValue = CharModManager.applyModToModifierNode(matchnode, "armor", rData.nMod);
+
+	-- If, after modification, the armor value is set to 0, then we need
+	-- to delete it so that it isn't treated as an immunity
+	if nNewValue == 0 then
+		DB.deleteNode(matchnode);
+		rData.sSummary = rData.sSummary .. " (Removed)";
+	end
+
+	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
+end
+
+function applyInitiativeModification(rActor, rData)
+	local charnode = ActorManager.getCreatureNode(rActor);
+
+	CharModManager.applyModToTrainingNode(charnode, "inittraining", rData.sTraining);
+	CharModManager.applyModToAssetNode(charnode, "initasset", rData.nAsset);
+	CharModManager.applyModToModifierNode(charnode, "initmod", rData.nMod);
+
+	rData.sSummary = "Initiative: " .. rData.sSummary;
 	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
 end
 
@@ -76,6 +207,98 @@ function applyAbilityModification(rActor, rData)
 		rMod.sSource = string.format("%s (Ability)", sAbilityName);
 		CharModManager.addModificationToChar(rActor, rMod);
 	end
+end
+
+function applyRecoveryModification(rActor, rData)
+	local charnode = ActorManager.getCreatureNode(rActor);
+
+	CharModManager.applyModToModifierNode(charnode, "recoveryrollmod", rData.nMod);
+
+	rData.sSummary = "Recovery: " .. rData.sSummary;
+	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
+end
+
+function applyEdgeModification(rActor, rData)
+	local charnode = ActorManager.getCreatureNode(rActor);
+	local sPath = "abilities." .. rData.sStat;
+	local statnode = DB.getChild(charnode, sPath)
+	if not statnode then
+		return;
+	end
+
+	CharModManager.applyModToModifierNode(statnode, "edge", rData.nMod);
+
+	rData.sSummary = "Edge: " .. rData.sSummary;
+	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
+end
+
+function applyEffortModification(rActor, rData)
+	local charnode = ActorManager.getCreatureNode(rActor);
+
+	CharModManager.applyModToModifierNode(charnode, "effort", rData.nMod);
+
+	rData.sSummary = "Effort: " .. rData.sSummary;
+	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
+end
+
+function applyItemModification(rActor, rData)
+	-- Add ability to list
+	local charnode = ActorManager.getCreatureNode(rActor);
+	local sourcenode = DB.findNode(rData.sLinkRecord);
+
+	if not sourcenode then
+		return;
+	end
+
+	Debug.chat(rData.sLinkRecord);
+	ItemManager.handleItem(charnode, nil, "item", rData.sLinkRecord, true);
+
+	rData.sSummary = "Item: " .. rData.sSummary;
+	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
+end
+
+function applyCypherLimitModification(rActor, rData)
+	local charnode = ActorManager.getCreatureNode(rActor);
+
+	CharModManager.applyModToModifierNode(charnode, "cypherlimit", rData.nMod);
+
+	rData.sSummary = "Cypher Limit: " .. rData.sSummary;
+	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
+end
+
+-- 0 = inability, 1 - nothing, 2 = trained, 3 = specialized
+function applyModToTrainingNode(node, sPath, sTraining)
+	if (sTraining or "") == "" then
+		return;
+	end
+
+	local nCurTraining = DB.getValue(node, sPath, 1);
+	nCurTraining = nCurTraining + RollManager.processTraining(
+		sTraining == "inability",
+		sTraining == "trained",
+		sTraining == "specialized"
+	)
+
+	-- Clamp training between 0 and 3
+	nCurTraining = math.min(math.max(nCurTraining, 0), 3);
+	DB.setValue(node, sPath, "number", nCurTraining);
+end
+function applyModToAssetNode(node, sPath, nAsset)
+	if (nAsset or 0) == 0 then
+		return;
+	end
+
+	nAsset = DB.getValue(node, sPath, 0) + nAsset;
+	DB.setValue(node, sPath, "number", nAsset);
+end
+function applyModToModifierNode(node, sPath, nMod)
+	if (nMod or 0) == 0 then
+		return;
+	end
+
+	nMod = DB.getValue(node, sPath, 0) + nMod;
+	DB.setValue(node, sPath, "number", nMod);
+	return nMod;
 end
 
 ---------------------------------------------------------------
@@ -106,7 +329,7 @@ function getModificationData(modNode)
 
 	elseif rMod.sProperty == "Skill" then
 		rMod.sProperty = "skill"
-		rMod.sSkill = DB.getValue(modNode, "skill", ""):lower();
+		rMod.sSkill = DB.getValue(modNode, "skill", "");
 		rMod.sStat = DB.getValue(modNode, "stat", ""):lower();
 		rMod.sTraining = DB.getValue(modNode, "training", ""):lower();
 		rMod.nAsset = DB.getValue(modNode, "asset", 0);

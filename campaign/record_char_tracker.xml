@@ -41,10 +41,12 @@
 					<top offset="5" />
 					<left offset="5" />
 					<right offset="5" />
+					<bottom offset="-5" />
 				</anchored>
 				<datasource>.tracker</datasource>
 				<class>charsheet_tracker_item</class>
 				<allowcreate merge="delete" />
+				<!-- TODO: Make this sort descending -->
 				<sortby mergerule="replace"><control>order</control></sortby>
 			</list_text>
 			<scrollbar>

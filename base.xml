@@ -80,6 +80,7 @@
 	<includefile source="utility/prompt_defense.xml" />
 	<includefile source="utility/options_damagetypes.xml" />
 	<includefile source="utility/prompt_gm_intrusion.xml" />
+	<includefile source="utility/select_dialog_type.xml" />
 
 	<!-- High-level scripts -->
 	<script name="GameSystem" file="scripts/manager_gamesystem.lua" />

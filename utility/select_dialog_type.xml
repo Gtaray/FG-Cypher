@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="select_dialog_type">
+		<frame>utilitybox</frame>
+		<placement>
+			<size width="350" height="400" />
+			<nosave />
+		</placement>
+		<script file="utility/scripts/dialog_type.lua" />
+		<sheetdata>
+			<windowtitlebar name="title">
+				<resource>dialog_select_type_title</resource>
+			</windowtitlebar>
+
+			<anchor_content_utilitybox_top />
+			<!-- <stringc_content_framed_groupbox_top name="text" /> -->
+
+			<subwindow name="stats">
+				<class>dialog_statpools</class>
+				<anchored to="contentanchor" height="145">
+					<top anchor="bottom" relation="relative" offset="0" />
+					<left />
+					<right />
+				</anchored>
+				<activate />
+				<fastinit />
+			</subwindow>		
+			
+			<anchor_content_utilitybox_bottom />
+			<sub_content_bottom name="sub_buttons">
+				<class>dialog_buttons_okcancel</class>
+			</sub_content_bottom>
+			
+			<close_utilitybox />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="dialog_statpools">
+		<frame>groupbox</frame>
+		<script file="utility/scripts/dialog_statpools.lua" />
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+
+			<label_column name="label_stats_remaining">
+				<anchored width="150">
+					<top offset="17" />
+					<left offset="20" />
+				</anchored>
+				<static textres="label_stats_remaining" />
+			</label_column>
+			<basicnumberc name="stats_remaining">
+				<anchored width="30" height="20">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="17" />
+					<right offset="-35" />
+				</anchored>
+				<readonly />
+				<script>
+					function onValueChanged()
+						window.update();
+					end
+				</script>
+			</basicnumberc>
+
+			<spacer_column name="spacer">
+				<anchored height="10" />
+			</spacer_column>
+
+			<!-- Might Controls -->
+			<label_column name="label_might">
+				<anchored>
+					<left offset="20" />
+				</anchored>
+				<static textres="might" />
+			</label_column>
+			<numberc_column name="might_current">
+				<readonly />
+			</numberc_column>
+			<basicnumberc name="might_new">
+				<anchored width="30" height="20">
+					<top parent="might_current" />
+					<right offset="-35" />
+				</anchored>
+				<readonly />
+			</basicnumberc>
+			<button_increase name="button_might_increase">
+				<anchored to="might_new" position="lefthigh" offset="20,0" width="20" />
+				<stat>might</stat>
+			</button_increase>
+			<button_decrease name="button_might_decrease">
+				<anchored to="might_new" position="lefthigh" offset="50,0" width="20" />
+				<stat>might</stat>
+			</button_decrease>
+
+			<!-- Speed Controls -->
+			<label_column name="label_speed">
+				<anchored>
+					<left offset="20" />
+				</anchored>
+				<static textres="speed" />
+			</label_column>
+			<numberc_column name="speed_current">
+				<readonly />
+			</numberc_column>
+			<basicnumberc name="speed_new">
+				<anchored width="30" height="20">
+					<top parent="speed_current" />
+					<right offset="-35" />
+				</anchored>
+				<readonly />
+			</basicnumberc>
+			<button_increase name="button_speed_increase">
+				<anchored to="speed_new" position="lefthigh" offset="20,0" width="20" />
+				<stat>speed</stat>
+			</button_increase>
+			<button_decrease name="button_speed_decrease">
+				<anchored to="speed_new" position="lefthigh" offset="50,0" width="20" />
+				<stat>speed</stat>
+			</button_decrease>
+
+			<!-- Intellect Controls -->
+			<label_column name="label_intellect">
+				<anchored>
+					<left offset="20" />
+				</anchored>
+				<static textres="intellect" />
+			</label_column>
+			<numberc_column name="intellect_current">
+				<readonly />
+			</numberc_column>
+			<basicnumberc name="intellect_new">
+				<anchored width="30" height="20">
+					<top parent="intellect_current" />
+					<right offset="-35" />
+				</anchored>
+				<readonly />
+			</basicnumberc>
+			<button_increase name="button_intellect_increase">
+				<anchored to="intellect_new" position="lefthigh" offset="20,0" width="20" />
+				<stat>intellect</stat>
+			</button_increase>
+			<button_decrease name="button_intellect_decrease">
+				<anchored to="intellect_new" position="lefthigh" offset="50,0" width="20" />
+				<stat>intellect</stat>
+			</button_decrease>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="dialog_edge">
+		<frame>groupbox</frame>
+		<sheetdata>
+		</sheetdata>
+	</windowclass>
+</root>

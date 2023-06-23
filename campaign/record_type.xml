@@ -139,6 +139,14 @@
 				<default>1</default>
 			</number_column>
 
+			<label_column name="cypherlimit_label">
+				<static textres="type_label_cypherlimit" />
+			</label_column>
+			<number_column name="cypherlimit">
+				<min>0</min>
+				<default>2</default>
+			</number_column>
+
 			<header_column name="starting_edge_header">
 				<static textres="type_header_edge"/>
 				<center />
@@ -163,6 +171,64 @@
 				<anchored to="edge_iedit" position="lefthigh" offset="3,0" />
 				<target>edge</target>
 			</button_iadd>
+
+			<header_column name="ability_amount_header">
+				<static textres="type_header_ability_amount"/>
+				<center />
+			</header_column>
+			<label_column name="t123_label">
+				<static textres="type_label_tier123" />
+			</label_column>
+			<number_column name="t1_abilities">
+				<min>0</min>
+				<default>4</default>
+				<tooltip textres="type_tooltip_ability_t1" />
+			</number_column>
+			<basicnumber name="t2_abilities">
+				<anchored to="t1_abilities" height="20" width="40">
+					<top />
+					<left anchor="right" relation="relative" offset="20" />
+				</anchored>
+				<min>0</min>
+				<default>4</default>
+				<tooltip textres="type_tooltip_ability_t2" />
+			</basicnumber>
+			<basicnumber name="t3_abilities">
+				<anchored to="t1_abilities" height="20" width="40">
+					<top />
+					<left anchor="right" relation="relative" offset="20" />
+				</anchored>
+				<min>0</min>
+				<default>4</default>
+				<tooltip textres="type_tooltip_ability_t3" />
+			</basicnumber>
+
+			<label_column name="t456_label">
+				<static textres="type_label_tier456" />
+			</label_column>
+			<number_column name="t4_abilities">
+				<min>0</min>
+				<default>4</default>
+				<tooltip textres="type_tooltip_ability_t4" />
+			</number_column>
+			<basicnumber name="t5_abilities">
+				<anchored to="t4_abilities" height="20" width="40">
+					<top />
+					<left anchor="right" relation="relative" offset="20" />
+				</anchored>
+				<min>0</min>
+				<default>4</default>
+				<tooltip textres="type_tooltip_ability_t5" />
+			</basicnumber>
+			<basicnumber name="t6_abilities">
+				<anchored to="t4_abilities" height="20" width="40">
+					<top />
+					<left anchor="right" relation="relative" offset="20" />
+				</anchored>
+				<min>0</min>
+				<default>4</default>
+				<tooltip textres="type_tooltip_ability_t6" />
+			</basicnumber>
 
 			<header_column name="abilities_header">
 				<static textres="type_header_abilities"/>

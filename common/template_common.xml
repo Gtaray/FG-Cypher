@@ -35,6 +35,15 @@
 		</cycler_column>
 	</template>
 
+	<template name="numberc_column">
+		<basicnumberc>
+			<anchored width="40" height="20">
+				<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+				<left offset="97" />
+			</anchored>
+		</basicnumberc>
+	</template>
+
 	<template name="number_pierce_amount">
 		<basicnumber name="pierceamount">
 			<anchored to="pierce" position="righthigh" offset="10,0" width="30" height="20" />

@@ -603,7 +603,7 @@
 			</button_decrease>
 
 			<!-- Speed Controls -->
-			<label_column name="label_might">
+			<label_column name="label_speed">
 				<static textres="speed" />
 			</label_column>
 			<number_column name="speed_current" source="abilities.speed.current">
@@ -626,7 +626,7 @@
 			</button_decrease>
 
 			<!-- Intellect Controls -->
-			<label_column name="label_might">
+			<label_column name="label_intellect">
 				<static textres="intellect" />
 			</label_column>
 			<number_column name="intellect_current" source="abilities.intellect.current">
