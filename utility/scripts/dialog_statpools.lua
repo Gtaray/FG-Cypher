@@ -44,7 +44,9 @@ function update()
 	button_intellect_decrease.setVisible(intellect_current.getValue() < intellect_new.getValue());
 	button_intellect_increase.setVisible(bCanIncrease);
 
-	parentcontrol.window.updateStats();
+	if parentcontrol.window.updateStats then
+		parentcontrol.window.updateStats();
+	end
 end
 
 function onIncrease(sStat)

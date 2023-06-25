@@ -8,6 +8,9 @@
 ---------------------------------------------------------------
 
 function addModificationToChar(rActor, vMod)
+	if type(rActor) == "databasenode" then
+		rActor = ActorManager.resolveActor(rActor);
+	end
 	if not rActor and not vMod then
 		return;
 	end
@@ -55,10 +58,62 @@ function addModificationToChar(rActor, vMod)
 end
 
 function applyStatModification(rActor, rData)
+	if rData.sStat == "flex" then
+		local w = Interface.openWindow("select_dialog_stats", "");
+		local rDialog = {
+			nodeChar = ActorManager.getCreatureNode(rActor),
+			nMight = ActorManagerCypher.getStatPool(rActor, "might"),
+			nSpeed = ActorManagerCypher.getStatPool(rActor, "speed");
+			nIntellect = ActorManagerCypher.getStatPool(rActor, "intellect");
+			nFloatingStats = rData.nMod,
+			sSource = rData.sSource
+		};
+		w.setData(rDialog, CharModManager.applyFloatingStatModificationCallback);
+		return;
+	end
+
 	ActorManagerCypher.addToStatMax(rActor, rData.sStat, rData.nMod);
 
 	rData.sSummary = "Stats: " .. rData.sSummary;
 	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
+end
+
+function applyFloatingStatModificationCallback(rData)
+	local rActor = ActorManager.resolveActor(rData.nodeChar);
+	local nCurMight = ActorManagerCypher.getStatPool(rActor, "might");
+	local nCurSpeed = ActorManagerCypher.getStatPool(rActor, "speed");
+	local nCurIntellect = ActorManagerCypher.getStatPool(rActor, "intellect");
+
+	if nCurMight ~= rData.nMight then
+		local nMod = rData.nMight - nCurMight;
+		CharModManager.applyStatModification(rActor, {
+			sProperty = "stat",
+			sStat = "might",
+			nMod = nMod,
+			sSummary = CharModManager.getStatModSummary({ sStat = "might", nMod = nMod }),
+			sSource = rData.sSource
+		});
+	end
+	if nCurSpeed ~= rData.nSpeed then
+		local nMod = rData.nSpeed - nCurSpeed;
+		CharModManager.applyStatModification(rActor, {
+			sProperty = "stat",
+			sStat = "speed",
+			nMod = nMod,
+			sSummary = CharModManager.getStatModSummary({ sStat = "speed", nMod = nMod }),
+			sSource = rData.sSource
+		});
+	end
+	if nCurIntellect ~= rData.nIntellect then
+		local nMod = rData.nIntellect - nCurIntellect;
+		CharModManager.applyStatModification(rActor, {
+			sProperty = "stat",
+			sStat = "intellect",
+			nMod = nMod,
+			sSummary = CharModManager.getStatModSummary({ sStat = "intellect", nMod = nMod }),
+			sSource = rData.sSource
+		});
+	end
 end
 
 function applySkillModification(rActor, rData)
@@ -429,9 +484,14 @@ function getStatModSummary(rMod)
 		return "";
 	end
 
-	return string.format("%s to %s Pool",
+	local sStatPool = string.format("%s Pool", StringManager.capitalize(rMod.sStat or ""));
+	if rMod.sStat == "flex" then
+		sStatPool = "divide among your stat pools"
+	end
+
+	return string.format("%s to %s",
 		DiceManager.convertDiceToString({}, rMod.nMod or 0, true),
-		StringManager.capitalize(rMod.sStat or "")
+		sStatPool
 	);
 end
 
