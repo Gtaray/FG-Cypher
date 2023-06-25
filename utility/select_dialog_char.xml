@@ -420,27 +420,34 @@
 
 			<label_column name="label_might">
 				<static textres="might" />
+				<invisible />
 			</label_column>
 			<stringc_column name="might">
 				<anchored with="100" />
+				<invisible />
 			</stringc_column>
 
 			<label_column name="label_speed">
 				<static textres="speed" />
+				<invisible />
 			</label_column>
 			<stringc_column name="speed">
 				<anchored with="100" />
+				<invisible />
 			</stringc_column>
 
 			<label_column name="label_intellect">
 				<static textres="intellect" />
+				<invisible />
 			</label_column>
 			<stringc_column name="intellect">
 				<anchored with="100" />
+				<invisible />
 			</stringc_column>
 
 			<label_column name="label_abilities">
 				<static textres="label_dialog_summary_abilities" />
+				<invisible />
 			</label_column>
 
 			<windowlist name="abilities">

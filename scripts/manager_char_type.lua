@@ -10,7 +10,7 @@ function addTypeDrop(nodeChar, sClass, sRecord)
 	end
 
 	-- Build the rest of the table that's specific to Types
-	CharTypeManager.buildTypeTier1AddTable(nodeChar, rAdd);
+	CharTypeManager.buildTier1AddTable(rAdd);
 
 	if rAdd.nFloatingStats > 0 or #(rAdd.aEdgeOptions) > 0 or #(rAdd.aAbilityOptions) > 0 then
 		local w = Interface.openWindow("select_dialog_char", "");
@@ -18,10 +18,10 @@ function addTypeDrop(nodeChar, sClass, sRecord)
 		return;
 	end
 
-	CharTypeManager.applyTier1(nodeChar, rAdd);
+	CharTypeManager.applyTier1(rAdd);
 end
 
-function buildTypeTier1AddTable(nodeChar, rAdd)
+function buildTier1AddTable(rAdd)
 	rAdd.nMight = DB.getValue(rAdd.nodeSource, "mightpool", 0);
 	rAdd.nSpeed = DB.getValue(rAdd.nodeSource, "speedpool", 0);
 	rAdd.nIntellect = DB.getValue(rAdd.nodeSource, "intellectpool", 0);
@@ -82,16 +82,17 @@ function applyTier1(rData)
 	-- Notification
 	CharManager.outputUserMessage("char_message_add_type", rData.sSourceName, rData.sCharName);
 
-	-- Add the name and link to the character sheet
 	CharTrackerManager.addToTracker(
 		rData.nodeChar, 
 		string.format("Type: %s", StringManager.capitalize(rData.sSourceName)), 
 		"Manual");
+
+	-- Add the name and link to the character sheet
 	DB.setValue(rData.nodeChar, "class.type", "string", rData.sSourceName);
 	DB.setValue(rData.nodeChar, "class.typelink", "windowreference", rData.sSourceClass, DB.getPath(rData.nodeSource));
 
-	--CharTypeManager.addStartingEffort(rData);
-	--CharTypeManager.addStartingCypherLimit(rData);
+	CharTypeManager.addStartingEffort(rData);
+	CharTypeManager.addStartingCypherLimit(rData);
 
 	-- Set the character's starting stat pools
 	CharTypeManager.setStartingPools(rData);
@@ -101,6 +102,28 @@ function applyTier1(rData)
 
 	-- Give starting abilities
 	CharTypeManager.addStartingAbilities(rData);
+end
+
+function addStartingEffort(rData)
+	DB.setValue(rData.nodeChar, "effort", "number", rData.nEffort or 1);
+
+	local sSummary = string.format(
+		"Effort: Set to %s", 
+		rData.nEffort)
+	local sSource = string.format("%s (Type)", StringManager.capitalize(rData.sSourceName));
+
+	CharTrackerManager.addToTracker(nodeChar, sSummary, sSource);
+end
+
+function addStartingCypherLimit(rData)
+	DB.setValue(rData.nodeChar, "cypherlimit", "number", rData.nCypherLimit or 1);
+
+	local sSummary = string.format(
+		"Cypher Limit: Set to %s", 
+		rData.nCypherLimit)
+	local sSource = string.format("%s (Type)", StringManager.capitalize(rData.sSourceName));
+
+	CharTrackerManager.addToTracker(nodeChar, sSummary, sSource);
 end
 
 function setStartingPools(rData)

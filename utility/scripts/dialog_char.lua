@@ -12,20 +12,26 @@ function setData(data, callback)
 	rData = data;
 	fCallback = callback;
 
-	bStats = rData.nFloatingStats > 0;
+	bStats = (rData.nFloatingStats or 0) > 0;
 	button_stats.setVisible(bStats);
 	stats.setVisible(bStats);
-	stats.subwindow.setData(rData.nMight, rData.nSpeed, rData.nIntellect, rData.nFloatingStats);
+	if bStats then
+		stats.subwindow.setData(rData.nMight, rData.nSpeed, rData.nIntellect, rData.nFloatingStats);
+	end
 
-	bEdge = #(rData.aEdgeOptions) > 0;
+	bEdge = #(rData.aEdgeOptions or {}) > 0;
 	button_edge.setVisible(bEdge);
 	edge.setVisible(bEdge)
-	edge.subwindow.setData(rData.aEdgeOptions);
+	if bEdge then
+		edge.subwindow.setData(rData.aEdgeOptions);
+	end
 
-	bAbilities = #(rData.aAbilityOptions) > 0 and rData.nAbilityChoices > 0;
+	bAbilities = #(rData.aAbilityOptions or {}) > 0;
 	button_abilities.setVisible(bAbilities)
 	abilities.setVisible(bAbilities)
-	abilities.subwindow.setData(rData.aAbilityOptions, rData.nAbilityChoices);
+	if bAbilities then
+		abilities.subwindow.setData(rData.aAbilityOptions, rData.nAbilityChoices);
+	end
 
 	if bStats then
 		onNavigation("stats");

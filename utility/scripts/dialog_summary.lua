@@ -1,3 +1,10 @@
+function onInit()
+	self.updateStat(0, 0, 0, "might");
+	self.updateStat(0, 0, 0, "speed");
+	self.updateStat(0, 0, 0, "intellect");
+	self.updateAbilities({});
+end
+
 function updateMight(nOrig, nNew, nEdge)
 	self.updateStat(nOrig, nNew, nEdge, "might");
 end
@@ -39,6 +46,10 @@ function updateStat(nOrig, nNew, nEdge, sStat)
 end
 
 function updateAbilities(aAbilities)
+	local bShow = #aAbilities > 0;
+	self["label_abilities"].setVisible(bShow);
+	self["abilities"].setVisible(bShow);
+	
 	abilities.closeAll();
 	for _, rData in ipairs(aAbilities) do
 		abilities.addEntry(rData.node, rData.multiselect);
