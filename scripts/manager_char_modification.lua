@@ -87,8 +87,8 @@ function applySkillModification(rActor, rData)
 	end
 	
 	CharModManager.applyModToTrainingNode(matchnode, "training", rData.sTraining);
-	CharModManager.applyModToAssetNode(matchnode, "asset", rData.sTraining);
-	CharModManager.applyModToModifierNode(matchnode, "misc", rData.sTraining);
+	CharModManager.applyModToAssetNode(matchnode, "asset", rData.nAsset);
+	CharModManager.applyModToModifierNode(matchnode, "misc", rData.nMod);
 
 	rData.sSummary = "Skill: " .. rData.sSummary;
 	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
@@ -250,7 +250,6 @@ function applyItemModification(rActor, rData)
 		return;
 	end
 
-	Debug.chat(rData.sLinkRecord);
 	ItemManager.handleItem(charnode, nil, "item", rData.sLinkRecord, true);
 
 	rData.sSummary = "Item: " .. rData.sSummary;

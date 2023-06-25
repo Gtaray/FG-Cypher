@@ -109,7 +109,7 @@
 				<static textres="ability_label_use_type" />
 			</label_column>
 			<cycler_column name="usetype">
-				<anchored width="80" />
+				<anchored width="100" />
 				<parameters>
 					<labelsres>ability_usetype_enabler|ability_usetype_action</labelsres>
 					<values>Enabler|Action</values>
@@ -121,11 +121,25 @@
 					end
 				</script>
 			</cycler_column>
+
+			<label_column name="selectlimit_label">
+				<static textres="ability_label_select_limit" />
+			</label_column>
+			<cycler_column name="selectlimit">
+				<anchored width="100" />
+				<parameters>
+					<labelsres>ability_select_limit_many</labelsres>
+					<values>many</values>
+					<defaultlabelres>ability_select_limit_once</defaultlabelres>
+				</parameters>
+				<tooltip textres="ability_tooltip_select_limit" />
+			</cycler_column>
 			<label_column name="useequipped_label">
 				<static textres="power_label_useequipped" />
 			</label_column>
+
 			<cycler_column name="useequipped">
-				<anchored width="80" />
+				<anchored width="100" />
 				<parameters>
 					<labelsres>yes</labelsres>
 					<values>yes</values>

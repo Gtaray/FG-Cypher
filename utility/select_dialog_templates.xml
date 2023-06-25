@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<template name="subwindow_char_dialog">
+		<subwindow name="abilities">
+			<anchored to="contentframe" position="over" />
+			<fastinit />
+		</subwindow>
+	</template>
+
+	<template name="button_char_dialog">
+		<button_text>
+			<script>
+				function onInit()
+					setText(Interface.getString("dialog_nav_" .. target[1]));
+				end
+				function onButtonPress()
+					window.onNavigation(target[1]);
+				end
+			</script>
+			<anchored to="navanchor" width="80">
+				<left anchor="right" offset="15" relation="relative" />
+				<top />
+			</anchored>
+		</button_text>
+	</template>
+</root>

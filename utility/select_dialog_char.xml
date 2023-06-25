@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="select_dialog_char">
+		<frame>utilitybox</frame>
+		<placement>
+			<size width="700" height="600" />
+			<nosave />
+		</placement>
+		<script file="utility/scripts/dialog_char.lua" />
+		<sheetdata>
+			<windowtitlebar name="title">
+				<resource>dialog_select_char_title</resource>
+			</windowtitlebar>
+
+			<anchor_content_utilitybox_top />
+
+			<genericcontrol name="navanchor">
+				<anchored to="contentanchor">
+					<top offset="0" />
+					<left offset="0" />
+				</anchored>
+			</genericcontrol>
+			<button_char_dialog name="button_stats">
+				<target>stats</target>
+			</button_char_dialog>
+			<button_char_dialog name="button_edge">
+				<target>edge</target>
+			</button_char_dialog>
+			<button_char_dialog name="button_abilities">
+				<target>abilities</target>
+			</button_char_dialog>
+
+			<genericcontrol name="contentframe">
+				<anchored to="contentanchor">
+					<top anchor="bottom" offset="40" />
+					<left offset="20" />
+					<right parent="" anchor="center" offset="-15" />
+					<bottom parent="" offset="-80" />
+				</anchored>
+				<frame name="groupbox" offset="15,10,15,10" />
+			</genericcontrol>
+
+			<subwindow_char_dialog name="stats">
+				<class>dialog_statpools</class>
+				<noscroll />
+			</subwindow_char_dialog>
+
+			<subwindow_char_dialog name="edge">
+				<class>dialog_edge</class>
+				<noscroll />
+			</subwindow_char_dialog>
+
+			<subwindow_char_dialog name="abilities">
+				<class>dialog_abilities</class>
+			</subwindow_char_dialog>
+			<scrollbar>
+				<anchored to="abilities" />
+				<target>abilities</target>
+			</scrollbar>
+
+			<genericcontrol name="summaryframe">
+				<anchored to="contentanchor">
+					<top anchor="bottom" offset="40" />
+					<left parent="" anchor="center" offset="15" />
+					<right offset="-20" />
+					<bottom parent="" offset="-80" />
+				</anchored>
+				<frame name="groupbox" offset="15,10,15,10" />
+			</genericcontrol>
+
+			<subwindow_char_dialog name="summary">
+				<class>dialog_summary</class>
+				<anchored to="summaryframe" position="over" />
+				<noscroll />
+				<activate />
+			</subwindow_char_dialog>
+			
+			<anchor_content_utilitybox_bottom />
+			<sub_content_bottom name="sub_buttons">
+				<class>dialog_buttons_okcancel</class>
+			</sub_content_bottom>
+			
+			<close_utilitybox />
+		</sheetdata>
+	</windowclass>
+	
+	<windowclass name="dialog_statpools">
+		<script file="utility/scripts/dialog_statpools.lua" />
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+
+			<header_column name="header_stats">
+				<static textres="header_dialog_stats" />
+				<center />
+			</header_column>
+
+			<label_column name="label_stats_remaining">
+				<anchored width="150" />
+				<static textres="label_dialog_stats_remaining" />
+			</label_column>
+			<basicnumberc name="stats_remaining">
+				<anchored width="30" height="20">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+					<right offset="-35" />
+				</anchored>
+				<readonly />
+				<script>
+					function onValueChanged()
+						window.update();
+					end
+				</script>
+			</basicnumberc>
+
+			<spacer_column name="spacer">
+				<anchored height="10" />
+			</spacer_column>
+
+			<!-- Might Controls -->
+			<label_column name="label_might">
+				<static textres="might" />
+			</label_column>
+			<numberc_column name="might_current">
+				<readonly />
+			</numberc_column>
+			<basicnumberc name="might_new">
+				<anchored width="30" height="20">
+					<top parent="might_current" />
+					<right offset="-35" />
+				</anchored>
+				<readonly />
+			</basicnumberc>
+			<button_increase name="button_might_increase">
+				<anchored to="might_new" position="lefthigh" offset="20,0" width="20" />
+				<stat>might</stat>
+			</button_increase>
+			<button_decrease name="button_might_decrease">
+				<anchored to="might_new" position="lefthigh" offset="50,0" width="20" />
+				<stat>might</stat>
+			</button_decrease>
+
+			<!-- Speed Controls -->
+			<label_column name="label_speed">
+				<static textres="speed" />
+			</label_column>
+			<numberc_column name="speed_current">
+				<readonly />
+			</numberc_column>
+			<basicnumberc name="speed_new">
+				<anchored width="30" height="20">
+					<top parent="speed_current" />
+					<right offset="-35" />
+				</anchored>
+				<readonly />
+			</basicnumberc>
+			<button_increase name="button_speed_increase">
+				<anchored to="speed_new" position="lefthigh" offset="20,0" width="20" />
+				<stat>speed</stat>
+			</button_increase>
+			<button_decrease name="button_speed_decrease">
+				<anchored to="speed_new" position="lefthigh" offset="50,0" width="20" />
+				<stat>speed</stat>
+			</button_decrease>
+
+			<!-- Intellect Controls -->
+			<label_column name="label_intellect">
+				<static textres="intellect" />
+			</label_column>
+			<numberc_column name="intellect_current">
+				<readonly />
+			</numberc_column>
+			<basicnumberc name="intellect_new">
+				<anchored width="30" height="20">
+					<top parent="intellect_current" />
+					<right offset="-35" />
+				</anchored>
+				<readonly />
+			</basicnumberc>
+			<button_increase name="button_intellect_increase">
+				<anchored to="intellect_new" position="lefthigh" offset="20,0" width="20" />
+				<stat>intellect</stat>
+			</button_increase>
+			<button_decrease name="button_intellect_decrease">
+				<anchored to="intellect_new" position="lefthigh" offset="50,0" width="20" />
+				<stat>intellect</stat>
+			</button_decrease>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="dialog_edge">
+		<script file="utility/scripts/dialog_edge.lua" />
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+
+			<header_column name="header_edge">
+				<static textres="header_dialog_edge" />
+				<center />
+			</header_column>
+
+			<windowlist name="edge">
+				<script>
+					function addEntry(aOptions)
+						local w = createWindow();
+						w.setOptions(aOptions);
+					end
+				</script>
+				<class>dialog_edge_item</class>
+				<anchored>
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="5" />
+					<left offset="20" />
+					<right offset="-25" />
+				</anchored>
+				<noscroll />
+			</windowlist>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="dialog_edge_item">
+		<script>
+			function setOptions(aOptions)
+				local sDash = Interface.getString("dash");
+				local aValues = {};
+				for _, sOption in ipairs(aOptions) do
+					table.insert(aValues, Interface.getString(sOption))
+				end
+
+				edge.initialize(
+					table.concat(aValues, '|'), 
+					table.concat(aOptions, '|'),
+					sDash);
+				edge.update();
+			end
+			function getData()
+				return (edge.getValue() or ""):lower();
+			end
+			function update()
+				windowlist.window.update();
+			end
+		</script>
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+
+			<label_column name="label_edges">
+				<static textres="label_dialog_select_edge" />
+			</label_column>
+
+			<cycler_column name="edge">
+				<anchored width="80" height="18" />
+				<sourceless />
+				<script>
+					function onValueChanged()
+						window.update();
+					end
+				</script>
+			</cycler_column>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="dialog_abilities">
+		<script file="utility/scripts/dialog_abilities.lua" />
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+
+			<header_column name="header_abilities">
+				<static textres="header_dialog_abilities" />
+				<center />
+			</header_column>
+
+			<label_column name="label_abilities_remaining">
+				<anchored width="150" />
+				<static textres="label_dialog_abilities_remaining" />
+			</label_column>
+			<basicnumberc name="abilities_remaining">
+				<anchored width="30" height="20">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+					<right offset="-35" />
+				</anchored>
+				<readonly />
+			</basicnumberc>
+
+			<windowlist name="abilities">
+				<script>
+					function addEntry(nodeRecord)
+						local w = createWindow();
+						w.setRecord(nodeRecord);
+					end
+				</script>
+				<class>dialog_ability_item</class>
+				<anchored>
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="5" />
+					<left offset="0" />
+					<right offset="0" />
+				</anchored>
+				<noscroll />
+			</windowlist>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="dialog_ability_item">
+		<margins control="0,0,0,2" />
+		<script>
+			local bMultiselect = false;
+			function setRecord(nodeRecord)
+				bMultiselect = DB.getValue(nodeRecord, "selectlimit", "") == "many";
+
+				shortcut.setValue("ability", DB.getPath(nodeRecord));
+				shortcut.setVisible(true);
+				text.setValue(DB.getValue(nodeRecord, "name", ""));
+			end
+
+			function onClick()
+				local nNewValue = (selected.getValue() + 1) % 2
+
+				if windowlist.window.hasRemaining() or nNewValue == 0 then
+					selected.setValue(nNewValue);
+				end
+			end
+			
+			function onSelectionChanged(bSelected)
+				label_multiselect.setVisible(bMultiselect and bSelected);
+				multiselect.setVisible(bMultiselect and bSelected);
+				windowlist.window.onSelectionChanged();
+			end
+
+			function onMultiSelectChanged()
+				windowlist.window.onSelectionChanged();
+			end
+		</script>
+		<sheetdata>
+			<buttonc_checkbox name="selected" >
+				<anchored position="insidetopleft" offset="0,5" width="20" height="20" />
+				<script>
+					function onClickDown(button, x, y)
+						return true;
+					end
+					function onClickRelease(button, x, y)
+						window.onClick();
+						return true;
+					end
+					function onDragEnd(dragdata)
+						window.onClick()
+						return true;
+					end
+					function onValueChanged()
+						window.onSelectionChanged(getValue() == 1);
+					end
+				</script>
+			</buttonc_checkbox>
+			<linkcontrol name="shortcut">
+				<anchored position="insidetopright" offset="0,5" width="20" height="20" />
+				<invisible />
+			</linkcontrol>
+			<label name="text">
+				<anchored position="insidetopleft" offset="20,5">
+					<right parent="shortcut" anchor="left" offset="0" />
+				</anchored>
+				<font>sheetlabel</font>
+				<multilinespacing>20</multilinespacing>
+				<script>
+					function onClickDown(button, x, y)
+						return true
+					end
+					function onClickRelease(button, x, y)
+						window.onClick()
+						return true;
+					end
+				</script>
+			</label>
+			<label name="label_multiselect">
+				<anchored to="text">
+					<top anchor="bottom" offset="2" />
+					<left offset="10" />
+				</anchored>
+				<static textres="label_dialog_abilities_multiple" />
+				<invisible />
+			</label>
+			<basicnumberc name="multiselect">
+				<anchored to="label_multiselect" position="right" width="30" offset="10,0" />
+				<min>1</min>
+				<default>1</default>
+				<invisible />
+				<script>
+					local fWheel;
+					function onInit()
+						super.onInit();
+						fWheel = super.onWheel;
+						super.onWheel = onWheel;
+					end
+					function onWheel(n)
+						if window.windowlist.window.hasRemaining() or n &lt; 0 then
+							return fWheel(n);
+						end
+
+						return true;
+					end
+					function onValueChanged()
+						if not isReadOnly() then
+							window.onMultiSelectChanged();
+						end
+					end
+				</script>
+			</basicnumberc>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="dialog_summary">
+		<script file="utility/scripts/dialog_summary.lua" />
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+
+			<header_column name="header_summary">
+				<static textres="header_dialog_summary" />
+				<center />
+			</header_column>
+
+			<label_column name="label_might">
+				<static textres="might" />
+			</label_column>
+			<stringc_column name="might">
+				<anchored with="100" />
+			</stringc_column>
+
+			<label_column name="label_speed">
+				<static textres="speed" />
+			</label_column>
+			<stringc_column name="speed">
+				<anchored with="100" />
+			</stringc_column>
+
+			<label_column name="label_intellect">
+				<static textres="intellect" />
+			</label_column>
+			<stringc_column name="intellect">
+				<anchored with="100" />
+			</stringc_column>
+
+			<label_column name="label_abilities">
+				<static textres="label_dialog_summary_abilities" />
+			</label_column>
+
+			<windowlist name="abilities">
+				<script>
+					function addEntry(nodeRecord, nMultiselect)
+						local w = createWindow();
+						w.setRecord(nodeRecord);
+						w.selected.setVisible(false);
+
+						if nMultiselect &gt; 1 then
+							w.multiselect.setReadOnly(true);
+							w.multiselect.setValue(nMultiselect);
+							w.multiselect.setVisible(true);
+							w.label_multiselect.setVisible(true);
+						end
+					end
+				</script>
+				<class>dialog_ability_item</class>
+				<anchored>
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="25" />
+					<left offset="10" />
+					<right offset="-25" />
+				</anchored>
+				<summary />
+			</windowlist>
+		</sheetdata>
+	</windowclass>
+</root>

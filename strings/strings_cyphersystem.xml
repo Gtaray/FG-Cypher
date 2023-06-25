@@ -294,6 +294,10 @@
 	<string name="ability_usetype_enabler">Enabler</string>
 	<string name="ability_usetype_action">Action</string>
 	<string name="ability_label_type">Type</string>
+	<string name="ability_label_select_limit">Can Select</string>
+	<string name="ability_select_limit_once">Once</string>
+	<string name="ability_select_limit_many">Multiple times</string>
+	<string name="ability_tooltip_select_limit">Can this ability be selected multiple?</string>
 
 	<string name="ref_ability_tooltip_ability_given">If checked, this ability will be given to the character. If unchecked, this ability will be listed as an optional ability for the character to select for its tier.</string>
 	<string name="ref_ability_tooltip_ability_tier">Tier this ability is offered at</string>
@@ -465,8 +469,26 @@
 	<string name="defense_prompt_hinder">Hinder</string>
 
 	<!-- Character Builder Dialog Boxes -->
-	<string name="dialog_select_type_title">Type Options</string>
-	<string name="label_stats_remaining">Stats Remaining</string>
+	<string name="dialog_nav_stats">Stat Pools</string>
+	<string name="dialog_nav_edge">Edge</string>
+	<string name="dialog_nav_abilities">Abilities</string>
+
+	<string name="dialog_select_char_title">Character Options</string>
+
+	<string name="header_dialog_stats">Apply Stats to Pools</string>
+	<string name="label_dialog_stats_remaining">Stats Remaining</string>
+
+	<string name="header_dialog_edge">Select Edge</string>
+	<string name="label_dialog_select_edge">Select Option</string>
+
+	<string name="header_dialog_abilities">Select Abilities</string>
+	<string name="label_dialog_abilities_remaining">Abilities Remaining</string>
+	<string name="label_dialog_abilities_multiple">Take Multiple Times</string>
+	<string name="tooltip_dialog_abilities_multiple">This ability can be selected multiple times. How many times would you like to take it?</string>
+
+	<string name="header_dialog_summary">Summary</string>
+	<string name="label_dialog_summary_stat_update">%s  -&gt;  %s</string>
+	<string name="label_dialog_summary_abilities">Abilities</string>
 
 	<!-- Desktop -->
 	<string name="diffadj_label_effort">Effort</string>

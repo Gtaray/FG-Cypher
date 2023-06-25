@@ -163,13 +163,11 @@ function addToStatMax(rActor, sStat, nValue)
 	end
 
 	sStat = sStat:lower();
-
-	local sPath = "abilities." .. sStat;
-	local nCur, nMax = ActorManagerCypher.getStatPool(rActor, sStat)
+	local _, nMax = ActorManagerCypher.getStatPool(rActor, sStat)
 
 	-- New stat pool maximum
 	nMax = nMax + nValue;
-	DB.setValue(nodeActor, sPath .. ".max", "number", nMax);
+	ActorManagerCypher.setStatMax(rActor, sStat, nMax);
 
 	-- Modify the current amount by the same amount
 	ActorManagerCypher.addToStatPool(rActor, sStat, nValue);

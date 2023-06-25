@@ -13,7 +13,7 @@ function addTypeDrop(nodeChar, sClass, sRecord)
 	CharTypeManager.buildTypeTier1AddTable(nodeChar, rAdd);
 
 	if rAdd.nFloatingStats > 0 or #(rAdd.aEdgeOptions) > 0 or #(rAdd.aAbilityOptions) > 0 then
-		local w = Interface.openWindow("select_dialog_type", "");
+		local w = Interface.openWindow("select_dialog_char", "");
 		w.setData(rAdd, CharTypeManager.applyTier1);
 		return;
 	end
@@ -38,11 +38,11 @@ function buildTypeTier1AddTable(nodeChar, rAdd)
 		local aChoices = {};
 		if sChoice ~= "" then
 			if sChoice == Interface.getString("char_mod_edge_might")  then
-				table.insert(aEdgeGiven, "might");
+				table.insert(rAdd.aEdgeGiven, "might");
 			elseif sChoice == Interface.getString("char_mod_edge_speed") then
-				table.insert(aEdgeGiven, "speed");
+				table.insert(rAdd.aEdgeGiven, "speed");
 			elseif sChoice == Interface.getString("char_mod_edge_intellect") then
-				table.insert(aEdgeGiven, "intellect");
+				table.insert(rAdd.aEdgeGiven, "intellect");
 			elseif sChoice == Interface.getString("char_mod_edge_might_or_speed") then
 				table.insert(aChoices, "might");
 				table.insert(aChoices, "speed");
@@ -78,30 +78,92 @@ function buildTypeTier1AddTable(nodeChar, rAdd)
 	end
 end
 
-function applyTier1(rAdd)
+function applyTier1(rData)
 	-- Notification
-	CharManager.outputUserMessage("char_message_add_type", rAdd.sSourceName, rAdd.sCharName);
+	CharManager.outputUserMessage("char_message_add_type", rData.sSourceName, rData.sCharName);
 
 	-- Add the name and link to the character sheet
-	DB.setValue(rAdd.nodeChar, "class.type", "string", rAdd.sSourceName);
-	DB.setValue(rAdd.nodeChar, "class.typelink", "windowreference", rAdd.sSourceClass, DB.getPath(rAdd.nodeSource));
+	CharTrackerManager.addToTracker(
+		rData.nodeChar, 
+		string.format("Type: %s", StringManager.capitalize(rData.sSourceName)), 
+		"Manual");
+	DB.setValue(rData.nodeChar, "class.type", "string", rData.sSourceName);
+	DB.setValue(rData.nodeChar, "class.typelink", "windowreference", rData.sSourceClass, DB.getPath(rData.nodeSource));
+
+	--CharTypeManager.addStartingEffort(rData);
+	--CharTypeManager.addStartingCypherLimit(rData);
 
 	-- Set the character's starting stat pools
-	-- CharTypeManager.setStartingPools(rAdd.nodeChar, rAdd.nodeSource);
+	CharTypeManager.setStartingPools(rData);
+
+	-- Set edge
+	CharTypeManager.setStartingEdge(rData);
+
+	-- Give starting abilities
+	CharTypeManager.addStartingAbilities(rData);
 end
 
-function setStartingPools(nodeChar, nodeType)
-	local nMight = DB.getValue(nodeType, "mightpool", 0);
-	local nSpeed = DB.getValue(nodeType, "speedpool", 0);
-	local nIntellect = DB.getValue(nodeType, "intellectpool", 0);
+function setStartingPools(rData)
+	if rData.nMight ~= 0 then
+		CharTypeManager.setStartingStat(rData.nodeChar, "might", rData.nMight, rData.sSourceName);
+	end
+	if rData.nSpeed ~= 0 then
+		CharTypeManager.setStartingStat(rData.nodeChar, "speed", rData.nSpeed, rData.sSourceName);
+	end
+	if rData.nIntellect ~= 0 then
+		CharTypeManager.setStartingStat(rData.nodeChar, "intellect", rData.nIntellect, rData.sSourceName);
+	end
+end
 
-	if nMight ~= 0 then
-		ActorManagerCypher.setStatMax(nodeChar, "might", nMight);
+function setStartingStat(nodeChar, sStat, nValue, sSource)
+	ActorManagerCypher.setStatMax(nodeChar, sStat, nValue);
+
+	local sSummary = string.format(
+		"Stats: Set %s to %s", 
+		StringManager.capitalize(sStat),
+		nValue)
+	sSource = string.format("%s (Type)", StringManager.capitalize(sSource));
+
+	CharTrackerManager.addToTracker(nodeChar, sSummary, sSource);
+end
+
+function setStartingEdge(rData)
+	local aEdge = {
+		["might"] = 0,
+		["speed"] = 0,
+		["intellect"] = 0
+	};
+
+	for _, sStat in ipairs(rData.aEdgeGiven) do
+		aEdge[sStat] = aEdge[sStat] + 1;
 	end
-	if nSpeed ~= 0 then
-		ActorManagerCypher.setStatMax(nodeChar, "speed", nSpeed);
+
+	for sStat, nEdge in pairs(aEdge) do
+		local sPath = string.format("abilities.%s.edge", sStat);
+		DB.setValue(rData.nodeChar, sPath, "number", nEdge);
+
+		if nEdge > 0 then
+			CharTrackerManager.addToTracker(
+				rData.nodeChar, 
+				string.format("Edge: Set %s Edge to %s", StringManager.capitalize(sStat), nEdge),
+				string.format("%s (Type)", StringManager.capitalize(rData.sSourceName)));
+		end
 	end
-	if nIntellect ~= 0 then
-		ActorManagerCypher.setStatMax(nodeChar, "intellects", nIntellect);
+end
+
+function addStartingAbilities(rData)
+	local rActor = ActorManager.resolveActor(rData.nodeChar);
+
+	for _, sAbility in ipairs(rData.aAbilitiesGiven) do
+		local rMod = {
+			sLinkRecord = sAbility,
+			sSource = string.format("%s (Type)", StringManager.capitalize(rData.sSourceName))
+		}
+		rMod.sSummary = CharModManager.getAbilityModSummary(rMod)
+
+		local nodeAbility = DB.findNode(sAbility);
+		if nodeAbility then
+			CharModManager.applyAbilityModification(rActor, rMod);
+		end
 	end
 end

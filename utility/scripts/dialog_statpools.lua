@@ -28,6 +28,10 @@ function setFloatingStatAmount(n)
 	stats_remaining.setValue(n);
 end
 
+function isValid()
+	return stats_remaining.getValue() == 0;
+end
+
 function update()
 	local bCanIncrease = (stats_remaining.getValue() > 0);
 
@@ -39,6 +43,8 @@ function update()
 
 	button_intellect_decrease.setVisible(intellect_current.getValue() < intellect_new.getValue());
 	button_intellect_increase.setVisible(bCanIncrease);
+
+	parentcontrol.window.updateStats();
 end
 
 function onIncrease(sStat)
