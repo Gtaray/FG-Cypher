@@ -262,6 +262,8 @@ function applyAbilityModification(rActor, rData)
 		rMod.sSource = string.format("%s (Ability)", sAbilityName);
 		CharModManager.addModificationToChar(rActor, rMod);
 	end
+
+	return abilitynode;
 end
 
 function applyRecoveryModification(rActor, rData)

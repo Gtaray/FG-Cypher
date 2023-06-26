@@ -47,7 +47,7 @@
 				<class>charsheet_tracker_item</class>
 				<allowcreate merge="delete" />
 				<!-- TODO: Make this sort descending -->
-				<sortby mergerule="replace"><control>order</control></sortby>
+				<sortby mergerule="replace"><control desc="true">order</control></sortby>
 			</list_text>
 			<scrollbar>
 				<anchored to="tracker" />

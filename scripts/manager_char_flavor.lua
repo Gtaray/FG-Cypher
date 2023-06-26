@@ -12,6 +12,11 @@ function addFlavorDrop(nodeChar, sClass, sRecord)
 	-- Notification
 	CharManager.outputUserMessage("char_message_add_flavor", rAdd.sSourceName, rAdd.sCharName);
 
+	CharTrackerManager.addToTracker(
+		rAdd.nodeChar, 
+		string.format("Flavor: %s", StringManager.capitalize(rAdd.sSourceName)), 
+		"Manual");
+
 	-- Add the name and link to the character sheet
 	DB.setValue(rAdd.nodeChar, "class.flavor", "string", rAdd.sSourceName);
 	DB.setValue(rAdd.nodeChar, "class.flavorlink", "windowreference", rAdd.sSourceClass, DB.getPath(rAdd.nodeSource));

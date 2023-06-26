@@ -178,15 +178,19 @@ function addStartingAbilities(rData)
 	local rActor = ActorManager.resolveActor(rData.nodeChar);
 
 	for _, sAbility in ipairs(rData.aAbilitiesGiven) do
-		local rMod = {
-			sLinkRecord = sAbility,
-			sSource = string.format("%s (Type)", StringManager.capitalize(rData.sSourceName))
-		}
-		rMod.sSummary = CharModManager.getAbilityModSummary(rMod)
+		CharTypeManager.addAbility(rData.nodeChar, sAbility);
+	end
+end
 
-		local nodeAbility = DB.findNode(sAbility);
-		if nodeAbility then
-			CharModManager.applyAbilityModification(rActor, rMod);
-		end
+function addAbility(nodeChar, sAbilityRecord)
+	local rMod = {
+		sLinkRecord = sAbilityRecord,
+		sSource = string.format("%s (Type)", StringManager.capitalize(rData.sSourceName))
+	}
+	rMod.sSummary = CharModManager.getAbilityModSummary(rMod)
+
+	local nodeAbility = DB.findNode(sAbilityRecord);
+	if nodeAbility then
+		return CharModManager.applyAbilityModification(rActor, rMod);
 	end
 end
