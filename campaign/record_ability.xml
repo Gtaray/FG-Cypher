@@ -19,6 +19,10 @@
 			function onLockChanged()
 				super.onLockChanged();
 
+				if main.subwindow then
+					main.subwindow.update();
+				end
+
 				if actions.subwindow then
 					actions.subwindow.update();
 				end
