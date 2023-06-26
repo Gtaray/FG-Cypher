@@ -5,6 +5,7 @@
 
 function onInit()
 	local node = getDatabaseNode();
+	local charnode = DB.getChild(node, "...");
 
 	-- Migrate "statcost" to "cost"
 	local sStat = DB.getValue(node, "stat", "");
@@ -21,8 +22,10 @@ function onInit()
 	PowerManagerCore.registerDefaultPowerMenu(self);
 	PowerManagerCore.handleDefaultPowerInitParse(node);
 
-	registerMenuItem(Interface.getString("char_menu_hideability"), "tokenvisibility", 7);
-	registerMenuItem(Interface.getString("char_menu_confirm"), "tokenvisibility", 7, 7);
+	if ActorManager.isPC(charnode) then
+		registerMenuItem(Interface.getString("char_menu_hideability"), "tokenvisibility", 7);
+		registerMenuItem(Interface.getString("char_menu_confirm"), "tokenvisibility", 7, 7);
+	end
 
 	self.updateDetailButton();
 	self.toggleDetail();
@@ -73,46 +76,16 @@ function onCostChanged()
 	statcostview.setValue(sStatView);
 end
 
--- TODO: Update this to roll a generic roll with cost
-function onCostDoubleClicked()
+function initiateCostRoll(draginfo)
 	local rActor = ActorManager.resolveActor(DB.getChild(getDatabaseNode(), "..."));
 	local sStat = coststat.getValue() or "";
 	local rAction = {
-		sDesc = string.format("[COST (%s)] %s", StringManager.capitalize(sStat), name.getValue()),
+		label = name.getValue(),
 		nCost = cost.getValue(),
-		sStat = sStat;
-		sCostStat = sStat,
-		nEffort = 0,
-		nAssets = 0,
-		bDisableEdge = false
+		sCostStat = RollManager.resolveStat(sStat, "might")
 	};
 
-	local aFilter = { rAction.sCostStat};
-	RollManager.addEdgeToAction(rActor, rAction, aFilter);
-	RollManager.addWoundedToAction(rActor, rAction);
-	RollManager.addArmorCostToAction(rActor, rAction);
-	RollManager.applyDesktopAdjustments(rActor, rAction);
-	RollManager.resolveMaximumEffort(rActor, rAction, aFilter);
-	RollManager.resolveMaximumAssets(rActor, rAction, aFilter);
-	RollManager.calculateBaseEffortCost(rActor, rAction);
-	RollManager.adjustEffortCostWithEffects(rActor, rAction, aFilter);
-
-	-- Jank. We encode to sDesc, then set label to match the encoded result
-	-- because encodeEdge requires rRoll.sDesc, and spendPointsForRoll requires label
-	rAction.label = rAction.sDesc;
-
-	if RollManager.spendPointsForRoll(rActor, rAction) then
-		local rMessage = ChatManager.createBaseMessage(rActor);
-		rMessage.text = rAction.label;
-		rMessage.icon = "action_damage";
-
-		rMessage.text = RollManager.encodeEdge(rAction, rMessage.text);
-		rMessage.text = RollManager.encodeEffort(rAction, rMessage.text);
-		rMessage.dice = {};
-		rMessage.diemodifier = rAction.nCost;
- 
-		Comm.deliverChatMessage(rMessage);
-	end
+	ActionCost.performRoll(draginfo, rActor, rAction);
 end
 
 function onUsePeriodChanged()

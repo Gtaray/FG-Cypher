@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!--
+	Please see the license.html file included with this distribution for
+	attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="prompt_gm_intrusion">
+		<frame>referencelist</frame>
+		<placement>
+			<size width="300" height="500" />
+		</placement>
+		<sizelimits>
+			<minimum width="300" height="500" />
+			<dynamic />
+		</sizelimits>
+		<nodelete />
+		<script file="utility/scripts/gmi_prompt.lua" />
+		<sheetdata>
+			<windowtitlebar name="reftitle">
+				<resource>gmi_prompt_window_title</resource>
+			</windowtitlebar>
+			<frame_char name="frame">
+				<anchored>
+					<top offset="40"/>
+					<left offset="15" />
+					<right offset="-15" />
+					<bottom offset="-15" />
+				</anchored>
+			</frame_char>
+
+			<stringcontrol name="description">
+				<anchored to="frame">
+					<right anchor="right" offset="-15" />
+					<left anchor="left" offset="15"/>
+					<top anchor="top" offset="15" />
+				</anchored>
+				<multilinespacing>20</multilinespacing>
+				<font>reference-title</font>
+				<center/>
+				<readonly />
+			</stringcontrol>
+
+			<hsc name="selected">
+				<script>
+					function onValueChanged()
+						window.characters.update();
+						window.accept.onSelectionChanged();
+					end
+				</script>
+			</hsc>
+			<hsc name="selectedname" />
+			
+			<windowlist name="characters">
+				<script>
+					function addEntry(sNode, sToken, sName)
+						local w = createWindow();
+						if w then
+							w.node.setValue(sNode);
+							w.token.setPrototype(sToken);
+							w.name.setValue(sName);
+						end
+						return w;
+					end
+					function update()
+						for _, w in ipairs(getWindows()) do
+							w.updateFrame(window.selected.getValue());
+						end
+					end
+				</script>
+				<class>prompt_gm_intrusion_item</class>
+				<anchored to="description">
+					<left offset="0" />
+					<top anchor="bottom" offset="5" />
+					<right />
+					<bottom parent="" offset="-40" />
+				</anchored>
+			</windowlist>
+
+			<button_text name="accept">
+				<script>
+					function onInit()
+						updateTooltip();
+					end
+					function onSelectionChanged()
+						updateTooltip();
+
+						if not isVisible() then
+							setVisible(true);
+						end
+					end
+					function updateTooltip()
+						if (window.selected.getValue() or "") == "" then
+							setTooltipText(Interface.getString("gmi_prompt_tooltip_select_char"))
+						else
+							setTooltipText(string.format(
+								Interface.getString("gmi_prompt_tooltip_accept"),
+								window.selectedname.getValue()))
+						end
+					end
+					function onButtonPress()
+						window.acceptIntrusion();
+					end
+				</script>
+				<anchored height="22" width="160">
+					<bottom parent="frame" anchor="bottom" offset="-20" />
+					<right parent="frame" anchor="right" offset="-20" />
+				</anchored>
+				<textres>gmi_prompt_button_accept</textres>
+				<invisible />
+			</button_text>
+
+			<button_text name="refuse">
+				<script>
+					function update()
+						local node = window.getSourceNode()
+						if not node then
+							return;
+						end
+
+						if DB.getValue(node, "xp", 0) &gt; 0 then
+							setVisible(true);
+						end
+						
+						updateTooltip()
+					end
+					function updateTooltip()
+						local node = window.getSourceNode()
+						if not node then
+							return;
+						end
+
+						if DB.getValue(node, "xp", 0) &gt; 0 then
+							setTooltipText(Interface.getString("gmi_prompt_tooltip_refuse"))
+						else
+							setTooltipText(Interface.getString("gmi_prompt_tooltip_refuse_missing_xp"))
+						end
+					end
+					function onButtonPress()
+						window.refuseIntrusion();
+					end
+				</script>
+				<anchored height="22">
+					<bottom parent="frame" anchor="bottom" offset="-20" />
+					<left parent="frame" anchor="left" offset="20" />
+					<right parent="accept" anchor="left" offset="-10" />
+				</anchored>
+				<textres>gmi_prompt_button_refuse</textres>
+				<invisible />
+			</button_text>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="prompt_gm_intrusion_item">
+		<script>
+			function onInit()
+				updateFrame();
+			end
+			function updateFrame(sSelectedNode)
+				if sSelectedNode == node.getValue() then
+					setFrame("ctentrybox_friend");
+				else
+					setFrame("ctentrybox_neutral");
+				end
+			end
+
+			function onSelected()
+				windowlist.window.onSelect(node.getValue(), name.getValue());
+			end
+		</script>
+		<sheetdata>
+			<hsc name="node" />
+
+			<tokencontrol name="token">
+				<script>
+					function onClickDown(button, x, y)
+						return button == 1;
+					end
+					function onClickRelease(button, x, y)
+						window.onSelected();
+					end
+				</script>
+				<anchored width="50" height="50">
+					<top />
+					<left />
+				</anchored>
+				<nodrag />
+				<nodrop />
+			</tokencontrol>
+
+			<label name="name">
+				<anchored to="token" height="20">
+					<top offset="15" />
+					<left anchor="right" offset="10" />
+					<right parent="" />
+				</anchored>
+				<script>
+					function onClickDown(button, x, y)
+						return button == 1;
+					end
+					function onClickRelease(button, x, y)
+						window.onSelected();
+					end
+				</script>
+			</label>
+		</sheetdata>
+	</windowclass>
+</root>

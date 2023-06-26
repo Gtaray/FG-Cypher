@@ -14,7 +14,7 @@ function action(draginfo)
 	rAction.label = StringManager.capitalize(sStat);
 	rAction.sStat = sStat;
 	rAction.sTraining, rAction.nAssets, rAction.nModifier = ActorManagerCypher.getDefense(rActor, sStat);
-	ActionDefense.performRoll(draginfo, rActor, rAction);
+	ActionDefense.payCostAndRoll(draginfo, rActor, rAction);
 end
 
 function onButtonPress()

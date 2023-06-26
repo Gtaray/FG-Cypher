@@ -3,27 +3,18 @@ function onInit()
 	ActionsManager.registerResultHandler("defense", onRoll);
 end
 
-function performRoll(draginfo, rActor, rAction)
-	local aFilter = { "defense", "def", rAction.sStat };
+function payCostAndRoll(draginfo, rActor, rAction)
+	rAction.sSourceRollType = "defense";
 
-	RollManager.addEdgeToAction(rActor, rAction, aFilter);
-	RollManager.addWoundedToAction(rActor, rAction, "defense");
-	RollManager.addArmorCostToAction(rActor, rAction);
-	RollManager.applyDesktopAdjustments(rActor, rAction);
-	RollManager.resolveMaximumEffort(rActor, rAction, aFilter);
-	RollManager.resolveMaximumAssets(rActor, rAction, aFilter);
-	RollManager.calculateBaseEffortCost(rActor, rAction);
-	RollManager.adjustEffortCostWithEffects(rActor, rAction, aFilter);
-
-	local bCanRoll = RollManager.spendPointsForRoll(ActorManager.getCreatureNode(rActor), rAction);
-
-	if bCanRoll then
-		local rRoll = ActionDefense.getRoll(rActor, rAction);
-		ActionsManager.performAction(draginfo, rActor, rRoll);
-		return true;
+	if not ActionCost.performRoll(draginfo, rActor, rAction) then
+		PromptManager.closeDefensePromptWindow(rActor);
+		ActionDefense.performRoll(draginfo, rActor, rAction);
 	end
+end
 
-	return false;
+function performRoll(draginfo, rActor, rAction)
+	local rRoll = ActionDefense.getRoll(rActor, rAction);
+	ActionsManager.performAction(draginfo, rActor, rRoll);
 end
 
 function getRoll(rActor, rAction)
@@ -31,131 +22,226 @@ function getRoll(rActor, rAction)
 	rRoll.sType = "defense";
 	rRoll.aDice = { "d20" };
 	rRoll.nMod = rAction.nModifier or 0;
-	rRoll.sDesc = string.format("[DEFENSE] %s", rAction.label);
+
+	rRoll.sLabel = rAction.label;
+	rRoll.sStat = rAction.sStat:lower();
+	rRoll.sDesc = string.format("[DEFENSE] %s", rRoll.sLabel);
 
 	rRoll.nDifficulty = rAction.nDifficulty or 0;
+	rRoll.sTraining = rAction.sTraining;
+	rRoll.nAssets = rAction.nAssets or 0;
+	rRoll.nEffort = rAction.nEffort or 0;
+	rRoll.nEase = rAction.nEase or 0;
+	rRoll.nHinder = rAction.nHinder or 0;
 
-	RollManager.encodeStat(rAction, rRoll);
-	RollManager.encodeTraining(rAction, rRoll);
-	RollManager.encodeAssets(rAction, rRoll);
-	RollManager.encodeEdge(rAction, rRoll);
-	RollManager.encodeEffort(rAction, rRoll);
-	RollManager.encodeEaseHindrance(rRoll, (rAction.nEase or 0), (rAction.nHinder or 0));
 	RollManager.encodeTarget(rAction.rTarget, rRoll);
 
 	return rRoll;
 end
 
 function modRoll(rSource, rTarget, rRoll)
-	local sStat = RollManager.decodeStat(rRoll, false);
-	local nAssets = RollManager.decodeAssets(rRoll, true);
-	local nEffort = RollManager.decodeEffort(rRoll, true);
-	local bInability, bTrained, bSpecialized = RollManager.decodeTraining(rRoll, true);
-	rTarget = RollManager.decodeTarget(rRoll, rTarget, true);
-
-	-- Get base difficulty
-	-- Only calc difficulty if it's not already been set
-	-- this is because defense vs rolls will calc the difficulty of an NPC attack
-	-- ahead of time. Defense rolls in response don't need to get the difficulty
-	if (tonumber(rRoll.nDifficulty) or 0) == 0 then
-		rRoll.nDifficulty = RollManager.getBaseRollDifficulty(rSource, rTarget,  { "attack", "atk", sStat });		
+	if ActionDefense.rebuildRoll(rSource, rTarget, rRoll) then
+		return;
 	end
 
-	--Adjust raw modifier, converting every increment of 3 to a difficultly modifier
-	local nAssetMod, nEffectMod = RollManager.processFlatModifiers(rSource, rTarget, rRoll, { "defense", "def" }, { sStat })
-	nAssets = nAssets + nAssetMod;
+	rTarget = RollManager.decodeTarget(rRoll, rTarget, true);
+	local aFilter = { "defense", "def", rRoll.sStat };
 
-	-- Adjust difficulty based on assets. We can't hide everything behind processAssets here because
-	-- shields grant an asset bonus
-	local nMaxAssets = ActorManagerCypher.getMaxAssets(rSource, { "defense", "def", sStat });
-	nAssets = nAssets + RollManager.processAssets(rSource, rTarget, { "defense", "def", sStat }, nAssets);
+	--Adjust raw modifier, converting every increment of 3 to a difficultly modifier
+	local nAssetMod, nEffectMod = RollManager.processFlatModifiers(rSource, rTarget, rRoll, aFilter, { rRoll.sStat })
+	rRoll.nAssets = rRoll.nAssets + nAssetMod + RollManager.getAssetsFromDifficultyPanel();
+	local nAssets, nMaxAssets = RollManager.processAssets(rSource, rTarget, aFilter, rRoll.nAssets);
+	rRoll.nAssets = rRoll.nAssets + nAssets;
 
 	-- Get the shield bonus of the defender
 	local nShieldBonus = 0;
-	if sStat == "speed" then
+	if rRoll.sStat == "speed" then
 		nShieldBonus = ActorManagerCypher.getShieldBonus(rSource);
 	end
-	nAssets = math.min(nAssets + nShieldBonus, nMaxAssets);
+	rRoll.nAssets = math.min(rRoll.nAssets + nShieldBonus, nMaxAssets);
 
 	-- Adjust difficulty based on effort
-	nEffort = nEffort + RollManager.processEffort(rSource, rTarget, { "defense", "def", sStat }, nEffort);
+	rRoll.nEffort = rRoll.nEffort + RollManager.processEffort(rSource, rTarget, aFilter, rRoll.nEffort, rRoll.nMaxEffort);
 
 	-- Get ease/hinder effects
-	local nEase, nHinder = RollManager.resolveEaseHindrance(rSource, rTarget, rRoll, { "defense", "def", sStat });
+	rRoll.nEase = rRoll.nEase + EffectManagerCypher.getEffectsBonusByType(rSource, "EASE", aFilter, rTarget);
+	if ModifierManager.getKey("EASE") then
+		rRoll.nEase = rRoll.nEase + 1;
+	end
+
+	rRoll.nHinder = rRoll.nHinder + EffectManagerCypher.getEffectsBonusByType(rSource, "HINDER", aFilter, rTarget);
+	if ModifierManager.getKey("HINDER") then
+		rRoll.nHinder = rRoll.nHinder + 1;
+	end
 
 	-- Process conditions
-	local nConditionEffects = RollManager.processStandardConditions(rSource, rTarget);
+	rRoll.nConditionMod = RollManager.processStandardConditionsForActor(rSource);
 
-	-- Adjust difficulty based on training
-	local nTrainingMod = RollManager.processTraining(bInability, bTrained, bSpecialized)
+	RollManager.encodeTraining(rRoll.sTraining, rRoll);
+	RollManager.encodeEffort(rRoll.nEffort, rRoll);
+	RollManager.encodeAssets(rRoll.nAssets, rRoll);
+	RollManager.encodeEaseHindrance(rRoll, rRoll.nEase, rRoll.nHinder);
 
-	-- Roll up all the level/mod adjustments and apply them to the difficulty here
-	rRoll.nDifficulty = rRoll.nDifficulty - nAssets - nEffort - nTrainingMod + nConditionEffects - nEase + nHinder;
-
-	RollManager.encodeEffort(nEffort, rRoll)
-	RollManager.encodeAssets(nAssets, rRoll);
-	RollManager.encodeEaseHindrance(rRoll, nEase, nHinder);
-	RollManager.encodeEffects(rRoll, nEffectMod);
+	if rRoll.nConditionMod > 0 then
+		rRoll.sDesc = string.format("%s [EFFECTS %s]", rRoll.sDesc, rRoll.nConditionMod)
+	end
 end
 
 function onRoll(rSource, rTarget, rRoll)
 	rTarget = RollManager.decodeTarget(rRoll, rTarget);
-	local bPvP = ActorManager.isPC(rSource) and ActorManager.isPC(rTarget);
 
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 	rMessage.icon = "action_roll";
 
-	if rTarget then
-		rMessage.text = rMessage.text .. " [from " .. (ActorManager.getDisplayName(rTarget) or "unknown") .. "]";
+	-- Only set the difficulty if the difficulty hasn't already been set 
+	-- Difficulty is set when a defense roll is invoked from a defensevs roll
+	if rRoll.nDifficulty == 0 then
+		rRoll.nDifficulty = RollManager.getBaseRollDifficulty(rSource, rTarget, { "attack", "atk", rRoll.sStat });
 	end
 
-	local aAddIcons = {};
-	local nFirstDie = rRoll.aDice[1].result or 0;
-	local bSuccess, bAutomaticSuccess = RollManager.processRollSuccesses(rSource, rTarget, rRoll, rMessage, aAddIcons);
-	local sIcon = "";
+	RollManager.calculateDifficultyForRoll(rSource, rTarget, rRoll);
 
-	-- only check for hit/miss on non-pvp rolls. Eventually this will change
-	-- once I have a better way of handling pvp rolls
-	if bPvP then
-		RollManager.updateMessageWithConvertedTotal(rRoll, rMessage);
+	local aAddIcons = {};
+	local bAutomaticSuccess = rRoll.nDifficulty <= 0;
+
+	if #(rRoll.aDice) == 1 then
+		local nFirstDie = rRoll.aDice[1].result or 0;
 		
+		rRoll.bMajorEffect = not bAutomaticSuccess and nFirstDie == 20;
+		rRoll.bMinorEffect = not bAutomaticSuccess and nFirstDie == 19;
+		rRoll.bGmIntrusion = not bAutomaticSuccess and nFirstDie == 1;
+	end
+
+	if rRoll.bMajorEffect then
+		if rRoll.bRebuilt then
+			rMessage.text = rMessage.text .. " [MAJOR EFFECT]";
+		end
+		table.insert(aAddIcons, "roll20");
+	elseif rRoll.bMinorEffect then
+		if rRoll.bRebuilt then
+			rMessage.text = rMessage.text .. " [MINOR EFFECT]";
+		end
+		table.insert(aAddIcons, "roll19");
+	elseif rRoll.bGmIntrusion then
+		if rRoll.bRebuilt then
+			rMessage.text = rMessage.text .. " [GM INTRUSION]";
+		end
+		table.insert(aAddIcons, "roll1");
+	end
+
+	RollManager.updateRollMessageIcons(rMessage, aAddIcons);
+	Comm.deliverChatMessage(rMessage);
+
+	ActionDefense.applyRoll(rSource, rTarget, rRoll)
+end
+
+function applyRoll(rSource, rTarget, rRoll)
+	local nTotal, bSuccess, bAutomaticSuccess = RollManager.processRollResult(rSource, rTarget, rRoll);
+	local bPvP = ActorManager.isPC(rSource) and ActorManager.isPC(rTarget);
+	local msgShort = { 
+		font = "msgfont", 
+		icon = { "roll_attack", "task" .. (rRoll.nDifficulty or 0) } 
+	};
+	local msgLong = { 
+		font = "msgfont", 
+		icon = { "roll_attack", "task" .. (rRoll.nDifficulty or 0) } 
+	};
+
+	msgShort.text = string.format("[Defense]", rRoll.sStat);
+	msgLong.text = string.format("[Defense]", rRoll.sStat);
+
+	if (rRoll.sLabel or "") ~= "" then
+		msgShort.text = string.format("%s %s", msgShort.text, rRoll.sLabel or "");
+		msgLong.text = string.format("%s %s", msgLong.text, rRoll.sLabel or "");
+	end
+	msgLong.text = string.format("%s [%d]", msgLong.text, nTotal or 0);
+
+	-- Targeting information
+	msgShort.text = string.format("%s ->", msgShort.text);
+	msgLong.text = string.format("%s ->", msgLong.text);
+	if rTarget then
+		local sTargetName = ActorManager.getDisplayName(rTarget);
+		msgShort.text = string.format("%s [from %s]", msgShort.text, sTargetName);
+		msgLong.text = string.format("%s [from %s]", msgLong.text, sTargetName);
+	else
+		msgShort.text = string.format("%s [vs global level]", msgShort.text);
+		msgLong.text = string.format("%s [vs global level]", msgLong.text);
+	end
+	
+	if bPvP then
+		RollManager.updateMessageWithConvertedTotal(rRoll, msgShort);
+		RollManager.updateMessageWithConvertedTotal(rRoll, msgLong);
+
 	else
 		if bSuccess then
 			if bAutomaticSuccess then
-				rMessage.text = rMessage.text .. " [AUTOMATIC MISS]";
+				msgLong.text = string.format("%s [AUTOMATIC]", msgLong.text);
 			else
-				rMessage.text = rMessage.text .. " [MISS]";
+				msgLong.text = string.format("%s [MISS]", msgLong.text);
 			end
 
-			if nFirstDie >= 19 then
-				sIcon = "roll_attack_crit_miss";
+			if rRoll.bMajorEffect or rRoll.bMinorEffect then
+				msgShort.icon[1] = "roll_attack_crit_miss";
+				msgLong.icon[1] = "roll_attack_crit_miss";
 			else
-				sIcon = "roll_attack_miss";
+				msgShort.icon[1] = "roll_attack_miss";
+				msgLong.icon[1] = "roll_attack_miss";
 			end
 		else
-			rMessage.text = rMessage.text .. " [HIT]";
+			msgLong.text = string.format("%s [HIT]", msgLong.text);
 
-			if nFirstDie == 1 then
-				sIcon = "roll_attack_crit";
+			if rRoll.bGmIntrusion then
+				msgShort.icon[1] = "roll_attack_crit";
+				msgLong.icon[1] = "roll_attack_crit";
 			else
-				sIcon = "roll_attack_hit";
+				msgShort.icon[1] = "roll_attack_hit";
+				msgLong.icon[1] = "roll_attack_hit";
 			end
 		end
 	end
+	
+	ActionsManager.outputResult(rRoll.bSecret, rSource, rTarget, msgLong, msgShort);
+end
 
-	if not bAutomaticSuccess then
-		if nFirstDie >= 20 then
-			rMessage.text = rMessage.text .. " [MAJOR EFFECT]";
-			table.insert(aAddIcons, "roll20");
-		elseif nFirstDie == 19 then
-			rMessage.text = rMessage.text .. " [MINOR EFFECT]";
-			table.insert(aAddIcons, "roll19");
-		elseif nFirstDie == 1 then
-			rMessage.text = rMessage.text .. " [GM INTRUSION]";
-			table.insert(aAddIcons, "roll1");
-		end
+--------------------------------------------------------------------------------
+-- HELPERS
+--------------------------------------------------------------------------------
+-- Returns boolean determining whether the roll was rebuilt from a chat message
+function rebuildRoll(rSource, rTarget, rRoll)
+	local bRebuilt = false;
+
+	if not rRoll.sLabel then
+		rRoll.sLabel = StringManager.trim(rRoll.sDesc:match("%[DEFENSE.*%]([^%[]+)"));
+		bRebuilt = true;
+	end
+	if not rRoll.sStat then
+		rRoll.sStat = RollManager.decodeStat(rRoll, true);
+	end
+	if not rRoll.nAssets then
+		rRoll.nAssets = RollManager.decodeAssets(rRoll, true);
+	end
+	if not rRoll.nEffort then
+		rRoll.nEffort = RollManager.decodeEffort(rRoll, true);
+	end
+	if not rRoll.nEase and not rRoll.nHinder then
+		rRoll.nEase, rRoll.nHinder = RollManager.decodeEaseHindrance(rRoll, true)
+	end
+	if not rRoll.nConditionMod then
+		rRoll.nConditionMod = RollManager.decodeConditionMod(rRoll, true);
+	end
+	if not rRoll.sTraining then
+		rRoll.sTraining = RollManager.decodeTraining(rRoll, true);
+	end
+	if rRoll.bMajorEffect == nil then
+		rRoll.bMajorEffect = rRoll.sDesc:match("%[MAJOR EFFECT%]") ~= nil;
+	end
+	if rRoll.bMinorEffect == nil then
+		rRoll.bMinorEffect = rRoll.sDesc:match("%[MINOR EFFECT%]") ~= nil;
+	end
+	if rRoll.bGmIntrusion == nil then
+		rRoll.bGmIntrusion = rRoll.sDesc:match("%[GM INTRUSION%]") ~= nil;
 	end
 
-	RollManager.updateRollMessageIcons(rMessage, aAddIcons, sIcon);
-	Comm.deliverChatMessage(rMessage);
+	rRoll.bRebuilt = bRebuilt;
+	return bRebuilt;
 end

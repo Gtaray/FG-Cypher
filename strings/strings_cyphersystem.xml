@@ -110,6 +110,7 @@
 	<string name="char_tooltip_armorspeedcost">Increase to the cost of spending effort on speed tests due to wearing armor.</string>
 	<string name="char_header_special_defenses">Special Defenses</string>
 
+	<string name="char_message_add_ability">Ability '%s' added to '%s'</string>
 	<string name="char_message_add_type">Type '%s' added to '%s'</string>
 	<string name="char_message_add_descriptor">Descriptor '%s' added to '%s'</string>
 	<string name="char_message_add_focus">Focus '%s' added to '%s'</string>
@@ -177,6 +178,11 @@
     <!-- Character - Dialog Boxes -->
     <string name="dialog_recovery_title">Recovery</string>
     <string name="label_recovery_remaining">Recovery Remaining</string>
+
+	<!-- Character Tracker -->
+	<string name="char_header_tracker">Progression Tracker</string>
+	<string name="char_tooltip_tracker">Open the progression tracker</string>
+	<string name="char_tracker_label_source">Source:</string>
 
 	<!-- Powers -->
 	<string name="power_title_stat">Spell/Ability Roll</string>
@@ -288,6 +294,10 @@
 	<string name="ability_usetype_enabler">Enabler</string>
 	<string name="ability_usetype_action">Action</string>
 	<string name="ability_label_type">Type</string>
+	<string name="ability_label_select_limit">Can Select</string>
+	<string name="ability_select_limit_once">Once</string>
+	<string name="ability_select_limit_many">Multiple times</string>
+	<string name="ability_tooltip_select_limit">Can this ability be selected multiple?</string>
 
 	<string name="ref_ability_tooltip_ability_given">If checked, this ability will be given to the character. If unchecked, this ability will be listed as an optional ability for the character to select for its tier.</string>
 	<string name="ref_ability_tooltip_ability_tier">Tier this ability is offered at</string>
@@ -306,8 +316,17 @@
 	<string name="type_label_floating_stats">Flex</string>
 	<string name="type_tooltip_floatingstats">The number of additional points to divide among stat pools.</string>
 	<string name="type_label_starting_effort">Effort</string>
+	<string name="type_label_cypherlimit">Cypher Use</string>
 	<string name="type_header_edge">Starting Edge</string>
-	<string name="type_label_cypher_use">Cypher Use</string>
+	<string name="type_header_ability_amount">Number of Abilities</string>
+	<string name="type_label_tier123">Tier 1, 2, and 3</string>
+	<string name="type_label_tier456">Tier 4, 5, and 6</string>
+	<string name="type_tooltip_ability_t1">How many tier 1 abilities can a player select</string>
+	<string name="type_tooltip_ability_t2">How many tier 2 abilities can a player select</string>
+	<string name="type_tooltip_ability_t3">How many tier 3 abilities can a player select</string>
+	<string name="type_tooltip_ability_t4">How many tier 4 abilities can a player select</string>
+	<string name="type_tooltip_ability_t5">How many tier 5 abilities can a player select</string>
+	<string name="type_tooltip_ability_t6">How many tier 6 abilities can a player select</string>
 	<string name="type_header_abilities">Abilities</string>
 
 	<!-- Descriptor -->
@@ -449,6 +468,28 @@
 	<string name="defense_prompt_ease">Ease</string>
 	<string name="defense_prompt_hinder">Hinder</string>
 
+	<!-- Character Builder Dialog Boxes -->
+	<string name="dialog_nav_stats">Stat Pools</string>
+	<string name="dialog_nav_edge">Edge</string>
+	<string name="dialog_nav_abilities">Abilities</string>
+
+	<string name="dialog_select_char_title">Character Options</string>
+
+	<string name="header_dialog_stats">Apply Stats to Pools</string>
+	<string name="label_dialog_stats_remaining">Stats Remaining</string>
+
+	<string name="header_dialog_edge">Select Edge</string>
+	<string name="label_dialog_select_edge">Select Option</string>
+
+	<string name="header_dialog_abilities">Select Abilities</string>
+	<string name="label_dialog_abilities_remaining">Abilities Remaining</string>
+	<string name="label_dialog_abilities_multiple">Take Multiple Times</string>
+	<string name="tooltip_dialog_abilities_multiple">This ability can be selected multiple times. How many times would you like to take it?</string>
+
+	<string name="header_dialog_summary">Summary</string>
+	<string name="label_dialog_summary_stat_update">%s  -&gt;  %s</string>
+	<string name="label_dialog_summary_abilities">Abilities</string>
+
 	<!-- Desktop -->
 	<string name="diffadj_label_effort">Effort</string>
 	<string name="diffadj_label_assets">Assets</string>
@@ -456,4 +497,20 @@
 	<string name="modifier_label_EASE">Ease</string>
 	<string name="modifier_label_HINDER">Hinder</string>
 	<string name="desktop_tooltip_difficulty">Difficulty that all non-targeted rolls are made against. Use the scroll wheel to increase or decrease this value.</string>
+
+	<!-- Intrusions -->
+	<string name="menu_gm_intrusion">Invoke a GM Intrusion on this PC (and grant them 1 XP)</string>
+	<string name="gmi_message_user_not_found">The selected PC has no active user.</string>
+	<string name="gmi_message_gm_intrusion">The GM has invoked an intrusion on %s!</string>
+	<string name="gmi_message_gm_intrusion_accept">%s has accepted the intrusion. They gain 1 XP and give 1 XP to %s.</string>
+	<string name="gmi_message_gm_intrusion_refuse">%s has spent 1 XP to refuse the intrusion.</string>
+
+	<string name="gmi_prompt_window_title">GM INTRUSION</string>
+	<string name="gmi_prompt_description">The GM has invoked an intrusion on %s!\n\nSelect another character to grant an XP to.</string>
+	<string name="gmi_prompt_button_accept">Accept</string>
+	<string name="gmi_prompt_tooltip_accept">Accept this intrusion. You and %s both gain 1 XP.</string>
+	<string name="gmi_prompt_tooltip_select_char">You must select another character to give an XP to in order to accept the intrusion.</string>
+	<string name="gmi_prompt_button_refuse">Refuse</string>
+	<string name="gmi_prompt_tooltip_refuse">Spend 1 XP to refuse this intrusion.</string>
+	<string name="gmi_prompt_tooltip_refuse_missing_xp">You don't have enough XP to refuse this intrusion.</string>
 </root>

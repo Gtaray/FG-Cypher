@@ -134,6 +134,45 @@ function getDamageTrack(rActor)
 	return DB.getValue(nodeActor, "wounds", 0);
 end
 
+function setStatMax(rActor, sStat, nValue)
+	local nodeActor;
+	if type(rActor) == "databasenode" then
+		nodeActor = rActor;
+	else
+		nodeActor = ActorManager.getCreatureNode(rActor);
+	end
+	if not nodeActor or (sStat or "") == "" or nValue == 0 then
+		return 0;
+	end
+	
+	local sPath = string.format("abilities.%s.max", sStat:lower());
+	DB.setValue(nodeActor, sPath, "number", nValue);
+
+	ActorManagerCypher.setStatPool(rActor, sStat, nValue);
+end
+
+function addToStatMax(rActor, sStat, nValue)
+	local nodeActor;
+	if type(rActor) == "databasenode" then
+		nodeActor = rActor;
+	else
+		nodeActor = ActorManager.getCreatureNode(rActor);
+	end
+	if not nodeActor or (sStat or "") == "" or nValue == 0 then
+		return 0;
+	end
+
+	sStat = sStat:lower();
+	local _, nMax = ActorManagerCypher.getStatPool(rActor, sStat)
+
+	-- New stat pool maximum
+	nMax = nMax + nValue;
+	ActorManagerCypher.setStatMax(rActor, sStat, nMax);
+
+	-- Modify the current amount by the same amount
+	ActorManagerCypher.addToStatPool(rActor, sStat, nValue);
+end
+
 function addToStatPool(rActor, sStat, nValue)
 	local nodeActor;
 	if type(rActor) == "databasenode" then
@@ -461,6 +500,10 @@ function resistanceCheckerHelper(tDmgMods, aDmgTypes)
 
 	return false, 0;
 end
+
+---------------------------------------------------------------
+-- SHIELD (Temporary HP)
+---------------------------------------------------------------
 
 ---------------------------------------------------------------
 -- EQUIPPED WEAPONS

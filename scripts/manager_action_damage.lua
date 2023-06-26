@@ -12,70 +12,66 @@ function onInit()
 	ActionsManager.registerResultHandler("damage", onRoll);
 end
 
+function payCostAndRoll(draginfo, rActor, rAction)
+	rAction.sSourceRollType = "damage";
+
+	if not ActionCost.performRoll(draginfo, rActor, rAction) then
+		ActionDamage.performRoll(draginfo, rActor, rAction);
+	end
+end
+
 function performRoll(draginfo, rActor, rAction)
-	local aFilter = { "damage", "dmg" };
-
-	RollManager.addEdgeToAction(rActor, rAction, aFilter);
-	RollManager.addArmorCostToAction(rActor, rAction);
-	RollManager.applyDesktopAdjustments(rActor, rAction);
-	RollManager.resolveMaximumEffort(rActor, rAction, aFilter);
-	RollManager.calculateBaseEffortCost(rActor, rAction);
-	RollManager.adjustEffortCostWithEffects(rActor, rAction, aFilter);
-	
-	local bCanRoll = true; -- NPCs can always roll
-	if ActorManager.isPC(rActor) then
-		bCanRoll = RollManager.spendPointsForRoll(ActorManager.getCreatureNode(rActor), rAction);
-	end
-
-	if bCanRoll then
-		local rRoll = getRoll(rActor, rAction);
-		ActionsManager.performAction(draginfo, rActor, rRoll);
-	end
+	local rRoll = getRoll(rActor, rAction);
+	ActionsManager.performAction(draginfo, rActor, rRoll);
 end
 
 function getRoll(rActor, rAction)
 	local rRoll = {}
 	rRoll.sType = "damage"
-
-	local sDamageDetails = StringManager.capitalize(rAction.sDamageStat or "");
-	if (rAction.sDamageType or "") ~= "" then
-		sDamageDetails = string.format("%s, %s", sDamageDetails, rAction.sDamageType)
-	end
-	rRoll.sDesc = string.format(
-		"[DAMAGE (%s)] %s", 
-		sDamageDetails, 
-		rAction.label or "");
-
 	rRoll.aDice = { };
 	rRoll.nMod = rAction.nDamage or 0;
 
-	RollManager.encodeStat(rAction, rRoll); -- Encode the stat that takes damage instead of the stat that's used to attack
-	RollManager.encodePiercing(rAction, rRoll);
-	RollManager.encodeAmbientDamage(rAction, rRoll);
-	RollManager.encodeEdge(rAction, rRoll);
-	RollManager.encodeEffort(rAction, rRoll);
+	rRoll.sLabel = rAction.label or "";
+	rRoll.sStat = rAction.sStat;
+	rRoll.sDamageStat = rAction.sDamageStat;
+	rRoll.sDamageType = rAction.sDamageType;
+	rRoll.nEffort = rAction.nEffort or 0;
+
+	rRoll.sDesc = string.format("[DAMAGE (%s", StringManager.capitalize(rRoll.sDamageStat));
+
+	if (rAction.sDamageType or "") ~= "" then
+		rRoll.sDesc = string.format("%s, %s", rRoll.sDesc, rAction.sDamageType)
+	end
+	rRoll.sDesc = string.format(
+		"%s)] %s", 
+		rRoll.sDesc, 
+		rRoll.sLabel);
+
+	rRoll.bAmbient = rAction.bAmbient or false;
+	rRoll.bPierce = rAction.bPierce or false;
+	if rRoll.bPierce then
+		rRoll.nPierceAmount = rAction.nPierceAmount;
+	end
 	
 	return rRoll;
 end
 
 function modRoll(rSource, rTarget, rRoll)
-	 -- We want to get rid of the [STAT: %s] tag here, because the onRoll handler
-	 -- will decode the [DAMAGE (%s)] stat tag (which is the stat that's being damaged)
-	 -- We only need the source's stat to handle effects
-	local sStat = RollManager.decodeStat(rRoll, false);
-	local nEffort = RollManager.decodeEffort(rRoll, true);
-	local bPiercing, nPierceAmount = RollManager.decodePiercing(rRoll, true);
-	local sDamageType = RollManager.decodeDamageType(rRoll);
-
-	-- Adjust mod based on effort
-	nEffort = nEffort + RollManager.processEffort(rSource, rTarget, { "damage", "dmg" }, nEffort);
-	if (nEffort or 0) > 0 then
-		rRoll.nMod = rRoll.nMod + (nEffort * 3);
+	if ActionDamage.rebuildRoll(rSource, rTarget, rRoll) then
+		return;
 	end
 
-	bPiercing, nPierceAmount = RollManager.processPiercing(rSource, rTarget, bPiercing, nPierceAmount, { sDamageType }); -- Eventually the filter param here will include sDamageType
+	local aFilter = { "damage", "dmg" };
 
-	local nDmgBonus = EffectManagerCypher.getEffectsBonusByType(rSource, { "damage", "dmg" }, { sStat, sDamageType }, rTarget)
+	-- Adjust mod based on effort
+	rRoll.nEffort = (rRoll.nEffort or 0) + RollManager.processEffort(rSource, rTarget, aFilter, rRoll.nEffort);
+	if (rRoll.nEffort or 0) > 0 then
+		rRoll.nMod = rRoll.nMod + (rRoll.nEffort * 3);
+	end
+
+	rRoll.bPiercing, rRoll.nPierceAmount = RollManager.processPiercing(rSource, rTarget, bPiercing, nPierceAmount, { rRoll.sDamageType });
+
+	local nDmgBonus = EffectManagerCypher.getEffectsBonusByType(rSource, aFilter, { rRoll.sStat, rRoll.sDamageType }, rTarget)
 	if nDmgBonus ~= 0 then
 		rRoll.nMod = rRoll.nMod + nDmgBonus;
 	end
@@ -83,15 +79,44 @@ function modRoll(rSource, rTarget, rRoll)
 	-- We fake the action object here when encoding piercing
 	-- Because it requires two variables as an input
 	-- instead of just the single that most encodes have
+	RollManager.encodeAmbientDamage({ bAmbient = rRoll.bAmbient }, rRoll);
 	RollManager.encodePiercing({ bPierce = bPiercing, nPierceAmount = nPierceAmount }, rRoll);
 	RollManager.encodeEffort(nEffort, rRoll)
 	RollManager.encodeEffects(rRoll, nDmgBonus);
 end
 
+-- Returns boolean determining whether the roll was rebuilt from a chat message
+-- It's important to note here that we do not need to rebuild the stat that the PC
+-- used, because that stat is only ever used to get modifiers in the modRoll()
+-- function. Since that function has already been called when the roll was first made
+-- (this function only applies when drag/dropping chat messages), the effects
+-- are already baked in
+function rebuildRoll(rSource, rTarget, rRoll)
+	local bRebuilt = false;
+
+	if not rRoll.sLabel then
+		rRoll.sLabel = StringManager.trim(rRoll.sDesc:match("%[DAMAGE.*%]([^%[]+)"));
+		bRebuilt = true;
+	end
+	if not rRoll.sDamageStat then
+		rRoll.sDamageStat = RollManager.decodeStat(rRoll, true);
+	end
+	if not rRoll.nEffort then
+		rRoll.nEffort = RollManager.decodeEffort(rRoll, true);
+	end
+	if rRoll.bPiercing == nil then
+		rRoll.bPiercing, rRoll.nPierceAmount = RollManager.decodePiercing(rRoll, true);
+	end
+	if rRoll.bAmbient == nil then
+		rRoll.bAmbient = RollManager.decodeAmbientDamage(rRoll, true);
+	end
+
+	rRoll.bRebuilt = bRebuilt;
+	return bRebuilt;
+end
+
 function onRoll(rSource, rTarget, rRoll)
 	local rResult = ActionDamage.buildRollResult(rSource, rTarget, rRoll);
-
-	RollManager.decodeStat(rRoll, false); -- We no longer need the stat in the text once we've built the result table
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 
 	if rResult.bSourceNPC and rResult.bTargetPC then
@@ -113,10 +138,11 @@ function buildRollResult(rSource, rTarget, rRoll)
 	rResult.bTargetPC = (rTarget and ActorManager.isPC(rTarget)) or false;
 	rResult.bSourceNPC = (rSource and not ActorManager.isPC(rSource)) or false;
 	rResult.bTargetNPC = (rTarget and not ActorManager.isPC(rTarget)) or false;
-	rResult.sStat = RollManager.decodeStat(rRoll, true);
-	rResult.sDamageType = (RollManager.decodeDamageType(rRoll) or ""):lower();
-	rResult.bPiercing, rResult.nPierceAmount = RollManager.decodePiercing(rRoll, true);
-	rResult.bAmbient = RollManager.decodeAmbientDamage(rRoll, true);
+	rResult.sDamageStat = rRoll.sDamageStat
+	rResult.sDamageType = (rRoll.sDamageType or ""):lower()
+	rResult.bPiercing = rRoll.bPiercing;
+	rResult.nPierceAmount = rRoll.nPierceAmount
+	rResult.bAmbient = rRoll.bAmbient
 	
 	if rRoll.nTotal  then
 		rResult.nTotal = rRoll.nTotal;
@@ -232,33 +258,34 @@ function applyDamage(rSource, rTarget, bSecret, rResult)
 
 		-- Report positive values only
 		nTotal = math.abs(nTotal);
-		msgLong.text = string.format("[%s healing", nTotal)
-		if (sStat or "") ~= "" then
-			msgLong.text = string.format("%s %s", msgLong.text, sStat)
-		end
-		msgLong.text = string.format("%s]", msgLong.text)
+		msgShort.text = string.format("[heal %s]", nTotal);
+		msgLong.text = string.format("[heal %s]", nTotal);
 		
 	else
 		msgShort.icon = "roll_damage";
 		msgLong.icon = "roll_damage";
 
-		if sDamageType then
+		if (sDamageType or "") ~= "" then
+			msgShort.text = string.format("[%s %s damage]", nTotal, sDamageType);
 			msgLong.text = string.format("[%s %s damage]", nTotal, sDamageType);
 		else
+			msgShort.text = string.format("[%s damage]", nTotal);
 			msgLong.text = string.format("[%s damage]", nTotal);
 		end
 	end
 
-	msgLong.text = string.format("%s ->", msgLong.text);
 	if rTarget then
-		msgLong.text = string.format("%s [to %s", msgLong.text, ActorManager.getDisplayName(rTarget));
+		msgShort.text = string.format("%s -> [to %s", msgShort.text, ActorManager.getDisplayName(rTarget));
+		msgLong.text = string.format("%s -> [to %s", msgLong.text, ActorManager.getDisplayName(rTarget));
 	end
 
 	if ActorManager.isPC(rTarget) and (sStat or "") ~= "" then
+		msgShort.text = string.format("%s's %s", msgShort.text, sStat);
 		msgLong.text = string.format("%s's %s", msgLong.text, sStat);
 	end
+
+	msgShort.text = msgShort.text .. "]";
 	msgLong.text = msgLong.text .. "]";
-	msgShort.text = msgLong.text;
 	
 	if #aNotifications > 0 then
 		msgLong.text = string.format("%s %s", msgLong.text, table.concat(aNotifications, " "));

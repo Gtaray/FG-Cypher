@@ -23,7 +23,9 @@ function addInfoDB(nodeChar, sClass, sRecord)
 		return false;
 	end
 	
-	if sClass == "type" then
+	if sClass == "ability" then
+		CharAbilityManager.addAbilityDrop(nodeChar, sClass, sRecord);
+	elseif sClass == "type" then
 		CharTypeManager.addTypeDrop(nodeChar, sClass, sRecord);
 	elseif sClass == "descriptor" then
 		CharDescriptorManager.addDescriptorDrop(nodeChar, sClass, sRecord);
@@ -236,6 +238,7 @@ function addItemAsWeapon(itemnode)
 	DB.setValue(attacknode, "modifier", "number", ItemManagerCypher.getWeaponModifier(itemnode));
 	DB.setValue(attacknode, "damage", "number", ItemManagerCypher.getWeaponDamage(itemnode));
 	DB.setValue(attacknode, "damagestat", "string", ItemManagerCypher.getWeaponDamageStat(itemnode));
+	DB.setValue(attacknode, "damagetype", "string", ItemManagerCypher.getWeaponDamageType(itemnode));
 
 	local nPiercing = ItemManagerCypher.getWeaponPiercing(itemnode);
 	if nPiercing >= 0 then
@@ -321,52 +324,6 @@ function updateCyphers(nodeChar)
 	end
 
 	DB.setValue(nodeChar, "cypherload", "number", nCypherTotal);
-end
-
--------------------------------------------------------------------------------
--- TYPE, DESCRIPTOR, FOCUS, ABILITIES
--------------------------------------------------------------------------------
-function addTypeToCharater(nodeChar, nodeType)
-	if not nodeChar then return false end
-	if not nodeType then return false end
-
-	local sTypeName = DB.getValue(nodeType, "name", "");
-	
-	DB.setValue(nodeChar, "class.type", "string", sTypeName);
-	DB.setValue(nodeChar, "class.typelink", "windowreference", "type", DB.getPath(nodeType));
-end
-
-function addDescriptorToCharater(nodeChar, nodeDescriptor)
-	if not nodeChar then return false end
-	if not nodeDescriptor then return false end
-
-	local sDescName = DB.getValue(nodeDescriptor, "name", "");
-	
-	DB.setValue(nodeChar, "class.descriptor", "string", sDescName);
-	DB.setValue(nodeChar, "class.descriptorlink", "windowreference", "descriptor", DB.getPath(nodeDescriptor));
-end
-
-function addFocusToCharater(nodeChar, nodeFocus)
-	if not nodeChar then return false end
-	if not nodeFocus then return false end
-
-	local sFocusName = DB.getValue(nodeFocus, "name", "");
-	
-	DB.setValue(nodeChar, "class.descriptor", "string", sFocusName);
-	DB.setValue(nodeChar, "class.descriptorlink", "windowreference", "focus", DB.getPath(nodeFocus));
-end
-
-function addAbilityToCharacter(nodeChar, nodeAbility)
-	if not nodeChar then return false end
-	if not nodeAbility then return false end
-
-	local abilityList = DB.getChild(nodeChar, "abilitylist");
-	if not abilityList then return false end;
-
-	local newNode = DB.createChild(abilityList);
-	DB.copyNode(nodeAbility, newNode);
-
-	return true;
 end
 
 -------------------------------------------------------------------------------

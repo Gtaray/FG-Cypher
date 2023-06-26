@@ -33,7 +33,7 @@
 						local rAction = {};
 						rAction.sStat = "speed";
 						rAction.sTraining, rAction.nAssets, rAction.nModifier = ActorManagerCypher.getInitiative(rActor);
-						ActionInit.performRoll(draginfo, rActor, rAction);
+						ActionInit.payCostAndRoll(draginfo, rActor, rAction);
 					end
 
 					function onButtonPress(x, y)
@@ -244,14 +244,14 @@
 			</list_text>
 			<scrollbar>
 				<anchored to="abilitylist" />
-				<target>abilitylist</target>
+				<edittarget>abilitylist</edittarget>
 			</scrollbar>
 			<button_iedit name="abilitylist_iedit">
 				<anchored to="abilitylist" position="aboveleft" offset="0,0" />
 			</button_iedit>
 			<button_iadd name="abilitylist_iadd">
 				<anchored to="abilitylist_iedit" position="righthigh" offset="0,0" />
-				<target>abilitylist</target>
+				<edittarget>abilitylist</edittarget>
 			</button_iadd>
 		</sheetdata>
 	</windowclass>

@@ -12,17 +12,6 @@ function onClose()
 	OptionsManager.unregisterCallback("HRXP", onXPOptionChanged);
 end
 
-function onDrop(x, y, draginfo)
-	if draginfo.isType("shortcut") then
-		local sClass, sRecord = draginfo.getShortcutData();
-
-		if StringManager.contains({"type", "descriptor", "focus", "flavor", "ancestry"}, sClass) then
-			CharManager.addInfoDB(getDatabaseNode(), sClass, sRecord);
-			return true;
-		end
-	end
-end
-
 function onXPOptionChanged()
 	local bSeparateXP = OptionsManager.isOption("HRXP", "on");
 	

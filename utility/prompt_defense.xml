@@ -114,10 +114,7 @@
 			<button_text name="roll">
 				<script>
 					function onButtonPress()
-						local bRolled = window.roll();
-						if bRolled then
-							window.closeWindow();
-						end
+						window.roll();
 					end
 				</script>
 				<anchored height="22" width="160">

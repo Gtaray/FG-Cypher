@@ -1,14 +1,38 @@
 OOB_MSG_TYPE_INITIATEDEFPRMOPT = "initiatedefprompt";
 OOB_MSGTYPE_PROMPTDEFENSE = "promptdefense";
-OOB_MSGTYPE_PROMPTCOST = "promptcost";
 
 function onInit()
 	OOBManager.registerOOBMsgHandler(OOB_MSG_TYPE_INITIATEDEFPRMOPT, handleInitiateDefensePrompt);
 	OOBManager.registerOOBMsgHandler(OOB_MSGTYPE_PROMPTDEFENSE, handlePromptDefenseRoll);
-	-- OOBManager.registerOOBMsgHandler(OOB_MSGTYPE_PROMPTCOST, handlePromptCost);
 end
 
--- We need a double OOB here so that the GM is the one sending out the defense prompt OOB
+function getUser(rPlayer)
+	for _,sIdentity in pairs(User.getAllActiveIdentities()) do
+		local sName = User.getIdentityLabel(sIdentity);
+		if sName == rPlayer.sName then
+			return User.getIdentityOwner(sIdentity)
+		end
+	end
+end
+
+-------------------------------------------------------------------------------
+-- DEFENSE PROMPT
+-------------------------------------------------------------------------------
+
+-- This is used when a PC is prompted to make a defense roll
+-- Since we only want to close the window if the roll was completed
+function closeDefensePromptWindow(rSource)
+	if not DB.isOwner(ActorManager.getCreatureNodeName(rSource)) then
+		return;
+	end
+
+	for _, w in ipairs(Interface.getWindows("prompt_defense")) do
+		w.close();
+	end
+end
+
+-- We need a double OOB here so that the GM is the one sending out the 
+-- defense prompt OOB
 function initiateDefensePrompt(rSource, rPlayer, rResult)
 	local msgOOB = {};
 	msgOOB.type = OOB_MSG_TYPE_INITIATEDEFPRMOPT;
@@ -32,7 +56,7 @@ function handleInitiateDefensePrompt(msgOOB)
 	-- if there's no user, then auto-roll
 	if sUser == nil then
 		local rAction = getActionFromOobMsg(msgOOB);
-		ActionDefense.performRoll(nil, rPlayer, rAction);
+		ActionDefense.payCostAndRoll(nil, rPlayer, rAction);
 	end
 
 	-- Change the type and forward the OOB msg
@@ -43,12 +67,6 @@ end
 function promptDefenseRoll(rSource, rPlayer, rResult)
 	-- Gets the username of the player who owns rPlayer
 	local sUser = getUser(rPlayer);
-
-	-- ADD THIS BACK IN ONCE TESTING IS COMPLETE
-	-- This is only here so I can test as a GM
-	-- if sUser == nil then
-	-- 	return false;
-	-- end
 
 	local msgOOB = {};
 	msgOOB.type = OOB_MSGTYPE_PROMPTDEFENSE;
@@ -72,7 +90,7 @@ function handlePromptDefenseRoll(msgOOB)
 		window.setData(rSource, rTarget, sStat, nDifficulty);
 	else
 		local rAction = getActionFromOobMsg(rSource, rTarget, msgOOB);
-		ActionDefense.performRoll(nil, rTarget, rAction);
+		ActionDefense.payCostAndRoll(nil, rTarget, rAction);
 	end
 end
 
@@ -85,24 +103,4 @@ function getActionFromOobMsg(rSource, rTarget, msgOOB)
 	rAction.label = StringManager.capitalize(rAction.sStat);
 
 	return rAction
-end
-
-function promptCostWindow(rSource, vTarget, rRolls)
-	-- Don't use an OOB for this because we always want the prompt to happen on the client
-	-- that clicks the action button
-	if rSource and #rRolls > 0 then
-		local window = Interface.openWindow("cost_prompt", "");
-		window.setData(rSource, vTarget, rRolls);
-	end
-	
-	return true;
-end
-
-function getUser(rPlayer)
-	for _,sIdentity in pairs(User.getAllActiveIdentities()) do
-		local sName = User.getIdentityLabel(sIdentity);
-		if sName == rPlayer.sName then
-			return User.getIdentityOwner(sIdentity)
-		end
-	end
 end

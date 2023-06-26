@@ -246,7 +246,7 @@
 			<script>
 				function onInit()
 					super.onInit();
-					addItems({ "", "Might", "Speed", "Intellect" });
+					addItems({ "", "Might", "Speed", "Intellect", "Flex" });
 				end
 				function onValueChanged()
 					window.onPropertyChanged();

@@ -130,7 +130,7 @@
 			</header_column>
 			<button_iedit name="actions_iedit">
 				<anchored to="header_actions" position="righthigh" offset="-20,0" />
-				<target>actions</target>
+				<edittarget>actions</edittarget>
 			</button_iedit>
 			<button_iadd name="actions_iadd">
 				<anchored to="actions_iedit" position="lefthigh" offset="5,0" />
@@ -158,6 +158,7 @@
 					<top offset="2" />
 					<right parent="rightanchor" anchor="left" relation="relative" offset="-5" />
 				</anchored>
+				<editmode>actions_iedit</editmode>
 			</button_idelete>
 			<button_poweritem_toggle_actions name="activatedetail">
 				<anchored>
@@ -184,23 +185,48 @@
 				<empty textres="npc_empty_powername" />
 			</stringfield>
 			
+			<!-- This is being phased out and replaced with a formatted string control -->
 			<basicstring name="desc">
+				<script>
+					function onInit()
+						if (getValue() or "") == "" then
+							return;
+						end
+
+						window.description.setValue(getValue());
+						setValue("");
+					end
+				</script>
 				<anchored to="name" position="belowleft" offset="0,5">
 					<right parent="" offset="-5" />
 				</anchored>
 				<multilinespacing>20</multilinespacing>
-				<!-- <script file="campaign/scripts/npc_action.lua" /> -->
+				<invisible />
 			</basicstring>
+
+			<basicft name="description">
+				<anchored to="name" position="belowleft" offset="0,5">
+					<right parent="" offset="-5" />
+				</anchored>
+				<multilinespacing>20</multilinespacing>
+			</basicft>
 
 			<list_poweraction name="actions">
 				<anchored>
-					<top parent="desc" anchor="bottom" relation="relative" offset="5" />
+					<top parent="description" anchor="bottom" relation="relative" offset="5" />
 					<left offset="20" />
 					<right offset="-20" />
 				</anchored>
+				<class>npc_power_action</class>
 				<invisible />
 			</list_poweraction>
 		</sheetdata>
+	</windowclass>
+
+	<!-- Entry in a power_item's list_poweraction list -->
+	<windowclass name="npc_power_action" copy="power_action">
+		<!-- Don't need to add anything, this is just here because it needs
+		to be distinct from the PC entry -->
 	</windowclass>
 
 	<windowclass name="npc_notes">

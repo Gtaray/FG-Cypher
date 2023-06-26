@@ -80,4 +80,31 @@
 			</button_modifierkey>
 		</sheetdata>
 	</windowclass>
+
+	<template name="characterlist_entry" merge="join">
+		<genericcontrol>
+			<script>
+				local fSetMenuItems
+				function onInit()
+					fSetMenuItems = super.setMenuItems;
+					super.setMenuItems = setMenuItems;
+				end
+				function setMenuItems(sIdentity)
+					fSetMenuItems(sIdentity);	
+
+					if Session.IsHost then
+						IntrusionManager.registerIntrusionMenu(self);
+					end
+				end
+				function onMenuSelection(selection, subselection)
+					if Session.IsHost and selection == 7 then
+						local rActor = ActorManager.resolveActor(self.getIdentityPath());
+						IntrusionManager.handleMenuSelection(selection, rActor);
+						return;
+					end
+					super.onMenuSelection(selection, subselection);
+				end
+			</script>
+		</genericcontrol>
+	</template>
 </root>

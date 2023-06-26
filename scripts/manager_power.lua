@@ -430,26 +430,26 @@ function performAction(node, tData)
 
 	if rAction.type == "stat" then
 		if bPC then
-			ActionStat.performRoll(draginfo, rActor, rAction);
+			ActionStat.payCostAndRoll(draginfo, rActor, rAction);
 		else
 			Comm.addChatMessage({ text = "This action is not available for NPCs.", font = "systemfont" });
 		end
 
 	elseif rAction.type == "attack" then
 		if bPC then
-			ActionAttack.performRoll(draginfo, rActor, rAction);
+			ActionAttack.payCostAndRoll(draginfo, rActor, rAction);
 		else
 			ActionDefenseVs.performRoll(draginfo, rActor, rAction);
 		end
 		
 	elseif rAction.type == "damage" then
-		ActionDamage.performRoll(draginfo, rActor, rAction);
+		ActionDamage.payCostAndRoll(draginfo, rActor, rAction);
 		
 	elseif rAction.type == "heal" then
-		ActionHeal.performRoll(draginfo, rActor, rAction);
+		ActionHeal.payCostAndRoll(draginfo, rActor, rAction);
 		
 	elseif rAction.type == "effect" then
-		ActionEffect.performRoll(draginfo, rActor, rAction);
+		ActionEffectCypher.payCostAndRoll(draginfo, rActor, rAction);
 	end
 
 	return true;

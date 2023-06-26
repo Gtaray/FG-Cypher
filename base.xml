@@ -45,6 +45,7 @@
 	<includefile source="campaign/record_char_actions_attack.xml" />
 	<includefile source="campaign/record_char_actions_power.xml" />
 	<includefile source="campaign/record_char_modification.xml" />
+	<includefile source="campaign/record_char_tracker.xml" />
 	<includefile source="campaign/record_power_roll_stat.xml" />
 	<includefile source="campaign/record_power_roll_attack.xml" />
 	<includefile source="campaign/record_power_roll_damage.xml" />
@@ -78,18 +79,24 @@
 	<!-- Utility windows -->
 	<includefile source="utility/prompt_defense.xml" />
 	<includefile source="utility/options_damagetypes.xml" />
+	<includefile source="utility/prompt_gm_intrusion.xml" />
+	<includefile source="utility/select_dialog_char.xml" />
+	<includefile source="utility/select_dialog_stats.xml" />
+	<includefile source="utility/select_dialog_templates.xml" />
 
 	<!-- High-level scripts -->
 	<script name="GameSystem" file="scripts/manager_gamesystem.lua" />
 	<script name="OptionsManagerCypher" file="scripts/data_options_cyphersystem.lua" />
 	
 	<script name="CharManager" file="scripts/manager_char.lua" />
+	<script name="CharAbilityManager" file="scripts/manager_char_ability.lua" />
 	<script name="CharTypeManager" file="scripts/manager_char_type.lua" />
 	<script name="CharDescriptorManager" file="scripts/manager_char_descriptor.lua" />
 	<script name="CharFocusManager" file="scripts/manager_char_focus.lua" />
 	<script name="CharAncestryManager" file="scripts/manager_char_ancestry.lua" />
 	<script name="CharFlavorManager" file="scripts/manager_char_flavor.lua" />
-	<script name="CharModificationManager" file="scripts/manager_char_modification.lua" />
+	<script name="CharModManager" file="scripts/manager_char_modification.lua" />
+	<script name="CharTrackerManager" file="scripts/manager_char_tracker.lua" />
 
 	<script name="ActorManagerCypher" file="scripts/manager_actor_cypher.lua" />
 	<script name="EffectManagerCypher" file="scripts/manager_effect_cypher.lua" />
@@ -101,6 +108,7 @@
 	<script name="PromptManager" file="scripts/manager_prompt.lua" />
 	<script name="DamageTypeManager" file="scripts/manager_damage_types.lua" />
 	<script name="DifficultyManager" file="scripts/manager_difficulty.lua" />
+	<script name="IntrusionManager" file="scripts/manager_intrusion.lua" />
 
 	<script name="ActionGeneral" file="scripts/manager_action_general.lua" />
 	<script name="ActionStat" file="scripts/manager_action_stat.lua" />
@@ -112,4 +120,6 @@
 	<script name="ActionInit" file="scripts/manager_action_init.lua" />
 	<script name="ActionRecovery" file="scripts/manager_action_recovery.lua" />
 	<script name="ActionHeal" file="scripts/manager_action_heal.lua" />
+	<script name="ActionCost" file="scripts/manager_action_cost.lua" />
+	<script name="ActionEffectCypher" file="scripts/manager_action_effect_cypher.lua" />
 </root>

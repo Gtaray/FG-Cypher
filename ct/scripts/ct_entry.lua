@@ -8,6 +8,19 @@ function onInit()
 	self.onHealthChanged();
 end
 
+function onFirstLayout()
+	if self.isPC() then
+		IntrusionManager.registerIntrusionMenu(self);
+	end
+end
+
+function onMenuSelection(selection)
+	if self.isPC() then
+		local rActor = ActorManager.resolveActor(getDatabaseNode());
+		IntrusionManager.handleMenuSelection(selection, rActor);
+	end
+end
+
 function onLinkChanged()
 	super.onLinkChanged();
 	

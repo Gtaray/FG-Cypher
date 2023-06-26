@@ -202,6 +202,19 @@
 				<description field="focus" />
 				<target>focus</target>
 			</linkfield_char_detail>
+
+			<button_details name="button_tracker">
+				<anchored to="characterframe">
+					<top offset="10" />
+					<right offset="-10" />
+				</anchored>
+				<tooltip textres="char_tooltip_tracker" />
+				<script>
+					function onButtonPress()
+						Interface.openWindow("charsheet_tracker", window.getDatabaseNode());
+					end
+				</script>
+			</button_details>
 			
 			<!-- STATS -->
 			<frame_char name="mightframe">
@@ -496,37 +509,6 @@
 			<basicnumber name="recoveryrollmod">
 				<anchored to="recoveryrollplus" position="righthigh" offset="7,0" width="20" height="20" />
 			</basicnumber>
-
-			<!-- <frame_char name="skillframe">
-				<bounds>165,50,-29,360</bounds>
-			</frame_char>
-			<label_frametop>
-				<anchored to="skillframe" />
-				<static textres="char_label_skills" />
-			</label_frametop>
-			<list_text name="skills">
-				<anchored to="skillframe">
-					<left offset="10" />
-					<top offset="30" />
-					<right offset="-20" />
-					<bottom offset="-10" />
-				</anchored>
-				<datasource>.skilllist</datasource>
-				<class>char_skill</class>
-				<sortby><field>name</field></sortby>
-			</list_text>
-			<scrollbar>
-				<anchored to="skills" />
-				<target>skills</target>
-			</scrollbar>
-			<button_iedit name="skills_iedit">
-				<anchored to="skills" position="aboveright" offset="5,0" />
-				<target>skills</target>
-			</button_iedit>
-			<button_iadd name="skills_iadd">
-				<anchored to="skills_iedit" position="lefthigh" offset="5,0" />
-				<target>skills</target>
-			</button_iadd> -->
 		</sheetdata>
 	</windowclass>
 
@@ -621,7 +603,7 @@
 			</button_decrease>
 
 			<!-- Speed Controls -->
-			<label_column name="label_might">
+			<label_column name="label_speed">
 				<static textres="speed" />
 			</label_column>
 			<number_column name="speed_current" source="abilities.speed.current">
@@ -644,7 +626,7 @@
 			</button_decrease>
 
 			<!-- Intellect Controls -->
-			<label_column name="label_might">
+			<label_column name="label_intellect">
 				<static textres="intellect" />
 			</label_column>
 			<number_column name="intellect_current" source="abilities.intellect.current">

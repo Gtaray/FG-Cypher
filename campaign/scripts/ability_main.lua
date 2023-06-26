@@ -3,13 +3,15 @@ function onInit()
 end
 
 function update()
-	local bReadOnly = WindowManager.getReadOnlyState(getDatabaseNode());
+	local node = getDatabaseNode();
+	local bReadOnly = WindowManager.getReadOnlyState(node);
 	local bAction = usetype.getValue() == "Action";
 	local bHasCost = cost.getValue() ~= 0 and coststat.getValue() ~= "-";
 	local bShowCost = bAction and (bHasCost or not bReadOnly);
 	local bHasType = type.getValue() ~= "";
 	local bHasRecharge = period.getValue() ~= "-";
 	local bHasUseType = usetype.getValue() ~= "-";
+	local bRef = StringManager.startsWith(DB.getPath(node), "ability");
 
 	WindowManager.callSafeControlUpdate(self, "type", bReadOnly, not bHasType and bReadOnly)
 
@@ -19,6 +21,10 @@ function update()
 	usetype.setVisible(bHasUseType or not bReadOnly);
 	usetype_label.setReadOnly(bReadOnly);
 	usetype_label.setVisible(bHasUseType or not bReadOnly);
+	selectlimit.setReadOnly(bReadOnly);
+	selectlimit.setVisible(bRef)
+	selectlimit_label.setReadOnly(bReadOnly);
+	selectlimit_label.setVisible(bRef)
 
 	useequipped.setReadOnly(bReadOnly);
 	useequipped.setVisible(bAction and (bHasType or not bReadonly));

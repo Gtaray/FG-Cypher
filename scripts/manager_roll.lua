@@ -12,6 +12,49 @@ function registerDifficultyPanel(w)
 	_panelWindow = w;
 	self.resetDifficultyPanel();
 end
+
+function getEffortFromDifficultyPanel(bRetain)
+	if not _panelWindow then
+		return 0;
+	end
+
+	local nEffort = _panelWindow.effort.getValue();
+
+	if not bRetain then
+		_panelWindow.effort.setValue(0);
+	end
+
+	return nEffort;
+end
+
+function getAssetsFromDifficultyPanel(bRetain)
+	if not _panelWindow then
+		return 0;
+	end
+
+	local nAssets = _panelWindow.assets.getValue();
+
+	if not bRetain then
+		_panelWindow.assets.setValue(0);
+	end
+
+	return nAssets;
+end
+
+function isEdgeDisabled(bRetain)
+	if not _panelWindow then
+		return false;
+	end
+
+	local bDisableEdge = (_panelWindow.disableedge.getValue() == 1);
+
+	if not bRetain then
+		_panelWindow.disableedge.setValue(0);
+	end
+
+	return bDisableEdge;
+end
+
 function resetDifficultyPanel()
 	if not _panelWindow then
 		return;
@@ -257,6 +300,7 @@ function resolveDifficultyModifier(sTraining, nAssets, nLevel, nMod)
 	return nDifficulty, nFinalMod;
 end
 
+-- TODO: REMOVE
 function resolveStatUsedForCost(rAction)
 	-- if cost.sStat is already set, then don't do anything
 	if (rAction.sCostStat or "") ~= "" then
@@ -357,12 +401,16 @@ function processAssets(rSource, rTarget, aFilter, nAssets)
 	local nAssetEffect = EffectManagerCypher.getEffectsBonusByType(rSource, "ASSET", aFilter, rTarget)
 	local nMaxAssets = ActorManagerCypher.getMaxAssets(rSource, aFilter);
 
-	return math.min(nAssetEffect, nMaxAssets - nAssets);
+	return math.min(nAssetEffect, nMaxAssets - nAssets), nMaxAssets;
 end
 
-function processEffort(rSource, rTarget, aFilter, nEffort)
+function processEffort(rSource, rTarget, aFilter, nEffort, nMaxEffort)
 	local nEffortEffect = EffectManagerCypher.getEffectsBonusByType(rSource, "EFFORT", aFilter, rTarget)
-	local nMaxEffort = ActorManagerCypher.getMaxEffort(rSource, aFilter);
+
+	if not nMaxEffort then
+		nMaxEffort = ActorManagerCypher.getMaxEffort(rSource, aFilter);
+	end
+
 	return math.min(nEffortEffect, nMaxEffort - nEffort);
 end
 
@@ -387,11 +435,23 @@ function processStandardConditions(rSource, rTarget, sStat)
 	if EffectManager.hasCondition(rTarget, "Dazed") or 
 		(sStat == "might" and EffectManager.hasCondition(rTarget, "Staggered")) or
 		(sStat == "speed" and EffectManager.hasCondition(rTarget, "Frostbitten")) or
-		(sStat == "intellect" and EffectManager.hasCondition(rTarget, "Confused"))then
+		(sStat == "intellect" and EffectManager.hasCondition(rTarget, "Confused")) then
 		nLevelAdjust = nLevelAdjust - 1;
 	end
 
 	return nLevelAdjust;
+end
+
+function processStandardConditionsForActor(rActor)
+	-- Dazed and Stunned don't stack with the other conditions
+	if EffectManager.hasCondition(rSource, "Dazed") or 
+	   EffectManager.hasCondition(rSource, "Stunned") or
+	   (sStat == "might" and EffectManager.hasCondition(rSource, "Staggered")) or
+	   (sStat == "speed" and (EffectManager.hasCondition(rSource, "Frostbitten") or EffectManager.hasCondition(rSource, "Slowed"))) or
+	   (sStat == "intellect" and EffectManager.hasCondition(rSource, "Confused")) then
+		return 1;
+	end
+	return 0;
 end
 
 function processPiercing(rSource, rTarget, bPiercing, nPierceAmount, aFilter)
@@ -451,6 +511,64 @@ function processRollSuccesses(rSource, rTarget, rRoll, rMessage, aAddIcons)
 	end
 
 	return bSuccess, bAutomaticSuccess, nSuccess;
+end
+
+function calculateDifficultyForRoll(rSource, rTarget, rRoll)
+	local nMod = 0;
+
+	-- Start by modifying the difficulty based on the PC's properties
+	if rRoll.sTraining == "trained" then
+		nMod = nMod - 1;
+	elseif rRoll.sTraining == "specialized" then
+		nMod = nMod - 2;
+	elseif rRoll.sTraining == "inability" then
+		nMod = nMod + 1;
+	end
+
+	nMod = nMod - (rRoll.nEffort or 0);
+	nMod = nMod - (rRoll.nAssets or 0);
+	nMod = nMod - (rRoll.nEase or 0);
+	nMod = nMod + (rRoll.nHinder or 0);
+	nMod = nMod + (rRoll.nConditionMod or 0);
+
+	if rRoll.bLightWeapon then
+		nMod = nMod - 1;
+	end
+
+	-- Modify based on target's conditions
+	nMod = nMod - RollManager.processStandardConditionsForActor(rTarget)
+
+	rRoll.nDifficulty = rRoll.nDifficulty + nMod;
+end
+
+function processRollResult(rSource, rTarget, rRoll)
+	local bSuccess = false;
+	local bAutomaticSuccess = false;
+	local nSuccess = 0;
+	local bPvP = ActorManager.isPC(rSource) and ActorManager.isPC(rTarget);
+
+	local nDifficulty = tonumber(rRoll.nDifficulty) or 0;
+	
+	-- Calculate the total number of successes in this roll
+	-- We don't account for assets or effort here because assets were already
+	-- used to adjust the difficulty in the calculateDifficultyForRoll function
+	local nTotal = ActionsManager.total(rRoll);
+	nSuccess = math.max(0, math.min(10, math.floor(nTotal / 3)));
+	
+	-- Only track success flags for non pvp rolls
+	if not bPvP then
+		nDifficulty = math.min(math.max(nDifficulty, 0), 10);
+
+		if nDifficulty == 0 then
+			bAutomaticSuccess = true;
+		end
+
+		if nSuccess >= nDifficulty then
+			bSuccess = true;
+		end
+	end
+
+	return nTotal, bSuccess, bAutomaticSuccess;
 end
 
 function updateRollMessageIcons(rMessage, aAddIcons, sFirstIcon)
@@ -557,11 +675,22 @@ function decodeStat(rRoll, bPersist)
 		"%[STAT: (%w-)%]",
 		bPersist
 	);
+
 	-- If there's no stat found with the STAT tag
 	-- Then look for it in the parenthesis in the roll type tag
 	if (sStat or "") == "" then
 		sStat = string.match(rRoll.sDesc, "^%[.-%s%((%w+),?%s?.-%)%]");
 	end
+
+	-- If sStat is still not found, we finally check rRoll.sLabel
+	if (sStat or "") == "" and (rRoll.sLabel or "") ~= "" then
+		if  rRoll.sLabel:lower() == "might" or
+			rRoll.sLabel:lower() == "speed" or 
+			rRoll.sLabel:lower() == "intellect" then
+			sStat = rRoll.sLabel:lower();
+		end
+	end
+
 	rRoll.sDesc = sText;
 
 	return (sStat or ""):lower();
@@ -635,7 +764,15 @@ function decodeTraining(rRoll, bPersist)
 		bPersist
 	);
 
-	return bInability, bTrained, bSpecialized;
+	if bInability then
+		return "inability";
+	elseif bTrained then
+		return "trained";
+	elseif bSpecialized then
+		return "specialized";
+	end
+
+	return "";
 end
 
 function encodeEdge(rAction, vRoll)
@@ -846,7 +983,7 @@ function decodePiercing(vRoll, bPersist)
 end
 
 function encodeAmbientDamage(rAction, rRoll)
-	if rAction.bAmbient then
+	if rAction.bAmbient == true then
 		-- Place the text in the roll description
 		rRoll.sDesc = RollManager.addOrOverwriteText(
 			rRoll.sDesc,
@@ -965,6 +1102,16 @@ function decodeEffects(rRoll, bPersist)
 		rRoll.sDesc,
 		"%[EFFECTS:%s-[+-]?%d+%]",
 		"%[EFFECTS:%s-+?([-]?d-)%]",
+		bPersist
+	);
+
+	return nResult;
+end
+function decodeConditionMod(rRoll, bPersist)
+	local nResult, sText = RollManager.decodeTextAsNumber(
+		rRoll.sDesc,
+		"%[EFFECTS%s-[+-]?%d+%]",
+		"%[EFFECTS%s-+?([-]?d-)%]",
 		bPersist
 	);
 
