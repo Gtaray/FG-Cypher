@@ -365,6 +365,17 @@ function resolveTraining(nTraining)
 	end
 end
 
+function convertTrainingStringToNumber(sTraining)
+	if sTraining == "trained" then
+		return 2;
+	elseif sTraining == "specialized" then
+		return 3;
+	elseif sTraining == "inability" then
+		return 0;
+	end
+	return 1;
+end
+
 -----------------------------------------------------------------------
 -- ROLL PROCESSING
 -----------------------------------------------------------------------
@@ -525,11 +536,11 @@ function calculateDifficultyForRoll(rSource, rTarget, rRoll)
 		nMod = nMod + 1;
 	end
 
-	nMod = nMod - (rRoll.nEffort or 0);
-	nMod = nMod - (rRoll.nAssets or 0);
-	nMod = nMod - (rRoll.nEase or 0);
-	nMod = nMod + (rRoll.nHinder or 0);
-	nMod = nMod + (rRoll.nConditionMod or 0);
+	nMod = nMod - (tonumber(rRoll.nEffort or "0"));
+	nMod = nMod - (tonumber(rRoll.nAssets or "0"));
+	nMod = nMod - (tonumber(rRoll.nEase or "0"));
+	nMod = nMod + (tonumber(rRoll.nHinder or "0"));
+	nMod = nMod + (tonumber(rRoll.nConditionMod or "0"));
 
 	if rRoll.bLightWeapon then
 		nMod = nMod - 1;

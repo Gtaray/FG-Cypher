@@ -72,7 +72,10 @@ function buildTier1AddTable(rAdd)
 			if DB.getValue(nodeability, "given", 0) == 1 then
 				table.insert(rAdd.aAbilitiesGiven, sRecord);
 			else	
-				table.insert(rAdd.aAbilityOptions, sRecord);
+				table.insert(rAdd.aAbilityOptions, {
+					nTier = 1,
+					sRecord = sRecord
+				});
 			end
 		end
 	end
@@ -178,14 +181,14 @@ function addStartingAbilities(rData)
 	local rActor = ActorManager.resolveActor(rData.nodeChar);
 
 	for _, sAbility in ipairs(rData.aAbilitiesGiven) do
-		CharTypeManager.addAbility(rData.nodeChar, sAbility);
+		CharTypeManager.addAbility(rData.nodeChar, sAbility, rData.sSourceName);
 	end
 end
 
-function addAbility(nodeChar, sAbilityRecord)
+function addAbility(nodeChar, sAbilityRecord, sSourceName)
 	local rMod = {
 		sLinkRecord = sAbilityRecord,
-		sSource = string.format("%s (Type)", StringManager.capitalize(rData.sSourceName))
+		sSource = string.format("%s (Type)", StringManager.capitalize(sSourceName))
 	}
 	rMod.sSummary = CharModManager.getAbilityModSummary(rMod)
 

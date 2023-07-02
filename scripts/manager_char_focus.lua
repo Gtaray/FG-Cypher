@@ -30,7 +30,10 @@ function buildTier1AddTable(rAdd)
 			if DB.getValue(nodeability, "given", 0) == 1 then
 				table.insert(rAdd.aAbilitiesGiven, sRecord);
 			else	
-				table.insert(rAdd.aAbilityOptions, sRecord);
+				table.insert(rAdd.aAbilityOptions, {
+					nTier = 1,
+					sRecord = sRecord,
+				});
 			end
 		end
 	end
@@ -50,7 +53,7 @@ function applyTier1(rData)
 	DB.setValue(rData.nodeChar, "class.focuslink", "windowreference", rData.sSourceClass, DB.getPath(rData.nodeSource));
 
 	-- Give starting abilities
-	CharTypeManager.addStartingAbilities(rData);
+	CharFocusManager.addStartingAbilities(rData);
 end
 
 function addStartingAbilities(rData)

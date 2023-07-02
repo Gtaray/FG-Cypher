@@ -101,6 +101,7 @@ end
 
 function onRoll(rSource, rTarget, rRoll)
 	rTarget = RollManager.decodeTarget(rRoll, rTarget);
+	rRoll.bLightWeapon = rRoll.sDesc:match("%[LIGHT%]") ~= nil;
 
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 	rMessage.icon = "action_attack";

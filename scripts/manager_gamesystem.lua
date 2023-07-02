@@ -3,6 +3,14 @@
 -- attribution and copyright information.
 --
 
+-- Has to be defined before the table
+function getAbilityTypeValue(vNode)
+	if not vNode then
+		return {};
+	end
+	return StringManager.split(DB.getValue(vNode, "type", ""), ",", true);
+end
+
 -- Ruleset action types
 actions = {
 	["dice"] = { bUseModStack = "true" },
@@ -40,7 +48,7 @@ aRecordOverrides = {
 		sRecordDisplayClass = "ability",
 		sSidebarCategory = "create",
 		aCustomFilters = {
-			["Type"] = { sField = "type" },
+			["Type"] = { sField = "type", fGetValue = getAbilityTypeValue },
 			["Use"] = { sField = "usetype" }
 		}
 	},
@@ -80,9 +88,7 @@ currencies = { };
 currencyDefault = nil;
 
 function onInit()
-	for kRecordType,vRecordType in pairs(aRecordOverrides) do
-		LibraryData.overrideRecordTypeInfo(kRecordType, vRecordType);
-	end
+	LibraryData.overrideRecordTypes(aRecordOverrides);
 end
 
 function getCharSelectDetailHost(nodeChar)

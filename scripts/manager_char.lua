@@ -74,6 +74,14 @@ function takeAbilityAdvancement(nodeChar)
 		return;
 	end
 
+	local rData = {
+		nodeChar = nodeChar,
+		nFloatingStats = 4,
+	};
+
+	local w = Interface.openWindow("select_dialog_advancement", "");
+	w.setData("stats", rData);
+
 	CharManager.takeAdvancement(nodeChar, "increase their stat pools");
 end
 
@@ -81,6 +89,12 @@ function takeEdgeAdvancement(nodeChar)
 	if not nodeChar then
 		return;
 	end
+
+	local rData = {
+		nodeChar = nodeChar
+	};
+	local w = Interface.openWindow("select_dialog_advancement", "");
+	w.setData("edge", rData);
 
 	CharManager.takeAdvancement(nodeChar, "increase their edge");
 end
@@ -90,6 +104,13 @@ function takeEffortAdvancement(nodeChar)
 		return;
 	end
 
+	local rData = {
+		nodeChar = nodeChar
+	};
+
+	local w = Interface.openWindow("select_dialog_advancement", "");
+	w.setData("effort", rData);
+
 	CharManager.takeAdvancement(nodeChar, "increase their effort");
 end
 
@@ -98,13 +119,17 @@ function takeSkillAdvancement(nodeChar)
 		return;
 	end
 
+	local rData = {
+		nodeChar = nodeChar
+	};
+
+	local w = Interface.openWindow("select_dialog_advancement", "");
+	w.setData("skill", rData);
+
 	CharManager.takeAdvancement(nodeChar, "gain training in a skill");
 end
 
 function takeAdvancement(nodeChar, sMessage)
-	if not OptionsManagerCypher.areExperimentalFeaturesEnabled() then
-		return;
-	end
 	if not nodeChar then
 		return;
 	end
@@ -158,8 +183,7 @@ function sendAdvancementMessage(nodeChar, sMessageResource, sMessage)
 				sMessageResource), 
 				sName, 
 				sMessage),
-		font = "msgfont",
-		sender = User.getIdentityLabel(sSender)
+		font = "msgfont"
 	};
 
 	Comm.deliverChatMessage(rMessage);

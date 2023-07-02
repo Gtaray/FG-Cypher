@@ -372,6 +372,7 @@
 	<string name="char_mod_header_effort">Effort</string>
 	<string name="char_mod_header_item">Item</string>
 	<string name="char_mod_header_cypher">Cypher Limit</string>
+	<string name="char_mod_header_armoreffortcost">Armor Effort Penalty</string>
 
 	<string name="char_mod_label_stat">Stat</string>
 	<string name="char_mod_label_skill">Skill</string>
@@ -485,10 +486,36 @@
 	<string name="label_dialog_abilities_remaining">Abilities Remaining</string>
 	<string name="label_dialog_abilities_multiple">Take Multiple Times</string>
 	<string name="tooltip_dialog_abilities_multiple">This ability can be selected multiple times. How many times would you like to take it?</string>
+	<string name="label_dialog_abilities_tier">Tier %s</string>
 
 	<string name="header_dialog_summary">Summary</string>
 	<string name="label_dialog_summary_stat_update">%s  -&gt;  %s</string>
 	<string name="label_dialog_summary_abilities">Abilities</string>
+
+	<string name="header_dialog_effort">Effort</string>
+	<string name="label_dialog_effort">Effort</string>
+	<string name="summary_dialog_effort">%s -&gt; %s</string>
+
+	<string name="header_dialog_skill">Train in a Skill</string>
+	<string name="header_dialog_ability">Train in an Ability</string>
+	<string name="label_empty_skill">&#171; New Skill &#187;</string>
+
+	<string name="header_dialog_recovery">Recovery</string>
+	<string name="label_dialog_recovery">Bonus</string>
+	<string name="summary_dialog_recovery">%s -&gt; %s</string>
+
+	<string name="header_dialog_armor">Reduce Armor Effort Cost Penalty</string>
+	<string name="label_dialog_armor">Penalty</string>
+	<string name="summary_dialog_armor">%s -&gt; %s</string>
+
+	<string name="label_advancement_stats">Increase Stat Pools by 4</string>
+	<string name="label_advancement_edge">Increase one Edge by one</string>
+	<string name="label_advancement_effort">Increase Effort by 1</string>
+	<string name="label_advancement_skill">Train in a skill or ability</string>
+	<string name="label_advancement_ability">Select another ability from your Type</string>
+	<string name="label_advancement_recovery">Increase Recovery by 2</string>
+	<string name="label_advancement_armor">Reduce armor's Speed Effort cost by 1</string>
+	<string name="label_advancement_focus">Select another Focus ability at tier 3</string>
 
 	<!-- Desktop -->
 	<string name="diffadj_label_effort">Effort</string>

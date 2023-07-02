@@ -9,7 +9,8 @@ local aProperties = {
 	"Edge",
 	"Effort",
 	"Item",
-	"Cypher Limit"
+	"Cypher Limit",
+	"Armor Effort Penalty",
 }
 
 function onInit()
@@ -48,17 +49,19 @@ end
 
 function update()
 	local sProp = property.getSelectedValue();
-	local bStats = sProp == "Stat Pool";
-	local bSkill = sProp == "Skill";
-	local bDef = sProp == "Defense";
-	local bArmor = sProp == "Armor";
-	local bInit = sProp == "Initiative";
-	local bAbility = sProp == "Ability";
-	local bRec = sProp == "Recovery";
-	local bEdge = sProp == "Edge";
-	local bEffort = sProp == "Effort";
-	local bItem = sProp == "Item";
-	local bCypher = sProp == "Cypher Limit";
+	local bEmpty = (sProp or "") == "";
+	local bStats = not bEmpty and sProp == "Stat Pool";
+	local bSkill = not bEmpty and sProp == "Skill";
+	local bDef = not bEmpty and sProp == "Defense";
+	local bArmor = not bEmpty and sProp == "Armor";
+	local bInit = not bEmpty and sProp == "Initiative";
+	local bAbility = not bEmpty and sProp == "Ability";
+	local bRec = not bEmpty and sProp == "Recovery";
+	local bEdge = not bEmpty and sProp == "Edge";
+	local bEffort = not bEmpty and sProp == "Effort";
+	local bItem = not bEmpty and sProp == "Item";
+	local bCypher = not bEmpty and sProp == "Cypher Limit";
+	local bArmorEffortCost = not bEmpty and sProp == "Armor Effort Penalty";
 
 	stats_header.setVisible(bStats);
 	skills_header.setVisible(bSkill);
@@ -71,12 +74,13 @@ function update()
 	effort_header.setVisible(bEffort);
 	item_header.setVisible(bItem);
 	cypher_header.setVisible(bCypher);
+	armoreffortcost_header.setVisible(bArmorEffortCost);
 
 	updateCombobox("stat", not (bStats or bSkill or bDef or bEdge));
 	WindowManager.callSafeControlUpdate(self, "skill", false, not bSkill)
 	updateCombobox("training", not (bSkill or bDef or bInit));
 	WindowManager.callSafeControlUpdate(self, "asset", false, not (bSkill or bDef or bInit))
-	WindowManager.callSafeControlUpdate(self, "mod", false, bAbility or bItem)
+	WindowManager.callSafeControlUpdate(self, "mod", false, bEmpty or bAbility or bItem)
 	WindowManager.callSafeControlUpdate(self, "dmgtype", false, not bArmor);
 
 	-- Not using WindowManager.callSafeControlUpdate as that function

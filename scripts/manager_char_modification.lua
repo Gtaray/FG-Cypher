@@ -54,6 +54,10 @@ function addModificationToChar(rActor, vMod)
 
 	elseif rData.sProperty == "cypherlimit" then
 		CharModManager.applyCypherLimitModification(rActor, rData);
+
+	elseif rData.sProperty == "armoreffortpenalty" then
+		CharModManager.applyArmorEffortPenaltyModification(rActor, rData);
+		
 	end
 end
 
@@ -322,6 +326,15 @@ function applyCypherLimitModification(rActor, rData)
 	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
 end
 
+function applyArmorEffortPenaltyModification(rActor, rData)
+	local charnode = ActorManager.getCreatureNode(rActor);
+
+	CharModManager.applyModToModifierNode(charnode, "armorspeedcost", rData.nMod);
+
+	rData.sSummary = "Armor: " .. rData.sSummary;
+	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
+end
+
 -- 0 = inability, 1 - nothing, 2 = trained, 3 = specialized
 function applyModToTrainingNode(node, sPath, sTraining)
 	if (sTraining or "") == "" then
@@ -433,6 +446,11 @@ function getModificationData(modNode)
 	elseif rMod.sProperty == "Cypher Limit" then
 		rMod.sProperty = "cypherlimit"
 		rMod.nMod = DB.getValue(modNode, "mod", 0);
+
+	elseif rMod.sProperty == "Armor Effort Penalty" then
+		rMod.sProperty = "armoreffortpenalty";
+		rMod.nMod = DB.getValue(modNode, "mod", 0);
+		
 	end
 
 	return rMod;
@@ -476,6 +494,8 @@ function getCharacterModificationSummary(vMod)
 		return CharModManager.getAbilityModSummary(rMod);
 	elseif rMod.sProperty == "item" then
 		return CharModManager.getItemModSummary(rMod);
+	elseif rMod.sProperty == "armoreffortpenalty" then
+		return CharModManager.getArmorEffortPenaltySummary(rMod);
 	end
 
 	return "";
@@ -611,6 +631,16 @@ end
 
 function getItemModSummary(rMod)
 	return CharModManager.getAbilityModSummary(rMod);
+end
+
+function getArmorEffortPenaltySummary(rMod)
+	if not rMod then
+		return "";
+	end
+
+	return string.format("%s to Armor Effort Penalty", 
+		DiceManager.convertDiceToString({}, rMod.nMod or 0, true)
+	);
 end
 
 function getAssetModifierTrainingFormat(nAsset, nMod, sTraining)
