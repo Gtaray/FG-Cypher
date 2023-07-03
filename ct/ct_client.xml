@@ -38,6 +38,10 @@
 	<windowclass name="client_ct_entry" merge="join">
 		<script file="ct/scripts/clientct_entry.lua" />
 		<sheetdata>
+			<hnx name="mightmax" />
+			<hnx name="speedmax" />
+			<hnx name="intellectmax" />
+
 			<base_clientct_health name="healthbase" insertbefore="initresult" />
 			<string_clientct_status name="status" insertbefore="initresult" />
 			<number_clientct_intellectpool name="intellectpool" insertbefore="initresult" />

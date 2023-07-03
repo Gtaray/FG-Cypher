@@ -43,11 +43,13 @@
 	<!-- Options -->
 	<string name="option_label_INITPC">Init: PC</string>
 	<string name="option_label_INITNPC">Init: NPC</string>
-	<string name="option_label_EXPF">Enable Experimental Features</string>
+	<string name="option_label_MAXTARGET">Maximum Difficulty Level for Rolls</string>
 	<string name="option_label_HRXP">Hero Points (Intrusion XP)</string>
 
 	<string name="option_val_yes">Yes</string>
 	<string name="option_val_no">No</string>
+	<string name="option_val_maxtarget_10">10</string>
+	<string name="option_val_maxtarget_15">15</string>
 
 	<!-- Combat Tracker -->
 	<string name="ct_label_hp">Health</string>
@@ -71,6 +73,7 @@
 	<string name="ps_label_invtype">Type</string>
 	
 	<!-- Character - Main -->
+	<string name="char_tooltip_pc_intrusion">Click to invoke a Player Intrusion</string>
 	<string name="char_label_main1">is a</string>
 	<string name="char_label_main2">who</string>
 	<string name="char_label_main3">&#x2014;</string>
@@ -513,4 +516,21 @@
 	<string name="gmi_prompt_button_refuse">Refuse</string>
 	<string name="gmi_prompt_tooltip_refuse">Spend 1 XP to refuse this intrusion.</string>
 	<string name="gmi_prompt_tooltip_refuse_missing_xp">You don't have enough XP to refuse this intrusion.</string>
+
+	<string name="pci_prompt_window_title">PC INTRUSION</string>
+	<string name="pci_prompt_description">You are invoking a player intrusion! Select from the options below.</string>
+	<string name="pmi_prompt_button_accept">Accept</string>
+	<string name="pmi_prompt_button_cancel">Cancel</string>
+	<string name="pci_label_reroll">Spend 1 XP to reroll any roll</string>
+	<string name="pci_summary_reroll">Reroll any roll, even if you didn't roll it, and the dice roller chooses the best result.</string>
+	<string name="pci_label_shortterm">Spend 1 XP to introduce a solution to a problem</string>
+	<string name="pci_summary_shortterm">This can affect a single object, feature, or NPC, and should be about adjusting the scenario you find yourself in.</string>
+	<string name="pci_label_mediumterm">Spend 2 XP to gain training in a skill that is useful only for your current surroundings</string>
+	<string name="pci_summary_mediumterm">These are usually story-based, and allow a character to get immediate training in a skill for half the normal cost, even if the training is limited to a specific location or situation.</string>
+	<string name="pci_label_longterm">Spend 3 XP to gain a long-term benefit (contact, home, title, wealth, etc)</string>
+	<string name="pci_summary_longterm">These benefits are a means of integrating game mechanics with story, are usually permanent, and not easily taken away. You have agency over what you've gained.</string>
+	<string name="pci_message_reroll">%s has invoked a player intrusion to reroll a die! (1 XP)</string>
+	<string name="pci_message_shortterm">%s has invoked a player intrusion to adjust the scenario! (1 XP)</string>
+	<string name="pci_message_mediumterm">%s has invoked a player intrusion to gain training a skill! (2 XP)</string>
+	<string name="pci_message_longterm">%s has invoked a player intrusion to gain a long-term benefit! (3 XP)</string>
 </root>

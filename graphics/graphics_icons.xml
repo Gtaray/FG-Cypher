@@ -27,6 +27,14 @@
 	<icon name="task8" file="graphics/icons/task8.png" />
 	<icon name="task9" file="graphics/icons/task9.png" />
 	<icon name="task10" file="graphics/icons/task10.png" />
+	<icon name="task11" file="graphics/icons/task11.png" />
+	<icon name="task12" file="graphics/icons/task12.png" />
+	<icon name="task13" file="graphics/icons/task13.png" />
+	<icon name="task14" file="graphics/icons/task14.png" />
+	<icon name="task15" file="graphics/icons/task15.png" />
+
+	<icon name="playerintrusion" file="graphics/icons/player_intrusion.png" />
+
 
 	<!-- Global target -->
 	<icon name="global_target" file="graphics/icons/global_target.png" />

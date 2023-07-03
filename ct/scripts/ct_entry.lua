@@ -14,10 +14,15 @@ function onFirstLayout()
 	end
 end
 
-function onMenuSelection(selection)
+function onMenuSelection(selection, subselection)
+	local bHandled = false;
 	if self.isPC() then
 		local rActor = ActorManager.resolveActor(getDatabaseNode());
-		IntrusionManager.handleMenuSelection(selection, rActor);
+		bHandled = IntrusionManager.handleMenuSelection(selection, rActor);
+	end
+
+	if not bHandled then
+		super.onMenuSelection(selection, subselection);
 	end
 end
 
@@ -55,8 +60,14 @@ function linkPCFields()
 		name.setLink(DB.createChild(nodeChar, "name", "string"), true);
 
 		damagetrack.setLink(DB.createChild(nodeChar, "wounds", "number"));
+
+		mightmax.setLink(DB.createChild(nodeChar, "abilities.might.max", "number"));
 		mightpool.setLink(DB.createChild(nodeChar, "abilities.might.current", "number"));
+
+		speedmax.setLink(DB.createChild(nodeChar, "abilities.speed.max", "number"));
 		speedpool.setLink(DB.createChild(nodeChar, "abilities.speed.current", "number"));
+
+		intellectmax.setLink(DB.createChild(nodeChar, "abilities.intellect.max", "number"));
 		intellectpool.setLink(DB.createChild(nodeChar, "abilities.intellect.current", "number"));
 
 		armor.setLink(DB.createChild(nodeChar, "armor", "number"));

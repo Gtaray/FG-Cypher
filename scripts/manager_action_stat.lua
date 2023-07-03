@@ -98,6 +98,8 @@ function modRoll(rSource, rTarget, rRoll)
 end
 
 function onRoll(rSource, rTarget, rRoll)
+	-- Hacky way to force the rebuilt flag to either be true or false, never an empty string
+	rRoll.bRebuilt = (rRoll.bRebuilt == true) or (rRoll.bRebuilt or "") ~= "";
 	rTarget = RollManager.decodeTarget(rRoll, rTarget);
 	
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
@@ -116,7 +118,7 @@ function onRoll(rSource, rTarget, rRoll)
 	-- rebuildRoll() function will assign these booleans
 	if #(rRoll.aDice) == 1 then
 		local nFirstDie = rRoll.aDice[1].result or 0;
-		
+
 		rRoll.bMajorEffect = not bAutomaticSuccess and nFirstDie == 20;
 		rRoll.bMinorEffect = not bAutomaticSuccess and nFirstDie == 19;
 		rRoll.bGmIntrusion = not bAutomaticSuccess and nFirstDie == 1;

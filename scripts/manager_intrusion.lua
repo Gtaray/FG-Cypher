@@ -20,12 +20,15 @@ end
 
 function handleMenuSelection(selection, rActor)
 	if not rActor then
-		return;
+		return false;
 	end
 
 	if selection == 7 then
 		IntrusionManager.invokeGmIntrusion(rActor);
+		return true;
 	end
+
+	return false;
 end
 
 function invokeGmIntrusion(rActor)
@@ -121,6 +124,19 @@ function handleGmIntrusionResponse(msgOOB)
 end
 
 -------------------------------------------------------------------------------
+-- PC INTRUSION
+-------------------------------------------------------------------------------
+function handlePlayerIntrusionRespnose(nodeChar, sType, nCost)
+	local rActor = ActorManager.resolveActor(nodeChar);
+	IntrusionManager.modifyXp(rActor, -nCost);
+
+	local sMessage = Interface.getString(string.format("pci_message_%s", sType));
+	sMessage = string.format(sMessage, ActorManager.getDisplayName(rActor));
+
+	IntrusionManager.sendPcIntrusionNotification(sMessage);
+end
+
+-------------------------------------------------------------------------------
 -- XP MODIFICATION
 -------------------------------------------------------------------------------
 function addOneXp(rActor)
@@ -185,6 +201,15 @@ function sendGmIntrusionRefusedResponse(rActor)
 			Interface.getString("gmi_message_gm_intrusion_refuse"), 
 			ActorManager.getDisplayName(rActor)),
 		font = "msgfont"
+	}
+	Comm.deliverChatMessage(rMessage);
+end
+
+function sendPcIntrusionNotification(sMessage)	
+	local rMessage = {
+		text = sMessage,
+		font = "msgfont",
+		icon = "playerintrusion"
 	}
 	Comm.deliverChatMessage(rMessage);
 end

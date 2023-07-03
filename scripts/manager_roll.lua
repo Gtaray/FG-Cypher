@@ -423,25 +423,6 @@ function processTraining(bInability, bTrained, bSpecialized)
 	else return 0 end
 end
 
-function processStandardConditions(rSource, rTarget, sStat)
-	local nLevelAdjust = 0;
-	-- Dazed doesn't stack with the other conditions
-	if EffectManager.hasCondition(rSource, "Dazed") or 
-	   (sStat == "might" and EffectManager.hasCondition(rSource, "Staggered")) or
-	   (sStat == "speed" and EffectManager.hasCondition(rSource, "Frostbitten")) or
-	   (sStat == "intellect" and EffectManager.hasCondition(rSource, "Confused")) then
-		nLevelAdjust = nLevelAdjust + 1;
-	end
-	if EffectManager.hasCondition(rTarget, "Dazed") or 
-		(sStat == "might" and EffectManager.hasCondition(rTarget, "Staggered")) or
-		(sStat == "speed" and EffectManager.hasCondition(rTarget, "Frostbitten")) or
-		(sStat == "intellect" and EffectManager.hasCondition(rTarget, "Confused")) then
-		nLevelAdjust = nLevelAdjust - 1;
-	end
-
-	return nLevelAdjust;
-end
-
 function processStandardConditionsForActor(rActor)
 	-- Dazed and Stunned don't stack with the other conditions
 	if EffectManager.hasCondition(rSource, "Dazed") or 
@@ -478,39 +459,6 @@ function processPiercing(rSource, rTarget, bPiercing, nPierceAmount, aFilter)
 	end
 
 	return bPiercing, nPierceAmount;
-end
-
--- Returns: bSuccess, bAutomaticSuccess
-function processRollSuccesses(rSource, rTarget, rRoll, rMessage, aAddIcons)
-	local bSuccess = false;
-	local bAutomaticSuccess = false;
-	local nSuccess = 0;
-	local bPvP = ActorManager.isPC(rSource) and ActorManager.isPC(rTarget);
-
-	if #(rRoll.aDice) == 1 and rRoll.aDice[1].type == "d20" then		
-		local nDifficulty = tonumber(rRoll.nDifficulty) or 0;
-		
-		-- Calculate the total number of successes in this roll
-		-- We don't account for assets or effort here becuase assets were already used to adjust the 	
-		-- difficulty in the modRoll function
-		local nTotal = ActionsManager.total(rRoll);
-		nSuccess = math.max(0, math.min(10, math.floor(nTotal / 3)));
-		
-		-- Only track success flags for non pvp rolls
-		if not bPvP then
-			nDifficulty = math.min(math.max(nDifficulty, 0), 10);
-			table.insert(aAddIcons, "task" .. nDifficulty)
-
-			if nDifficulty == 0 then
-				bAutomaticSuccess = true;
-			end
-			if nSuccess >= nDifficulty then
-				bSuccess = true;
-			end
-		end
-	end
-
-	return bSuccess, bAutomaticSuccess, nSuccess;
 end
 
 function calculateDifficultyForRoll(rSource, rTarget, rRoll)
@@ -553,11 +501,15 @@ function processRollResult(rSource, rTarget, rRoll)
 	-- We don't account for assets or effort here because assets were already
 	-- used to adjust the difficulty in the calculateDifficultyForRoll function
 	local nTotal = ActionsManager.total(rRoll);
-	nSuccess = math.max(0, math.min(10, math.floor(nTotal / 3)));
+	nSuccess = math.max(0, math.min(
+		OptionsManagerCypher.getMaxTarget(), 
+		math.floor(nTotal / 3)));
 	
 	-- Only track success flags for non pvp rolls
 	if not bPvP then
-		nDifficulty = math.min(math.max(nDifficulty, 0), 10);
+		nDifficulty = math.min(
+			math.max(nDifficulty, 0), 
+			OptionsManagerCypher.getMaxTarget());
 
 		if nDifficulty == 0 then
 			bAutomaticSuccess = true;

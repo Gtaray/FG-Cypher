@@ -36,6 +36,63 @@
 	<windowclass name="ct_entry" merge="join">
 		<script file="ct/scripts/ct_entry.lua" />
 		<sheetdata>
+			<hnx name="mightmax">
+				<script>
+					function onInit()
+						if super and super.onInit then
+							super.onInit()
+						end
+						setPoolMax();
+					end
+					function onValueChanged()
+						if super and super.onValueChanged then
+							super.onValueChanged()
+						end
+						setPoolMax()
+					end
+					function setPoolMax()
+						window.mightpool.setMaxValue(getValue());
+					end
+				</script>
+			</hnx>
+			<hnx name="speedmax">
+				<script>
+					function onInit()
+						if super and super.onInit then
+							super.onInit()
+						end
+						setPoolMax();
+					end
+					function onValueChanged()
+						if super and super.onValueChanged then
+							super.onValueChanged()
+						end
+						setPoolMax()
+					end
+					function setPoolMax()
+						window.speedpool.setMaxValue(getValue());
+					end
+				</script>
+			</hnx>
+			<hnx name="intellectmax">
+				<script>
+					function onInit()
+						if super and super.onInit then
+							super.onInit()
+						end
+						setPoolMax();
+					end
+					function onValueChanged()
+						if super and super.onValueChanged then
+							super.onValueChanged()
+						end
+						setPoolMax()
+					end
+					function setPoolMax()
+						window.intellectpool.setMaxValue(getValue());
+					end
+				</script>
+			</hnx>
 			<hs name="status" />
 
 			<hnx name="armor" />
@@ -47,18 +104,21 @@
 					<top />
 					<right anchor="left" relation="relative" offset="-10" />
 				</anchored>
+				<min>0</min>
 			</number_ct_crosslink>
 			<number_ct_crosslink name="speedpool" insertbefore="initresult">
 				<anchored to="rightanchor" width="22" height="20">
 					<top />
 					<right anchor="left" relation="relative" offset="-10" />
 				</anchored>
+				<min>0</min>
 			</number_ct_crosslink>
 			<number_ct_crosslink name="mightpool" insertbefore="initresult">
 				<anchored to="rightanchor" width="22" height="20">
 					<top />
 					<right anchor="left" relation="relative" offset="-10" />
 				</anchored>
+				<min>0</min>
 			</number_ct_crosslink>
 			<button_ct_damagetrack name="damagetrack" source="wounds" insertbefore="initresult">
 				<anchored to="rightanchor" width="22" height="20">

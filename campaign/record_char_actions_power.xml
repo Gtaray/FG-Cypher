@@ -125,6 +125,29 @@
 		</sheetdata>
 	</windowclass>
 
+	<windowclass name="power_action_mini" merge="join">
+		<script>
+			function onInit()
+				super.onInit()
+				local node = getDatabaseNode();
+				local abilityNode = DB.getChild(node, "...");
+				local nodeActor = PowerManagerCore.getPowerActorNode(abilityNode);
+
+				DB.addHandler(DB.getPath(abilityNode, "useequipped"), "onUpdate", self.onDataChanged);
+				DB.addHandler(DB.getPath(nodeActor, "attacklist.*"), "onChildUpdate", self.onDataChanged);
+			end
+			function onClose()
+				super.onClose();
+				local node = getDatabaseNode();
+				local abilityNode = DB.getChild(node, "...");
+				local nodeActor = PowerManagerCore.getPowerActorNode(abilityNode);
+
+				DB.removeHandler(DB.getPath(abilityNode, "useequipped"), "onUpdate", self.onDataChanged);
+				DB.removeHandler(DB.getPath(nodeActor, "attacklist.*"), "onChildUpdate", self.onDataChanged);
+			end
+		</script>
+	</windowclass>
+
 	<windowclass name="power">
 		<frame>referencepage</frame>
 		<placement>

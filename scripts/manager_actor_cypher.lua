@@ -22,51 +22,57 @@ end
 function getWoundPercent(v)
 	local rActor = ActorManager.resolveActor(v);
 
-	local nHP = 0;
-	local nWounds = 0;
-
-	local nodeCT = ActorManager.getCTNode(rActor);
-	if nodeCT then
-		if ActorManager.isPC(rActor) then
-			nHP = 3;
-		else
-			nHP = DB.getValue(nodeActor, "hp", 0);
-		end
-		nWounds = DB.getValue(nodeCT, "wounds", 0);
-	elseif ActorManager.isPC(rActor) then
-		local nodePC = ActorManager.getCreatureNode(rActor);
-		if nodePC then
-			nHP = 3;
-			nWounds = DB.getValue(nodePC, "wounds", 0);
-		end
+	if ActorManager.isPC(rActor) then
+		return ActorManagerCypher.getPCWoundPercent(rActor);
 	end
 
+	-- Guaranteed to be NPC after this point
+	local nHP = DB.getValue(nodeCT, "hp", 0);
+	local nWounds = DB.getValue(nodeCT, "wounds", 0);
 	local nPercentWounded = 0;
+
 	if nHP > 0 then
 		nPercentWounded = nWounds / nHP;
 	end
 	
 	local sStatus;
-	if sNodeType == "pc" then
-		if nWounds <= 0 then
-			sStatus = STATUS_HALE;
-		elseif nWounds == 1 then
-			sStatus = STATUS_IMPAIRED;
-		elseif nWounds == 2 then
-			sStatus = STATUS_DEBILITATED;
-		else
-			sStatus = ActorHealthManager.STATUS_DEAD;
-		end
+	if nPercentWounded <= 0 then
+		sStatus = ActorHealthManager.STATUS_HEALTHY;
+	elseif nPercentWounded < .5 then
+		sStatus = ActorHealthManager.STATUS_SIMPLE_WOUNDED;
+	elseif nPercentWounded < 1 then
+		sStatus = ActorHealthManager.STATUS_SIMPLE_HEAVY;
 	else
-		if nPercentWounded <= 0 then
-			sStatus = ActorHealthManager.STATUS_HEALTHY;
-		elseif nPercentWounded < .5 then
-			sStatus = ActorHealthManager.STATUS_SIMPLE_WOUNDED;
-		elseif nPercentWounded < 1 then
-			sStatus = ActorHealthManager.STATUS_SIMPLE_HEAVY;
-		else
-			sStatus = ActorHealthManager.STATUS_DEAD;
-		end
+		sStatus = ActorHealthManager.STATUS_DEAD;
+	end
+
+	return nPercentWounded, sStatus;
+end
+
+function getPCWoundPercent(rActor)
+	-- Wound percentage is tracked with the overall loss of stats from all 3 pools
+	local nMightCur, nMightMax = ActorManagerCypher.getStatPool(rActor, "might");
+	local nSpeedCur, nSpeedMax = ActorManagerCypher.getStatPool(rActor, "speed");
+	local nIntCur, nIntMax = ActorManagerCypher.getStatPool(rActor, "intellect");
+	local nCur = nMightCur + nSpeedCur + nIntCur;
+	local nMax = nMightMax + nSpeedMax + nIntMax;
+
+	local nPercentWounded = 0;
+	if nMax > 0 then
+		nPercentWounded = 1 - (nCur / nMax);
+	end
+	
+	-- Track status based on the number of wounds the PC has
+	local nWounds = DB.getValue(nodePC, "wounds", 0);
+	local sStatus;
+	if nWounds <= 0 then
+		sStatus = STATUS_HALE;
+	elseif nWounds == 1 then
+		sStatus = STATUS_IMPAIRED;
+	elseif nWounds == 2 then
+		sStatus = STATUS_DEBILITATED;
+	else
+		sStatus = ActorHealthManager.STATUS_DEAD;
 	end
 
 	return nPercentWounded, sStatus;
