@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!--
+	Please see the license.html file included with this distribution for
+	attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="prompt_pc_intrusion">
+		<frame>referencelist</frame>
+		<placement>
+			<size width="400" height="500" />
+		</placement>
+		<sizelimits>
+			<minimum width="400" height="500" />
+			<dynamic />
+		</sizelimits>
+		<nodelete />
+		<script file="utility/scripts/pci_prompt.lua" />
+		<sheetdata>
+			<windowtitlebar name="reftitle">
+				<resource>pci_prompt_window_title</resource>
+			</windowtitlebar>
+			<frame_char name="frame">
+				<anchored>
+					<top offset="40"/>
+					<left offset="15" />
+					<right offset="-15" />
+					<bottom offset="-15" />
+				</anchored>
+			</frame_char>
+
+			<stringcontrol name="description">
+				<anchored to="frame">
+					<right anchor="right" offset="-15" />
+					<left anchor="left" offset="15"/>
+					<top anchor="top" offset="15" />
+				</anchored>
+				<multilinespacing>20</multilinespacing>
+				<font>reference-title</font>
+				<center/>
+				<readonly />
+				<static textres="pci_prompt_description" />
+			</stringcontrol>
+
+			<label_pci_type name="reroll_label">
+				<static textres="pci_label_reroll" />
+			</label_pci_type>
+			<checkbox_pci_type name="reroll_checkbox">
+				<target>reroll</target>
+				<cost>1</cost>
+				<anchored to="reroll_label" />
+			</checkbox_pci_type>
+			<label_pci_summary name="reroll_summary">
+				<static textres="pci_summary_reroll" />
+			</label_pci_summary>
+
+			<label_pci_type name="shortterm_label">
+				<static textres="pci_label_shortterm" />
+			</label_pci_type>
+			<checkbox_pci_type name="shortterm_checkbox">
+				<target>shortterm</target>
+				<cost>1</cost>
+				<anchored to="shortterm_label" />
+			</checkbox_pci_type>
+			<label_pci_summary name="shortterm_summary">
+				<static textres="pci_summary_shortterm" />
+			</label_pci_summary>
+
+			<label_pci_type name="mediumterm_label">
+				<static textres="pci_label_mediumterm" />
+			</label_pci_type>
+			<checkbox_pci_type name="mediumterm_checkbox">
+				<target>mediumterm</target>
+				<cost>2</cost>
+				<anchored to="mediumterm_label" />
+			</checkbox_pci_type>
+			<label_pci_summary name="mediumterm_summary">
+				<static textres="pci_summary_mediumterm" />
+			</label_pci_summary>
+
+			<label_pci_type name="longterm_label">
+				<static textres="pci_label_longterm" />
+			</label_pci_type>
+			<checkbox_pci_type name="longterm_checkbox">
+				<target>longterm</target>
+				<cost>3</cost>
+				<anchored to="longterm_label" />
+			</checkbox_pci_type>
+			<label_pci_summary name="longterm_summary">
+				<static textres="pci_summary_longterm" />
+			</label_pci_summary>
+
+			<button_text name="accept">
+				<script>
+					function onButtonPress()
+						window.invokeIntrusion();
+					end
+				</script>
+				<anchored height="22" width="160">
+					<bottom parent="frame" anchor="bottom" offset="-20" />
+					<right parent="frame" anchor="right" offset="-20" />
+				</anchored>
+				<textres>gmi_prompt_button_accept</textres>
+				<invisible />
+			</button_text>
+
+			<button_text name="refuse">
+				<script>
+					function onButtonPress()
+						window.cancelIntrusion();
+					end
+				</script>
+				<anchored height="22">
+					<bottom parent="frame" anchor="bottom" offset="-20" />
+					<left parent="frame" anchor="left" offset="20" />
+					<right parent="accept" anchor="left" offset="-10" />
+				</anchored>
+				<textres>pmi_prompt_button_cancel</textres>
+			</button_text>
+		</sheetdata>
+	</windowclass>
+
+	<template name="label_pci_type">
+		<stringcontrol>
+			<anchored to="description">
+				<left offset="25" />
+				<top anchor="bottom" relation="relative" offset="8" />
+				<right offset="0" />
+			</anchored>
+			<multilinespacing>20</multilinespacing>
+			<font>sheetlabel</font>
+		</stringcontrol>
+	</template>
+	<template name="checkbox_pci_type">
+		<button_checkbox>
+			<script>
+				function onButtonPress()
+					window.onOptionSelected(target[1], tonumber(cost[1]), getValue() == 1);
+				end
+			</script>
+			<anchored height="20" width="20">
+				<top />
+				<right anchor="left" offset="-5" />
+			</anchored>
+		</button_checkbox>
+	</template>
+	<template name="label_pci_summary">
+		<stringcontrol>
+			<anchored to="description">
+				<top anchor="bottom" relation="relative" offset="8" />
+				<left offset="20" />
+				<right offset="-20" />
+			</anchored>
+			<multilinespacing>20</multilinespacing>
+			<font>sheettext</font>
+			<readonly />
+			<frame name="referenceblock-blue" offset="12,12,12,12" />
+			<invisible />
+		</stringcontrol>
+	</template>
+</root>

@@ -49,19 +49,6 @@
 				<min>0</min>
 				<max>6</max>
 			</basicnumber>
-			<label name="hero_label">
-				<anchored to="overviewanchor">
-					<top />
-					<left anchor="right" relation="relative" offset="20" />
-				</anchored>
-				<static textres="char_label_hero" />
-			</label>
-			<basicnumber name="hero">
-				<anchored to="overviewanchor" width="30" height="20">
-					<top />
-					<left anchor="right" relation="relative" offset="10" />
-				</anchored>
-			</basicnumber>
 			<label name="xp_label">
 				<anchored to="overviewanchor">
 					<top />
@@ -132,6 +119,20 @@
 				<font>sheetlabelmini</font>
 				<static textres="char_label_adv_skill" />
 			</stringcontrol>
+
+			<buttoncontrol name="button_pc_intrusion">
+				<anchored to="overviewframe" width="30" height="30">
+					<top offset="10" />
+					<right anchor="right" offset="-20" />
+				</anchored>
+				<icon normal="playerintrusion" />
+				<tooltip textres="char_tooltip_pc_intrusion" />
+				<script>
+					function onButtonPress()
+						PromptManager.promptPlayerIntrusion(window.getDatabaseNode());
+					end
+				</script>
+			</buttoncontrol>
 
 			<!-- TYPE / FOCUS / DESCRIPTOR -->
 			<frame_char name="characterframe">
@@ -215,6 +216,21 @@
 					end
 				</script>
 			</button_details>
+
+			<label name="hero_label">
+				<anchored to="characterframe">
+					<bottom offset="-20" />
+					<left offset="20" />
+				</anchored>
+				<static textres="char_label_hero" />
+			</label>
+			<basicnumber name="hero">
+				<anchored to="hero_label" width="30" height="20">
+					<top />
+					<left anchor="right" offset="10" />
+				</anchored>
+				<min>0</min>
+			</basicnumber>
 			
 			<!-- STATS -->
 			<frame_char name="mightframe">

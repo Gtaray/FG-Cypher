@@ -83,6 +83,8 @@ function modRoll(rSource, rTarget, rRoll)
 end
 
 function onRoll(rSource, rTarget, rRoll)
+	-- Hacky way to force the rebuilt flag to either be true or false, never an empty string
+	rRoll.bRebuilt = (rRoll.bRebuilt == true) or (rRoll.bRebuilt or "") ~= "";
 	rTarget = RollManager.decodeTarget(rRoll, rTarget);
 
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);

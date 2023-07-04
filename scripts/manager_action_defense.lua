@@ -88,6 +88,8 @@ function modRoll(rSource, rTarget, rRoll)
 end
 
 function onRoll(rSource, rTarget, rRoll)
+	-- Hacky way to force the rebuilt flag to either be true or false, never an empty string
+	rRoll.bRebuilt = (rRoll.bRebuilt == true) or (rRoll.bRebuilt or "") ~= "";
 	rTarget = RollManager.decodeTarget(rRoll, rTarget);
 
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
@@ -95,7 +97,7 @@ function onRoll(rSource, rTarget, rRoll)
 
 	-- Only set the difficulty if the difficulty hasn't already been set 
 	-- Difficulty is set when a defense roll is invoked from a defensevs roll
-	if rRoll.nDifficulty == 0 then
+	if tonumber(rRoll.nDifficulty or "0") == 0 then
 		rRoll.nDifficulty = RollManager.getBaseRollDifficulty(rSource, rTarget, { "attack", "atk", rRoll.sStat });
 	end
 

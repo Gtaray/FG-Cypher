@@ -11,7 +11,7 @@ function onInit()
 	self.update();
 end
 
-function setFloatingStatAmount(n)
+function setRecoveryAmount(n)
 	recovery_remaining.setValue(n);
 end
 function apply()

@@ -5,7 +5,6 @@
 
 DIFFICULTY_DEFAULT = 3
 DIFFICULTY_MINIMUM = 1
-DIFFICULTY_MAXIMUM = 10
 DIFFICULTY_PATH = "global.difficulty";
 
 function onInit()
@@ -44,7 +43,7 @@ function setGlobalDifficulty(nDifficulty)
 		math.max(
 			DifficultyManager.DIFFICULTY_MINIMUM, 
 			nDifficulty), 
-		DifficultyManager.DIFFICULTY_MAXIMUM
+		OptionsManagerCypher.getMaxTarget()
 	)
 	DB.setValue(DifficultyManager.DIFFICULTY_PATH, "number", nDifficulty);
 end

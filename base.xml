@@ -6,7 +6,7 @@
 -->
 
 <root version="3.0" release="4.1" logo="logo.png">
-	<announcement text="Cypher System ruleset (2023-06-13) for Fantasy Grounds\rCopyright 2023 Smiteworks USA, LLC" font="emotefont" icon="rulesetlogo_CoreRPG" />
+	<announcement text="Cypher System ruleset (2023-07-03) for Fantasy Grounds\rCopyright 2023 Smiteworks USA, LLC" font="emotefont" icon="rulesetlogo_CoreRPG" />
 	
 	<!-- Attributes -->
 	<description>
@@ -80,6 +80,7 @@
 	<includefile source="utility/prompt_defense.xml" />
 	<includefile source="utility/options_damagetypes.xml" />
 	<includefile source="utility/prompt_gm_intrusion.xml" />
+	<includefile source="utility/prompt_pc_intrusion.xml" />
 	<includefile source="utility/select_dialog_char.xml" />
 	<includefile source="utility/select_dialog_stats.xml" />
 	<includefile source="utility/select_dialog_abilities.xml" />
@@ -111,8 +112,8 @@
 	<script name="DamageTypeManager" file="scripts/manager_damage_types.lua" />
 	<script name="DifficultyManager" file="scripts/manager_difficulty.lua" />
 	<script name="IntrusionManager" file="scripts/manager_intrusion.lua" />
+	<script name="TokenManagerCypher" file="scripts/manager_token_cypher.lua" />
 
-	<script name="ActionGeneral" file="scripts/manager_action_general.lua" />
 	<script name="ActionStat" file="scripts/manager_action_stat.lua" />
 	<script name="ActionSkill" file="scripts/manager_action_skill.lua" />
 	<script name="ActionDefense" file="scripts/manager_action_defense.lua" />

@@ -219,7 +219,6 @@ function applyDamage(rSource, rTarget, bSecret, rResult)
 			nPierceAmount, 
 			aNotifications);
 	end
-	
 
 	if sTargetNodeType == "pc" then
 		ActionDamage.applyDamageToPc(rSource, rTarget, nTotal, sStat, sDamageType, aNotifications);
@@ -236,6 +235,7 @@ function applyDamage(rSource, rTarget, bSecret, rResult)
 	else
 		bShowStatus = not OptionsManager.isOption("SHNPC", "off");
 	end
+
 	if bShowStatus then
 		local sNewStatus = ActorHealthManager.getHealthStatus(rTarget);
 		if sOriginalStatus ~= sNewStatus then

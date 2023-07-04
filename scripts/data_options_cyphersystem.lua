@@ -29,6 +29,8 @@ function registerOptions()
 	OptionsManager.registerOption2("SHNPC", false, "option_header_combat", "option_label_SHNPC", "option_entry_cycler", 
 			{ labels = "option_val_detailed|option_val_status", values = "detailed|status", baselabel = "option_val_off", baseval = "off", default = "status" });
 
+	OptionsManager.registerOption2("MAXTARGET", false, "option_header_houserule", "option_label_MAXTARGET", "option_entry_cycler",
+			{ labels = "option_val_maxtarget_15", values = "15", baselabel = "option_val_maxtarget_10", baseval = "10", default = "10" });
 	OptionsManager.registerOption2("HRXP", false, "option_header_houserule", "option_label_HRXP", "option_entry_cycler", 
 			{ labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "off" });
 end
@@ -39,4 +41,11 @@ function calcEncumbrance(nodeChar)
 	CharEncumbranceManager.setDefaultEncumbranceValue(nodeChar, nEncumbrance);
 
 	CharEncumbranceManagerCnC.updateEncumbranceState(nodeChar);
+end
+
+-------------------------------------------------------------------------------
+-- ACCESSORS
+-------------------------------------------------------------------------------
+function getMaxTarget()
+	return tonumber(OptionsManager.getOption("MAXTARGET"));
 end

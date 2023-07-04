@@ -104,3 +104,13 @@ function getActionFromOobMsg(rSource, rTarget, msgOOB)
 
 	return rAction
 end
+
+-------------------------------------------------------------------------------
+-- PLAYER INTRUSION PROMPT
+-------------------------------------------------------------------------------
+function promptPlayerIntrusion(nodeChar)
+	local window = Interface.openWindow("prompt_pc_intrusion", "")
+	if window then
+		window.setData(nodeChar);
+	end
+end
