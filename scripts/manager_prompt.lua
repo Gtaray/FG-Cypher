@@ -16,6 +16,16 @@ function getUser(rPlayer)
 end
 
 -------------------------------------------------------------------------------
+-- CHARACTER BUILDING / ADVANCEMENT PROMPTS
+-------------------------------------------------------------------------------
+function promptForCharacterModifications(rData)
+	local w = Interface.openWindow("select_dialog_stats", "");
+	if w then
+		w.addModification(rData);
+	end
+end
+
+-------------------------------------------------------------------------------
 -- DEFENSE PROMPT
 -------------------------------------------------------------------------------
 

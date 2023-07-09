@@ -63,8 +63,8 @@ end
 
 function applyStatModification(rActor, rData)
 	if rData.sStat == "flex" then
-		local w = Interface.openWindow("select_dialog_stats", "");
 		local rDialog = {
+			sType = "stats",
 			nodeChar = ActorManager.getCreatureNode(rActor),
 			nMight = ActorManagerCypher.getStatPool(rActor, "might"),
 			nSpeed = ActorManagerCypher.getStatPool(rActor, "speed");
@@ -72,7 +72,8 @@ function applyStatModification(rActor, rData)
 			nFloatingStats = rData.nMod,
 			sSource = rData.sSource
 		};
-		w.setData(rDialog, CharModManager.applyFloatingStatModificationCallback);
+		
+		PromptManager.promptForCharacterModifications(rDialog);
 		return;
 	end
 
