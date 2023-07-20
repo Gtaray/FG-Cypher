@@ -7,12 +7,13 @@ function addModification(rData)
 
 	if rData.sType == "stats" then
 		local w = self.createWindow("dialog_statpools")
+		w.setData(rData.nMight, rData.nSpeed, rData.nIntellect, rData.nFloatingStats);
+		w.type.setValue("stats");
 
 	elseif rData.sType == "edge" then
 		local w = self.createWindow("dialog_edge")
 
 	end
-	stats.subwindow.setData(rData.nMight, rData.nSpeed, rData.nIntellect, rData.nFloatingStats);
 end
 
 function createWindow(sClass)

@@ -326,6 +326,7 @@ function removeItemLinkedToRecord(noderecord)
 	CharManager.removeLinkedRecord(noderecord, "itemlink");
 end
 
+-- This threw an error during the game (invalid argument #1)
 function removeLinkedRecord(sourcenode, sPath)
 	local _, sRecord = DB.getValue(sourcenode, sPath);
 	if (sRecord or "") == "" then

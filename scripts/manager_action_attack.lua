@@ -91,7 +91,7 @@ function modRoll(rSource, rTarget, rRoll)
 	RollManager.encodeAssets(rRoll.nAssets, rRoll);
 	RollManager.encodeEaseHindrance(rRoll, rRoll.nEase, rRoll.nHinder);
 
-	if rRoll.bLightWeapon then
+	if rRoll.bLightWeapon == "true" then
 		rRoll.sDesc = string.format("%s [LIGHT]", rRoll.sDesc)
 	end
 	if rRoll.nConditionMod > 0 then
@@ -102,6 +102,7 @@ end
 function onRoll(rSource, rTarget, rRoll)
 	-- Hacky way to force the rebuilt flag to either be true or false, never an empty string
 	rRoll.bRebuilt = (rRoll.bRebuilt == true) or (rRoll.bRebuilt or "") ~= "";
+	rRoll.bLightWeapon = (rRoll.bLightWeapon == "true") or (rRoll.bLightWeapon == "light");
 	rTarget = RollManager.decodeTarget(rRoll, rTarget);
 	rRoll.bLightWeapon = rRoll.sDesc:match("%[LIGHT%]") ~= nil;
 

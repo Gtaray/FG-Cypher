@@ -27,6 +27,7 @@ function getWoundPercent(v)
 	end
 
 	-- Guaranteed to be NPC after this point
+	local nodeCT = ActorManager.getCTNode(rActor);
 	local nHP = DB.getValue(nodeCT, "hp", 0);
 	local nWounds = DB.getValue(nodeCT, "wounds", 0);
 	local nPercentWounded = 0;
