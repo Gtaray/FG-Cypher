@@ -20,7 +20,6 @@
 				if super and super.onInit then
 					super.onInit()
 				end
-				Debug.chat(getDatabaseNode());
 			end
 			function onLockChanged()
 				super.onLockChanged();

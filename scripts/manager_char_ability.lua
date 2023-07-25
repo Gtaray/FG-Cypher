@@ -25,3 +25,27 @@ function addAbilityDrop(nodeChar, sClass, sRecord)
 		sSource = "Manual"
 	});
 end
+
+function addTrainingToAbility(nodeChar, nodeAbility)
+	for _, actionnode in ipairs(DB.getChildList(nodeAbility, "actions")) do
+		-- Only include abilities with stat or attack actions
+		local sType = DB.getValue(actionnode, "type", "");
+
+		if sType == "attack" or sType == "stat" then
+			CharAbilityManager.addTrainingToAbilityAction(actionnode)
+		end
+	end
+end
+
+function addTrainingToAbilityAction(nodeAction)
+	sTraining = DB.getValue(nodeAction, "training", "");
+	if sTraining == "specialized" then
+		return;
+	end
+
+	local nTraining = RollManager.convertTrainingStringToNumber(sTraining) + 1;
+	nTraining = math.max(math.min(nTraining, 3), 0);
+	sTraining = RollManager.resolveTraining(nTraining)
+
+	DB.setValue(nodeAction, "training", "string", sTraining);
+end

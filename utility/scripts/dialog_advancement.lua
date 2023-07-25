@@ -1,16 +1,16 @@
 local fCallback
 local rData;
 
-function setData(sAdvancement, data, callback)
+function setData(data, callback)
 	rData = data;
 	fCallback = callback;
 
-	updateCheckbox("stats", sAdvancement == "stats");
-	updateCheckbox("edge", sAdvancement == "edge");
-	updateCheckbox("effort", sAdvancement == "effort");
-	updateCheckbox("skill", sAdvancement == "skill");
+	updateCheckbox("stats", rData.sType == "stats");
+	updateCheckbox("edge", rData.sType == "edge");
+	updateCheckbox("effort", rData.sType == "effort");
+	updateCheckbox("skill", rData.sType == "skill");
 
-	if sAdvancement == "stats" then
+	if rData.sType == "stats" then
 		stats.subwindow.setData(
 			ActorManagerCypher.getStatPool(rData.nodeChar, "might"),
 			ActorManagerCypher.getStatPool(rData.nodeChar, "speed"),
@@ -18,11 +18,11 @@ function setData(sAdvancement, data, callback)
 			rData.nFloatingStats);
 		stats_checkbox.setValue(1);
 
-	elseif sAdvancement == "edge" then
+	elseif rData.sType == "edge" then
 		edge.subwindow.setData({{ "might", "speed", "intellect" }})
 		edge_checkbox.setValue(1);
 
-	elseif sAdvancement == "effort" then
+	elseif rData.sType == "effort" then
 		local nEffort = DB.getValue(rData.nodeChar, "effort", 1);
 		effort.subwindow.effort.setValue(string.format(
 			Interface.getString("summary_dialog_effort"),
@@ -31,7 +31,7 @@ function setData(sAdvancement, data, callback)
 		));
 		effort_checkbox.setValue(1);
 
-	elseif sAdvancement == "skill" then
+	elseif rData.sType == "skill" then
 		local aSkills, aAbilities = buildSkillAdvancementList();
 		skill.subwindow.setSkills(aSkills);
 		skill.subwindow.addEmptySkill();
@@ -49,7 +49,6 @@ function setData(sAdvancement, data, callback)
 	-- Focus
 	local nTier = ActorManagerCypher.getTier(rData.nodeChar);
 	local aFocusAbilities = buildFocusAdvancementList();
-	Debug.chat(nTier, aFocusAbilities);
 	updateCheckbox("focus", nTier >= 3 and #aFocusAbilities > 0);
 	if nTier >= 3 and #aFocusAbilities > 0 then
 		focus.subwindow.setData(aFocusAbilities, 1);
@@ -70,7 +69,7 @@ function setData(sAdvancement, data, callback)
 	))
 
 	-- initialize subwindow vis
-	onAdvancementSelected(sAdvancement, true);
+	onAdvancementSelected(rData.sType, true);
 end
 
 function buildSkillAdvancementList()
@@ -251,13 +250,42 @@ function onAdvancementSelected(sAdv, bChecked)
 	focus.setVisible(sAdv == "focus" and bChecked);
 	recovery.setVisible(sAdv == "recovery" and bChecked);
 	armor.setVisible(sAdv == "armor" and bChecked);
+
+	rData.sType = sAdv;
 end
 
 function processOK()
-	if fCallback then
-		rData.nMight, rData.nSpeed, rData.nIntellect = stats.subwindow.getData();
-		fCallback(rData);
+	if not fCallback then
+		close();
+		return;
 	end
+
+	if rData.sType == "stats" then
+		rData.nMight, rData.nSpeed, rData.nIntellect = stats.subwindow.getData();
+	elseif rData.sType == "edge" then
+		rData.aEdgeGiven = edge.subwindow.getData();
+	elseif rData.sType == "effort" then
+		rData.nMod = 1;
+	elseif rData.sType == "skill" then
+		local rSkillData = skill.subwindow.getData();
+		if rSkillData.abilitynode then
+			rData.sAbility = rSkillData.sName;
+			rData.abilitynode = rSkillData.abilitynode;
+		else
+			rData.sSkill = rSkillData.sName;
+			rData.sTraining = "trained";
+		end
+	elseif rData.sType == "ability" then
+		rData.aAbilitiesGiven = abilities.subwindow.getData()
+	elseif rData.sType == "recovery" then
+		rData.nMod = 2;
+	elseif rData.sType == "armor" then
+		rData.nMod = -1
+	elseif rData.sType == "focus" then
+		rData.aAbilitiesGiven = focus.subwindow.getData()
+	end
+
+	fCallback(rData);
 	close()
 end
 

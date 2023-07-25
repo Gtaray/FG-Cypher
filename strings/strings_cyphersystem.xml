@@ -110,7 +110,10 @@
 
 	<string name="char_label_armor">Armor</string>
 	<string name="char_label_armorspeedcost">Speed Effort Cost</string>
-	<string name="char_tooltip_armorspeedcost">Increase to the cost of spending effort on speed tests due to wearing armor.</string>
+	<string name="char_label_armorspeedcostbase">Base</string>
+	<string name="char_tooltip_armorspeedcostbase">Base amount that your armor increases the cost of applying Speed Effort.</string>
+	<string name="char_label_armorspeedcostmod">Mod</string>
+	<string name="char_tooltip_armorspeedcost">Modifier for the Speed Effort cost penalty (due to advancements or abilities).</string>
 	<string name="char_header_special_defenses">Special Defenses</string>
 
 	<string name="char_message_add_ability">Ability '%s' added to '%s'</string>

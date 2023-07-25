@@ -186,6 +186,8 @@ function addStartingAbilities(rData)
 end
 
 function addAbility(nodeChar, sAbilityRecord, sSourceName)
+	local rActor = ActorManager.resolveActor(nodeChar);
+
 	local rMod = {
 		sLinkRecord = sAbilityRecord,
 		sSource = string.format("%s (Type)", StringManager.capitalize(sSourceName))

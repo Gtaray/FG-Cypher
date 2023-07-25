@@ -68,7 +68,9 @@
 				<script>
 					function onValueChanged()
 						if getValue() == 0 then return end
-						CharManager.takeAbilityAdvancement(window.getDatabaseNode());
+						if not CharManager.takeAbilityAdvancement(window.getDatabaseNode()) then
+							setValue(0)
+						end
 					end
 				</script>
 			</button_checkbox>
@@ -82,7 +84,9 @@
 				<script>
 					function onValueChanged()
 						if getValue() == 0 then return end
-						CharManager.takeEdgeAdvancement(window.getDatabaseNode());
+						if not CharManager.takeEdgeAdvancement(window.getDatabaseNode()) then
+							setValue(0)
+						end
 					end
 				</script>
 			</button_checkbox>
@@ -96,7 +100,9 @@
 				<script>
 					function onValueChanged()
 						if getValue() == 0 then return end
-						CharManager.takeEffortAdvancement(window.getDatabaseNode());
+						if not CharManager.takeEffortAdvancement(window.getDatabaseNode()) then
+							setValue(0)
+						end
 					end
 				</script>
 			</button_checkbox>
@@ -110,7 +116,9 @@
 				<script>
 					function onValueChanged()
 						if getValue() == 0 then return end
-						CharManager.takeSkillAdvancement(window.getDatabaseNode());
+						if not CharManager.takeSkillAdvancement(window.getDatabaseNode()) then
+							setValue(0)
+						end
 					end
 				</script>
 			</button_checkbox>
@@ -398,10 +406,10 @@
 				<static textres="char_label_armor" />
 			</label>
 			<basicnumber name="armor">
-				<anchored to="armor_label" position="righthigh" offset="10,0" height="20" width="30" />
+				<anchored to="armor_label" position="righthigh" offset="20,0" height="20" width="30" />
 			</basicnumber>
 			<label name="armorspeedcost_label">
-				<anchored to="armor" position="righthigh" offset="20,0" height="20" width="105" />
+				<anchored to="armor" position="righthigh" offset="10,0" height="20" width="105" />
 				<static textres="char_label_armorspeedcost" />
 			</label>
 			<basicnumber name="armorspeedcost">

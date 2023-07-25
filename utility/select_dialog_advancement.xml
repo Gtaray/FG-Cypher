@@ -184,6 +184,8 @@
 
 	<windowclass name="dialog_skill">
 		<script>
+			local wSelectedItem = nil;
+
 			function setSkills(aSkills)
 				for _, skill in ipairs(aSkills) do
 					skills.addEntry(skill)
@@ -201,8 +203,20 @@
 			end
 
 			function onSelection(wSelected)
+				wSelectedItem = wSelected;
 				skills.unselectOthers(wSelected);
 				abilities.unselectOthers(wSelected);
+			end
+
+			function getData()
+				local rData = {
+					sName = wSelectedItem.text.getValue()
+				}
+				local sClass, sRecord = wSelectedItem.shortcut.getValue()
+				if (sRecord or "") ~= "" then
+					rData.abilitynode = DB.findNode(sRecord)
+				end
+				return rData;
 			end
 		</script>
 		<sheetdata>

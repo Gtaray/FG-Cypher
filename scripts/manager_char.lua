@@ -71,83 +71,74 @@ end
 -------------------------------------------------------------------------------
 function takeAbilityAdvancement(nodeChar)
 	if not nodeChar then
-		return;
+		return false;
 	end
 
 	local rData = {
 		nodeChar = nodeChar,
+		sType = "stats",
 		nFloatingStats = 4,
 	};
 
-	local w = Interface.openWindow("select_dialog_advancement", "");
-	w.setData("stats", rData);
-
-	CharManager.takeAdvancement(nodeChar, "increase their stat pools");
+	return CharManager.takeAdvancement(nodeChar, "increase their stat pools", rData);
 end
 
 function takeEdgeAdvancement(nodeChar)
 	if not nodeChar then
-		return;
+		return false;
 	end
 
 	local rData = {
-		nodeChar = nodeChar
+		nodeChar = nodeChar,
+		sType = "edge",
 	};
-	local w = Interface.openWindow("select_dialog_advancement", "");
-	w.setData("edge", rData);
 
-	CharManager.takeAdvancement(nodeChar, "increase their edge");
+	return CharManager.takeAdvancement(nodeChar, "increase their edge", rData);
 end
 
 function takeEffortAdvancement(nodeChar)
 	if not nodeChar then
-		return;
+		return false;
 	end
 
 	local rData = {
-		nodeChar = nodeChar
+		nodeChar = nodeChar,
+		sType = "effort",
 	};
 
-	local w = Interface.openWindow("select_dialog_advancement", "");
-	w.setData("effort", rData);
-
-	CharManager.takeAdvancement(nodeChar, "increase their effort");
+	return CharManager.takeAdvancement(nodeChar, "increase their effort", rData);
 end
 
 function takeSkillAdvancement(nodeChar)
 	if not nodeChar then
-		return;
+		return false;
 	end
 
 	local rData = {
-		nodeChar = nodeChar
+		nodeChar = nodeChar,
+		sType = "skill",
 	};
 
-	local w = Interface.openWindow("select_dialog_advancement", "");
-	w.setData("skill", rData);
-
-	CharManager.takeAdvancement(nodeChar, "gain training in a skill");
+	return CharManager.takeAdvancement(nodeChar, "gain training in a skill", rData);
 end
 
-function takeAdvancement(nodeChar, sMessage)
+function takeAdvancement(nodeChar, sMessage, rData)
 	if not nodeChar then
-		return;
+		return false;
 	end
 
 	if not CharManager.deductXpForAdvancement(nodeChar, 4) then
-		return;
+		return false;
 	end
 
 	if (sMessage or "") ~= "" then
 		CharManager.sendAdvancementMessage(nodeChar, "char_message_advancement_taken", sMessage);
 	end
 
-	-- Check if all advancements have been taken, and if so, clear all the checkboxes
-	-- and increment tier
-	
-	if CharManager.checkForAllAdvancements(nodeChar) then
-		CharManager.increaseTier(nodeChar);
-	end
+	local w = Interface.openWindow("select_dialog_advancement", "");
+	w.setData(rData, CharManager.completeAdvancement);
+
+	return true;
 end
 
 function deductXpForAdvancement(nodeChar, nCost)
@@ -164,6 +155,60 @@ function deductXpForAdvancement(nodeChar, nCost)
 
 	DB.setValue(nodeChar, "xp", "number", math.max(nXP - nCost, 0));
 	return true;
+end
+
+function completeAdvancement(rData)
+	local rActor = ActorManager.resolveActor(rData.nodeChar);
+	rData.sSource = "Advancement"
+
+	if rData.sType == "stats" then
+		CharModManager.applyFloatingStatModificationCallback(rData);
+		
+	elseif rData.sType == "edge" then
+		for sStat, nEdge in pairs(rData.aEdgeGiven) do
+			if nEdge > 0 then
+				local rEdge = { sStat = sStat, nMod = nEdge, sSource = rData.sSource };
+				rEdge.sSummary = CharModManager.getEdgeModSummary(rEdge);
+				CharModManager.applyEdgeModification(rActor, rEdge)
+			end
+		end
+
+	elseif rData.sType == "effort" then
+		rData.sSummary = CharModManager.getEffortModSummary(rData)
+		CharModManager.applyEffortModification(rActor, rData);
+
+	elseif rData.sType == "skill" then
+		if rData.sSkill then
+			rData.sSummary = CharModManager.getSkillModSummary(rData)
+			CharModManager.applySkillModification(rActor, rData)
+		elseif rData.sAbility then
+			CharAbilityManager.addTrainingToAbility(rData.nodeChar, rData.abilitynode)
+		end
+
+	elseif rData.sType == "ability" or rData.sType == "focus" then
+		for _, rAbility in ipairs(rData.aAbilitiesGiven) do
+			local rMod = {
+				sLinkRecord = DB.getPath(rAbility.node),
+				sSource = rData.sSource
+			}
+			rMod.sSummary = CharModManager.getAbilityModSummary(rMod);
+			CharModManager.applyAbilityModification(rActor, rMod);
+		end
+
+	elseif rData.sType == "recovery" then
+		rData.sSummary = CharModManager.getRecoveryModSummary(rData);
+		CharModManager.applyRecoveryModification(rActor, rData)
+
+	elseif rData.sType == "armor" then
+		rData.sSummary = CharModManager.getArmorEffortPenaltySummary(rData);
+		CharModManager.applyArmorEffortPenaltyModification(rActor, rData)
+	end
+
+	-- Check if all advancements have been taken, and if so, clear all the checkboxes
+	-- and increment tier
+	if CharManager.checkForAllAdvancements(rData.nodeChar) then
+		CharManager.increaseTier(rData.nodeChar);
+	end
 end
 
 function sendAdvancementMessage(nodeChar, sMessageResource, sMessage)

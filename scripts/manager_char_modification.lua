@@ -139,6 +139,10 @@ function applySkillModification(rActor, rData)
 	if not matchnode then
 		matchnode = DB.createChild(skilllist);
 		DB.setValue(matchnode, "name", "string", rData.sSkill);
+		-- Set the training value to 1 (practiced) because we increment the 
+		-- training below. This prevents a new skill from instantly being set
+		-- to specialized becuase it was initialized at Trained and then incremented
+		DB.setValue(matchnode, "training", "number", 1)
 	end
 
 	-- Only change the stat if the skill doesn't have a stat set
