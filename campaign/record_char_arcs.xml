@@ -24,6 +24,12 @@
 					<bottom offset="-20" />
 				</anchored>
 				<class>char_arc</class>
+				<script>
+					function addEntry()
+						local w = createWindow();
+						return w;
+					end
+				</script>
 			</windowlist>
 			<scrollbar_list>
 				<anchored to="arcs" />
@@ -42,8 +48,111 @@
 	</windowclass>
 
 	<windowclass name="char_arc">
+		<script file="campaign/scripts/char_arc.lua" />
 		<sheetdata>
+			<hn name="currentStage">
+				<script>
+					function onValueChanged()
+						window.updateTitle()
+					end
+				</script>
+				<default>1</default>
+				<min>1</min>
+				<max>4</max>
+			</hn>
+			<hs name="name">
+				<script>
+					function onValueChanged()
+						window.updateTitle()
+					end
+				</script>
+				<empty textres="char_empty_arc" />
+			</hs>
 
+			<label name="title">
+				<anchored>
+					<top />
+					<left />
+					<right />
+				</anchored>
+				<center />				
+			</label>
+
+			<button_idelete name="idelete">
+				<anchored width="20" height="20">
+					<top offset="2" />
+					<right offset="0" />
+				</anchored>
+				<editmode>arcs_iedit</editmode>
+			</button_idelete>
+
+			<genericcontrol name="icon">
+				<anchored height="65" width="423">
+					<top parent="title" anchor="bottom" offset="5" />
+					<left/>
+				</anchored>
+				<icon>arc_opening</icon>
+			</genericcontrol>
+			<column_left name="left">
+				<anchored to="icon" />
+			</column_left>
+			<column_right name="right">
+				<anchored to="icon" />
+			</column_right>
+
+			<arc_stage_left name="opening">
+				<anchored to="left" />
+			</arc_stage_left>
+			<arc_stage_right name="inprogress">
+				<anchored to="left" />
+			</arc_stage_right>
+			<arc_stage_left name="climax">
+				<anchored to="right" />
+			</arc_stage_left>
+			<arc_stage_right name="resolution">
+				<anchored to="right" />
+			</arc_stage_right>
 		</sheetdata>
 	</windowclass>
+
+	<template name="arc_stage">
+		<genericcontrol>
+			<script>
+				function onHover(state)
+					window.onStageHover(getName(), state)
+				end
+				function onClickDown(button, x, y)
+					return button == 1;
+				end
+				function onClickRelease(button, x, y)
+					if button == 1 then
+						window.onStageClicked(getName())
+					end
+				end
+			</script>
+			<!-- <cursor >
+				<hover>hand</hover>
+			</cursor> -->
+		</genericcontrol>
+	</template>
+	<template name="arc_stage_left">
+		<arc_stage>
+			<anchored>
+				<top />
+				<left />
+				<right anchor="center" />
+				<bottom parent="icon" />
+			</anchored>
+		</arc_stage>
+	</template>
+	<template name="arc_stage_right">
+		<arc_stage>
+			<anchored>
+				<top />
+				<left anchor="center" />
+				<right />
+				<bottom parent="icon" />
+			</anchored>
+		</arc_stage>
+	</template>
 </root>

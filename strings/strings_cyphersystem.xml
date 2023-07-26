@@ -189,6 +189,12 @@
 
 	<!-- Character - Arcs -->
 	<string name="char_label_arcs">Character Arcs</string>
+	<string name="char_empty_arc">&#171; New Character Arc &#187;</string>
+	<string name="char_label_name">Name</string>
+	<string name="char_label_opening">Opening</string>
+	<string name="char_label_steps">Steps</string>
+	<string name="char_label_climax">Climax</string>
+	<string name="char_label_resolution">Resolution</string>
 	
 	<!-- Character - Notes -->
 	<string name="char_label_background">Background</string>
