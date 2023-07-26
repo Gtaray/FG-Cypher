@@ -186,6 +186,9 @@
 	<string name="char_label_invcypher">Cyphers</string>
 	<string name="char_label_invcypherlimit">Limit</string>
 	<string name="char_label_invcyphertotal">Total</string>
+
+	<!-- Character - Arcs -->
+	<string name="char_label_arcs">Character Arcs</string>
 	
 	<!-- Character - Notes -->
 	<string name="char_label_background">Background</string>

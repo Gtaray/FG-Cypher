@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="charsheet_arcs">
+		<sheetdata>
+			<frame_char name="arcframe">
+				<bounds>15,0,-29,-5</bounds>
+			</frame_char>
+			<label_frametop name="header_arcs">
+				<anchored to="arcframe" />
+				<static textres="char_label_arcs" />
+			</label_frametop>
+
+			<windowlist name="arcs">
+				<anchored to="arcframe">
+					<left offset="15" />
+					<top offset="35" />
+					<right offset="-20" />
+					<bottom offset="-20" />
+				</anchored>
+				<class>char_arc</class>
+			</windowlist>
+			<scrollbar_list>
+				<anchored to="arcs" />
+				<target>arcs</target>
+			</scrollbar_list>
+
+			<button_iedit name="arcs_iedit">
+				<anchored to="arcs" position="aboveright" offset="-13,5" />
+				<edittarget>arcs</edittarget>
+			</button_iedit>
+			<button_iadd name="arcs_iadd">
+				<anchored to="arcs_iedit" position="lefthigh" offset="3,0" />
+				<target>arcs</target>
+			</button_iadd>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="char_arc">
+		<sheetdata>
+
+		</sheetdata>
+	</windowclass>
+</root>

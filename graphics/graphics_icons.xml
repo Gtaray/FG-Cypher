@@ -74,4 +74,7 @@
 	<icon name="sidebar_icon_recordtype_focus" file="graphics/sidebar/sidebar_icon_feat.png" />
 	<icon name="sidebar_icon_recordtype_ancestry" file="graphics/sidebar/sidebar_icon_race.png" />
 	<icon name="sidebar_icon_recordtype_flavor" file="graphics/sidebar/sidebar_icon_potion.png" />
+
+	<!-- Character Arcs -->
+	<icon name="tab_arcs" file="graphics/tabs/tab_arcs.png" />
 </root>
