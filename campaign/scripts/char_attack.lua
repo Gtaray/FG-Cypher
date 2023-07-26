@@ -17,6 +17,12 @@ function update()
 	button_attack.updateTooltip();
 	button_damage.updateTooltip();
 	onAttackTypeUpdated();
+
+	-- Update ammo display
+	local bUseAmmo = DB.getValue(getDatabaseNode(), "useammo", "no") == "yes";
+	label_ammo.setVisible(bUseAmmo);
+	maxammo.setVisible(bUseAmmo);
+	ammocounter.setVisible(bUseAmmo);
 end
 
 function onAttackTypeUpdated()
@@ -71,8 +77,8 @@ function getDamageAction()
 	rAction.sDamageType = DB.getValue(nodeAction, "damagetype", "");
 	rAction.nCost = 0;
 
-	rAction.bPierce = DB.getValue(nodeAction, "pierce", "") == "yes";
-	if rAction.bPierce then
+	rAction.bPiercing = DB.getValue(nodeAction, "pierce", "") == "yes";
+	if rAction.bPiercing then
 		rAction.nPierceAmount = DB.getValue(nodeAction, "pierceamount", 0);	
 	end
 
@@ -85,7 +91,22 @@ function actionAttack(draginfo)
 	local rActor = ActorManager.resolveActor(nodeActor);
 	local rAction = self.getAttackAction();
 
-	ActionAttack.payCostAndRoll(draginfo, rActor, rAction)
+	if not self.hasAmmo() then
+		local rMessage = {
+			text = string.format(
+				Interface.getString("char_message_not_enough_ammo"),
+				rAction.label
+			),
+			font = "msgfont"
+		};
+		Comm.addChatMessage(rMessage);
+		return;
+	end
+
+	if ActionAttack.payCostAndRoll(draginfo, rActor, rAction) then
+		-- decrement ammo
+		self.useAmmo();
+	end
 end
 
 function actionDamage(draginfo)
@@ -95,4 +116,37 @@ function actionDamage(draginfo)
 	local rAction = self.getDamageAction();	
 	
 	ActionDamage.payCostAndRoll(draginfo, rActor, rAction);
+end
+
+-- Ammo Functions
+function getAmmo()
+	local nodeAction = getDatabaseNode();
+	local nCur = DB.getValue(nodeAction, "ammo", 0);
+	local nMax = DB.getValue(nodeAction, "maxammo", 0);
+
+	return nCur, nMax;
+end
+
+function hasAmmo()
+	if not self.usesAmmo() then
+		return true
+	end
+
+	local nCur, nMax = self.getAmmo();
+	return nCur < nMax;
+end
+
+function usesAmmo()
+	return DB.getValue(getDatabaseNode(), "useammo", "no") == "yes";
+end
+
+function useAmmo()
+	if not self.usesAmmo() then
+		return;
+	end
+
+	local nodeAction = getDatabaseNode();
+	local nCur, nMax = self.getAmmo();
+	nCur = math.max(math.min(nCur + 1, nMax), 0);
+	DB.setValue(nodeAction, "ammo", "number", nCur)
 end

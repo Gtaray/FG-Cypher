@@ -73,10 +73,14 @@ function modRoll(rSource, rTarget, rRoll)
 	-- Process conditions
 	rRoll.nConditionMod = RollManager.processStandardConditionsForActor(rSource);
 
+	-- Process Lucky (advantage / disadvantage)
+	local bAdv, bDis = RollManager.processAdvantage(rSource, rTarget, rRoll, aFilter)
+
 	RollManager.encodeTraining(rRoll.sTraining, rRoll);
 	RollManager.encodeEffort(rRoll.nEffort, rRoll);
 	RollManager.encodeAssets(rRoll.nAssets, rRoll);
 	RollManager.encodeEaseHindrance(rRoll, rRoll.nEase, rRoll.nHinder);
+	RollManager.encodeAdvantage(rRoll, bAdv, bDis);
 
 	-- We only need to encode the condition mods because all other effect handling
 	-- is stored in the asset, ease, hinder, and effort tags
@@ -88,6 +92,8 @@ function modRoll(rSource, rTarget, rRoll)
 end
 
 function onRoll(rSource, rTarget, rRoll)
+	RollManager.decodeAdvantage(rRoll);
+
 	-- Hacky way to force the rebuilt flag to either be true or false, never an empty string
 	rRoll.bRebuilt = (rRoll.bRebuilt == true) or (rRoll.bRebuilt or "") ~= "";
 	RollManager.calculateDifficultyForRoll(rSource, rTarget, rRoll)

@@ -322,10 +322,11 @@ function getArmorSpeedCost(rActor)
 		return 0;
 	end
 
-	local nBase = DB.getValue(nodeActor, "armorspeedcost", 0);
+	local nBase = DB.getValue(nodeActor, "armorspeedcosttotal", 0);
 	local nBonus = EffectManagerCypher.getEffectsBonusByType(rActor, "COST", { "armor" });
 
-	return nBase + nBonus;
+	-- This value can never be lower than 0, because 0 means there's no penalty
+	return math.max(nBase + nBonus, 0);
 end
 
 function getDefense(rActor, sStat)

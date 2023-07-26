@@ -72,10 +72,14 @@ function modRoll(rSource, rTarget, rRoll)
 	-- Process conditions
 	rRoll.nConditionMod = RollManager.processStandardConditionsForActor(rSource);
 
+	-- Process Lucky (advantage / disadvantage)
+	local bAdv, bDis = RollManager.processAdvantage(rSource, rTarget, rRoll, aFilter)
+
 	RollManager.encodeTraining(rRoll.sTraining, rRoll);
 	RollManager.encodeEffort(rRoll.nEffort, rRoll);
 	RollManager.encodeAssets(rRoll.nAssets, rRoll);
 	RollManager.encodeEaseHindrance(rRoll, rRoll.nEase, rRoll.nHinder);
+	RollManager.encodeAdvantage(rRoll, bAdv, bDis);
 
 	if rRoll.nConditionMod > 0 then
 		rRoll.sDesc = string.format("%s [EFFECTS %s]", rRoll.sDesc, rRoll.nConditionMod)
@@ -83,6 +87,8 @@ function modRoll(rSource, rTarget, rRoll)
 end
 
 function onRoll(rSource, rTarget, rRoll)
+	RollManager.decodeAdvantage(rRoll);
+	
 	-- Hacky way to force the rebuilt flag to either be true or false, never an empty string
 	rRoll.bRebuilt = (rRoll.bRebuilt == true) or (rRoll.bRebuilt or "") ~= "";
 	rTarget = RollManager.decodeTarget(rRoll, rTarget);

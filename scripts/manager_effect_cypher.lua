@@ -161,7 +161,8 @@ function getEffectsByType(rActor, sEffectType, aFilter, rFilterActor, bTargetedO
 										
 					-- Check for match
 					local comp_match = false;
-					if rEffectComp.type:lower() == sEffectType:lower() then
+					if rEffectComp.type:lower() == sEffectType:lower() or 
+					   rEffectComp.original:lower() == sEffectType:lower() then
 
 						-- Check effect targeting
 						if bTargetedOnly and not bTargeted then
@@ -188,6 +189,10 @@ function getEffectsByType(rActor, sEffectType, aFilter, rFilterActor, bTargetedO
 										break;
 									end
 								end
+							else
+								-- No remainders found in the effect, which means
+								-- we should match against anything
+								bMatch = true;
 							end
 							if not bMatch then
 								comp_match = false;
