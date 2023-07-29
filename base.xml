@@ -88,6 +88,7 @@
 	<includefile source="utility/select_dialog_abilities.xml" />
 	<includefile source="utility/select_dialog_advancement.xml" />
 	<includefile source="utility/select_dialog_templates.xml" />
+	<includefile source="utility/prompt_arc.xml" />
 
 	<!-- High-level scripts -->
 	<script name="GameSystem" file="scripts/manager_gamesystem.lua" />

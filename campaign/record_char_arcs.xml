@@ -181,7 +181,6 @@
 			end
 
 			function addStep()
-				Debug.chat(inprogress.subwindow)
 				inprogress.subwindow.addStep();
 			end
 		</script>
@@ -276,6 +275,23 @@
 
 	<windowclass name="record_arc_inprogress">
 		<script>
+			function onInit()
+				local node = getDatabaseNode();
+				DB.addHandler(DB.getPath(node, "success"), "onUpdate", update);
+
+				update();
+			end
+			function onClose()
+				local node = getDatabaseNode();
+				DB.removeHandler(DB.getPath(node, "success"), "onUpdate", update);
+			end
+			function update()
+				local node = getDatabaseNode();
+				local bIsComplete = DB.getValue(node, "success", "") ~= "";
+
+				steps_iedit.setVisible(not bIsComplete);
+				steps_iadd.setVisible(not bIsComplete);
+			end
 			function addStep()
 				local w = steps.addEntry();
 			end
@@ -338,6 +354,36 @@
 
 	<windowclass name="record_arc_climax">
 		<script>
+			function onInit()
+				local node = getDatabaseNode();
+				DB.addHandler(DB.getPath(node, "steps"), "onChildUpdate", update);
+				DB.addHandler(DB.getPath(node, "success"), "onUpdate", update);
+
+				update();
+			end
+			function onClose()
+				local node = getDatabaseNode();
+				DB.removeHandler(DB.getPath(node, "steps"), "onChildUpdate", update);
+				DB.removeHandler(DB.getPath(node, "success"), "onUpdate", update);
+			end
+			function update()
+				local bIsComplete = DB.getValue(getDatabaseNode(), "success", "") ~= "";
+
+				button_complete.setVisible(allStepsAreComplete() and not bIsComplete);
+				WindowManager.callSafeControlUpdate(self, "success", true, not bIsComplete)
+			end
+			function allStepsAreComplete()
+				local node = getDatabaseNode();
+				local bComplete = DB.getChildCount(node, "steps") &gt; 0;
+				for _, step in ipairs(DB.getChildList(node, "steps")) do
+					if DB.getValue(step, "complete", "") ~= "yes" then
+						bComplete = false;
+						break;
+					end
+				end
+
+				return bComplete;
+			end
 			function focus()
 				climax.setFocus();
 			end
@@ -350,30 +396,36 @@
 				<center />
 			</header_column>
 
-			<!-- <label_column name="success_label">
-				<static textres="char_label_step_success" />
+			<label_column name="success_label">
+				<static textres="char_label_climax_success" />
 			</label_column>
-			<cycler_column name="success">
-				<anchored width="80" />
-				<parameters>
-					<labelsres>option_val_yes</labelsres>
-					<values>yes</values>
-					<defaultlabelres>option_val_no</defaultlabelres>
-				</parameters>
-			</cycler_column> -->
+			<string_columnh name="success" />
+
+			<genericcontrol name="bottomanchor">
+				<anchored height="0" width="0">
+					<left />
+					<bottom />
+				</anchored>
+				<invisible />
+			</genericcontrol>
 
 			<button_text name="button_complete">
 				<anchored height="22">
 					<left offset="5" />
 					<right offset="-5" />
-					<bottom offset="-5" />
+					<bottom parent="bottomanchor" anchor="top" relation="relative" offset="-5" />
 				</anchored>
 				<state textres="char_label_arc_complete" />
+				<script>
+					function onButtonPress()
+						PromptManager.promptCharacterArcClimax(window.getDatabaseNode());
+					end
+				</script>
 			</button_text>
 
 			<ft_columnh name="climax">
 				<anchored>
-					<bottom parent="button_complete" anchor="top" offset="-10" />
+					<bottom parent="bottomanchor" anchor="top" relation="relative" offset="-10" /> 
 					<right offset="-10" />
 				</anchored>
 			</ft_columnh>
@@ -386,6 +438,25 @@
 
 	<windowclass name="record_arc_resolution">
 		<script>
+			function onInit()
+				local node = getDatabaseNode();
+				DB.addHandler(DB.getPath(node, "success"), "onUpdate", update);
+				DB.addHandler(DB.getPath(node, "resolved"), "onUpdate", update);
+
+				update();
+			end
+			function onClose()
+				local node = getDatabaseNode();
+				DB.removeHandler(DB.getPath(node, "success"), "onUpdate", update);
+				DB.removeHandler(DB.getPath(node, "resolved"), "onUpdate", update);
+			end
+			function update()
+				local bIsComplete = DB.getValue(getDatabaseNode(), "success", "") ~= "";
+				local bIsResolved = DB.getValue(getDatabaseNode(), "resolved", "") ~= "";
+
+				button_complete.setVisible(bIsComplete and not bIsResolved);
+				WindowManager.callSafeControlUpdate(self, "resolved", true, not bIsResolved)
+			end
 			function focus()
 				resolution.setFocus();
 			end
@@ -398,9 +469,43 @@
 				<center />
 			</header_column>
 
+			<label_column name="resolved_label">
+				<static textres="char_label_resolution_resolved" />
+			</label_column>
+			<string_columnh name="resolved" />
+
+			<genericcontrol name="bottomanchor">
+				<anchored height="0" width="0">
+					<left />
+					<bottom />
+				</anchored>
+				<invisible />
+			</genericcontrol>
+
+			<button_text name="button_complete">
+				<anchored height="22">
+					<left offset="5" />
+					<right offset="-5" />
+					<bottom parent="bottomanchor" anchor="top" relation="relative" offset="-5" />
+				</anchored>
+				<state textres="char_label_arc_resolved" />
+				<script>
+					function onButtonPress()
+						local nodeArc = window.getDatabaseNode();
+						if DB.getValue(nodeArc, "success", "") == "Yes" then
+							local nodeChar = DB.getChild(nodeArc, "...");
+							CharManager.completeCharacterArcResolution(nodeChar, nodeArc, true);
+							return
+						end
+
+						PromptManager.promptCharacterArcResolution(window.getDatabaseNode());
+					end
+				</script>
+			</button_text>
+
 			<ft_columnh name="resolution">
 				<anchored>
-					<bottom offset="-5" />
+					<bottom parent="bottomanchor" anchor="top" relation="relative" offset="-10" /> 
 					<right offset="-10" />
 				</anchored>
 			</ft_columnh>
@@ -413,6 +518,27 @@
 
 	<windowclass name="record_arc_step">
 		<margins control="0,0,0,5" />
+		<script>
+			function onInit()
+				local node = getDatabaseNode();
+				local nodeArc = DB.getChild(node, "...");
+				DB.addHandler(DB.getPath(nodeArc, "success"), "onUpdate", update);
+
+				update();
+			end
+			function onClose()
+				local node = getDatabaseNode();
+				local nodeArc = DB.getChild(node, "...");
+				DB.removeHandler(DB.getPath(nodeArc, "success"), "onUpdate", update);
+			end
+			function update()
+				local node = getDatabaseNode();
+				local nodeArc = DB.getChild(node, "...");
+				local bIsComplete = DB.getValue(nodeArc, "success", "") ~= "";
+
+				complete.setReadOnly(bIsComplete);
+			end
+		</script>
 		<sheetdata>
 			<hn name="order" />
 			<anchor_column name="columnanchor" />
@@ -435,7 +561,6 @@
 
 						local nodeStep = window.getDatabaseNode();
 						local nodeChar = DB.getChild(nodeStep, ".....");
-						Debug.chat('nodeChar', nodeChar);
 						CharManager.completeCharacterArcStep(nodeChar)
 					end
 				</script>

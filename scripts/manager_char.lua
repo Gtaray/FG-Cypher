@@ -451,18 +451,28 @@ function completeCharacterArcClimax(nodeChar, nodeArc, bSuccess)
 	if bSuccess then
 		nReward = OptionsManagerCypher.getArcClimaxSuccessXpReward();
 		CharManager.sendCharacterArcMessage(nodeChar, "char_message_arc_climax_success", nReward)
+		DB.setValue(nodeArc, "success", "string", "Yes");
 	else
 		nReward = OptionsManagerCypher.getArcClimaxFailureXpReward();
 		CharManager.sendCharacterArcMessage(nodeChar, "char_message_arc_climax_failure", nReward)
+		DB.setValue(nodeArc, "success", "string", "No");
 	end
 
 	local nXP = DB.getValue(nodeChar, "xp", 0);
 	DB.setValue(nodeChar, "xp", "number", math.max(nXP + nReward, 0));
 end
 
-function completeCharacterArcResolution(nodeChar)
-	local nReward = OptionsManagerCypher.getArcResolutionXpReward();
-	CharManager.sendCharacterArcMessage(nodeChar, "char_message_arc_resolution", nReward)
+function completeCharacterArcResolution(nodeChar, nodeArc, bSuccess)
+	local nReward = 0;
+	if bSuccess then
+		nReward = OptionsManagerCypher.getArcResolutionXpReward();
+		CharManager.sendCharacterArcMessage(nodeChar, "char_message_arc_resolution_success", nReward)
+		DB.setValue(nodeArc, "resolved", "string", "Yes");
+	else
+		CharManager.sendCharacterArcMessage(nodeChar, "char_message_arc_resolution_failure", nReward)
+		DB.setValue(nodeArc, "resolved", "string", "No");
+	end
+	
 	local nXP = DB.getValue(nodeChar, "xp", 0);
 	DB.setValue(nodeChar, "xp", "number", math.max(nXP + nReward, 0));
 end

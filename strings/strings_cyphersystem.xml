@@ -207,8 +207,10 @@
 	<string name="char_label_step_complete">Complete?</string>
 	<string name="char_label_climax">Climax</string>
 	<string name="char_label_arc_complete">Complete</string>
-	<string name="char_label_step_success">Succeeded?</string>
+	<string name="char_label_climax_success">Succeeded?</string>
 	<string name="char_label_resolution">Resolution</string>
+	<string name="char_label_arc_resolved">Resolve</string>
+	<string name="char_label_resolution_resolved">Resolved?</string>
 	<string name="char_tooltip_arc_editor">Open up the details for this character arc</string>
 	<string name="char_header_arc_editor">Character Arc</string>
 
@@ -229,7 +231,12 @@
 	<string name="char_message_arc_complete_step">%s gained %s XP for completing a step in one of their character arcs.</string>
 	<string name="char_message_arc_climax_success">%s successfully completed the finale of one of their character arcs and gains %s XP.</string>
 	<string name="char_message_arc_climax_failure">%s was not able to complete the finale of one of their character arcs and gains %s XP.</string>
-	<string name="char_message_arc_resolution">%s resolved one of their character arcs and gains %s XP.</string>
+	<string name="char_message_arc_resolution_success">%s resolved one of their character arcs and gains %s XP.</string>
+	<string name="char_message_arc_resolution_failure">%s was unable to resolve one of their character arcs.</string>
+
+	<string name="arc_complete_prompt_window_title">Select</string>
+	<string name="arc_climax_prompt_label">Were you victorious?</string>
+	<string name="arc_resolution_prompt_label">Were you victorious?</string>
 	
 	<!-- Character - Notes -->
 	<string name="char_label_background">Background</string>

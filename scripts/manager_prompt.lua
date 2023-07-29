@@ -124,3 +124,14 @@ function promptPlayerIntrusion(nodeChar)
 		window.setData(nodeChar);
 	end
 end
+
+-------------------------------------------------------------------------------
+-- CHARACTER ARCS
+-------------------------------------------------------------------------------
+function promptCharacterArcClimax(nodeArc)
+	local window = Interface.openWindow("prompt_arc_climax", nodeArc);
+end
+
+function promptCharacterArcResolution(nodeArc)
+	local window = Interface.openWindow("prompt_arc_resolution", nodeArc);
+end
