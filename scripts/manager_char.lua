@@ -403,3 +403,83 @@ end
 function rest(nodeChar)
 	DB.setValue(nodeChar, "recoveryused", "number", 0);
 end
+
+-------------------------------------------------------------------------------
+-- CHARACTER ARCS
+-------------------------------------------------------------------------------
+
+function getCostToBuyNewCharacterArc(nodeChar)
+	local nCost = 0;
+	-- Only the first character arc is free
+	if DB.getChildCount(nodeChar, "characterarcs") > 0 then
+		nCost = OptionsManagerCypher.getXpCostToAddArc();
+	end
+	return nCost;
+end
+
+function buyNewCharacterArc(nodeChar)
+	local nCost = CharManager.getCostToBuyNewCharacterArc(nodeChar);
+
+	-- Check to see if character has enough XP
+	local nXP = DB.getValue(nodeChar, "xp", 0);
+	if nXP < nCost then
+		local rMessage = {
+			text = Interface.getString("char_message_not_enough_xp_for_arc"),
+			font = "msgfont"
+		};
+		Comm.addChatMessage(rMessage);
+		return false;
+	end
+
+	DB.setValue(nodeChar, "xp", "number", math.max(nXP - nCost, 0));
+	
+	-- Notify chat
+	CharManager.sendCharacterArcMessage(nodeChar, "char_message_add_arc", nCost)
+	return true;
+end
+
+function completeCharacterArcStep(nodeChar)
+	local nReward = OptionsManagerCypher.getArcStepXpReward();
+	CharManager.sendCharacterArcMessage(nodeChar, "char_message_arc_complete_step", nReward)
+
+	local nXP = DB.getValue(nodeChar, "xp", 0);
+	DB.setValue(nodeChar, "xp", "number", math.max(nXP + nReward, 0));
+end
+
+function completeCharacterArcClimax(nodeChar, nodeArc, bSuccess)
+	local nReward = 0;
+	if bSuccess then
+		nReward = OptionsManagerCypher.getArcClimaxSuccessXpReward();
+		CharManager.sendCharacterArcMessage(nodeChar, "char_message_arc_climax_success", nReward)
+	else
+		nReward = OptionsManagerCypher.getArcClimaxFailureXpReward();
+		CharManager.sendCharacterArcMessage(nodeChar, "char_message_arc_climax_failure", nReward)
+	end
+
+	local nXP = DB.getValue(nodeChar, "xp", 0);
+	DB.setValue(nodeChar, "xp", "number", math.max(nXP + nReward, 0));
+end
+
+function completeCharacterArcResolution(nodeChar)
+	local nReward = OptionsManagerCypher.getArcResolutionXpReward();
+	CharManager.sendCharacterArcMessage(nodeChar, "char_message_arc_resolution", nReward)
+	local nXP = DB.getValue(nodeChar, "xp", 0);
+	DB.setValue(nodeChar, "xp", "number", math.max(nXP + nReward, 0));
+end
+
+function sendCharacterArcMessage(nodeChar, sMessageResource, nXp)
+	local sName = DB.getValue(nodeChar, "name", "");
+	if sName == "" then
+		return;
+	end
+
+	local rMessage = {
+		text = string.format(
+			Interface.getString(sMessageResource), 
+			sName, 
+			nXp),
+		font = "msgfont"
+	};
+
+	Comm.deliverChatMessage(rMessage);
+end

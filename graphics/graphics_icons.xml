@@ -77,6 +77,10 @@
 
 	<!-- Character Arcs -->
 	<icon name="tab_arcs" file="graphics/tabs/tab_arcs.png" />
+	<icon name="tab_opening" file="graphics/tabs/tab_opening.png" />
+	<icon name="tab_inprogress" file="graphics/tabs/tab_inprogress.png" />
+	<icon name="tab_climax" file="graphics/tabs/tab_climax.png" />
+	<icon name="tab_resolution" file="graphics/tabs/tab_resolution.png" />
 	
 	<icon name="arc_opening" file="graphics/arcs/opening.png" />
 	<icon name="arc_opening_highlight" file="graphics/arcs/opening_highlight.png" />

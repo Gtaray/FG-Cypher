@@ -22,10 +22,6 @@
 			</windowtitlebar_charsheethelper>
 			<anchor_title_charsheethelper name="contentanchor" />
 
-			<frame_char name="characterframe">
-				<bounds>,0,328,190</bounds>
-			</frame_char>
-
 			<genericcontrol name="contentframe">
 				<anchored to="contentanchor">
 					<top anchor="bottom" offset="15" />

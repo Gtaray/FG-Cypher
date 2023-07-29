@@ -21,18 +21,29 @@ end
 
 function registerOptions()
 	OptionsManager.registerOption2("INITNPC", false, "option_header_combat", "option_label_INITNPC", "option_entry_cycler", 
-			{ labels = "option_val_group", values = "group", baselabel = "option_val_standard", baseval = "off", default = "off" });
+		{ labels = "option_val_group", values = "group", baselabel = "option_val_standard", baseval = "off", default = "off" });
 	OptionsManager.registerOption2("INITPC", false, "option_header_combat", "option_label_INITPC", "option_entry_cycler", 
-			{ labels = "option_val_group", values = "group", baselabel = "option_val_standard", baseval = "off", default = "off" });
+		{ labels = "option_val_group", values = "group", baselabel = "option_val_standard", baseval = "off", default = "off" });
 	OptionsManager.registerOption2("SHPC", false, "option_header_combat", "option_label_SHPC", "option_entry_cycler", 
-			{ labels = "option_val_detailed|option_val_status", values = "detailed|status", baselabel = "option_val_off", baseval = "off", default = "detailed" });
+		{ labels = "option_val_detailed|option_val_status", values = "detailed|status", baselabel = "option_val_off", baseval = "off", default = "detailed" });
 	OptionsManager.registerOption2("SHNPC", false, "option_header_combat", "option_label_SHNPC", "option_entry_cycler", 
-			{ labels = "option_val_detailed|option_val_status", values = "detailed|status", baselabel = "option_val_off", baseval = "off", default = "status" });
+		{ labels = "option_val_detailed|option_val_status", values = "detailed|status", baselabel = "option_val_off", baseval = "off", default = "status" });
 
 	OptionsManager.registerOption2("MAXTARGET", false, "option_header_houserule", "option_label_MAXTARGET", "option_entry_cycler",
-			{ labels = "option_val_maxtarget_15", values = "15", baselabel = "option_val_maxtarget_10", baseval = "10", default = "10" });
+		{ labels = "option_val_maxtarget_15", values = "15", baselabel = "option_val_maxtarget_10", baseval = "10", default = "10" });
 	OptionsManager.registerOption2("HRXP", false, "option_header_houserule", "option_label_HRXP", "option_entry_cycler", 
-			{ labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "off" });
+		{ labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "off" });
+
+	OptionsManager.registerOption2("ARCCOST", false, "option_header_houserule", "option_label_ARCCOST", "option_entry_cycler", 
+		{ labels = "option_val_1|option_val_2|option_val_3|option_val_4|option_val_5", values = "1|2|3|4|5", baselabel = "option_val_0", baseval = "0", default = "1" });
+	OptionsManager.registerOption2("ARCXPSTEP", false, "option_header_houserule", "option_label_ARCXPSTEP", "option_entry_cycler", 
+		{ labels = "option_val_1|option_val_2|option_val_3|option_val_4|option_val_5", values = "1|2|3|4|5", baselabel = "option_val_0", baseval = "0", default = "2" });
+	OptionsManager.registerOption2("ARCXPCLIMAX_SUCCESS", false, "option_header_houserule", "option_label_ARCXPCLIMAX_SUCCESS", "option_entry_cycler", 
+		{ labels = "option_val_1|option_val_2|option_val_3|option_val_4|option_val_5", values = "1|2|3|4|5", baselabel = "option_val_0", baseval = "0", default = "4" });
+	OptionsManager.registerOption2("ARCXPCLIMAX_FAILURE", false, "option_header_houserule", "option_label_ARCXPCLIMAX_FAILURE", "option_entry_cycler", 
+		{ labels = "option_val_1|option_val_2|option_val_3|option_val_4|option_val_5", values = "1|2|3|4|5", baselabel = "option_val_0", baseval = "0", default = "2" });
+	OptionsManager.registerOption2("ARCXPRESOLVE", false, "option_header_houserule", "option_label_ARCXPRESOLVE", "option_entry_cycler", 
+		{ labels = "option_val_1|option_val_2|option_val_3|option_val_4|option_val_5", values = "1|2|3|4|5", baselabel = "option_val_0", baseval = "0", default = "1" });
 end
 
 function calcEncumbrance(nodeChar)
@@ -48,4 +59,24 @@ end
 -------------------------------------------------------------------------------
 function getMaxTarget()
 	return tonumber(OptionsManager.getOption("MAXTARGET"));
+end
+
+function getXpCostToAddArc()
+	return tonumber(OptionsManager.getOption("ARCCOST"));
+end
+
+function getArcStepXpReward()
+	return tonumber(OptionsManager.getOption("ARCXPSTEP"));
+end
+
+function getArcClimaxSuccessXpReward()
+	return tonumber(OptionsManager.getOption("ARCXPCLIMAX_SUCCESS"));
+end
+
+function getArcClimaxFailureXpReward()
+	return tonumber(OptionsManager.getOption("ARCXPCLIMAX_FAILURE"));
+end
+
+function getArcResolutionXpReward()
+	return tonumber(OptionsManager.getOption("ARCXPRESOLVE"));
 end
