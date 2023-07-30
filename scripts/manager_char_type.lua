@@ -63,16 +63,22 @@ function buildTier1AddTable(rAdd)
 		end		
 	end
 
-	rAdd.nAbilityChoices = DB.getValue(rAdd.nodeSource, "t1_abilities", 0);
-	rAdd.aAbilitiesGiven = {};
-	rAdd.aAbilityOptions = {};
-	for _, nodeability in ipairs(DB.getChildList(rAdd.nodeSource, "abilities")) do
-		if DB.getValue(nodeability, "tier", 0) == 1 then
-			local sClass, sRecord = DB.getValue(nodeability, "link");
+	CharTypeManager.buildAbilityPromptTable(rAdd.nodeChar, rAdd.nodeSource, 1, rAdd);
+end
+
+function buildAbilityPromptTable(nodeChar, nodeType, nTier, rData)
+	local sProperty = string.format("t%s_abilities", nTier)
+	rData.nAbilityChoices = DB.getValue(nodeType, sProperty, 0);
+	rData.aAbilitiesGiven = {};
+	rData.aAbilityOptions = {};
+
+	for _, nodeability in ipairs(DB.getChildList(nodeType, "abilities")) do
+		if DB.getValue(nodeability, "tier", 0) == nTier then
+			local _, sRecord = DB.getValue(nodeability, "link");
 			if DB.getValue(nodeability, "given", 0) == 1 then
-				table.insert(rAdd.aAbilitiesGiven, sRecord);
+				table.insert(rData.aAbilitiesGiven, sRecord);
 			else	
-				table.insert(rAdd.aAbilityOptions, {
+				table.insert(rData.aAbilityOptions, {
 					nTier = 1,
 					sRecord = sRecord
 				});
@@ -104,8 +110,16 @@ function applyTier1(rData)
 	CharTypeManager.setStartingEdge(rData);
 
 	-- Give starting abilities
-	CharTypeManager.addStartingAbilities(rData);
+	CharTypeManager.addAbilities(rData);
 end
+
+function applyTier(rData)
+	CharTypeManager.addAbilities(rData);
+end
+
+--------------------------------------------------------------
+-- HELPER FUNCTIONS
+--------------------------------------------------------------
 
 function addStartingEffort(rData)
 	DB.setValue(rData.nodeChar, "effort", "number", rData.nEffort or 1);
@@ -177,9 +191,7 @@ function setStartingEdge(rData)
 	end
 end
 
-function addStartingAbilities(rData)
-	local rActor = ActorManager.resolveActor(rData.nodeChar);
-
+function addAbilities(rData)
 	for _, sAbility in ipairs(rData.aAbilitiesGiven) do
 		CharTypeManager.addAbility(rData.nodeChar, sAbility, rData.sSourceName);
 	end

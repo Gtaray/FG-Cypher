@@ -257,6 +257,47 @@ function increaseTier(nodeChar)
 	DB.setValue(nodeChar, "advancement.edge", "number", 0);
 	DB.setValue(nodeChar, "advancement.effort", "number", 0);
 	DB.setValue(nodeChar, "advancement.skill", "number", 0);
+
+	CharManager.promptAbilitiesForNextTier(nodeChar)
+end
+
+function promptAbilitiesForNextTier(nodeChar)
+	local nTier = DB.getValue(nodeChar, "tier", 0);
+	local _, sRecord = DB.getValue(nodeChar, "typelink", "");
+	local typenode = DB.findNode(sRecord);
+
+	local rData = { nodeChar = nodeChar, sSourceName = DB.getValue(nodeChar, "class.type", ""), nTier = nTier };
+	CharTypeManager.buildAbilityPromptTable(nodeChar, typenode, nTier, rData);
+
+	if #(rData.aAbilityOptions) > 0 then
+		local w = Interface.openWindow("select_dialog_char", "");
+		w.setData(rData, CharManager.applyTypeAbilitiesAndPromptFocusAbilities);
+		return;
+	end
+
+	CharManager.applyTypeAbilitiesAndPromptFocusAbilities(rData);
+end
+
+function applyTypeAbilitiesAndPromptFocusAbilities(rData)
+	CharTypeManager.applyTier(rData);
+
+	local _, sRecord = DB.getValue(rData.nodeChar, "class.focuslink", "");
+	local focusnode = DB.findNode(sRecord);
+
+	-- This re-initializes the ability lists for the focus
+	rData.sSourceName = DB.getValue(nodeChar, "class.focus", "");
+	CharFocusManager.buildAbilityPromptTable(rData.nodeChar, focusnode, rData.nTier, rData);
+	if #(rData.aAbilityOptions) > 0 then
+		local w = Interface.openWindow("select_dialog_char", "");
+		w.setData(rData, CharManager.applyFocusAbilities);
+		return true; -- Return true to keep the window open
+	end
+
+	CharManager.applyFocusAbilities(rData);
+end
+
+function applyFocusAbilities(rData)
+	CharFocusManager.addAbilities(rData);
 end
 
 -------------------------------------------------------------------------------

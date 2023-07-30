@@ -34,14 +34,16 @@ function setData(data, callback)
 	end
 
 	if bStats then
-		onNavigation("stats");
+		self.onNavigation("stats");
 	elseif bEdge then
-		onNavigation("edge");
+		self.onNavigation("edge");
 	elseif bAbilities then
-		onNavigation("abilities");
+		self.onNavigation("abilities");
 	else
-		onNavigation();
+		self.onNavigation();
 	end
+
+	self.updateAbilities();
 end
 
 function updateStats()
@@ -83,6 +85,7 @@ function updateOkButton()
 end
 
 function processOK()
+	local bClose = true;
 	if fCallback then
 		if bStats then
 			rData.nMight, rData.nSpeed, rData.nIntellect = stats.subwindow.getData();
@@ -104,10 +107,14 @@ function processOK()
 			end
 		end
 
-		fCallback(rData);
+		if fCallback(rData) then
+			bClose = false;
+		end
 	end
 	
-	close();
+	if bClose then
+		close();
+	end
 end
 
 function processCancel()

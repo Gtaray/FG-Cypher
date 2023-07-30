@@ -12,6 +12,7 @@ function setData(aAbilities, nCount)
 		abilities_remaining.setValue(nCount);
 	end
 
+	abilities.closeAll();
 	for _, rAbility in ipairs(aAbilities) do
 		local node = DB.findNode(rAbility.sRecord)
 		if node then

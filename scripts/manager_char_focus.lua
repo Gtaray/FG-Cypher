@@ -9,7 +9,7 @@ function addFocusDrop(nodeChar, sClass, sRecord)
 		return;
 	end
 
-	CharFocusManager.buildTier1AddTable(rAdd);
+	CharFocusManager.buildAbilityPromptTable(rAdd.nodeChar, rAdd.nodeSource, 1, rAdd);
 
 	if #(rAdd.aAbilityOptions) > 0 then
 		local w = Interface.openWindow("select_dialog_char", "");
@@ -20,19 +20,20 @@ function addFocusDrop(nodeChar, sClass, sRecord)
 	CharFocusManager.applyTier1(rAdd)
 end
 
-function buildTier1AddTable(rAdd)
-	rAdd.nAbilityChoices = 1; -- This might end up needing to be configurable
-	rAdd.aAbilitiesGiven = {};
-	rAdd.aAbilityOptions = {};
-	for _, nodeability in ipairs(DB.getChildList(rAdd.nodeSource, "abilities")) do
-		if DB.getValue(nodeability, "tier", 0) == 1 then
-			local sClass, sRecord = DB.getValue(nodeability, "link");
+function buildAbilityPromptTable(nodeChar, nodeFocus, nTier, rData)
+	rData.nAbilityChoices = 1;
+	rData.aAbilitiesGiven = {};
+	rData.aAbilityOptions = {};
+
+	for _, nodeability in ipairs(DB.getChildList(nodeFocus, "abilities")) do
+		if DB.getValue(nodeability, "tier", 0) == nTier then
+			local _, sRecord = DB.getValue(nodeability, "link");
 			if DB.getValue(nodeability, "given", 0) == 1 then
-				table.insert(rAdd.aAbilitiesGiven, sRecord);
+				table.insert(rData.aAbilitiesGiven, sRecord);
 			else	
-				table.insert(rAdd.aAbilityOptions, {
+				table.insert(rData.aAbilityOptions, {
 					nTier = 1,
-					sRecord = sRecord,
+					sRecord = sRecord
 				});
 			end
 		end
@@ -56,7 +57,7 @@ function applyTier1(rData)
 	CharFocusManager.addStartingAbilities(rData);
 end
 
-function addStartingAbilities(rData)
+function addAbilities(rData)
 	local rActor = ActorManager.resolveActor(rData.nodeChar);
 
 	for _, sAbility in ipairs(rData.aAbilitiesGiven) do
