@@ -48,7 +48,7 @@ function modRoll(rSource, rTarget, rRoll)
 	end
 
 	rTarget = RollManager.decodeTarget(rRoll, rTarget, true);
-	aFilter = { "skill", "skills", rRoll.sStat }
+	aFilter = { "skill", "skills", rRoll.sStat, rRoll.sSkill }
 
 	--Adjust raw modifier, converting every increment of 3 to a difficultly modifier
 	local nAssetMod, nEffectMod = RollManager.processFlatModifiers(rSource, rTarget, rRoll, aFilter, { rRoll.sStat, rRoll.sSkill })

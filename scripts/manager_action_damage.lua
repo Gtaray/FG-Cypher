@@ -149,7 +149,7 @@ function buildRollResult(rSource, rTarget, rRoll)
 	else
 		rResult.nTotal = ActionsManager.total(rRoll);
 	end
-
+	
 	return rResult;
 end
 
@@ -171,6 +171,19 @@ function notifyApplyDamage(rSource, rTarget, rRoll, rResult)
 	msgOOB.sSourceNode = ActorManager.getCreatureNodeName(rSource);
 	msgOOB.sTargetNode = ActorManager.getCreatureNodeName(rTarget);
 	msgOOB.nTotal = rResult.nTotal or 0;
+	msgOOB.sDamageStat = rResult.sDamageStat
+	msgOOB.sDamageType = rResult.sDamageType
+
+	msgOOB.bPiercing = "false";
+	if rRoll.bPiercing then
+		msgOOB.bPiercing = "true";
+	end
+	msgOOB.nPierceAmount = rRoll.nPierceAmount
+
+	msgOOB.bAmbient = "false";
+	if rRoll.bAmbient then
+		msgOOB.bAmbient = "true";
+	end
 
 	Comm.deliverOOBMessage(msgOOB, "");
 end
@@ -184,7 +197,12 @@ function handleApplyDamage(msgOOB)
 
 	local rRoll = {
 		sDesc = msgOOB.sDesc,
-		nTotal = tonumber(msgOOB.nTotal)
+		nTotal = tonumber(msgOOB.nTotal),
+		sDamageStat = msgOOB.sDamageStat,
+		sDamageType = msgOOB.sDamageType,
+		bPiercing = msgOOB.bPiercing == "true",
+		nPierceAmount = msgOOB.nPierceAmount,
+		bAmbient = msgOOB.bAmbient == "true"
 	}
 	local rResult = ActionDamage.buildRollResult(rSource, rTarget, rRoll);
 	

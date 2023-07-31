@@ -421,7 +421,7 @@ function getArmor(rActor, rTarget, sStat, sDamageType)
 
 	-- Only apply the character's base armor to Might damage.
 	if sDamageType == "untyped" and sStat == "might" then
-		nArmor = DB.getValue(node, "armor", 0);
+		nArmor = DB.getValue(node, "armortotal", 0);
 	end
 
 	-- Start by getting special armor values from the creature node

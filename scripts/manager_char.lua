@@ -5,7 +5,8 @@
 
 function onInit()
 	ItemManager.setCustomCharAdd(onCharItemAdd);
-	ItemManager.setCustomCharRemove(onCharItemRemoved);
+	-- Overriding char_invitem.onDelete instead of this, because this throws errors
+	-- ItemManager.setCustomCharRemove(onCharItemRemoved);
 end
 
 function outputUserMessage(sResource, ...)
@@ -412,8 +413,15 @@ function removeItemLinkedToRecord(noderecord)
 	CharManager.removeLinkedRecord(noderecord, "itemlink");
 end
 
--- This threw an error during the game (invalid argument #1)
 function removeLinkedRecord(sourcenode, sPath)
+	-- For some reason when an item is moved to the party sheet the onRemove event
+	-- fires twice, but by the time we get here the sourcnode is already deleted
+	-- (due to async processing I think), so we just need to check that sourcenode is
+	-- valid before running this.
+	if not sourcenode or type(sourcenode) ~= "databasenode" then
+		return;
+	end
+
 	local _, sRecord = DB.getValue(sourcenode, sPath);
 	if (sRecord or "") == "" then
 		return;
