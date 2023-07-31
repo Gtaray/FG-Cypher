@@ -3,6 +3,9 @@
 -- attribution and copyright information.
 --
 function onInit()	
+	if super and super.onInit then
+		super.onInit();
+	end
 	local nodeActor = window.getDatabaseNode();
 
 	if stat and stat[1] then
@@ -62,6 +65,7 @@ function onDrop(x, y, draginfo)
 		self.handleRecoveryDrop(draginfo);
 		return true;
 	end
+	return super.onDrop(x, y, draginfo);
 end
 function handleRecoveryDrop(draginfo)
 	local aDice = draginfo.getDiceData();

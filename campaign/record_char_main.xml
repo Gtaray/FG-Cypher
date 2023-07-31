@@ -267,6 +267,10 @@
 				<anchored to="mightpool" />
 				<static textres="char_label_might" />
 			</label_charabilitypool>
+			<button_statroll name="mightstatroll">
+				<anchored to="mightpool" />
+				<stat>might</stat>
+			</button_statroll>
 
 			<button_defenseroll name="mightdefroll">
 				<anchored to="mightpool" />
@@ -312,6 +316,10 @@
 				<anchored to="speedpool" />
 				<static textres="char_label_speed" />
 			</label_charabilitypool>
+			<button_statroll name="speedstatroll">
+				<anchored to="speedpool" />
+				<stat>speed</stat>
+			</button_statroll>
 			
 			<genericcontrol name="speedarmor_notice">
 				<anchored to="speedpool" position="righthigh" offset="-3,-5" width="10" height="10" />
@@ -375,6 +383,10 @@
 				<anchored to="intellectpool" />
 				<static textres="char_label_intellect" />
 			</label_charabilitypool>
+			<button_statroll name="intellectstatroll">
+				<anchored to="intellectpool" />
+				<stat>intellect</stat>
+			</button_statroll>
 			
 			<button_defenseroll name="intellectdefroll">
 				<anchored to="intellectpool" />
