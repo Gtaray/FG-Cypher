@@ -322,10 +322,11 @@ function getArmorSpeedCost(rActor)
 		return 0;
 	end
 
-	local nBase = DB.getValue(nodeActor, "armorspeedcost", 0);
+	local nBase = DB.getValue(nodeActor, "armorspeedcosttotal", 0);
 	local nBonus = EffectManagerCypher.getEffectsBonusByType(rActor, "COST", { "armor" });
 
-	return nBase + nBonus;
+	-- This value can never be lower than 0, because 0 means there's no penalty
+	return math.max(nBase + nBonus, 0);
 end
 
 function getDefense(rActor, sStat)
@@ -420,7 +421,7 @@ function getArmor(rActor, rTarget, sStat, sDamageType)
 
 	-- Only apply the character's base armor to Might damage.
 	if sDamageType == "untyped" and sStat == "might" then
-		nArmor = DB.getValue(node, "armor", 0);
+		nArmor = DB.getValue(node, "armortotal", 0);
 	end
 
 	-- Start by getting special armor values from the creature node

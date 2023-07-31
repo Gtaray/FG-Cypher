@@ -303,12 +303,12 @@ function getPowerAction(nodeAction)
 		rAction.sDamageType = DB.getValue(nodeAction, "damagetype", "");
 
 		--rAction.sDamageType = DB.getValue(nodeAction, "damagetype", "");
-		rAction.bPierce = DB.getValue(nodeAction, "pierce", "") == "yes";
+		rAction.bPiercing = DB.getValue(nodeAction, "pierce", "") == "yes";
 
 		-- Only for NPCs
 		rAction.bAmbient = DB.getValue(nodeAction, "ambient", "") == "yes";
 
-		if rAction.bPierce then
+		if rAction.bPiercing then
 			rAction.nPierceAmount = DB.getValue(nodeAction, "pierceamount", 0);	
 		end
 

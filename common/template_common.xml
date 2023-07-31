@@ -51,4 +51,23 @@
 			<tooltip textres="power_tooltip_pierce_armoramount" />
 		</basicnumber>
 	</template>
+
+	<template name="column_left">
+		<genericcontrol>
+			<anchored>
+				<top />
+				<left />
+				<right anchor="center" />
+			</anchored>
+		</genericcontrol>
+	</template>
+	<template name="column_right">
+		<genericcontrol>
+			<anchored>
+				<top />
+				<left anchor="center" />
+				<right />
+			</anchored>
+		</genericcontrol>
+	</template>
 </root>

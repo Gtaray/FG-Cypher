@@ -68,7 +68,9 @@
 				<script>
 					function onValueChanged()
 						if getValue() == 0 then return end
-						CharManager.takeAbilityAdvancement(window.getDatabaseNode());
+						if not CharManager.takeAbilityAdvancement(window.getDatabaseNode()) then
+							setValue(0)
+						end
 					end
 				</script>
 			</button_checkbox>
@@ -82,7 +84,9 @@
 				<script>
 					function onValueChanged()
 						if getValue() == 0 then return end
-						CharManager.takeEdgeAdvancement(window.getDatabaseNode());
+						if not CharManager.takeEdgeAdvancement(window.getDatabaseNode()) then
+							setValue(0)
+						end
 					end
 				</script>
 			</button_checkbox>
@@ -96,7 +100,9 @@
 				<script>
 					function onValueChanged()
 						if getValue() == 0 then return end
-						CharManager.takeEffortAdvancement(window.getDatabaseNode());
+						if not CharManager.takeEffortAdvancement(window.getDatabaseNode()) then
+							setValue(0)
+						end
 					end
 				</script>
 			</button_checkbox>
@@ -110,7 +116,9 @@
 				<script>
 					function onValueChanged()
 						if getValue() == 0 then return end
-						CharManager.takeSkillAdvancement(window.getDatabaseNode());
+						if not CharManager.takeSkillAdvancement(window.getDatabaseNode()) then
+							setValue(0)
+						end
 					end
 				</script>
 			</button_checkbox>
@@ -397,17 +405,36 @@
 				</anchored>	
 				<static textres="char_label_armor" />
 			</label>
-			<basicnumber name="armor">
-				<anchored to="armor_label" position="righthigh" offset="10,0" height="20" width="30" />
-			</basicnumber>
+			<number_linked name="armortotal">
+				<anchored to="armor_label" position="righthigh" offset="5,0" height="20" width="20" />
+				<source><name>armorbase</name><op>+</op></source>
+				<source><name>armor</name><op>+</op></source>
+				<nodrag />
+			</number_linked>
 			<label name="armorspeedcost_label">
-				<anchored to="armor" position="righthigh" offset="20,0" height="20" width="105" />
+				<anchored to="armortotal" position="righthigh" offset="20,0" height="20" width="100" />
 				<static textres="char_label_armorspeedcost" />
 			</label>
-			<basicnumber name="armorspeedcost">
-				<anchored to="armorspeedcost_label" position="righthigh" offset="10,0" height="20" width="30" />
+			<number_linked name="armorspeedcosttotal">
+				<anchored to="armorspeedcost_label" position="righthigh" offset="5,0" height="20" width="20" />
 				<tooltip textres="char_tooltip_armorspeedcost" />
-			</basicnumber>
+				<source><name>armorspeedcostbase</name><op>+</op></source>
+				<source><name>armorspeedcost</name><op>+</op></source>
+				<nodrag />
+			</number_linked>
+
+			<button_details name="button_armorcalc">
+				<anchored to="armorframe">
+					<top offset="10" />
+					<right offset="-10" />
+				</anchored>
+				<tooltip textres="char_tooltip_armor" />
+				<script>
+					function onButtonPress()
+						Interface.openWindow("charsheet_armorcalc", window.getDatabaseNode());
+					end
+				</script>
+			</button_details>
 
 			<label_frametop name="header_special_defenses">
 				<anchored to="armorframe">
@@ -525,6 +552,90 @@
 			<basicnumber name="recoveryrollmod">
 				<anchored to="recoveryrollplus" position="righthigh" offset="7,0" width="20" height="20" />
 			</basicnumber>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="charsheet_armorcalc">
+		<frame>charsheethelper</frame>
+		<placement>
+			<size width="350" height="150" />
+		</placement>
+		<sizelimits>
+			<minimum width="350" height="150" />
+			<dynamic />
+		</sizelimits>
+		<sheetdata>
+			<windowtitlebar_charsheethelper name="title">
+				<prefix>char_armorcalc_title</prefix>
+			</windowtitlebar_charsheethelper>
+			<anchor_title_charsheethelper name="contentanchor" />
+
+			<anchor_column name="columnanchor">
+				<anchored to="contentanchor" position="below" offset="0,-5" />
+			</anchor_column>
+			
+			<!-- Armor -->
+			<label name="label_armor">
+				<anchored width="100">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="20" />
+					<left offset="30" />
+				</anchored>
+				<static textres="char_label_armor" />
+			</label>
+			<basicnumber name="armorbase">
+				<anchored to="label_armor" position="righthigh" offset="5,0" width="45" height="20" />
+				<tooltip textres="char_tooltip_armorbase"/>
+			</basicnumber>
+			<label_fieldtop name="label_armorbase">
+				<anchored to="armorbase" />
+				<static textres="char_label_armorbase" />
+			</label_fieldtop>
+			<label name="label_armorplus">
+				<anchored to="armorbase" position="righthigh" offset="5,0" width="10" />
+				<static>+</static>
+				<center />
+			</label>
+			<basicnumber name="armor">
+				<anchored to="label_armorplus" position="right" offset="5,0" width="45" />
+				<tooltip textres="char_tooltip_armormod"/>
+			</basicnumber>
+			<label_fieldtop name="label_armormod">
+				<anchored to="armor" />
+				<static textres="char_label_armormod" />
+			</label_fieldtop>
+			
+			<!-- Speed Effort Penalty -->
+			<label name="label_armorspeedcost">
+				<anchored width="100">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="20" />
+					<left offset="30" />
+				</anchored>
+				<static textres="char_label_armorspeedcost" />
+			</label>
+			<basicnumber name="armorspeedcostbase">
+				<anchored to="label_armorspeedcost" position="righthigh" offset="5,0" width="45" height="20" />
+				<tooltip textres="char_tooltip_armorspeedcostbase" />
+			</basicnumber>
+			<label_fieldtop name="label_armorspeedcostbase">
+				<anchored to="armorspeedcostbase" />
+				<static textres="char_label_armorbase" />
+			</label_fieldtop>
+			<label name="label_armorspeedcostplus">
+				<anchored to="armorspeedcostbase" position="righthigh" offset="5,0" width="10" />
+				<static>+</static>
+				<center />
+			</label>
+			<basicnumber name="armorspeedcost">
+				<anchored to="label_armorspeedcostplus" position="righthigh" offset="5,0" width="45" height="20" />
+				<tooltip textres="char_tooltip_armorspeedcostmod" />
+			</basicnumber>
+			<label_fieldtop name="label_armorspeedcostmod">
+				<anchored to="armorspeedcost" />
+				<static textres="char_label_armormod" />
+			</label_fieldtop>
+
+			<resize_charsheethelper />
+			<close_charsheethelper />
 		</sheetdata>
 	</windowclass>
 

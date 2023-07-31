@@ -6,67 +6,10 @@
 -->
 
 <root>
-	<windowclass name="select_dialog_stats">
-		<frame>utilitybox</frame>
-		<placement>
-			<size width="380" height="350" />
-			<nosave />
-		</placement>
-		<script>
-			local fCallback
-			local rData;
-			function setData(data, callback)
-				rData = data;
-				fCallback = callback;
-				stats.subwindow.setData(rData.nMight, rData.nSpeed, rData.nIntellect, rData.nFloatingStats);
-			end
-			function processOK()
-				if fCallback then
-					rData.nMight, rData.nSpeed, rData.nIntellect = stats.subwindow.getData();
-					fCallback(rData);
-				end
-				close()
-			end
-			function processCancel()
-				close();
-			end
-		</script>
-		<sheetdata>
-			<windowtitlebar name="title">
-				<resource>dialog_select_char_title</resource>
-			</windowtitlebar>
-
-			<anchor_content_utilitybox_top />
-
-			<genericcontrol name="contentframe">
-				<anchored to="contentanchor">
-					<top anchor="bottom" offset="20" />
-					<left offset="20" />
-					<right parent="" offset="-40" />
-					<bottom parent="" offset="-80" />
-				</anchored>
-				<frame name="groupbox" offset="15,10,15,10" />
-			</genericcontrol>
-
-			<subwindow_char_dialog name="stats">
-				<class>dialog_statpools</class>
-				<fastinit />
-				<activate />
-				<noscroll />
-			</subwindow_char_dialog>
-			
-			<anchor_content_utilitybox_bottom />
-			<sub_content_bottom name="sub_buttons">
-				<class>dialog_buttons_okcancel</class>
-			</sub_content_bottom>
-			
-			<close_utilitybox />
-		</sheetdata>
-	</windowclass>
-
 	<windowclass name="dialog_statpools">
 		<script file="utility/scripts/dialog_statpools.lua" />
 		<sheetdata>
+			<hsx name="type" />
 			<anchor_column name="columnanchor" />
 
 			<header_column name="header_stats">

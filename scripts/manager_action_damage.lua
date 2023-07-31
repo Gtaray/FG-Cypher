@@ -48,8 +48,8 @@ function getRoll(rActor, rAction)
 		rRoll.sLabel);
 
 	rRoll.bAmbient = rAction.bAmbient or false;
-	rRoll.bPierce = rAction.bPierce or false;
-	if rRoll.bPierce then
+	rRoll.bPiercing = rAction.bPiercing or false;
+	if rRoll.bPiercing then
 		rRoll.nPierceAmount = rAction.nPierceAmount;
 	end
 	
@@ -69,7 +69,7 @@ function modRoll(rSource, rTarget, rRoll)
 		rRoll.nMod = rRoll.nMod + (rRoll.nEffort * 3);
 	end
 
-	rRoll.bPiercing, rRoll.nPierceAmount = RollManager.processPiercing(rSource, rTarget, bPiercing, nPierceAmount, { rRoll.sDamageType });
+	rRoll.bPiercing, rRoll.nPierceAmount = RollManager.processPiercing(rSource, rTarget, rRoll.bPiercing, rRoll.nPierceAmount, { rRoll.sDamageType });
 
 	local nDmgBonus = EffectManagerCypher.getEffectsBonusByType(rSource, aFilter, { rRoll.sStat, rRoll.sDamageType }, rTarget)
 	if nDmgBonus ~= 0 then
@@ -80,7 +80,7 @@ function modRoll(rSource, rTarget, rRoll)
 	-- Because it requires two variables as an input
 	-- instead of just the single that most encodes have
 	RollManager.encodeAmbientDamage({ bAmbient = rRoll.bAmbient }, rRoll);
-	RollManager.encodePiercing({ bPierce = bPiercing, nPierceAmount = nPierceAmount }, rRoll);
+	RollManager.encodePiercing({ bPierce = rRoll.bPiercing, nPierceAmount = rRoll.nPierceAmount }, rRoll);
 	RollManager.encodeEffort(nEffort, rRoll)
 	RollManager.encodeEffects(rRoll, nDmgBonus);
 end
@@ -149,7 +149,7 @@ function buildRollResult(rSource, rTarget, rRoll)
 	else
 		rResult.nTotal = ActionsManager.total(rRoll);
 	end
-
+	
 	return rResult;
 end
 
@@ -171,6 +171,19 @@ function notifyApplyDamage(rSource, rTarget, rRoll, rResult)
 	msgOOB.sSourceNode = ActorManager.getCreatureNodeName(rSource);
 	msgOOB.sTargetNode = ActorManager.getCreatureNodeName(rTarget);
 	msgOOB.nTotal = rResult.nTotal or 0;
+	msgOOB.sDamageStat = rResult.sDamageStat
+	msgOOB.sDamageType = rResult.sDamageType
+
+	msgOOB.bPiercing = "false";
+	if rRoll.bPiercing then
+		msgOOB.bPiercing = "true";
+	end
+	msgOOB.nPierceAmount = rRoll.nPierceAmount
+
+	msgOOB.bAmbient = "false";
+	if rRoll.bAmbient then
+		msgOOB.bAmbient = "true";
+	end
 
 	Comm.deliverOOBMessage(msgOOB, "");
 end
@@ -184,7 +197,12 @@ function handleApplyDamage(msgOOB)
 
 	local rRoll = {
 		sDesc = msgOOB.sDesc,
-		nTotal = tonumber(msgOOB.nTotal)
+		nTotal = tonumber(msgOOB.nTotal),
+		sDamageStat = msgOOB.sDamageStat,
+		sDamageType = msgOOB.sDamageType,
+		bPiercing = msgOOB.bPiercing == "true",
+		nPierceAmount = msgOOB.nPierceAmount,
+		bAmbient = msgOOB.bAmbient == "true"
 	}
 	local rResult = ActionDamage.buildRollResult(rSource, rTarget, rRoll);
 	

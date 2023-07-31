@@ -5,7 +5,8 @@
 
 function onInit()
 	ItemManager.setCustomCharAdd(onCharItemAdd);
-	ItemManager.setCustomCharRemove(onCharItemRemoved);
+	-- Overriding char_invitem.onDelete instead of this, because this throws errors
+	-- ItemManager.setCustomCharRemove(onCharItemRemoved);
 end
 
 function outputUserMessage(sResource, ...)
@@ -71,55 +72,74 @@ end
 -------------------------------------------------------------------------------
 function takeAbilityAdvancement(nodeChar)
 	if not nodeChar then
-		return;
+		return false;
 	end
 
-	CharManager.takeAdvancement(nodeChar, "increase their stat pools");
+	local rData = {
+		nodeChar = nodeChar,
+		sType = "stats",
+		nFloatingStats = 4,
+	};
+
+	return CharManager.takeAdvancement(nodeChar, "increase their stat pools", rData);
 end
 
 function takeEdgeAdvancement(nodeChar)
 	if not nodeChar then
-		return;
+		return false;
 	end
 
-	CharManager.takeAdvancement(nodeChar, "increase their edge");
+	local rData = {
+		nodeChar = nodeChar,
+		sType = "edge",
+	};
+
+	return CharManager.takeAdvancement(nodeChar, "increase their edge", rData);
 end
 
 function takeEffortAdvancement(nodeChar)
 	if not nodeChar then
-		return;
+		return false;
 	end
 
-	CharManager.takeAdvancement(nodeChar, "increase their effort");
+	local rData = {
+		nodeChar = nodeChar,
+		sType = "effort",
+	};
+
+	return CharManager.takeAdvancement(nodeChar, "increase their effort", rData);
 end
 
 function takeSkillAdvancement(nodeChar)
 	if not nodeChar then
-		return;
+		return false;
 	end
 
-	CharManager.takeAdvancement(nodeChar, "gain training in a skill");
+	local rData = {
+		nodeChar = nodeChar,
+		sType = "skill",
+	};
+
+	return CharManager.takeAdvancement(nodeChar, "gain training in a skill", rData);
 end
 
-function takeAdvancement(nodeChar, sMessage)
+function takeAdvancement(nodeChar, sMessage, rData)
 	if not nodeChar then
-		return;
+		return false;
 	end
 
 	if not CharManager.deductXpForAdvancement(nodeChar, 4) then
-		return;
+		return false;
 	end
 
 	if (sMessage or "") ~= "" then
 		CharManager.sendAdvancementMessage(nodeChar, "char_message_advancement_taken", sMessage);
 	end
 
-	-- Check if all advancements have been taken, and if so, clear all the checkboxes
-	-- and increment tier
-	
-	if CharManager.checkForAllAdvancements(nodeChar) then
-		CharManager.increaseTier(nodeChar);
-	end
+	local w = Interface.openWindow("select_dialog_advancement", "");
+	w.setData(rData, CharManager.completeAdvancement);
+
+	return true;
 end
 
 function deductXpForAdvancement(nodeChar, nCost)
@@ -136,6 +156,60 @@ function deductXpForAdvancement(nodeChar, nCost)
 
 	DB.setValue(nodeChar, "xp", "number", math.max(nXP - nCost, 0));
 	return true;
+end
+
+function completeAdvancement(rData)
+	local rActor = ActorManager.resolveActor(rData.nodeChar);
+	rData.sSource = "Advancement"
+
+	if rData.sType == "stats" then
+		CharModManager.applyFloatingStatModificationCallback(rData);
+		
+	elseif rData.sType == "edge" then
+		for sStat, nEdge in pairs(rData.aEdgeGiven) do
+			if nEdge > 0 then
+				local rEdge = { sStat = sStat, nMod = nEdge, sSource = rData.sSource };
+				rEdge.sSummary = CharModManager.getEdgeModSummary(rEdge);
+				CharModManager.applyEdgeModification(rActor, rEdge)
+			end
+		end
+
+	elseif rData.sType == "effort" then
+		rData.sSummary = CharModManager.getEffortModSummary(rData)
+		CharModManager.applyEffortModification(rActor, rData);
+
+	elseif rData.sType == "skill" then
+		if rData.sSkill then
+			rData.sSummary = CharModManager.getSkillModSummary(rData)
+			CharModManager.applySkillModification(rActor, rData)
+		elseif rData.sAbility then
+			CharAbilityManager.addTrainingToAbility(rData.nodeChar, rData.abilitynode)
+		end
+
+	elseif rData.sType == "ability" or rData.sType == "focus" then
+		for _, rAbility in ipairs(rData.aAbilitiesGiven) do
+			local rMod = {
+				sLinkRecord = DB.getPath(rAbility.node),
+				sSource = rData.sSource
+			}
+			rMod.sSummary = CharModManager.getAbilityModSummary(rMod);
+			CharModManager.applyAbilityModification(rActor, rMod);
+		end
+
+	elseif rData.sType == "recovery" then
+		rData.sSummary = CharModManager.getRecoveryModSummary(rData);
+		CharModManager.applyRecoveryModification(rActor, rData)
+
+	elseif rData.sType == "armor" then
+		rData.sSummary = CharModManager.getArmorEffortPenaltySummary(rData);
+		CharModManager.applyArmorEffortPenaltyModification(rActor, rData)
+	end
+
+	-- Check if all advancements have been taken, and if so, clear all the checkboxes
+	-- and increment tier
+	if CharManager.checkForAllAdvancements(rData.nodeChar) then
+		CharManager.increaseTier(rData.nodeChar);
+	end
 end
 
 function sendAdvancementMessage(nodeChar, sMessageResource, sMessage)
@@ -155,8 +229,7 @@ function sendAdvancementMessage(nodeChar, sMessageResource, sMessage)
 				sMessageResource), 
 				sName, 
 				sMessage),
-		font = "msgfont",
-		sender = User.getIdentityLabel(sSender)
+		font = "msgfont"
 	};
 
 	Comm.deliverChatMessage(rMessage);
@@ -185,6 +258,47 @@ function increaseTier(nodeChar)
 	DB.setValue(nodeChar, "advancement.edge", "number", 0);
 	DB.setValue(nodeChar, "advancement.effort", "number", 0);
 	DB.setValue(nodeChar, "advancement.skill", "number", 0);
+
+	CharManager.promptAbilitiesForNextTier(nodeChar)
+end
+
+function promptAbilitiesForNextTier(nodeChar)
+	local nTier = DB.getValue(nodeChar, "tier", 0);
+	local _, sRecord = DB.getValue(nodeChar, "typelink", "");
+	local typenode = DB.findNode(sRecord);
+
+	local rData = { nodeChar = nodeChar, sSourceName = DB.getValue(nodeChar, "class.type", ""), nTier = nTier };
+	CharTypeManager.buildAbilityPromptTable(nodeChar, typenode, nTier, rData);
+
+	if #(rData.aAbilityOptions) > 0 then
+		local w = Interface.openWindow("select_dialog_char", "");
+		w.setData(rData, CharManager.applyTypeAbilitiesAndPromptFocusAbilities);
+		return;
+	end
+
+	CharManager.applyTypeAbilitiesAndPromptFocusAbilities(rData);
+end
+
+function applyTypeAbilitiesAndPromptFocusAbilities(rData)
+	CharTypeManager.applyTier(rData);
+
+	local _, sRecord = DB.getValue(rData.nodeChar, "class.focuslink", "");
+	local focusnode = DB.findNode(sRecord);
+
+	-- This re-initializes the ability lists for the focus
+	rData.sSourceName = DB.getValue(nodeChar, "class.focus", "");
+	CharFocusManager.buildAbilityPromptTable(rData.nodeChar, focusnode, rData.nTier, rData);
+	if #(rData.aAbilityOptions) > 0 then
+		local w = Interface.openWindow("select_dialog_char", "");
+		w.setData(rData, CharManager.applyFocusAbilities);
+		return true; -- Return true to keep the window open
+	end
+
+	CharManager.applyFocusAbilities(rData);
+end
+
+function applyFocusAbilities(rData)
+	CharFocusManager.addAbilities(rData);
 end
 
 -------------------------------------------------------------------------------
@@ -299,8 +413,15 @@ function removeItemLinkedToRecord(noderecord)
 	CharManager.removeLinkedRecord(noderecord, "itemlink");
 end
 
--- This threw an error during the game (invalid argument #1)
 function removeLinkedRecord(sourcenode, sPath)
+	-- For some reason when an item is moved to the party sheet the onRemove event
+	-- fires twice, but by the time we get here the sourcnode is already deleted
+	-- (due to async processing I think), so we just need to check that sourcenode is
+	-- valid before running this.
+	if not sourcenode or type(sourcenode) ~= "databasenode" then
+		return;
+	end
+
 	local _, sRecord = DB.getValue(sourcenode, sPath);
 	if (sRecord or "") == "" then
 		return;
@@ -330,4 +451,94 @@ end
 
 function rest(nodeChar)
 	DB.setValue(nodeChar, "recoveryused", "number", 0);
+end
+
+-------------------------------------------------------------------------------
+-- CHARACTER ARCS
+-------------------------------------------------------------------------------
+
+function getCostToBuyNewCharacterArc(nodeChar)
+	local nCost = 0;
+	-- Only the first character arc is free
+	if DB.getChildCount(nodeChar, "characterarcs") > 0 then
+		nCost = OptionsManagerCypher.getXpCostToAddArc();
+	end
+	return nCost;
+end
+
+function buyNewCharacterArc(nodeChar)
+	local nCost = CharManager.getCostToBuyNewCharacterArc(nodeChar);
+
+	-- Check to see if character has enough XP
+	local nXP = DB.getValue(nodeChar, "xp", 0);
+	if nXP < nCost then
+		local rMessage = {
+			text = Interface.getString("char_message_not_enough_xp_for_arc"),
+			font = "msgfont"
+		};
+		Comm.addChatMessage(rMessage);
+		return false;
+	end
+
+	DB.setValue(nodeChar, "xp", "number", math.max(nXP - nCost, 0));
+	
+	-- Notify chat
+	CharManager.sendCharacterArcMessage(nodeChar, "char_message_add_arc", nCost)
+	return true;
+end
+
+function completeCharacterArcStep(nodeChar)
+	local nReward = OptionsManagerCypher.getArcStepXpReward();
+	CharManager.sendCharacterArcMessage(nodeChar, "char_message_arc_complete_step", nReward)
+
+	local nXP = DB.getValue(nodeChar, "xp", 0);
+	DB.setValue(nodeChar, "xp", "number", math.max(nXP + nReward, 0));
+end
+
+function completeCharacterArcClimax(nodeChar, nodeArc, bSuccess)
+	local nReward = 0;
+	if bSuccess then
+		nReward = OptionsManagerCypher.getArcClimaxSuccessXpReward();
+		CharManager.sendCharacterArcMessage(nodeChar, "char_message_arc_climax_success", nReward)
+		DB.setValue(nodeArc, "success", "string", "Yes");
+	else
+		nReward = OptionsManagerCypher.getArcClimaxFailureXpReward();
+		CharManager.sendCharacterArcMessage(nodeChar, "char_message_arc_climax_failure", nReward)
+		DB.setValue(nodeArc, "success", "string", "No");
+	end
+
+	local nXP = DB.getValue(nodeChar, "xp", 0);
+	DB.setValue(nodeChar, "xp", "number", math.max(nXP + nReward, 0));
+end
+
+function completeCharacterArcResolution(nodeChar, nodeArc, bSuccess)
+	local nReward = 0;
+	if bSuccess then
+		nReward = OptionsManagerCypher.getArcResolutionXpReward();
+		CharManager.sendCharacterArcMessage(nodeChar, "char_message_arc_resolution_success", nReward)
+		DB.setValue(nodeArc, "resolved", "string", "Yes");
+	else
+		CharManager.sendCharacterArcMessage(nodeChar, "char_message_arc_resolution_failure", nReward)
+		DB.setValue(nodeArc, "resolved", "string", "No");
+	end
+	
+	local nXP = DB.getValue(nodeChar, "xp", 0);
+	DB.setValue(nodeChar, "xp", "number", math.max(nXP + nReward, 0));
+end
+
+function sendCharacterArcMessage(nodeChar, sMessageResource, nXp)
+	local sName = DB.getValue(nodeChar, "name", "");
+	if sName == "" then
+		return;
+	end
+
+	local rMessage = {
+		text = string.format(
+			Interface.getString(sMessageResource), 
+			sName, 
+			nXp),
+		font = "msgfont"
+	};
+
+	Comm.deliverChatMessage(rMessage);
 end

@@ -13,7 +13,10 @@ function payCostAndRoll(draginfo, rActor, rAction)
 
 	if not ActionCost.performRoll(draginfo, rActor, rAction) then
 		ActionAttack.performRoll(draginfo, rActor, rAction);
+		return true;
 	end
+
+	return false;
 end
 
 function performRoll(draginfo, rActor, rAction)
@@ -86,10 +89,14 @@ function modRoll(rSource, rTarget, rRoll)
 	-- Process conditions
 	rRoll.nConditionMod = RollManager.processStandardConditionsForActor(rSource);
 
+	-- Process Lucky (advantage / disadvantage)
+	local bAdv, bDis = RollManager.processAdvantage(rSource, rTarget, rRoll, aFilter)
+
 	RollManager.encodeTraining(rRoll.sTraining, rRoll);
 	RollManager.encodeEffort(rRoll.nEffort, rRoll);
 	RollManager.encodeAssets(rRoll.nAssets, rRoll);
 	RollManager.encodeEaseHindrance(rRoll, rRoll.nEase, rRoll.nHinder);
+	RollManager.encodeAdvantage(rRoll, bAdv, bDis);
 
 	if rRoll.bLightWeapon == "true" then
 		rRoll.sDesc = string.format("%s [LIGHT]", rRoll.sDesc)
@@ -100,10 +107,13 @@ function modRoll(rSource, rTarget, rRoll)
 end
 
 function onRoll(rSource, rTarget, rRoll)
+	RollManager.decodeAdvantage(rRoll);
+
 	-- Hacky way to force the rebuilt flag to either be true or false, never an empty string
 	rRoll.bRebuilt = (rRoll.bRebuilt == true) or (rRoll.bRebuilt or "") ~= "";
 	rRoll.bLightWeapon = (rRoll.bLightWeapon == "true") or (rRoll.bLightWeapon == "light");
 	rTarget = RollManager.decodeTarget(rRoll, rTarget);
+	rRoll.bLightWeapon = rRoll.sDesc:match("%[LIGHT%]") ~= nil;
 
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 	rMessage.icon = "action_attack";

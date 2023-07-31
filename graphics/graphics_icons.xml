@@ -74,4 +74,29 @@
 	<icon name="sidebar_icon_recordtype_focus" file="graphics/sidebar/sidebar_icon_feat.png" />
 	<icon name="sidebar_icon_recordtype_ancestry" file="graphics/sidebar/sidebar_icon_race.png" />
 	<icon name="sidebar_icon_recordtype_flavor" file="graphics/sidebar/sidebar_icon_potion.png" />
+
+	<!-- Character Arcs -->
+	<icon name="tab_arcs" file="graphics/tabs/tab_arcs.png" />
+	<icon name="tab_opening" file="graphics/tabs/tab_opening.png" />
+	<icon name="tab_inprogress" file="graphics/tabs/tab_inprogress.png" />
+	<icon name="tab_climax" file="graphics/tabs/tab_climax.png" />
+	<icon name="tab_resolution" file="graphics/tabs/tab_resolution.png" />
+	
+	<icon name="arc_opening" file="graphics/arcs/opening.png" />
+	<icon name="arc_opening_highlight" file="graphics/arcs/opening_highlight.png" />
+	<icon name="arc_opening_next" file="graphics/arcs/opening_advance.png" />
+
+	<icon name="arc_inprogress" file="graphics/arcs/inprogress.png" />
+	<icon name="arc_inprogress_previous" file="graphics/arcs/inprogress_previous.png" />
+	<icon name="arc_inprogress_highlight" file="graphics/arcs/inprogress_highlight.png" />
+	<icon name="arc_inprogress_next" file="graphics/arcs/inprogress_advance.png" />
+
+	<icon name="arc_climax" file="graphics/arcs/climax.png" />
+	<icon name="arc_climax_previous" file="graphics/arcs/climax_previous.png" />
+	<icon name="arc_climax_highlight" file="graphics/arcs/climax_highlight.png" />
+	<icon name="arc_climax_next" file="graphics/arcs/climax_advance.png" />
+
+	<icon name="arc_resolution" file="graphics/arcs/resolution.png" />
+	<icon name="arc_resolution_previous" file="graphics/arcs/resolution_previous.png" />
+	<icon name="arc_resolution_highlight" file="graphics/arcs/resolution_highlight.png" />
 </root>

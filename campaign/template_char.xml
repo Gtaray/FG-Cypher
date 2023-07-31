@@ -411,4 +411,14 @@
 			<closetoggle />
 		</linkfield_statich>
 	</template>
+
+	<template name="state_charammocounter">
+		<buttongroup_counter>
+			<sourcefields>
+				<maximum>maxammo</maximum>
+				<current>ammo</current>
+			</sourcefields>
+			<maxslotperrow>30</maxslotperrow>
+		</buttongroup_counter>
+	</template>
 </root>

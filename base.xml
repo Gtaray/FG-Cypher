@@ -40,6 +40,7 @@
 	<includefile source="campaign/record_char_skills.xml" />
 	<includefile source="campaign/record_char_inventory.xml" />
 	<includefile source="campaign/record_char_abilities.xml" />
+	<includefile source="campaign/record_char_arcs.xml" />
 	<includefile source="campaign/record_char_notes.xml" />
 	<includefile source="campaign/record_char_actions.xml" />
 	<includefile source="campaign/record_char_actions_attack.xml" />
@@ -83,7 +84,11 @@
 	<includefile source="utility/prompt_pc_intrusion.xml" />
 	<includefile source="utility/select_dialog_char.xml" />
 	<includefile source="utility/select_dialog_stats.xml" />
+	<includefile source="utility/select_dialog_edge.xml" />
+	<includefile source="utility/select_dialog_abilities.xml" />
+	<includefile source="utility/select_dialog_advancement.xml" />
 	<includefile source="utility/select_dialog_templates.xml" />
+	<includefile source="utility/prompt_arc.xml" />
 
 	<!-- High-level scripts -->
 	<script name="GameSystem" file="scripts/manager_gamesystem.lua" />

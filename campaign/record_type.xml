@@ -45,9 +45,6 @@
 					<subwindow>content</subwindow>
 				</tab>
 			</tabs_recordsheet>
-
-			<resize_referencepage />
-			<close_referencepage />
 		</sheetdata>
 	</windowclass>
 

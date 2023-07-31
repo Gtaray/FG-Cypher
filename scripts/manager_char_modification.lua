@@ -54,13 +54,17 @@ function addModificationToChar(rActor, vMod)
 
 	elseif rData.sProperty == "cypherlimit" then
 		CharModManager.applyCypherLimitModification(rActor, rData);
+
+	elseif rData.sProperty == "armoreffortpenalty" then
+		CharModManager.applyArmorEffortPenaltyModification(rActor, rData);
+		
 	end
 end
 
 function applyStatModification(rActor, rData)
 	if rData.sStat == "flex" then
-		local w = Interface.openWindow("select_dialog_stats", "");
 		local rDialog = {
+			sType = "stats",
 			nodeChar = ActorManager.getCreatureNode(rActor),
 			nMight = ActorManagerCypher.getStatPool(rActor, "might"),
 			nSpeed = ActorManagerCypher.getStatPool(rActor, "speed");
@@ -68,7 +72,8 @@ function applyStatModification(rActor, rData)
 			nFloatingStats = rData.nMod,
 			sSource = rData.sSource
 		};
-		w.setData(rDialog, CharModManager.applyFloatingStatModificationCallback);
+		
+		PromptManager.promptForCharacterModifications(rDialog);
 		return;
 	end
 
@@ -134,6 +139,10 @@ function applySkillModification(rActor, rData)
 	if not matchnode then
 		matchnode = DB.createChild(skilllist);
 		DB.setValue(matchnode, "name", "string", rData.sSkill);
+		-- Set the training value to 1 (practiced) because we increment the 
+		-- training below. This prevents a new skill from instantly being set
+		-- to specialized becuase it was initialized at Trained and then incremented
+		DB.setValue(matchnode, "training", "number", 1)
 	end
 
 	-- Only change the stat if the skill doesn't have a stat set
@@ -322,6 +331,15 @@ function applyCypherLimitModification(rActor, rData)
 	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
 end
 
+function applyArmorEffortPenaltyModification(rActor, rData)
+	local charnode = ActorManager.getCreatureNode(rActor);
+
+	CharModManager.applyModToModifierNode(charnode, "armorspeedcost", rData.nMod);
+
+	rData.sSummary = "Armor: " .. rData.sSummary;
+	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
+end
+
 -- 0 = inability, 1 - nothing, 2 = trained, 3 = specialized
 function applyModToTrainingNode(node, sPath, sTraining)
 	if (sTraining or "") == "" then
@@ -433,6 +451,11 @@ function getModificationData(modNode)
 	elseif rMod.sProperty == "Cypher Limit" then
 		rMod.sProperty = "cypherlimit"
 		rMod.nMod = DB.getValue(modNode, "mod", 0);
+
+	elseif rMod.sProperty == "Armor Effort Penalty" then
+		rMod.sProperty = "armoreffortpenalty";
+		rMod.nMod = DB.getValue(modNode, "mod", 0);
+		
 	end
 
 	return rMod;
@@ -476,6 +499,8 @@ function getCharacterModificationSummary(vMod)
 		return CharModManager.getAbilityModSummary(rMod);
 	elseif rMod.sProperty == "item" then
 		return CharModManager.getItemModSummary(rMod);
+	elseif rMod.sProperty == "armoreffortpenalty" then
+		return CharModManager.getArmorEffortPenaltySummary(rMod);
 	end
 
 	return "";
@@ -611,6 +636,16 @@ end
 
 function getItemModSummary(rMod)
 	return CharModManager.getAbilityModSummary(rMod);
+end
+
+function getArmorEffortPenaltySummary(rMod)
+	if not rMod then
+		return "";
+	end
+
+	return string.format("%s to Armor Effort Penalty", 
+		DiceManager.convertDiceToString({}, rMod.nMod or 0, true)
+	);
 end
 
 function getAssetModifierTrainingFormat(nAsset, nMod, sTraining)

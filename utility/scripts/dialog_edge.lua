@@ -35,5 +35,7 @@ function isValid()
 end
 
 function update()
-	parentcontrol.window.updateStats();
+	if parentcontrol and parentcontrol.window and parentcontrol.window.updateStats then
+		parentcontrol.window.updateStats();
+	end
 end

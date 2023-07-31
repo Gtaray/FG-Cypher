@@ -16,6 +16,16 @@ function getUser(rPlayer)
 end
 
 -------------------------------------------------------------------------------
+-- CHARACTER BUILDING / ADVANCEMENT PROMPTS
+-------------------------------------------------------------------------------
+function promptForCharacterModifications(rData)
+	local w = Interface.openWindow("select_dialog_stats", "");
+	if w then
+		w.addModification(rData);
+	end
+end
+
+-------------------------------------------------------------------------------
 -- DEFENSE PROMPT
 -------------------------------------------------------------------------------
 
@@ -113,4 +123,15 @@ function promptPlayerIntrusion(nodeChar)
 	if window then
 		window.setData(nodeChar);
 	end
+end
+
+-------------------------------------------------------------------------------
+-- CHARACTER ARCS
+-------------------------------------------------------------------------------
+function promptCharacterArcClimax(nodeArc)
+	local window = Interface.openWindow("prompt_arc_climax", nodeArc);
+end
+
+function promptCharacterArcResolution(nodeArc)
+	local window = Interface.openWindow("prompt_arc_resolution", nodeArc);
 end

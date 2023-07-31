@@ -191,6 +191,17 @@ function resolveTraining(nTraining)
 	end
 end
 
+function convertTrainingStringToNumber(sTraining)
+	if sTraining == "trained" then
+		return 2;
+	elseif sTraining == "specialized" then
+		return 3;
+	elseif sTraining == "inability" then
+		return 0;
+	end
+	return 1;
+end
+
 -----------------------------------------------------------------------
 -- ROLL PROCESSING
 -----------------------------------------------------------------------
@@ -262,9 +273,16 @@ function processStandardConditionsForActor(rActor)
 end
 
 function processPiercing(rSource, rTarget, bPiercing, nPierceAmount, aFilter)
+	if type(bPiercing) == "string" then
+		bPiercing = bPiercing == "true";
+	end
+	if type(nPierceAmount) == "string" then
+		nPierceAmount = tonumber(nPierceAmount);
+	end
+
 	local nPierceEffectAmount, nPierceEffectCount = EffectManagerCypher.getEffectsBonusByType(rSource, { "pierce", "piercing" }, aFilter, rTarget);
 	if nPierceEffectCount > 0 then
-		-- if we have pierce effects, then bPiercing is set locked to true.
+		-- if we have pierce effects, then bPiercing is locked to true.
 		bPiercing = true;
 
 		-- If either the effect or innate pierce is equal to 0, 
@@ -287,6 +305,15 @@ function processPiercing(rSource, rTarget, bPiercing, nPierceAmount, aFilter)
 	return bPiercing, nPierceAmount;
 end
 
+function processAdvantage(rSource, rTarget, rRoll, aFilter)
+	local aAdvEffects = #(EffectManagerCypher.getEffectsByType(rSource, "ADV", aFilter, rTarget)) > 0;
+	local aDisEffects = #(EffectManagerCypher.getEffectsByType(rSource, "DISADV", aFilter, rTarget)) > 0;
+	local bGrantAdv = #(EffectManagerCypher.getEffectsByType(rTarget, "GRANTADV", aFilter, rSource)) > 0;
+	local bGrantDisadv = #(EffectManagerCypher.getEffectsByType(rTarget, "GRANTDISADV", aFilter, rSource)) > 0;
+
+	return aAdvEffects or bGrantAdv, aDisEffects or bGrantDisadv;
+end
+
 function calculateDifficultyForRoll(rSource, rTarget, rRoll)
 	local nMod = 0;
 
@@ -299,11 +326,11 @@ function calculateDifficultyForRoll(rSource, rTarget, rRoll)
 		nMod = nMod + 1;
 	end
 
-	nMod = nMod - (rRoll.nEffort or 0);
-	nMod = nMod - (rRoll.nAssets or 0);
-	nMod = nMod - (rRoll.nEase or 0);
-	nMod = nMod + (rRoll.nHinder or 0);
-	nMod = nMod + (rRoll.nConditionMod or 0);
+	nMod = nMod - (tonumber(rRoll.nEffort or "0"));
+	nMod = nMod - (tonumber(rRoll.nAssets or "0"));
+	nMod = nMod - (tonumber(rRoll.nEase or "0"));
+	nMod = nMod + (tonumber(rRoll.nHinder or "0"));
+	nMod = nMod + (tonumber(rRoll.nConditionMod or "0"));
 
 	if rRoll.bLightWeapon then
 		nMod = nMod - 1;
@@ -429,6 +456,43 @@ function decodeTextAsBoolean(sText, sMatch, sValue, bPersist)
 	sResult, sText = RollManager.decodeText(sText, sMatch, sValue, bPersist)
 
 	return (sResult or "") ~= "", sText;
+end
+
+function encodeAdvantage(rRoll, bADV, bDIS)	
+	if bADV then
+		rRoll.sDesc = rRoll.sDesc .. " [ADV]";
+	end
+	if bDIS then
+		rRoll.sDesc = rRoll.sDesc .. " [DIS]";
+	end
+	if (bADV and not bDIS) or (bDIS and not bADV) then
+		table.insert(rRoll.aDice, 2, "d20");
+		rRoll.aDice.expr = nil;
+	end
+end
+
+function decodeAdvantage(rRoll)
+	local bADV = string.match(rRoll.sDesc, "%[ADV%]");
+	local bDIS = string.match(rRoll.sDesc, "%[DIS%]");
+	if (bADV and not bDIS) or (bDIS and not bADV) then
+		if #(rRoll.aDice) > 1 then
+			local nDecodeDie;
+			if (bADV and not bDIS) then
+				nDecodeDie = math.max(rRoll.aDice[1].result, rRoll.aDice[2].result);
+				nDroppedDie = math.min(rRoll.aDice[1].result, rRoll.aDice[2].result);
+				rRoll.aDice[1].type = "g" .. string.sub(rRoll.aDice[1].type, 2);
+			else
+				nDecodeDie = math.min(rRoll.aDice[1].result, rRoll.aDice[2].result);
+				nDroppedDie = math.max(rRoll.aDice[1].result, rRoll.aDice[2].result);
+				rRoll.aDice[1].type = "r" .. string.sub(rRoll.aDice[1].type, 2);
+			end
+			rRoll.aDice[1].result = nDecodeDie;
+			rRoll.aDice[1].value = nil;
+			table.remove(rRoll.aDice, 2);
+			rRoll.aDice.expr = nil;
+			rRoll.sDesc = rRoll.sDesc .. " [DROPPED " .. nDroppedDie .. "]";
+		end
+	end	
 end
 
 function encodeStat(vAction, rRoll)

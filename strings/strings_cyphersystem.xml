@@ -45,11 +45,22 @@
 	<string name="option_label_INITNPC">Init: NPC</string>
 	<string name="option_label_MAXTARGET">Maximum Difficulty Level for Rolls</string>
 	<string name="option_label_HRXP">Hero Points (Intrusion XP)</string>
+	<string name="option_label_ARCCOST">Character Arcs: XP Cost to gain new character arcs</string>
+	<string name="option_label_ARCXPSTEP">Character Arcs: How much XP is gained for each step of a character arc</string>
+	<string name="option_label_ARCXPCLIMAX_SUCCESS">Charater Arcs: How much XP is gained when successfully completing a character arc's climax</string>
+	<string name="option_label_ARCXPCLIMAX_FAILURE">Charater Arcs: How much XP is gained when failing to complete a character arc's climax</string>
+	<string name="option_label_ARCXPRESOLVE">Character Arcs: How much XP is gained when resolving a character arc</string>
 
 	<string name="option_val_yes">Yes</string>
 	<string name="option_val_no">No</string>
 	<string name="option_val_maxtarget_10">10</string>
 	<string name="option_val_maxtarget_15">15</string>
+	<string name="option_val_0">0</string>
+	<string name="option_val_1">1</string>
+	<string name="option_val_2">2</string>
+	<string name="option_val_3">3</string>
+	<string name="option_val_4">4</string>
+	<string name="option_val_5">5</string>
 
 	<!-- Combat Tracker -->
 	<string name="ct_label_hp">Health</string>
@@ -108,9 +119,17 @@
 	<string name="char_label_recovery10hr">10 Hours</string>
 	<string name="char_label_recoveryused">Used</string>
 
-	<string name="char_label_armor">Armor</string>
-	<string name="char_label_armorspeedcost">Speed Effort Cost</string>
-	<string name="char_tooltip_armorspeedcost">Increase to the cost of spending effort on speed tests due to wearing armor.</string>
+	<string name="char_tooltip_armor">Adjust armor and effort cost penalty</string>	
+	<string name="char_armorcalc_title">Armor Calc</string>
+	<string name="char_label_armorbase">Base</string>
+	<string name="char_label_armormod">Mod</string>
+	<string name="char_label_armor">Armor: </string>
+	<string name="char_tooltip_armorbase">Base Armor granted from armor</string>
+	<string name="char_tooltip_armormod">Armor granted from abilities or other features</string>
+	<string name="char_label_armorspeedcost">Effort Penalty:</string>
+	<string name="char_tooltip_armorspeedcostbase">Base amount that your armor increases the cost of applying Speed Effort.</string>
+	<string name="char_tooltip_armorspeedcostmod">Modifier for the Speed Effort cost penalty (due to advancements or abilities).</string>
+	
 	<string name="char_header_special_defenses">Special Defenses</string>
 
 	<string name="char_message_add_ability">Ability '%s' added to '%s'</string>
@@ -145,8 +164,9 @@
 	<string name="char_message_tier_increase">%s advanced to tier %s.</string>
 
 	<!-- Character - Actions -->
-	<string name="char_label_attacks">Attacks</string>
+	<string name="char_label_attacks">Weapons</string>
 	<string name="char_title_attack_editor">Attack Editor</string>
+	<string name="char_label_weaponammo">Uses</string>
 	
 	<string name="char_label_attacktype">Attack Type</string>
 	<string name="char_label_attacktype_weapon">Weapon</string>
@@ -155,11 +175,14 @@
 	<string name="char_label_weapontype_light">Light</string>
 	<string name="char_label_weapontype_medium">Medium</string>
 	<string name="char_label_weapontype_heavy">Heavy</string>
+	<string name="char_label_useammo">Uses Ammo</string>
 
 	<string name="char_label_abilityname">Abilities</string>
 	<string name="char_menu_hideability">Hide ability from the Action tab</string>
 	<string name="char_menu_showability">Show ability on the Action tab</string>
 	<string name="char_menu_confirm">Confirm</string>
+
+	<string name="char_message_not_enough_ammo">You are out of ammo for your %s.</string>
 
 	<!-- Character - Inventory -->
 	<string name="char_label_invtype">Type</string>
@@ -174,6 +197,46 @@
 	<string name="char_label_invcypher">Cyphers</string>
 	<string name="char_label_invcypherlimit">Limit</string>
 	<string name="char_label_invcyphertotal">Total</string>
+
+	<!-- Character - Arcs -->
+	<string name="char_label_arcs">Character Arcs</string>
+	<string name="char_empty_arc">&#171; New Character Arc &#187;</string>
+	<string name="char_label_name">Name</string>
+	<string name="char_label_opening">Opening</string>
+	<string name="char_label_inprogress">In Progress</string>
+	<string name="char_label_step_complete">Complete?</string>
+	<string name="char_label_climax">Climax</string>
+	<string name="char_label_arc_complete">Complete</string>
+	<string name="char_label_climax_success">Succeeded?</string>
+	<string name="char_label_resolution">Resolution</string>
+	<string name="char_label_arc_resolved">Resolve</string>
+	<string name="char_label_resolution_resolved">Resolved?</string>
+	<string name="char_tooltip_arc_editor">Open up the details for this character arc</string>
+	<string name="char_header_arc_editor">Character Arc</string>
+
+	<string name="char_tooltip_arc_add">Spend %s XP to gain a new character arc</string>
+	<string name="char_tooltip_arc_opening_highlight">Edit the arc's opening details</string>
+	<string name="char_tooltip_arc_opening_next">Move this arc to in progress</string>
+	<string name="char_tooltip_arc_inprogress_highlight">Edit this arc's progress</string>
+	<string name="char_tooltip_arc_inprogress_previous">Revert this arc back to its opening</string>
+	<string name="char_tooltip_arc_inprogress_next">Move this arc to its climax</string>
+	<string name="char_tooltip_arc_climax_highlight">Edit this arc's climax details</string>
+	<string name="char_tooltip_arc_climax_previous">Revert this arc back to in progress</string>
+	<string name="char_tooltip_arc_climax_next">Move this arc to its resolution</string>
+	<string name="char_tooltip_arc_resolution_highlight">Edit this arc's resolution details</string>
+	<string name="char_tooltip_arc_resolution_previous">Revert this arc back to its climax</string>
+
+	<string name="char_message_not_enough_xp_for_arc">You do not have enough XP to gain a new character arc.</string>
+	<string name="char_message_add_arc">%s spent %s XP to gain a new character arc.</string>
+	<string name="char_message_arc_complete_step">%s gained %s XP for completing a step in one of their character arcs.</string>
+	<string name="char_message_arc_climax_success">%s successfully completed the finale of one of their character arcs and gains %s XP.</string>
+	<string name="char_message_arc_climax_failure">%s was not able to complete the finale of one of their character arcs and gains %s XP.</string>
+	<string name="char_message_arc_resolution_success">%s resolved one of their character arcs and gains %s XP.</string>
+	<string name="char_message_arc_resolution_failure">%s was unable to resolve one of their character arcs.</string>
+
+	<string name="arc_complete_prompt_window_title">Select</string>
+	<string name="arc_climax_prompt_label">Were you victorious?</string>
+	<string name="arc_resolution_prompt_label">Were you victorious?</string>
 	
 	<!-- Character - Notes -->
 	<string name="char_label_background">Background</string>
@@ -375,6 +438,7 @@
 	<string name="char_mod_header_effort">Effort</string>
 	<string name="char_mod_header_item">Item</string>
 	<string name="char_mod_header_cypher">Cypher Limit</string>
+	<string name="char_mod_header_armoreffortcost">Armor Effort Penalty</string>
 
 	<string name="char_mod_label_stat">Stat</string>
 	<string name="char_mod_label_skill">Skill</string>
@@ -488,10 +552,36 @@
 	<string name="label_dialog_abilities_remaining">Abilities Remaining</string>
 	<string name="label_dialog_abilities_multiple">Take Multiple Times</string>
 	<string name="tooltip_dialog_abilities_multiple">This ability can be selected multiple times. How many times would you like to take it?</string>
+	<string name="label_dialog_abilities_tier">Tier %s</string>
 
 	<string name="header_dialog_summary">Summary</string>
 	<string name="label_dialog_summary_stat_update">%s  -&gt;  %s</string>
 	<string name="label_dialog_summary_abilities">Abilities</string>
+
+	<string name="header_dialog_effort">Effort</string>
+	<string name="label_dialog_effort">Effort</string>
+	<string name="summary_dialog_effort">%s -&gt; %s</string>
+
+	<string name="header_dialog_skill">Train in a Skill</string>
+	<string name="header_dialog_ability">Train in an Ability</string>
+	<string name="label_empty_skill">&#171; New Skill &#187;</string>
+
+	<string name="header_dialog_recovery">Recovery</string>
+	<string name="label_dialog_recovery">Bonus</string>
+	<string name="summary_dialog_recovery">%s -&gt; %s</string>
+
+	<string name="header_dialog_armor">Reduce Armor Effort Cost Penalty</string>
+	<string name="label_dialog_armor">Penalty</string>
+	<string name="summary_dialog_armor">%s -&gt; %s</string>
+
+	<string name="label_advancement_stats">Increase Stat Pools by 4</string>
+	<string name="label_advancement_edge">Increase one Edge by one</string>
+	<string name="label_advancement_effort">Increase Effort by 1</string>
+	<string name="label_advancement_skill">Train in a skill or ability</string>
+	<string name="label_advancement_ability">Select another ability from your Type</string>
+	<string name="label_advancement_recovery">Increase Recovery by 2</string>
+	<string name="label_advancement_armor">Reduce armor's Speed Effort cost by 1</string>
+	<string name="label_advancement_focus">Select another Focus ability at tier 3</string>
 
 	<!-- Desktop -->
 	<string name="diffadj_label_effort">Effort</string>

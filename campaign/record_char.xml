@@ -34,6 +34,9 @@
 			<sub_charsheet name="abilities">
 				<class>charsheet_abilities</class>
 			</sub_charsheet>
+			<sub_charsheet name="arcs">
+				<class>charsheet_arcs</class>
+			</sub_charsheet>
 			<sub_charsheet name="notes">
 				<class>charsheet_notes</class>
 			</sub_charsheet>
@@ -57,6 +60,10 @@
 				<tab>
 					<icon>tab_abilities</icon>
 					<subwindow>abilities</subwindow>
+				</tab>
+				<tab>
+					<icon>tab_arcs</icon>
+					<subwindow>arcs</subwindow>
 				</tab>
 				<tab>
 					<icon>tab_notes</icon>

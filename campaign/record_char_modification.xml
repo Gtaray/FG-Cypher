@@ -172,6 +172,10 @@
 				<static textres="char_mod_header_cypher"/>
 				<center />
 			</header_column>
+			<header_column name="armoreffortcost_header">
+				<static textres="char_mod_header_armoreffortcost"/>
+				<center />
+			</header_column>
 
 			<label_column name="skill_label">
 				<static textres="char_mod_label_skill" />
@@ -196,7 +200,7 @@
 			<label_column name="mod_label">
 				<static textres="char_mod_label_mod" />
 			</label_column>
-			<number_columnh name="mod" />
+			<number_columnh name="mod" />			
 
 			<label_column name="dmgtype_label">
 				<static textres="char_mod_label_dmgtype" />

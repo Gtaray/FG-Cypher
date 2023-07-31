@@ -16,6 +16,11 @@
 			<dynamic />
 		</sizelimits>
 		<script>
+			function onInit()
+				if super and super.onInit then
+					super.onInit()
+				end
+			end
 			function onLockChanged()
 				super.onLockChanged();
 
@@ -69,9 +74,6 @@
 					<subwindow>content</subwindow>
 				</tab>
 			</tabs_recordsheet>
-			
-			<resize_referencepage />
-			<close_referencepage />
 		</sheetdata>
 	</windowclass>
 

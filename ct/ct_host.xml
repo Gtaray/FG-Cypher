@@ -210,9 +210,14 @@
 				<script>
 					function action(draginfo)
 						local rActor = ActorManager.resolveActor(window.getDatabaseNode());
-						local sDesc = "[DAMAGE]";
-						local rRoll = { sType = "damage", sDesc = sDesc, aDice = { }, nMod = getValue() };
-						ActionsManager.performAction(draginfo, rActor, rRoll);
+						local rAction = { 
+							label = "",
+							sStat = "might",
+							sDamageStat = "might",
+							sDamageType = "",
+							nDamage = getValue()
+						};
+						ActionDamage.performRoll(draginfo, rActor, rAction)
 					end
 
 					function onDoubleClick(x, y)

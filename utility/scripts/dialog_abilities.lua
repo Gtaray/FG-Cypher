@@ -1,5 +1,8 @@
 local nMax = 0;
-function setData(aRecords, nCount)
+local nMinTier = 6;
+local nMaxTier = 1;
+
+function setData(aAbilities, nCount)
 	nMax = nCount;
 
 	if not nMax then
@@ -9,12 +12,25 @@ function setData(aRecords, nCount)
 		abilities_remaining.setValue(nCount);
 	end
 
-	for _, sRecord in ipairs(aRecords) do
-		local node = DB.findNode(sRecord)
+	abilities.closeAll();
+	for _, rAbility in ipairs(aAbilities) do
+		local node = DB.findNode(rAbility.sRecord)
 		if node then
-			abilities.addEntry(node);
+			if rAbility.nTier < nMinTier then
+				nMinTier = rAbility.nTier;
+			end
+			if rAbility.nTier > nMaxTier then
+				nMaxTier = rAbility.nTier;
+			end
+
+			abilities.addEntry(node, rAbility.nTier);
 		end
 	end
+
+	label_tier.setVisible(nMinTier ~= nMaxTier);
+	increase_tier.setVisible(nMinTier ~= nMaxTier);
+	decrease_tier.setVisible(nMinTier ~= nMaxTier);
+	tier.setValue(nMaxTier);
 end
 
 function getData()
@@ -65,6 +81,26 @@ function onSelectionChanged()
 	if nMax then
 		local nRemaining = nMax - self.getNumberSelected();
 		abilities_remaining.setValue(nRemaining);
-		parentcontrol.window.updateAbilities();
+		if parentcontrol.window.updateAbilities then
+			parentcontrol.window.updateAbilities();
+		end
 	end
+end
+
+function onIncrease()
+	local nCurrentTier = tier.getValue();
+	if nCurrentTier == nMaxTier then
+		return;
+	end
+
+	tier.setValue(math.min(nCurrentTier + 1, nMaxTier));
+end
+
+function onDecrease()
+	local nCurrentTier = tier.getValue();
+	if nCurrentTier == nMinTier then
+		return;
+	end
+
+	tier.setValue(math.max(nCurrentTier - 1, nMinTier));
 end

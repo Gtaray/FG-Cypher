@@ -7,7 +7,7 @@
 
 <root>
 	<windowclass name="char_attack">
-		<margin>0,0,0,2</margin>
+		<margin>0,0,0,12</margin>
 		<script file="campaign/scripts/char_attack.lua" />
 		<sheetdata>
 			<genericcontrol name="rightanchor">
@@ -93,6 +93,22 @@
 					<right anchor="center" offset="5" />
 				</anchored>
 			</string_textlistitem>
+
+			<label name="label_ammo">
+				<anchored width="50">
+					<top parent="name" anchor="bottom" relation="relative" offset="-2" />
+					<left offset="15" />
+				</anchored>
+				<static textres="char_label_weaponammo" />
+			</label>
+			<basicnumber name="maxammo">
+				<anchored to="label_ammo" position="righthigh" width="30" height="18" />
+				<min>0</min>
+				<max>100</max>
+			</basicnumber>
+			<state_charammocounter name="ammocounter">
+				<anchored to="maxammo" position="righthigh" offset="8,0" />
+			</state_charammocounter>
 		</sheetdata>
 	</windowclass>
 
@@ -191,6 +207,18 @@
 					<labelsres>char_label_weapontype_light|char_label_weapontype_medium|char_label_weapontype_heavy</labelsres>
 					<values>light|medium|heavy</values>
 					<defaultlabelres>dash</defaultlabelres>
+				</parameters>
+			</cycler_column>
+
+			<label_column name="useammo_label">
+				<static textres="char_label_useammo" />
+			</label_column>
+			<cycler_column name="useammo">
+				<anchored width="80" />
+				<parameters>
+					<labelsres>option_val_yes</labelsres>
+					<values>yes</values>
+					<defaultlabelres>option_val_no</defaultlabelres>
 				</parameters>
 			</cycler_column>
 
