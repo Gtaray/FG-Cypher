@@ -37,7 +37,7 @@
 					<top anchor="top" offset="15" />
 				</anchored>
 				<multilinespacing>20</multilinespacing>
-				<font>reference-title</font>
+				<font>sheetlabel</font>
 				<center/>
 				<readonly />
 			</stringcontrol>

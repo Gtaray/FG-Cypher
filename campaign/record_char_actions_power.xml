@@ -149,7 +149,7 @@
 	</windowclass>
 
 	<windowclass name="power">
-		<frame>referencepage</frame>
+		<frame>recordsheet</frame>
 		<placement>
 			<size width="400" height="350" />
 		</placement>

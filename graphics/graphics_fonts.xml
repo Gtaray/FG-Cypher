@@ -10,9 +10,4 @@
 		<ttf file="graphics/fonts/Rokkitt-Bold.ttf" name="Rokkitt" size="30" />
 		<color value="#660000" />
 	</font>
-
-	<font name="reference-title">
-		<ttf file="graphics/fonts/Noto_Sans/NotoSans-Bold.ttf" name="Noto Sans Bold" size="18" />
-		<color value="000000" />
-	</font>
 </root>

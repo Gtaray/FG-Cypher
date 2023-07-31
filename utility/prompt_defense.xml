@@ -33,7 +33,7 @@
 					<top anchor="top" offset="15" />
 				</anchored>
 				<multilinespacing>20</multilinespacing>
-				<font>reference-title</font>
+				<font>sheetlabel</font>
 				<center/>
 				<readonly />
 			</stringcontrol>
@@ -80,36 +80,30 @@
 				</script>
 			</basicnumber>
 
-			<buttoncontrol name="ease">
+			<button_text name="ease">
 				<anchored width="60" height="22">
 					<top parent="description" anchor="bottom" relation="current" offset="10" />
 					<right parent="frame" anchor="center" offset="-10" />
 				</anchored>
-				<state frame="buttonup" frameoffset="5,5,5,5" />
-				<state frame="buttondown" frameoffset="5,5,5,5" offset="1,1" />
-				<font>button-white</font>
 				<textres>defense_prompt_ease</textres>
 				<script>
 					function onValueChanged()
 						window.updateDifficulty();
 					end
 				</script>
-			</buttoncontrol>
-			<buttoncontrol name="hinder">
+			</button_text>
+			<button_text name="hinder">
 				<anchored width="60" height="22">
 					<top parent="description" anchor="bottom" relation="relative" offset="10" />
 					<left parent="frame" anchor="center" offset="10" />
 				</anchored>
-				<state frame="buttonup" frameoffset="5,5,5,5" />
-				<state frame="buttondown" frameoffset="5,5,5,5" offset="1,1" />
-				<font>button-white</font>
 				<textres>defense_prompt_hinder</textres>
 				<script>
 					function onValueChanged()
 						window.updateDifficulty();
 					end
 				</script>
-			</buttoncontrol>
+			</button_text>
 
 			<button_text name="roll">
 				<script>
