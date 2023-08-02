@@ -35,6 +35,7 @@
 	<string name="default_move">Short</string>
 
 	<string name="label_training_inability">Inability</string>
+	<string name="label_training_practiced">Practiced</string>
 	<string name="label_training_trained">Trained</string>
 	<string name="label_training_specialized">Specialized</string>
 
@@ -150,7 +151,7 @@
 	<string name="char_label_skillstat">Stat</string>
 	<string name="char_label_skillname">Name</string>
 	<string name="char_label_skillinability">Inability</string>
-	<string name="char_label_skilluntrained">-</string>
+	<string name="char_label_skilluntrained">Practiced</string>
 	<string name="char_label_skilltrained">Trained</string>
 	<string name="char_label_skillspecialized">Specialized</string>
 	<string name="char_tooltip_skillinability">Inability</string>

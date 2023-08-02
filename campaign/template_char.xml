@@ -162,7 +162,7 @@
 			<parameters>
 				<labelsres>label_training_trained|label_training_specialized|label_training_inability</labelsres>
 				<values>trained|specialized|inability</values>
-				<defaultlabel>-</defaultlabel>
+				<defaultlabelres>label_training_practiced</defaultlabelres>
 			</parameters>
 		</button_stringcycler>
 	</template>
