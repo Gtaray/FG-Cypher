@@ -30,7 +30,7 @@ function setData(data, callback)
 	button_abilities.setVisible(bAbilities)
 	abilities.setVisible(bAbilities)
 	if bAbilities then
-		abilities.subwindow.setData(rData.aAbilityOptions, rData.nAbilityChoices);
+		abilities.subwindow.setData(rData.aAbilityOptions, rData.aFlavorAbilities, rData.nAbilityChoices);
 	end
 
 	if bStats then
@@ -58,7 +58,10 @@ function updateStats()
 end
 
 function updateAbilities()
-	local aAbilities = abilities.subwindow.getData();
+	local aAbilities, aFlavorAbilities = abilities.subwindow.getData();
+	for _, ability in ipairs(aFlavorAbilities) do
+		table.insert(aAbilities, ability);
+	end
 	summary.subwindow.updateAbilities(aAbilities);
 
 	updateOkButton();
@@ -100,9 +103,18 @@ function processOK()
 		end
 
 		if bAbilities then
-			for _, rAbility in pairs(abilities.subwindow.getData()) do
+			local aTypeAbilities, aFlavorAbilities = abilities.subwindow.getData()
+
+			for _, rAbility in ipairs(aTypeAbilities) do
 				for i=1, rAbility.multiselect, 1 do
 					table.insert(rData.aAbilitiesGiven, DB.getPath(rAbility.node));
+				end
+			end
+
+			rData.aFlavorAbilities = {}; -- Reset this table so it's empty (we're reusing it)
+			for _, rAbility in ipairs(aFlavorAbilities) do
+				for i=1, rAbility.multiselect, 1 do
+					table.insert(rData.aFlavorAbilities, DB.getPath(rAbility.node));
 				end
 			end
 		end

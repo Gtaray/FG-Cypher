@@ -549,7 +549,8 @@
 	<string name="header_dialog_edge">Select Edge</string>
 	<string name="label_dialog_select_edge">Select Option</string>
 
-	<string name="header_dialog_abilities">Select Abilities</string>
+	<string name="header_dialog_abilities_type">Select Abilities from Type</string>
+	<string name="header_dialog_abilities_flavor">Select Abilities from Flavor</string>
 	<string name="label_dialog_abilities_remaining">Abilities Remaining</string>
 	<string name="label_dialog_abilities_multiple">Take Multiple Times</string>
 	<string name="tooltip_dialog_abilities_multiple">This ability can be selected multiple times. How many times would you like to take it?</string>

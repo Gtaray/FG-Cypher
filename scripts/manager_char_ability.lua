@@ -49,3 +49,20 @@ function addTrainingToAbilityAction(nodeAction)
 
 	DB.setValue(nodeAction, "training", "string", sTraining);
 end
+
+function addAbility(nodeChar, sAbilityRecord, sSourceName, sSourceType)
+	local rActor = ActorManager.resolveActor(nodeChar);
+
+	local rMod = {
+		sLinkRecord = sAbilityRecord,
+		sSource = string.format("%s (%s)", 
+			StringManager.capitalize(sSourceName), 
+			StringManager.capitalize(sSourceType))
+	}
+	rMod.sSummary = CharModManager.getAbilityModSummary(rMod)
+
+	local nodeAbility = DB.findNode(sAbilityRecord);
+	if nodeAbility then
+		return CharModManager.applyAbilityModification(rActor, rMod);
+	end
+end

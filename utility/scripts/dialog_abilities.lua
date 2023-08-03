@@ -2,7 +2,7 @@ local nMax = 0;
 local nMinTier = 6;
 local nMaxTier = 1;
 
-function setData(aAbilities, nCount)
+function setData(aAbilities, aFlavorAbilities, nCount)
 	nMax = nCount;
 
 	if not nMax then
@@ -12,7 +12,11 @@ function setData(aAbilities, nCount)
 		abilities_remaining.setValue(nCount);
 	end
 
-	abilities.closeAll();
+	lists.clear();
+
+	-- This is here to keep track of what abilities are added so that
+	-- the same ability isn't added in both the Type and Flavor sections
+	local aAbilityTracker = {};
 	for _, rAbility in ipairs(aAbilities) do
 		local node = DB.findNode(rAbility.sRecord)
 		if node then
@@ -23,7 +27,15 @@ function setData(aAbilities, nCount)
 				nMaxTier = rAbility.nTier;
 			end
 
-			abilities.addEntry(node, rAbility.nTier);
+			lists.addTypeAbility(node, rAbility.nTier);
+			aAbilityTracker[rAbility.sRecord] = true;
+		end
+	end
+
+	for _, rAbility in ipairs(aFlavorAbilities) do
+		local node = DB.findNode(rAbility.sRecord)
+		if not aAbilityTracker[rAbility.sRecord] and node then
+			lists.addFlavorAbility(node, rAbility.nTier);
 		end
 	end
 
@@ -34,21 +46,7 @@ function setData(aAbilities, nCount)
 end
 
 function getData()
-	local aAbilities = {};
-	for _,w in pairs(abilities.getWindows()) do
-		if w.selected.getValue() == 1 then
-			local _, sRecord = w.shortcut.getValue();
-			local nMultiselect = w.multiselect.getValue() or 1;
-			local node = DB.findNode(sRecord);
-			if node then
-				table.insert(aAbilities, {
-					node = node,
-					multiselect = nMultiselect,
-				});
-			end
-		end
-	end
-	return aAbilities;
+	return lists.getData();
 end
 
 function isValid()
@@ -56,13 +54,7 @@ function isValid()
 end
 
 function getNumberSelected()
-	local nSelections = 0;
-	for _,w in pairs(abilities.getWindows()) do
-		if w.selected.getValue() == 1 then
-			nSelections = nSelections + (w.multiselect.getValue() or 1);
-		end
-	end
-	return nSelections;
+	return lists.getNumberSelected();
 end
 
 function hasRemaining()

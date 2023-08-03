@@ -188,12 +188,11 @@ function completeAdvancement(rData)
 
 	elseif rData.sType == "ability" or rData.sType == "focus" then
 		for _, rAbility in ipairs(rData.aAbilitiesGiven) do
-			local rMod = {
-				sLinkRecord = DB.getPath(rAbility.node),
-				sSource = rData.sSource
-			}
-			rMod.sSummary = CharModManager.getAbilityModSummary(rMod);
-			CharModManager.applyAbilityModification(rActor, rMod);
+			CharAbilityManager.addAbility(
+				rData.nodeChar, 
+				rAbility.sRecord, 
+				"Advancement",
+				rAbility.sSourceType)
 		end
 
 	elseif rData.sType == "recovery" then

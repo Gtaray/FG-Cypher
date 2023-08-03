@@ -40,10 +40,10 @@ function setData(data, callback)
 	end
 
 	-- Ability
-	local aAbilities = buildAbilityAdvancementList();
+	local aAbilities, aFlavorAbilities = buildAbilityAdvancementList();
 	updateCheckbox("ability", #aAbilities > 0);
 	if #aAbilities > 0 then
-		abilities.subwindow.setData(aAbilities, 1);
+		abilities.subwindow.setData(aAbilities, aFlavorAbilities, 1);
 	end
 
 	-- Focus
@@ -51,7 +51,7 @@ function setData(data, callback)
 	local aFocusAbilities = buildFocusAdvancementList();
 	updateCheckbox("focus", nTier >= 3 and #aFocusAbilities > 0);
 	if nTier >= 3 and #aFocusAbilities > 0 then
-		focus.subwindow.setData(aFocusAbilities, 1);
+		focus.subwindow.setData(aFocusAbilities, {}, 1);
 	end
 
 	local nRecovery = DB.getValue(rData.nodeChar, "recoveryrollmod", 1);
@@ -122,8 +122,8 @@ end
 
 function buildAbilityAdvancementList()
 	local nCharTier = ActorManagerCypher.getTier(rData.nodeChar);
-	local _, sTypeNode = DB.getValue(rData.nodeChar, "class.typelink");
-	local typenode = DB.findNode(sTypeNode or "");
+	local typenode = CharTypeManager.getTypeNode(rData.nodeChar);
+	local flavornode = CharFlavorManager.getFlavorNode(rData.nodeChar);
 
 	-- If there's no type node found, then return an empty list
 	if not typenode then
@@ -157,10 +157,32 @@ function buildAbilityAdvancementList()
 				nTier = nTier,
 				sRecord = DB.getPath(recordnode)
 			});
+
+			-- Add the ability to the overall tracker so that abilities
+			-- from a Flavor don't get added twice
+			local sName = DB.getValue(abilitynode, "name", "")
+			tAbilities[sName:lower()] = true;
 		end
 	end
 
-	return aAbilities;
+	local aFlavorAbilities = {};
+	for _, abilitynode in ipairs(DB.getChildList(flavornode, "abilities")) do
+		local nTier = DB.getValue(abilitynode, "tier", 1);
+		local sName = DB.getValue(abilitynode, "name", "");
+		local _, sRecord = DB.getValue(abilitynode, "link");
+		local recordnode = DB.findNode(sRecord);
+
+		-- Only add to the overall list if the player doesn't have an ability
+		-- with a matching name
+		if recordnode and nTier <= nCharTier and not tAbilities[sName:lower()] then
+			table.insert(aFlavorAbilities, {
+				nTier = nTier,
+				sRecord = DB.getPath(recordnode)
+			});
+		end
+	end
+
+	return aAbilities, aFlavorAbilities;
 end
 
 function buildFocusAdvancementList()
@@ -276,13 +298,38 @@ function processOK()
 			rData.sTraining = "trained";
 		end
 	elseif rData.sType == "ability" then
-		rData.aAbilitiesGiven = abilities.subwindow.getData()
+		local aTypeAbilities, aFlavorAbilities = abilities.subwindow.getData()
+
+		rData.aAbilitiesGiven = {};
+		for _, rAbility in ipairs(aTypeAbilities) do
+			table.insert(rData.aAbilitiesGiven, 
+			{
+				sRecord = DB.getPath(rAbility.node),
+				sSourceType = "Type Ability"
+			});
+		end
+		for _, rAbility in ipairs(aFlavorAbilities) do
+			table.insert(rData.aAbilitiesGiven, 
+			{
+				sRecord = DB.getPath(rAbility.node),
+				sSourceType = "Flavor Ability"
+			});
+		end
 	elseif rData.sType == "recovery" then
 		rData.nMod = 2;
 	elseif rData.sType == "armor" then
 		rData.nMod = -1
 	elseif rData.sType == "focus" then
-		rData.aAbilitiesGiven = focus.subwindow.getData()
+		local aFocusAbilities = focus.subwindow.getData()
+
+		rData.aAbilitiesGiven = {};
+		for _, rAbility in ipairs(aFocusAbilities) do
+			table.insert(rData.aAbilitiesGiven, 
+			{
+				sRecord = DB.getPath(rAbility.node),
+				sSourceType = "Focus Ability"
+			});
+		end
 	end
 
 	fCallback(rData);
