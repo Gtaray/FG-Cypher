@@ -1,8 +1,7 @@
-rAttacker = nil;
-rTarget = nil;
-sStat = nil;
-sDefault = nil;
-nDifficulty = 0;
+rPc = nil;
+rAction = nil;
+aStats = nil;
+
 
 function onInit()
 	User.ringBell();
@@ -12,14 +11,13 @@ function closeWindow()
 	close();
 end
 
-function setData(rSource, rPC, aStats, sDefault, nDifficulty)
+function setData(rPC, rAction, aStats)
 	if type(aStats) == "string" then
 		aStats = { aStats }
 	end
 
-	rAttacker = rSource;
-	rTarget = rPC;
-	self.nDifficulty = nDifficulty;
+	self.rPc = rPC;
+	self.rAction = rAction;
 	self.aStats = aStats;
 
 	if #(self.aStats) > 1 then
@@ -27,11 +25,10 @@ function setData(rSource, rPC, aStats, sDefault, nDifficulty)
 			self[sStat .. "_label"].setVisible(true);
 			self[sStat .. "_checkbox"].setVisible(true);
 		end
+	end
 
-		if (sDefault or "") ~= "" then
-			self.sDefault = sDefault;
-			self[sDefault .. "_checkbox"].setValue(1);
-		end
+	if (self.rAction.sStat or "") ~= "" then
+		self[self.rAction.sStat .. "_checkbox"].setValue(1);
 	end
 
 	updateDifficulty();
@@ -50,7 +47,7 @@ function getStatText()
 end
 
 function updateDifficulty()
-	local nDiffMod = nDifficulty - effort.getValue() - assets.getValue();
+	local nDiffMod = self.rAction.nDifficulty - effort.getValue() - assets.getValue();
 	
 	if ease.getValue() == 1 then
 		nDiffMod = nDiffMod - 1;
@@ -61,7 +58,7 @@ function updateDifficulty()
 
 	nDiffMod = math.min(math.max(nDiffMod, 0), 6);
 
-	local sDisplayName = ActorManager.getDisplayName(rAttacker);
+	local sDisplayName = ActorManager.getDisplayName(self.rAction.rTarget);
 	if (sDisplayName or "") == "" then
 		sDisplayName = "A creature"
 	end
@@ -116,15 +113,13 @@ end
 
 function roll()
 	local sStat = getStat();
-	local rAction = {};
 
-	rAction.label = StringManager.capitalize(sStat)
-	rAction.bConverted = sStat ~= self.sDefault;
-	rAction.sStat = sStat;
-	rAction.rTarget = rAttacker;
-	rAction.sTraining, rAction.nAssets, rAction.nModifier = ActorManagerCypher.getDefense(rTarget, rAction.sStat)
-	rAction.nEffort = effort.getValue();
-	rAction.nAssets = rAction.nAssets + assets.getValue();
+	self.rAction.bConverted = sStat ~= self.rAction.sStat;
+	self.rAction.sStat = getStat()
+	self.rAction.label = StringManager.capitalize(self.rAction.sStat)
+	self.rAction.sTraining, self.rAction.nAssets, self.rAction.nModifier = ActorManagerCypher.getDefense(rPc, self.rAction.sStat)
+	self.rAction.nEffort = effort.getValue();
+	self.rAction.nAssets = rAction.nAssets + assets.getValue();
 
 	if ease.getValue() == 1 then
 		rAction.bEase = true;
@@ -133,11 +128,5 @@ function roll()
 		rAction.bHinder = true;
 	end
 
-	-- Only add in difficulty if the attacker is an NPC
-	-- This will change when I come up with a better answer for PvP rolls
-	if not ActorManager.isPC(rAttacker) then
-		rAction.nDifficulty = self.nDifficulty
-	end
-
-	ActionDefense.payCostAndRoll(nil, rTarget, rAction);
+	ActionDefense.payCostAndRoll(nil, rPc, rAction);
 end

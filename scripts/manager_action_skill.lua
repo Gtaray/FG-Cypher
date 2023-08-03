@@ -50,6 +50,9 @@ function modRoll(rSource, rTarget, rRoll)
 	rTarget = RollManager.decodeTarget(rRoll, rTarget, true);
 	aFilter = { "skill", "skills", rRoll.sStat, rRoll.sSkill }
 
+	-- Process training effects
+	RollManager.processTrainingEffects(rSource, rTarget, rRoll, aFilter);
+
 	--Adjust raw modifier, converting every increment of 3 to a difficultly modifier
 	local nAssetMod, nEffectMod = RollManager.processFlatModifiers(rSource, rTarget, rRoll, aFilter, { rRoll.sStat, rRoll.sSkill })
 	rRoll.nAssets = rRoll.nAssets + nAssetMod + RollManager.getAssetsFromDifficultyPanel();

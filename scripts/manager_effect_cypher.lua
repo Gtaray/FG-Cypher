@@ -463,8 +463,7 @@ function getConversionEffect(rActor, aTypes, aFilter)
 				local comp_match = true;
 
 				-- Check to see that the conversion effect has a type that we care about
-				if StringManager.contains(aTypes, rEffectComp.type) then
-
+				if rEffectComp.type == "convert" and StringManager.contains(aTypes, rEffectComp.rolltype) then
 					-- Check filters
 					if #aFilter > 0 then
 						local bFilterMatch = true;
@@ -493,6 +492,8 @@ function getConversionEffect(rActor, aTypes, aFilter)
 							comp_match = false;
 						end
 					end
+				else
+					comp_match = false;
 				end
 
 				-- Match!
@@ -524,19 +525,25 @@ function getConversionEffect(rActor, aTypes, aFilter)
 		end
 	end
 
-	return rMatchedComp.result;
+	if not rMatchedComp then
+		return "";
+	end
+
+	return rMatchedComp.result or "";
 end
 
 function parseConversionEffectComp(s)
 	local aStrings = StringManager.split(s, ":", true);
-	local sType, sResult = aStrings[1]:match("CONVERT%s*%(([^,]+),%s*([^)]+)%)");
+	local sType = aStrings[1]:match("([^(:]+)");
+	local sRollType, sResult = aStrings[1]:match("CONVERT%s*%(([^,]+),%s*([^)]+)%)");
 	local aFilters = {};
 	if aStrings[2] then
 		aFilters = StringManager.split(aStrings[2], ",", true)
 	end
 
 	return  {
-		type = sType or "", 
+		type = (sType or ""):lower(), 
+		rolltype = (sRollType or ""):lower(),
 		result = sResult, 
 		remainder = aFilters, 
 		original = StringManager.trim(s)

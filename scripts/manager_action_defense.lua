@@ -26,6 +26,7 @@ function getRoll(rActor, rAction)
 	rRoll.sLabel = rAction.label;
 	rRoll.sStat = rAction.sStat:lower();
 	rRoll.sDesc = string.format("[DEFENSE] %s", rRoll.sLabel);
+	rRoll.sAttackRange = rAction.sAttackRange;
 
 	if rAction.bConverted then
 		rRoll.sDesc = string.format("%s [CONVERTED]", rRoll.sDesc);
@@ -50,6 +51,12 @@ function modRoll(rSource, rTarget, rRoll)
 
 	rTarget = RollManager.decodeTarget(rRoll, rTarget, true);
 	local aFilter = { "defense", "def", rRoll.sStat };
+	if (rRoll.sAttackRange or "") ~= "" then
+		table.insert(aFilter, rRoll.sAttackRange:lower());
+	end
+
+	-- Process training effects
+	RollManager.processTrainingEffects(rSource, rTarget, rRoll, aFilter);
 
 	--Adjust raw modifier, converting every increment of 3 to a difficultly modifier
 	local nAssetMod, nEffectMod = RollManager.processFlatModifiers(rSource, rTarget, rRoll, aFilter, { rRoll.sStat })

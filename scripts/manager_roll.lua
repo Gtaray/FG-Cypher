@@ -189,6 +189,7 @@ function resolveTraining(nTraining)
 	elseif nTraining == 0 then
 		return "inability";
 	end
+	return "";
 end
 
 function convertTrainingStringToNumber(sTraining)
@@ -258,6 +259,25 @@ function processTraining(bInability, bTrained, bSpecialized)
 	elseif bTrained then return 1
 	elseif bSpecialized then return 2
 	else return 0 end
+end
+
+function processTrainingEffects(rSource, rTarget, rRoll, aFilter)
+	local nTrained = #(EffectManagerCypher.getEffectsByType(rSource, "TRAIN", aFilter, rTarget))
+	local nSpecialized = #(EffectManagerCypher.getEffectsByType(rSource, "SPEC", aFilter, rTarget))
+	local nInability = #(EffectManagerCypher.getEffectsByType(rSource, "INABILITY", aFilter, rTarget))
+
+	-- This combines the total number values of each training level
+	-- Which can then be added to the base training value
+	local nTraining = RollManager.convertTrainingStringToNumber(rRoll.sTraining);
+	nTraining = nTraining + nTrained + (2 * nSpecialized) + (-1 * nInability)
+	nTraining = math.min(3, math.max(0, nTraining));
+
+	-- 0 = inability
+	-- 1 = practiced
+	-- 2 = trained
+	-- 3 = specialized
+	rRoll.sTraining = RollManager.resolveTraining(nTraining);
+	return rRoll.sTraining;
 end
 
 function processStandardConditionsForActor(rActor)

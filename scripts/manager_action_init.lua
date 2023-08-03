@@ -51,6 +51,9 @@ end
 function modRoll(rSource, rTarget, rRoll)
 	local aFilter = { "initiative", "init", rRoll.sStat }
 
+	-- Process training effects
+	RollManager.processTrainingEffects(rSource, rTarget, rRoll, aFilter);
+
 	--Adjust raw modifier, converting every increment of 3 to a difficultly modifier
 	local nAssetMod, nEffectMod = RollManager.processFlatModifiers(rSource, rTarget, rRoll, aFilter, { rRoll.sStat })
 	rRoll.nAssets = rRoll.nAssets + nAssetMod + RollManager.getAssetsFromDifficultyPanel();
