@@ -96,8 +96,19 @@ function handlePromptDefenseRoll(msgOOB)
 	local sStat = msgOOB.sStat;
 
 	local window = Interface.openWindow("prompt_defense", "")
+	local aStats = { sStat }
 	if window then
-		window.setData(rSource, rTarget, sStat, nDifficulty);
+		-- Check to see if the actor has a CONVERT effect that lets them convert
+		-- one defense roll into another
+		local sConvert = EffectManagerCypher.getConversionEffect(rTarget, "defense", sStat);
+		if sConvert ~= nil and sConvert ~= sStat then
+			aStats = { sConvert, sStat };
+			if sConvert == "any" or sConvert == "all" then
+				aStats = { "might", "speed", "intellect" }
+			end
+		end
+
+		window.setData(rSource, rTarget, aStats, sStat, nDifficulty);
 	else
 		local rAction = getActionFromOobMsg(rSource, rTarget, msgOOB);
 		ActionDefense.payCostAndRoll(nil, rTarget, rAction);

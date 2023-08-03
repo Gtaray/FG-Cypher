@@ -342,6 +342,12 @@ function applyArmor(rSource, rTarget, nTotal, sStat, sDamageType, bPiercing, nPi
 		elseif nPierceAmount == 0 then
 			nArmorAdjust = 0;
 		end
+
+		-- If piercing reduces the amount of armor below super armor value
+		-- then the math.max() function will bring armor adjust back up to the 
+		-- super armor value
+		local nSuperArmor = ActorManagerCypher.getSuperArmor(rTarget, rSource, sStat, sDamageType);
+		nArmorAdjust = math.max(nArmorAdjust, nSuperArmor);
 	end
 
 	-- If any amount of armor was applied, then we add a notification
@@ -352,7 +358,7 @@ function applyArmor(rSource, rTarget, nTotal, sStat, sDamageType, bPiercing, nPi
 	elseif nArmorAdjust < nTotal then -- Greater than 0 but less than damage
 		table.insert(aNotifications, "[PARTIALLY RESISTED]");
 	elseif nArmorAdjust >= 0 then -- Equal or greater than damage
-		table.insert(aNotifications, "[RESISTED]");		
+		table.insert(aNotifications, "[RESISTED]");
 	end
 
 	-- Apply the adjusted armor value to the total damage

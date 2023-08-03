@@ -322,7 +322,7 @@ function getArmorSpeedCost(rActor)
 		return 0;
 	end
 
-	local nBase = DB.getValue(nodeActor, "armorspeedcosttotal", 0);
+	local nBase = DB.getValue(nodeActor, "ArmorSpeedPenalty.total", 0);
 	local nBonus = EffectManagerCypher.getEffectsBonusByType(rActor, "COST", { "armor" });
 
 	-- This value can never be lower than 0, because 0 means there's no penalty
@@ -413,16 +413,22 @@ function getArmor(rActor, rTarget, sStat, sDamageType)
 	end
 
 	-- if for some reason damage type isn't specified, default to untyped
-	if not sDamageType then
+	if (sDamageType or "") == "" then
 		sDamageType = "untyped";
 	end
-	
-	local nArmor = 0;
+
+	-- Get ARMOR effects
+	-- This can modify both untyped and typed damage
+	-- Do this before checking for damage type so that we can correctly apply this
+	-- if the damage type is untyped, and thus only applies if the stat is Might
+	local nArmorEffects = EffectManagerCypher.getArmorEffectBonusForDamageType(rActor, "armor", sStat, sDamageType, rTarget)
 
 	-- Only apply the character's base armor to Might damage.
 	if sDamageType == "untyped" and sStat == "might" then
-		nArmor = DB.getValue(node, "armortotal", 0);
+		return nArmorEffects + DB.getValue(node, "Armor.total", 0);
 	end
+
+	local nArmor = 0;
 
 	-- Start by getting special armor values from the creature node
 	-- This list does NOT include untyped armor, 
@@ -436,11 +442,36 @@ function getArmor(rActor, rTarget, sStat, sDamageType)
 		end
 	end
 
-	-- Get ARMOR effects
-	-- This can modify both untyped and typed damage
-	local nArmorEffects = EffectManagerCypher.getArmorEffectBonusForDamageType(rActor, sStat, sDamageType, rTarget)
-
 	return nArmor + nArmorEffects;
+end
+
+function getSuperArmor(rActor, rTarget, sStat, sDamageType)
+	local _, node = ActorManager.getTypeAndNode(rActor);
+
+	if not node then
+		return 0, 0;
+	end
+
+	-- Default to might, since that's the default for damage dealt
+	if not sStat then
+		sStat = "might";
+	end
+
+	-- if for some reason damage type isn't specified, default to untyped
+	if (sDamageType or "") == "" then
+		sDamageType = "untyped";
+	end
+
+	-- Base super armor only applies to untyped damage, which only applies
+	-- to Might damage
+	local nSuperArmor = 0
+	if sStat == "might" and sDamageType == "untyped" then
+		nSuperArmor = DB.getValue(node, "Armor.superarmor", 0);
+	end
+	
+	local nSuperArmorEffects = EffectManagerCypher.getArmorEffectBonusForDamageType(rActor, "superarmor", sStat, sDamageType, rTarget)
+
+	return nSuperArmor + nSuperArmorEffects;
 end
 
 function isImmune(rActor, rTarget, aDmgTypes)

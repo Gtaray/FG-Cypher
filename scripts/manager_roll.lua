@@ -262,11 +262,11 @@ end
 
 function processStandardConditionsForActor(rActor)
 	-- Dazed and Stunned don't stack with the other conditions
-	if EffectManager.hasCondition(rSource, "Dazed") or 
-	   EffectManager.hasCondition(rSource, "Stunned") or
-	   (sStat == "might" and EffectManager.hasCondition(rSource, "Staggered")) or
-	   (sStat == "speed" and (EffectManager.hasCondition(rSource, "Frostbitten") or EffectManager.hasCondition(rSource, "Slowed"))) or
-	   (sStat == "intellect" and EffectManager.hasCondition(rSource, "Confused")) then
+	if EffectManager.hasEffect(rSource, "Dazed") or 
+	   EffectManager.hasEffect(rSource, "Stunned") or
+	   (sStat == "might" and EffectManager.hasEffect(rSource, "Staggered")) or
+	   (sStat == "speed" and (EffectManager.hasEffect(rSource, "Frostbitten") or EffectManager.hasEffect(rSource, "Slowed"))) or
+	   (sStat == "intellect" and EffectManager.hasEffect(rSource, "Confused")) then
 		return 1;
 	end
 	return 0;

@@ -186,8 +186,13 @@ function applyArmorModification(rActor, rData)
 	-- First we handle the case where the damage type is empty
 	-- thus we place the armor in the character's Armor node
 	if (sDmgType or "") == "" then
-		nCurArmor = DB.getValue(charnode, "armor", 0);
-		DB.setValue(charnode, "armor", "number", nCurArmor + rData.nMod);
+		nCurArmor = DB.getValue(charnode, "Armor.mod", 0);
+		DB.setValue(charnode, "Armor.mod", "number", nCurArmor + rData.nMod);
+
+		if rData.bSuperArmor then
+			local nSuperArmor = DB.getValue(charnode, "Armor.superarmor", 0);
+			DB.setValue(charnode, "Armor.superarmor", "number", nSuperArmor + rData.nMod);
+		end
 
 		CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
 		return;
@@ -420,6 +425,9 @@ function getModificationData(modNode)
 		rMod.sProperty = "armor"
 		rMod.nMod = DB.getValue(modNode, "mod", 0);
 		rMod.sDamageType = DB.getValue(modNode, "dmgtype", "");
+		-- Only apply super armor to untyped damage
+		-- Capitalization on "Yes" is necessary
+		rMod.bSuperArmor = rMod.sDamageType == "" and DB.getValue(modNode, "superarmor", "") == "Yes";
 		
 	elseif rMod.sProperty == "Initiative" then
 		rMod.sProperty = "initiative"
@@ -566,10 +574,16 @@ function getArmorModSummary(rMod)
 		sDmgType = string.format(" %s", rMod.sDamageType);
 	end
 
-	return string.format("%s%s Armor",
+	local sText = string.format("%s%s Armor",
 		DiceManager.convertDiceToString({}, rMod.nMod or 0, true),
 		sDmgType
 	);
+
+	if rMod.bSuperArmor then
+		sText = string.format("%s (Immune to Armor piercing)", sText);
+	end
+
+	return sText;
 end
 
 function getInitiativeModSummary(rMod)

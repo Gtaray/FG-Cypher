@@ -83,7 +83,26 @@ function performRoll(draginfo, rActor, rAction)
 	local rRoll = ActionCost.getRoll(rActor, rAction);
 
 	if rRoll.nMod > 0 or rRoll.nEffort > 0 then
+		-- Need to set the last action BEFORE we prompt for cost conversion
 		ActionCost.setLastAction(rAction)
+
+		-- Check to see if the actor has a CONVERT effect that lets them convert
+		-- one cost into another
+		local sConvert = EffectManagerCypher.getConversionEffect(rActor, "cost", rRoll.sCostStat);
+		if sConvert ~= nil and sConvert ~= rRoll.sCostStat then
+			local aStats = { sConvert, rRoll.sCostStat };
+			if sConvert == "any" or sConvert == "all" then
+				aStats = { "might", "speed", "intellect" }
+			end
+
+			local w = Interface.openWindow("prompt_cost_conversion", "");
+			w.setData(aStats, rRoll.sCostStat);
+			w.setRoll(rActor, rRoll);
+
+			-- Don't want the original roll to fire so we return true;
+			return true;
+		end
+
 		ActionsManager.performAction(draginfo, rActor, rRoll);
 		return true;
 	end
@@ -146,10 +165,11 @@ function modRoll(rSource, rTarget, rRoll)
 	end
 
 	-- Handle cost increase for being wounded
-	if ActorManagerCypher.getDamageTrack(rSource) > 0 then
+	if CharManager.isImpaired(rSource) then
 		-- If the user is wounded, then add 1 for every level of
 		-- effort spent
 		rRoll.nMod = rRoll.nMod + rRoll.nEffort; 
+		rRoll.sDesc = string.format("%s [IMPAIRED]", rRoll.sDesc);
 	end
 
 	-- Add effort penalty based on armor

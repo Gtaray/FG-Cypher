@@ -541,3 +541,26 @@ function sendCharacterArcMessage(nodeChar, sMessageResource, nXp)
 
 	Comm.deliverChatMessage(rMessage);
 end
+
+-------------------------------------------------------------------------------
+-- HEALTH
+-------------------------------------------------------------------------------
+function isImpaired(rActor)
+	rActor = ActorManager.resolveActor(rActor);
+	if not ActorManager.isPC(rActor) then
+		return false;
+	end	
+
+	local nWounds = ActorManagerCypher.getDamageTrack(rActor);
+	if EffectManagerCypher.hasEffect(rActor, "IGNOREIMPAIRED", nil, false, true) then
+		nWounds = nWounds - 1;
+	end
+
+	return nWounds >= 1;
+end
+
+-------------------------------------------------------------------------------
+-- STAT CONVERSIONS
+-------------------------------------------------------------------------------
+function canConvertStat(rActor, sConversionType, aFilter)
+end

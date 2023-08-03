@@ -124,9 +124,11 @@
 	<string name="char_armorcalc_title">Armor Calc</string>
 	<string name="char_label_armorbase">Base</string>
 	<string name="char_label_armormod">Mod</string>
+	<string name="char_label_superarmor">Pierce-Proof</string>
 	<string name="char_label_armor">Armor: </string>
 	<string name="char_tooltip_armorbase">Base Armor granted from armor</string>
 	<string name="char_tooltip_armormod">Armor granted from abilities or other features</string>
+	<string name="char_tooltip_superarmor">How much of your Armor is immune to effects that would pierce or bypass Armor?</string>
 	<string name="char_label_armorspeedcost">Effort Penalty:</string>
 	<string name="char_tooltip_armorspeedcostbase">Base amount that your armor increases the cost of applying Speed Effort.</string>
 	<string name="char_tooltip_armorspeedcostmod">Modifier for the Speed Effort cost penalty (due to advancements or abilities).</string>
@@ -432,7 +434,7 @@
 	<string name="char_mod_header_skill">Skill</string>
 	<string name="char_mod_header_defense">Defense</string>
 	<string name="char_mod_header_armor">Armor</string>
-	<string name="char_mod_header_initiative">Initiative</string>
+	<string name="char_fmod_header_initiative">Initiative</string>
 	<string name="char_mod_header_ability">Ability</string>
 	<string name="char_mod_header_recovery">Recovery</string>
 	<string name="char_mod_header_edge">Edge</string>
@@ -449,6 +451,7 @@
 	<string name="char_mod_label_dmgtype">Dmg Type</string>
 	<string name="char_mod_label_link">Link</string>
 	<string name="char_mod_link_empty">Drop record here to assign</string>
+	<string name="char_mod_label_superarmor">Pierce-Proof</string>
 
 	<string name="char_mod_edge_label">Option</string>
 	<string name="char_mod_edge_might">Might</string>
@@ -535,6 +538,10 @@
 	<string name="defense_prompt_assets">Assets:</string>
 	<string name="defense_prompt_ease">Ease</string>
 	<string name="defense_prompt_hinder">Hinder</string>
+
+	<!-- Cost Conversion Prompt -->
+	<string name="cost_conversion_prompt_window_title">Select Stat</string>
+	<string name="cost_conversion_prompt_description">Select which stat you would like to pay the cost with</string>
 
 	<!-- Character Builder Dialog Boxes -->
 	<string name="dialog_nav_stats">Stat Pools</string>

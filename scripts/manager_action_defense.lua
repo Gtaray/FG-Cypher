@@ -27,6 +27,10 @@ function getRoll(rActor, rAction)
 	rRoll.sStat = rAction.sStat:lower();
 	rRoll.sDesc = string.format("[DEFENSE] %s", rRoll.sLabel);
 
+	if rAction.bConverted then
+		rRoll.sDesc = string.format("%s [CONVERTED]", rRoll.sDesc);
+	end
+
 	rRoll.nDifficulty = rAction.nDifficulty or 0;
 	rRoll.sTraining = rAction.sTraining;
 	rRoll.nAssets = rAction.nAssets or 0;
