@@ -28,7 +28,7 @@ end
 function getRoll(rActor, rAction)
 	local rRoll = {}
 	rRoll.sType = "damage"
-	rRoll.aDice = { };
+	rRoll.aDice = rAction.aDice or { };
 	rRoll.nMod = rAction.nDamage or 0;
 
 	rRoll.sLabel = rAction.label or "";
@@ -52,6 +52,10 @@ function getRoll(rActor, rAction)
 	if rRoll.bPiercing then
 		rRoll.nPierceAmount = rAction.nPierceAmount;
 	end
+
+	if rAction.bSecret then
+		rRoll.bSecret = true;
+	end
 	
 	return rRoll;
 end
@@ -69,9 +73,9 @@ function modRoll(rSource, rTarget, rRoll)
 		rRoll.nMod = rRoll.nMod + (rRoll.nEffort * 3);
 	end
 
-	rRoll.bPiercing, rRoll.nPierceAmount = RollManager.processPiercing(rSource, rTarget, rRoll.bPiercing, rRoll.nPierceAmount, { rRoll.sDamageType });
+	rRoll.bPiercing, rRoll.nPierceAmount = RollManager.processPiercing(rSource, rTarget, rRoll.bPiercing, rRoll.nPierceAmount, rRoll.sDamageType, rRoll.sStat);
 
-	local nDmgBonus = EffectManagerCypher.getEffectsBonusByType(rSource, aFilter, { rRoll.sStat, rRoll.sDamageType }, rTarget)
+	local nDmgBonus = EffectManagerCypher.getDamageEffectBonus(rSource, rRoll.sDamageType, rRoll.sStat, rTarget)
 	if nDmgBonus ~= 0 then
 		rRoll.nMod = rRoll.nMod + nDmgBonus;
 	end
@@ -161,7 +165,7 @@ function notifyApplyDamage(rSource, rTarget, rRoll, rResult)
 	local msgOOB = {};
 	msgOOB.type = OOB_MSGTYPE_APPLYDMG;
 	
-	if rRoll.bTower then
+	if rRoll.bTower or rRoll.bSecret then
 		msgOOB.nSecret = 1;
 	else
 		msgOOB.nSecret = 0;
@@ -205,7 +209,6 @@ function handleApplyDamage(msgOOB)
 		bAmbient = msgOOB.bAmbient == "true"
 	}
 	local rResult = ActionDamage.buildRollResult(rSource, rTarget, rRoll);
-	
 	applyDamage(rSource, rTarget, (tonumber(msgOOB.nSecret) == 1), rResult);
 end
 
@@ -350,8 +353,14 @@ function applyArmor(rSource, rTarget, nTotal, sStat, sDamageType, bPiercing, nPi
 		nArmorAdjust = math.max(nArmorAdjust, nSuperArmor);
 	end
 
+	-- Apply VULN effect
+	local nVuln = EffectManagerCypher.getVulnerabilityEffectBonus(rTarget, sDamageType, sStat, rSource)
+	if nVuln > 0 then
+		nArmorAdjust = nArmorAdjust - nVuln;
+	end
+
 	-- If any amount of armor was applied, then we add a notification
-	if nArmorAdjust < 0 then -- Less than 0
+	if nVuln > 0 or nArmorAdjust < 0 then -- Less than 0
 		table.insert(aNotifications, "[VULNERABLE]");
 	elseif nArmorAdjust == 0 then -- Equal to 0
 		-- Do nothing

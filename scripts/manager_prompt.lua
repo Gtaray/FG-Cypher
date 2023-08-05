@@ -102,11 +102,10 @@ function handlePromptDefenseRoll(msgOOB)
 	if window then
 		-- Check to see if the actor has a CONVERT effect that lets them convert
 		-- one defense roll into another
-		local sConvert = EffectManagerCypher.getConversionEffect(rTarget, { "defense", "def" }, rAction.sStat);
-		if (sConvert or "") ~= "" and sConvert ~= rAction.sStat then
-			aStats = { sConvert, rAction.sStat };
-			if sConvert == "any" or sConvert == "all" then
-				aStats = { "might", "speed", "intellect" }
+		local aConvert = EffectManagerCypher.getConversionEffect(rTarget, rAction.sStat, { "defense", "def" });
+		for _, sConvert in ipairs(aConvert) do
+			if sConvert ~= rAction.sStat then
+				table.insert(aStats, sConvert);
 			end
 		end
 

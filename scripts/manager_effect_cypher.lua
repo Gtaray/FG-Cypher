@@ -8,6 +8,8 @@ function onInit()
 	EffectManager.setCustomOnEffectRollEncode(onEffectRollEncode);
 	EffectManager.setCustomOnEffectTextEncode(onEffectTextEncode);
 	EffectManager.setCustomOnEffectTextDecode(onEffectTextDecode);
+
+	EffectManager.setCustomOnEffectActorStartTurn(onEffectActorStartTurn);
 end
 
 ---------------------------------
@@ -88,9 +90,247 @@ function onEffectTextDecode(sEffect, rEffect)
 	return s;
 end
 
----------------------------------
--- EFFECT GETTERS
----------------------------------
+function onEffectActorStartTurn(nodeActor, nodeEffect)
+	local sEffName = DB.getValue(nodeEffect, "label", "");
+	local aEffectComps = EffectManager.parseEffect(sEffName);
+
+	for _,sEffectComp in ipairs(aEffectComps) do
+		local rEffectComp = EffectManagerCypher.parseEffectComp(sEffectComp);
+		-- Conditionals
+		if rEffectComp.type == "IFT" then
+			break;
+		elseif rEffectComp.type == "IF" then
+			-- local rActor = ActorManager.resolveActor(nodeActor);
+			-- if not checkConditional(rActor, nodeEffect, rEffectComp.remainder) then
+			-- 	break;
+			-- end
+		
+		-- Ongoing damage and regeneration
+		elseif rEffectComp.type == "dmgo" or rEffectComp.type == "regen" then
+			local nActive = DB.getValue(nodeEffect, "isactive", 0);
+			-- If the effect is skipped, then we un-skip it. 
+			-- If it's skipped
+			if nActive == 2 then
+				EffectManagerCypher.activateSkippedEffect(nodeEffect);
+			else
+				EffectManagerCypher.applyOngoingDamageAdjustment(nodeActor, nodeEffect, rEffectComp);
+			end
+		end
+	end
+end
+
+function applyOngoingDamageAdjustment(nodeActor, nodeEffect, rEffectComp)
+	if #(rEffectComp.dice) == 0 and rEffectComp.mod == 0 then
+		return;
+	end
+	
+	local rTarget = ActorManager.resolveActor(nodeActor);
+	local rActor = ActorManager.resolveActor(nodeActor);
+	if rEffectComp.type == "regen" then
+		local nPercentWounded = ActorHealthManager.getWoundPercent(rActor);
+		
+		-- If not wounded, then return
+		if nPercentWounded <= 0 then
+			return;
+		end
+		-- Regeneration does not work once creature falls below 1 hit point
+		if nPercentWounded >= 1 then
+			return;
+		end
+		
+		local rAction = {};
+		rAction.label = "Regeneration";
+		rAction.aDice = rEffectComp.dice;
+		rAction.nHeal = rEffectComp.mod;
+		rAction.bSecret = EffectManager.isGMEffect(nodeActor, nodeEffect);
+
+		if #(rEffectComp.filters) == 0 then
+			rAction.sHealStat = "might" -- Default to healing might
+		elseif #(rEffectComp.filters) == 1 then
+			rAction.sHealStat = rEffectComp.filters[1]
+		else
+			return; -- Multiple regen stats are illegal. Bail
+		end
+
+		local rRoll = ActionHeal.getRoll(nil, rAction);
+		if EffectManager.isGMEffect(nodeActor, nodeEffect) then
+			rRoll.bSecret = true;
+		end
+
+		ActionsManager.actionDirect(nil, "heal", { rRoll }, { { rTarget } });
+
+	elseif rEffectComp.type == "dmgo" then
+		local rAction = {};
+		rAction.label = "Ongoing damage";
+		rAction.aDice = rEffectComp.dice;
+		rAction.nDamage = rEffectComp.mod;
+
+		for _, sFilter in ipairs(rEffectComp.filters) do
+			if sFilter == "might" or sFilter == "speed" or sFilter == "might" then
+				if rAction.sDamageStat ~= nil then
+					return; -- Multiple damage stats are illegal. Bail
+				end
+				rAction.sDamageStat = sFilter;
+			else
+				if rAction.sDamageType ~= nil then
+					return; -- Multiple damage types are illegal. Bail
+				end
+				rAction.sDamageType = sFilter;
+			end
+		end
+
+		if not rAction.sDamageStat then
+			rAction.sDamageStat = "might";
+		end
+		
+		local rRoll = ActionDamage.getRoll(nil, rAction);
+		if EffectManager.isGMEffect(nodeActor, nodeEffect) then
+			rRoll.bSecret = true;
+		end
+		ActionsManager.actionDirect(nil, "damage", { rRoll }, { { rTarget } });
+	end
+end
+
+-------------------------------------------------------------------------------
+-- EFFECT ACCESSORS
+-------------------------------------------------------------------------------
+function getPiercingEffectBonus(rActor, sDamageType, sStat, rTarget)
+	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, { "PIERCE", "PIERCING" }, sStat, sDamageType, rTarget);
+end
+
+function getLevelEffectBonus(rActor, aFilter, rTarget)
+	return EffectManagerCypher.getEffectsBonusByType(rActor, "LEVEL", aFilter, true, nil, true, rTarget);
+end
+
+function getEdgeEffectBonus(rActor, aFilter)
+	return EffectManagerCypher.getEffectsBonusByType(rActor, "EDGE", aFilter, true);
+end
+
+function getEffortEffectBonus(rActor, aFilter, rTarget)
+	return EffectManagerCypher.getEffectsBonusByType(rActor, "EFFORT", aFilter, true, nil, true, rTarget)
+end
+
+function getMaxEffortEffectBonus(rActor, aFilter)
+	return EffectManagerCypher.getEffectsBonusByType(rActor, { "MAXEFF", "MAXEFFORT" }, aFilter, true);
+end
+
+function getAssetEffectBonus(rActor, aFilter, rTarget)
+	return EffectManagerCypher.getEffectsBonusByType(rActor, "ASSET", aFilter, true, nil, true, rTarget)
+end
+
+function getMaxAssetsEffectBonus(rActor, aFilter)
+	return EffectManagerCypher.getEffectsBonusByType(rActor, "MAXASSETS", aFilter, true);
+end
+
+function getRecoveryEffectBonus(rActor, aFilter)
+	return EffectManagerCypher.getEffectsBonusByType(rActor, { "RECOVERY", "REC" }, aFilter, true);
+end
+
+function getHealEffectBonus(rActor, aFilter, rTarget)
+	return EffectManagerCypher.getEffectsBonusByType(rActor, "HEAL", aFilter, true, nil, true, rTarget)
+end
+
+function getDamageEffectBonus(rActor, sDamageType, sStat, rTarget)
+	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, { "DAMAGE", "DMG" }, sStat, sDamageType, rTarget);
+end
+
+function getCostEffectBonus(rActor, rFilter)
+	return EffectManagerCypher.getEffectsBonusByType(rActor, "COST", rFilter, true);
+end
+
+function getEaseEffectBonus(rActor, aFilter, rTarget)
+	return EffectManagerCypher.getEffectsBonusByType(rActor, "EASE", aFilter, true, nil, true, rTarget);
+end
+
+function getHinderEffectBonus(rActor, aFilter, rTarget)
+	return EffectManagerCypher.getEffectsBonusByType(rActor, "HINDER", aFilter, true, nil, true, rTarget);
+end
+
+function getArmorEffectBonus(rActor, sStat, sDamageType, rTarget)
+	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, "ARMOR", sStat, sDamageType, rTarget);
+end
+
+function getSuperArmorEffectBonus(rActor, sStat, sDamageType, rTarget)
+	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, "SUPERARMOR", sStat, sDamageType, rTarget);
+end
+
+function getVulnerabilityEffectBonus(rActor, sDamageType, sStat, rTarget)
+	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, "VULN", sStat, sDamageType, rTarget);
+end
+
+function getAdvantageEffects(rActor, aFilter, rTarget)
+	return EffectManagerCypher.getEffectsByType(rActor, "ADV", aFilter, true, nil, false, rTarget)
+end
+
+function getDisadvantageEffects(rActor, aFilter, rTarget)
+	return EffectManagerCypher.getEffectsByType(rActor, "DISADV", aFilter, true, nil, false, rTarget)
+end
+
+function getGrantAdvantageEffects(rActor, aFilter, rTarget)
+	return EffectManagerCypher.getEffectsByType(rActor, "GRANTADV", aFilter, true, nil, false, rTarget)
+end
+
+function getGrantDisadvantageEffects(rActor, aFilter, rTarget)
+	return EffectManagerCypher.getEffectsByType(rActor, "GRANTDISADV", aFilter, true, nil, false, rTarget)
+end
+
+function getTrainedEffects(rActor, aFilter, rTarget)
+	return EffectManagerCypher.getEffectsByType(rActor, "TRAIN", aFilter, true, nil, true, rTarget);
+end
+
+function getSpecializedEffects(rActor, aFilter, rTarget)
+	return EffectManagerCypher.getEffectsByType(rActor, "SPEC", aFilter, true, nil, true, rTarget);
+end
+
+function getInabilityEffects(rActor, aFilter, rTarget)
+	return EffectManagerCypher.getEffectsByType(rActor, "INABILITY", aFilter, true, nil, true, rTarget);
+end
+
+function getConversionEffect(rActor, aFilter, aContent)
+	if not rActor or not aContent then
+		return {};
+	end
+
+	local aEffects = EffectManagerCypher.getEffectsByType(rActor, "CONVERT", aFilter, true, aContent, false);
+	local aConversion = {};
+
+	for _, rEffect in ipairs(aEffects) do
+		for _, sContent in ipairs(rEffect.content) do
+			-- Only add to the final conversion table if the bit of content is not originally
+			-- in the matched list. This ensure that any content that's not filtered against
+			-- is added here.
+			if not StringManager.contains(aContent, sContent) then
+				table.insert(aConversion, sContent);
+			end
+		end
+	end
+
+	return aConversion;
+end
+
+function getImmunityEffects(rActor, rTarget)
+	return EffectManagerCypher.getEffectsByType(rActor, "IMMUNE", {}, false, nil, false, rTarget, false);
+end
+
+-------------------------------------------------------------------------------
+-- EFFECT PROCESSORS
+-------------------------------------------------------------------------------
+function getEffectsBonusForDamageType(rActor, sEffectType, sStat, sDamageType, rFilterActor)
+	if not rActor then
+		return 0, 0;
+	end
+
+	local aFilter = {};
+	if sStat then
+		table.insert(aFilter, sStat);
+	end
+	if sDamageType then
+		table.insert(aFilter, sDamageType);
+	end
+
+	return EffectManagerCypher.getEffectsBonusByType(rActor, sEffectType, aFilter, false, nil, false, rFilterActor, false);
+end
+
 function hasEffect(rActor, sEffect, rTarget, bTargetedOnly, bCheckEffectTargets)
 	if not rActor or ((sEffect or "") == "") then
 		return false;
@@ -112,7 +352,7 @@ function hasEffect(rActor, sEffect, rTarget, bTargetedOnly, bCheckEffectTargets)
 			-- Iterate through each effect component looking for a type match
 			local nMatch = 0;
 			for kEffectComp, sEffectComp in ipairs(tEffectComps) do
-				local rEffectComp = EffectManager.parseEffectCompSimple(sEffectComp);
+				local rEffectComp = EffectManagerCypher.parseEffectComp(sEffectComp);
 
 				if rEffectComp.original:lower() == sLowerEffect then
 					if bTargeted and not bIgnoreEffectTargets then
@@ -127,33 +367,17 @@ function hasEffect(rActor, sEffect, rTarget, bTargetedOnly, bCheckEffectTargets)
 
 			-- If matched, then remove one-off effects
 			if nMatch > 0 then
-				-- Switch "Skip" effect to active
-				if nActive == 2 then
-					DB.setValue(v, "isactive", "number", 1);
-
-				else
-					-- Remove one-off effects
-					table.insert(aMatch, v);
-					local sApply = DB.getValue(v, "apply", "");
-					if sApply == "action" then
-						EffectManager.notifyExpire(v, 0);
-					elseif sApply == "roll" then
-						EffectManager.notifyExpire(v, 0, true);
-					elseif sApply == "single" then
-						EffectManager.notifyExpire(v, nMatch, true);
-					end
-				end
+				EffectManagerCypher.addMatchedEffect(v, aMatch);
+				EffectManagerCypher.clearTemporaryEffect(v, nMatch);
+				EffectManagerCypher.activateSkippedEffect(v);
 			end
 		end
 	end
 	
-	if #aMatch > 0 then
-		return true;
-	end
-	return false;
+	return #aMatch > 0;
 end
 
-function getEffectsBonusByType(rActor, aEffectType, aFilter, rFilterActor, bTargetedOnly)
+function getEffectsBonusByType(rActor, aEffectType, aFilter, bExclusiveFilters, aContent, bExclusiveContent, rFilterActor, bTargetedOnly)
 	if not rActor or not aEffectType then
 		return 0, 0;
 	end
@@ -162,19 +386,20 @@ function getEffectsBonusByType(rActor, aEffectType, aFilter, rFilterActor, bTarg
 	if type(aEffectType) ~= "table" then
 		aEffectType = { aEffectType };
 	end
-	if type(aFilter) ~= "table" and type(aFilter) == "string" then
+	if type(aContent) ~= "table" and type(aFilter) == "string" then
 		aFilter = { aFilter:lower() };
+	end
+	if type(aContent) ~= "table" and type(aContent) == "string" then
+		aContent = { aContent:lower() };
 	end
 	
 	-- PER EFFECT TYPE VARIABLES
 	local results = {};
-	local bonuses = {};
-	local penalties = {};
 	local nEffectCount = 0;
 
 	for k, v in pairs(aEffectType) do
 		-- LOOK FOR EFFECTS THAT MATCH BONUSTYPE
-		local aEffectsByType = getEffectsByType(rActor, v, aFilter, rFilterActor, bTargetedOnly);
+		local aEffectsByType = EffectManagerCypher.getEffectsByType(rActor, v, aFilter, bExclusiveFilters, aContent, bExclusiveContent, rFilterActor, bTargetedOnly);
 
 		-- ITERATE THROUGH EFFECTS THAT MATCHED
 		for k2,v2 in pairs(aEffectsByType) do
@@ -196,358 +421,254 @@ function getEffectsBonusByType(rActor, aEffectType, aFilter, rFilterActor, bTarg
 	return nBonus, nEffectCount;
 end
 
-function getEffectsByType(rActor, sEffectType, aFilter, rFilterActor, bTargetedOnly)
-	if not rActor then
+function getEffectsByType(rActor, sEffectType, aFilter, bExclusiveFilters, aContent, bExclusiveContent, rFilterActor, bTargetedOnly)
+	if not rActor or not sEffectType then
 		return {};
 	end
-	local results = {};
-	aFilter = toLower(aFilter);
-	
-	-- Iterate through effects
-	for _,v in pairs(DB.getChildList(ActorManager.getCTNode(rActor), "effects")) do
-		-- Check active
-		local nActive = DB.getValue(v, "isactive", 0);
-		if (nActive ~= 0) then
-			local sLabel = DB.getValue(v, "label", "");
-			local sApply = DB.getValue(v, "apply", "");
 
-			-- IF COMPONENT WE ARE LOOKING FOR SUPPORTS TARGETS, THEN CHECK AGAINST OUR TARGET
-			local bTargeted = EffectManager.isTargetedEffect(v);
-			if not bTargeted or EffectManager.isEffectTarget(v, rFilterActor) then
-				local aEffectComps = EffectManager.parseEffect(sLabel);
-
-				-- Look for type/subtype match
-				local nMatch = 0;
-				for kEffectComp,sEffectComp in ipairs(aEffectComps) do
-					local rEffectComp = EffectManager.parseEffectCompSimple(sEffectComp);
-										
-					-- Check for match
-					local comp_match = false;
-					if rEffectComp.type:lower() == sEffectType:lower() or 
-					   rEffectComp.original:lower() == sEffectType:lower() then
-
-						-- Check effect targeting
-						if bTargetedOnly and not bTargeted then
-							comp_match = false;
-						else
-							comp_match = true;
-						end
-
-						-- Check filters
-						if #aFilter > 0 then
-							local bMatch = true;
-							-- No remainder matches with anything
-							-- So we skip this check
-							if #(rEffectComp.remainder) > 0 then
-								-- Match against all effect tags, or don't match at all
-								for _,tag in pairs(rEffectComp.remainder) do
-									if tag:lower() == "all" then
-										bMatch = true;
-										break;
-									end
-									
-									if not StringManager.contains(aFilter, tag:lower()) then
-										bMatch = false;
-										break;
-									end
-								end
-							else
-								-- No remainders found in the effect, which means
-								-- we should match against anything
-								bMatch = true;
-							end
-							if not bMatch then
-								comp_match = false;
-							end
-						end
-					end
-
-					-- Match!
-					if comp_match then
-						nMatch = kEffectComp;
-						if nActive == 1 then
-							table.insert(results, rEffectComp);
-						end
-					end
-				end -- END EFFECT COMPONENT LOOP
-
-				-- Remove one shot effects
-				if nMatch > 0 then
-					if nActive == 2 then
-						DB.setValue(v, "isactive", "number", 1);
-					else
-						if sApply == "action" then
-							EffectManager.notifyExpire(v, 0);
-						elseif sApply == "roll" then
-							EffectManager.notifyExpire(v, 0, true);
-						elseif sApply == "single" then
-							EffectManager.notifyExpire(v, nMatch, true);
-						end
-					end
-				end
-			end -- END TARGET CHECK
-		end  -- END ACTIVE CHECK
-	end  -- END EFFECT LOOP
-	
-	-- RESULTS
-	return results;
-end
-
-function getArmorEffectBonusForDamageType(rActor, sEffectType, sStat, sDamageType, rFilterActor, bTargetedOnly)
-	if not rActor then
-		return 0, 0;
-	end
-	
-	-- PER EFFECT TYPE VARIABLES
-	local results = {};
-	local nEffectCount = 0;
-
-	local aArmorEffects = getArmorEffectsForDamageType(rActor, sEffectType, sStat, sDamageType, rFilterActor, bTargetedOnly);
-
-	-- ITERATE THROUGH EFFECTS THAT MATCHED
-	for k,v in pairs(aArmorEffects) do
-		-- {type = STAT, remainder = {}, original = STATS: +1, dice = {}, mod = 1}
-
-		-- Add matched effect to results table
-		table.insert(results, v)
-
-		-- ADD TO EFFECT COUNT
-		nEffectCount = nEffectCount + 1;
-	end
-
-	local nBonus = 0;
-	for k,v in pairs(results) do
-		nBonus = nBonus + v.mod;
-	end
-
-	return nBonus, nEffectCount;
-end
-
-function getArmorEffectsForDamageType(rActor, sEffectType, sStat, sDamageType, rFilterActor, bTargetedOnly)
-	if not rActor then
-		return {};
-	end
-	local results = {};
 	sEffectType = sEffectType:lower();
-	sStat = sStat:lower();
-	sDamageType = sDamageType:lower();
-	
-	-- Iterate through effects
-	for _,v in pairs(DB.getChildList(ActorManager.getCTNode(rActor), "effects")) do
-		-- Check active
-		local nActive = DB.getValue(v, "isactive", 0);
 
-		if (nActive ~= 0) then
-			local sLabel = DB.getValue(v, "label", "");
-			local sApply = DB.getValue(v, "apply", "");
-
-			-- IF COMPONENT WE ARE LOOKING FOR SUPPORTS TARGETS, THEN CHECK AGAINST OUR TARGET
-			local bTargeted = EffectManager.isTargetedEffect(v);
-			if not bTargeted or EffectManager.isEffectTarget(v, rFilterActor) then
-				local aEffectComps = EffectManager.parseEffect(sLabel);
-
-				-- Look for type/subtype match
-				local nMatch = 0;
-				for kEffectComp,sEffectComp in ipairs(aEffectComps) do
-					local rEffectComp = EffectManager.parseEffectCompSimple(sEffectComp);
-										
-					-- Check for match
-					local comp_match = false;
-					if rEffectComp.type:lower() == sEffectType then
-
-						-- Check effect targeting
-						if bTargetedOnly and not bTargeted then
-							comp_match = false;
-						else
-							comp_match = true;
-						end
-
-						-- Match against all effect tags, or don't match at all
-						local bMatch = true;
-
-						-- If there's no remainders, but the damage type is set to some type
-						-- then we do not match.
-						if #(rEffectComp.remainder) == 0 and sDamageType ~= "untyped" then
-							bMatch = false;
-						end
-
-						for _,tag in pairs(rEffectComp.remainder) do
-							tag = tag:lower();
-
-							if tag == "all" then
-								bMatch = true;
-								break;
-							end
-
-							--
-							if DamageTypeManager.isDamageType(tag) then	
-								-- If the effect has a damage type tag, but the damage being dealt is untyped
-								-- then there isn't a match.
-								if sDamageType == "untyped" then
-									bMatch = false;
-
-								-- Otherwise if the tag doesn't match the given damage type, then this effect doesn't match.
-								elseif tag ~= sDamageType then
-									bMatch = false;
-								end
-							else
-								-- tag isn't a damage type, so it must be a stat
-								if tag ~= sStat then
-									bMatch = false;
-								end
-							end
-						end
-
-						if not bMatch then
-							comp_match = false;
-						end
-					end
-
-					-- Match!
-					if comp_match then
-						nMatch = kEffectComp;
-						if nActive == 1 then
-							table.insert(results, rEffectComp);
-						end
-					end
-				end -- END EFFECT COMPONENT LOOP
-
-				-- Remove one shot effects
-				if nMatch > 0 then
-					if nActive == 2 then
-						DB.setValue(v, "isactive", "number", 1);
-					else
-						if sApply == "action" then
-							EffectManager.notifyExpire(v, 0);
-						elseif sApply == "roll" then
-							EffectManager.notifyExpire(v, 0, true);
-						elseif sApply == "single" then
-							EffectManager.notifyExpire(v, nMatch, true);
-						end
-					end
-				end
-			end -- END TARGET CHECK
-		end  -- END ACTIVE CHECK
-	end  -- END EFFECT LOOP
-	
-	-- RESULTS
-	return results;
-end
-
-function getConversionEffect(rActor, aTypes, aFilter)
-	if not rActor or not aTypes then
-		return false;
-	end
-
-	-- MAKE BONUS TYPE INTO TABLE, IF NEEDED
-	if type(aTypes) ~= "table" then
-		aTypes = { aTypes };
+	if not aFilter then
+		aFilter = {}
 	end
 	if type(aFilter) ~= "table" and type(aFilter) == "string" then
 		aFilter = { aFilter:lower() };
 	end
 
-	local rMatchedComp;
-	for _,v in pairs(ActorManager.getEffects(rActor)) do
+	if not aContent then
+		aContent = {};
+	end
+	if type(aContent) ~= "table" and type(aContent) == "string" then
+		aContent = { aContent:lower() };
+	end
+
+	local results = {};
+	aFilter = toLower(aFilter);
+	aContent = toLower(aContent);
+	
+	-- Iterate through effects
+	for _,v in pairs(DB.getChildList(ActorManager.getCTNode(rActor), "effects")) do
+		-- Check active
 		local nActive = DB.getValue(v, "isactive", 0);
-		local sApply = DB.getValue(v, "apply", "");
-
-		if nActive ~= 0 then
+		if nActive ~= 0 and EffectManagerCypher.checkTargeting(v, rFilterActor) then
 			local sLabel = DB.getValue(v, "label", "");
-			local tEffectComps = EffectManager.parseEffect(sLabel);
+			local aEffectComps = EffectManager.parseEffect(sLabel);
 
+			-- Look for type/subtype match
 			local nMatch = 0;
-			-- Iterate through each effect component looking for a type match
-			for kEffectComp, sEffectComp in ipairs(tEffectComps) do
-				local rEffectComp = EffectManagerCypher.parseConversionEffectComp(sEffectComp);
-				local comp_match = true;
+			for kEffectComp, sEffectComp in ipairs(aEffectComps) do
+				local rEffectComp = EffectManagerCypher.parseEffectComp(sEffectComp);
+			
+				if  EffectManagerCypher.checkEffectCompType(rEffectComp, sEffectType) and
+					EffectManagerCypher.checkFilters(rEffectComp, aFilter, bExclusiveFilters) and 
+					EffectManagerCypher.checkContent(rEffectComp, aContent, bExclusiveContent) and 
+					EffectManagerCypher.checkDamageType(rEffectComp, sEffectType, aFilter) then
 
-				-- Check to see that the conversion effect has a type that we care about
-				if rEffectComp.type == "convert" and StringManager.contains(aTypes, rEffectComp.rolltype) then
-					-- Check filters
-					if #aFilter > 0 then
-						local bFilterMatch = true;
-						-- No remainder matches with anything
-						-- So we skip this check
-						if #(rEffectComp.remainder) > 0 then
-							-- Match against all effect tags, or don't match at all
-							for _,tag in pairs(rEffectComp.remainder) do
-								if tag:lower() == "all" or tag:lower() == "any" then
-									bFilterMatch = true;
-									break;
-								end
-								
-								if not StringManager.contains(aFilter, tag:lower()) then
-									bFilterMatch = false;
-									break;
-								end
-							end
-						else
-							-- No remainders found in the effect, which means
-							-- we should match against anything
-							bFilterMatch = true;
+						-- At this point we're guaranteed to have an active effect that matches targeting, type, and filters/content
+						nMatch = kEffectComp;
+
+						-- If this effect isn't active, then break.
+						-- This moves it directly to the function to activate
+						-- skipped effects
+						if EffectManagerCypher.checkActive(v) then
+							table.insert(results, rEffectComp);
 						end
-
-						if not bFilterMatch then
-							comp_match = false;
-						end
-					end
-				else
-					comp_match = false;
-				end
-
-				-- Match!
-				if comp_match then
-					nMatch = kEffectComp;
-					if nActive == 1 then
-						rMatchedComp = rEffectComp;
-
-						-- Break out of the loop the first time we find a match
-						break;
-					end
 				end
 			end -- END EFFECT COMPONENT LOOP
 
 			-- Remove one shot effects
 			if nMatch > 0 then
-				if nActive == 2 then
-					DB.setValue(v, "isactive", "number", 1);
-				else
-					if sApply == "action" then
-						EffectManager.notifyExpire(v, 0);
-					elseif sApply == "roll" then
-						EffectManager.notifyExpire(v, 0, true);
-					elseif sApply == "single" then
-						EffectManager.notifyExpire(v, nMatch, true);
-					end
-				end
+				EffectManagerCypher.clearTemporaryEffect(v, nMatch);
+				EffectManagerCypher.activateSkippedEffect(v);
 			end
+		end -- END ACTIVE AND TARGETING CHECK
+	end  -- END EFFECT LOOP
+	
+	-- RESULTS
+	return results;
+end
+
+-------------------------------------------------------------------------------
+-- INTERNAL EFFECT PROCESSING HELPERS
+-------------------------------------------------------------------------------
+
+function checkDamageType(rEffectComp, sEffectType, aFilter)
+	if not (sEffectType == "armor" or sEffectType == "immune" or sEffectType == "vuln") then
+		return true;
+	end
+
+	local bUntyped = StringManager.contains(aFilter, "untyped");
+	local bMatch = false;
+
+	for _,tag in pairs(rEffectComp.filters) do
+		if tag == "all" or tag == "any" then
+			bMatch = true;
+			break
+		end
+
+		-- Any tag that's not a stat means that we cannot match with untyped damage.
+		if not (tag == "might" or tag == "speed" or tag == "intellect") and bUntyped then
+			bMatch = false;
+			break;
+		elseif StringManager.contains(aFilter, tag) then
+			bMatch = true;
+			break;
 		end
 	end
 
-	if not rMatchedComp then
-		return "";
-	end
-
-	return rMatchedComp.result or "";
+	-- Either we have a match, or we're untyped with no filters
+	return bMatch or (bUntyped and #(rEffectComp.filters) == 0);
 end
 
-function parseConversionEffectComp(s)
-	local aStrings = StringManager.split(s, ":", true);
-	local sType = aStrings[1]:match("([^(:]+)");
-	local sRollType, sResult = aStrings[1]:match("CONVERT%s*%(([^,]+),%s*([^)]+)%)");
-	local aFilters = {};
-	if aStrings[2] then
-		aFilters = StringManager.split(aStrings[2], ",", true)
+function checkEffectCompType(rEffectComp, sEffectType)
+	return rEffectComp.type == sEffectType:lower() or rEffectComp.original == sEffectType:lower();
+end
+
+function checkTargeting(effectNode, rFilterActor)
+	-- If the effect doesn't target, then we're good to go
+	if not EffectManager.isTargetedEffect(effectNode) then
+		return true;
 	end
 
-	return  {
-		type = (sType or ""):lower(), 
-		rolltype = (sRollType or ""):lower(),
-		result = sResult, 
-		remainder = aFilters, 
-		original = StringManager.trim(s)
-	};
+	return EffectManager.isEffectTarget(effectNode, rFilterActor);
+end
+
+function checkActive(effectNode)
+	return DB.getValue(effectNode, "isactive", 0) == 1;
+end
+
+-- rEffectCompList can be either effectComp.filters or effectComp.content
+-- bExclusive: if true, all filters much match to pass this check. if false, at least one of the filters must match.
+-- Effectively bExclusive controls whether the filters are checked using AND (if true) or OR (if false)
+function checkEffectFilterOrContent(rEffectCompList, aFilters, bExclusive)
+	-- No remainder matches with anything
+	if #(rEffectCompList) == 0 then
+		return true;
+	end
+
+	-- if there are no filters to check against, any filter will match, so return true
+	if #(aFilters) == 0 then
+		return true;
+	end
+	
+	local bMatchedAny = false;
+	local bMatchedAll = true;
+	-- Match against all effect tags, or don't match at all
+	for _,tag in pairs(rEffectCompList) do
+		if tag == "all" or tag == "any" then
+			return true;
+		end
+		
+		local bContains = StringManager.contains(aFilters, tag)
+		if bContains then
+			bMatchedAny = true;
+		else
+			bMatchedAll = false;
+		end
+	end
+
+	if bExclusive then
+		return bMatchedAll;
+	end
+	return bMatchedAny;
+end
+
+function checkFilters(rEffectComp, aFilters, bExclusive)
+	return EffectManagerCypher.checkEffectFilterOrContent(rEffectComp.filters, aFilters, bExclusive);
+end
+
+function checkContent(rEffectComp, aFilters, bExclusive)
+	return EffectManagerCypher.checkEffectFilterOrContent(rEffectComp.content, aFilters, bExclusive);
+end
+
+function clearTemporaryEffect(effectNode, nEffectComp)
+	--  Effect component is 0 if there's no effect found matching criteria, so we don't do anything
+	if nEffectComp == 0 then
+		return;
+	end
+
+	-- 0 = inactive
+	-- 1 = active
+	-- 2 = skip once
+	-- We only want to process active effects, so we bail if its anything else
+	local nActive = DB.getValue(effectNode, "isactive", 0);
+	if nActive ~= 1 then
+		return;
+	end
+
+	local sApply = DB.getValue(effectNode, "apply", "");
+	if sApply == "action" then
+		EffectManager.notifyExpire(effectNode, 0);
+	elseif sApply == "roll" then
+		EffectManager.notifyExpire(effectNode, 0, true);
+	elseif sApply == "single" then
+		EffectManager.notifyExpire(effectNode, nEffectComp, true);
+	end
+end
+
+function activateSkippedEffect(effectNode)
+	local nActive = DB.getValue(effectNode, "isactive", 0);
+	if nActive == 2 then
+		DB.setValue(effectNode, "isactive", "number", 1);
+	end
+end
+
+function addMatchedEffect(effectNode, aEffects)
+	local nActive = DB.getValue(v, "isactive", 0);
+	if nActive == 1 then
+		table.insert(aEffects, effectNode);
+	end
+end
+
+function parseEffectComp(s)
+	local sType = s:match("([^:]+)[:?]?"); -- This will match everything before either a colon or the end of the string
+	local aDice = {};
+	local nMod = 0;
+	local aContent = {}; -- Data in parenthesis before the colon, separated by a comma. i.e. IF (CONTENT): ...
+	local aFilters = {}; -- Data after the colon separated by a comma that contains no parenthesis. i.e. ASSET: might, speed
+
+	if sType then
+		local sContent = sType:match("%(([^%)]+)%)");
+		sType = sType:match("([^%(%)%s:]+)")
+		sType = StringManager.trim(sType:lower());
+
+		-- Check for content (data in parenthesis)
+		if sContent then
+			aContent = StringManager.split(sContent, ",", true);
+		end
+	end
+
+	local sData = s:match(":(.-)$"); -- Matches to everything to the right of the colon
+	if sData then
+		local nFilterIndex = 1;
+		local aWords = StringManager.parseWords(sData, "/\\%.%[%]%(%):{}");
+
+		if #aWords > 0 then
+			-- Check the very first bit of text to see if it's a text string
+			if StringManager.isDiceString(aWords[1]) then
+				aDice, nMod = StringManager.convertStringToDice(aWords[1]);
+				nFilterIndex = 2;
+			end
+		end
+
+		while nFilterIndex <= #aWords do
+			local sWord = aWords[nFilterIndex]
+			if sWord then
+				sWord = StringManager.trim(sWord:lower());
+				table.insert(aFilters, sWord);
+			end
+			nFilterIndex = nFilterIndex + 1;
+		end
+	end
+
+	return {
+		type = sType,
+		mod = nMod,
+		dice = aDice,
+		content = toLower(aContent),
+		filters = toLower(aFilters),
+		original = StringManager.trim(s):lower();
+	}
 end
 
 function toLower(aList)

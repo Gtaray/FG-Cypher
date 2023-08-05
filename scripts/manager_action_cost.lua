@@ -88,15 +88,10 @@ function performRoll(draginfo, rActor, rAction)
 
 		-- Check to see if the actor has a CONVERT effect that lets them convert
 		-- one cost into another
-		local sConvert = EffectManagerCypher.getConversionEffect(rActor, "cost", rRoll.sCostStat);
-		if sConvert ~= nil and sConvert ~= rRoll.sCostStat then
-			local aStats = { sConvert, rRoll.sCostStat };
-			if sConvert == "any" or sConvert == "all" then
-				aStats = { "might", "speed", "intellect" }
-			end
-
+		local aConvert = EffectManagerCypher.getConversionEffect(rTarget, rRoll.sCostStat, { "cost" });
+		if #aConvert > 0 then
 			local w = Interface.openWindow("prompt_cost_conversion", "");
-			w.setData(aStats, rRoll.sCostStat);
+			w.setData(aConvert, rRoll.sCostStat);
 			w.setRoll(rActor, rRoll);
 
 			-- Don't want the original roll to fire so we return true;
@@ -185,7 +180,7 @@ function modRoll(rSource, rTarget, rRoll)
 	end
 
 	-- Finally, adjust based on COST effects
-	local nEffectMod = EffectManagerCypher.getEffectsBonusByType(rSource, "COST", aFilter);
+	local nEffectMod = EffectManagerCypher.getCostEffectBonus(rSource, aFilter);
 	rRoll.nMod = rRoll.nMod + nEffectMod;
 
 	-- Final clamping of the mod to a min of 0

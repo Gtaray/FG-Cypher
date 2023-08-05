@@ -20,7 +20,7 @@ end
 function getRoll(rActor, rAction)
 	local rRoll = {};
 	rRoll.sType = "heal";
-	rRoll.aDice = { };
+	rRoll.aDice = rAction.aDice or { };
 	rRoll.nMod = rAction.nHeal or rAction.nModifier or 0;
 	
 	rRoll.sLabel = rAction.label or "";
@@ -46,7 +46,10 @@ function modRoll(rSource, rTarget, rRoll)
 		return;
 	end
 
-	local aFilter = { "heal", "healing", rRoll.sStat };
+	local aFilter = { "heal", "healing" };
+	if rRoll.sStat then
+		table.insert(aFilter, rRoll.sStat);
+	end
 
 	-- Adjust mod based on effort
 	rRoll.nEffort = (rRoll.nEffort or 0) + RollManager.processEffort(rSource, rTarget, aFilter, rRoll.nEffort);
@@ -54,7 +57,11 @@ function modRoll(rSource, rTarget, rRoll)
 		rRoll.nMod = rRoll.nMod + (rRoll.nEffort * 3);
 	end
 
-	local nHealBonus, nHealEffectCount = EffectManagerCypher.getEffectsBonusByType(rSource, "HEAL", { sStat }, rTarget)
+	local aHealEffectFilter = {};
+	if rRoll.sStat then
+		table.insert(aHealEffectFilter, rRoll.sStat);
+	end
+	local nHealBonus = EffectManagerCypher.getHealEffectBonus(rSource, aHealEffectFilter, rTarget)
 	if nHealBonus ~= 0 then
 		rRoll.nMod = rRoll.nMod + nHealBonus;
 	end

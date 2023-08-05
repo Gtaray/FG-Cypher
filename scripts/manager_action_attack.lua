@@ -86,12 +86,12 @@ function modRoll(rSource, rTarget, rRoll)
 	rRoll.nEffort = rRoll.nEffort + RollManager.processEffort(rSource, rTarget, aFilter, rRoll.nEffort, rRoll.nMaxEffort);
 
 	-- Get ease/hinder effects
-	rRoll.nEase = rRoll.nEase + EffectManagerCypher.getEffectsBonusByType(rSource, "EASE", aFilter, rTarget);
+	rRoll.nEase = rRoll.nEase + EffectManagerCypher.getEaseEffectBonus(rSource, aFilter, rTarget);
 	if ModifierManager.getKey("EASE") then
 		rRoll.nEase = rRoll.nEase + 1;
 	end
 
-	rRoll.nHinder = rRoll.nHinder + EffectManagerCypher.getEffectsBonusByType(rSource, "HINDER", aFilter, rTarget);
+	rRoll.nHinder = rRoll.nHinder + EffectManagerCypher.getHinderEffectBonus(rSource, aFilter, rTarget);
 	if ModifierManager.getKey("HINDER") then
 		rRoll.nHinder = rRoll.nHinder + 1;
 	end

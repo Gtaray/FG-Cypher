@@ -27,7 +27,7 @@ function getRoll(rActor, rAction)
 end
 
 function modRoll(rSource, rTarget, rRoll)
-	local nRecoveryEffect = EffectManagerCypher.getEffectsBonusByType(rSource, { "RECOVERY", "REC" }, { });
+	local nRecoveryEffect = EffectManagerCypher.getRecoveryEffectBonus(rSource, { });
 
 	-- Only continue if the recovery effect is not zero
 	if nRecoveryEffect == 0 then
