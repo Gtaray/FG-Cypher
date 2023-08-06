@@ -844,6 +844,30 @@ function decodePiercing(vRoll, bPersist)
 	return bPiercing, nPierceAmount
 end
 
+function encodeOngoingDamage(rAction, rRoll)
+	if rAction.bOngoing then
+		rRoll.sDesc = RollManager.addOrOverwriteText(
+			rRoll.sDesc,
+			"%[ONGOING%]",
+			"[ONGOING]"
+		);
+	end
+end
+
+function decodeOngoingDamage(vRoll, bPersist)
+	local sDesc = vRoll;
+	if type(vRoll) == "table" then
+		sDesc = vRoll.sDesc;
+	end
+
+	return RollManager.decodeTextAsBoolean(
+		sDesc,
+		"%[ONGOING%]",
+		nil,
+		bPersist
+	);
+end
+
 function encodeAmbientDamage(rAction, rRoll)
 	if rAction.bAmbient == true then
 		-- Place the text in the roll description

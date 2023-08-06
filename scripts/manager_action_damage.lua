@@ -47,6 +47,7 @@ function getRoll(rActor, rAction)
 		rRoll.sDesc, 
 		rRoll.sLabel);
 
+	rRoll.bOngoing = rAction.bOngoing;
 	rRoll.bAmbient = rAction.bAmbient or false;
 	rRoll.bPiercing = rAction.bPiercing or false;
 	if rRoll.bPiercing then
@@ -83,6 +84,7 @@ function modRoll(rSource, rTarget, rRoll)
 	-- We fake the action object here when encoding piercing
 	-- Because it requires two variables as an input
 	-- instead of just the single that most encodes have
+	RollManager.encodeOngoingDamage({ bOngoing = rRoll.bOngoing }, rRoll)
 	RollManager.encodeAmbientDamage({ bAmbient = rRoll.bAmbient }, rRoll);
 	RollManager.encodePiercing({ bPierce = rRoll.bPiercing, nPierceAmount = rRoll.nPierceAmount }, rRoll);
 	RollManager.encodeEffort(nEffort, rRoll)
@@ -113,6 +115,9 @@ function rebuildRoll(rSource, rTarget, rRoll)
 	end
 	if rRoll.bAmbient == nil then
 		rRoll.bAmbient = RollManager.decodeAmbientDamage(rRoll, true);
+	end
+	if rRoll.bOngoing == nil then
+		rRoll.bOngoing = RollManager.decodeOngoingDamage(rRoll, true);
 	end
 
 	rRoll.bRebuilt = bRebuilt;
@@ -147,6 +152,7 @@ function buildRollResult(rSource, rTarget, rRoll)
 	rResult.bPiercing = rRoll.bPiercing;
 	rResult.nPierceAmount = rRoll.nPierceAmount
 	rResult.bAmbient = rRoll.bAmbient
+	rResult.bOngoing = rRoll.bOngoing;
 	
 	if rRoll.nTotal  then
 		rResult.nTotal = rRoll.nTotal;
@@ -189,6 +195,11 @@ function notifyApplyDamage(rSource, rTarget, rRoll, rResult)
 		msgOOB.bAmbient = "true";
 	end
 
+	msgOOB.bOngoing = "false";
+	if rRoll.bOngoing then
+		msgOOB.bOngoing = "true";
+	end
+
 	Comm.deliverOOBMessage(msgOOB, "");
 end
 
@@ -206,7 +217,8 @@ function handleApplyDamage(msgOOB)
 		sDamageType = msgOOB.sDamageType,
 		bPiercing = msgOOB.bPiercing == "true",
 		nPierceAmount = msgOOB.nPierceAmount,
-		bAmbient = msgOOB.bAmbient == "true"
+		bAmbient = msgOOB.bAmbient == "true",
+		bOngoing = msgOOB.bOngoing == "true"
 	}
 	local rResult = ActionDamage.buildRollResult(rSource, rTarget, rRoll);
 	applyDamage(rSource, rTarget, (tonumber(msgOOB.nSecret) == 1), rResult);
@@ -215,6 +227,7 @@ end
 function applyDamage(rSource, rTarget, bSecret, rResult)
 	local sStat = RollManager.decodeStat(rResult, false);
 	local bPiercing, nPierceAmount = RollManager.decodePiercing(rResult, true);
+	local bOngoing = RollManager.decodeOngoingDamage(rResult, true);
 	local sDamageType = rResult.sDamageType;
 	local nTotal = rResult.nTotal;
 
@@ -229,7 +242,13 @@ function applyDamage(rSource, rTarget, bSecret, rResult)
 		return;
 	end
 
-	if not bAmbient then
+	-- if damage type is not specified, then we make sure it has
+	-- the untyped value here. This makes all of the calcs easier
+	if (sDamageType or "") == "" then
+		sDamageType = "untyped";
+	end
+
+	if not bAmbient and (bOngoing and sDamageType ~= "untyped") then
 		nTotal = ActionDamage.applyArmor(
 			rSource, 
 			rTarget, 
@@ -286,7 +305,7 @@ function applyDamage(rSource, rTarget, bSecret, rResult)
 		msgShort.icon = "roll_damage";
 		msgLong.icon = "roll_damage";
 
-		if (sDamageType or "") ~= "" then
+		if sDamageType ~= "untyped" then
 			msgShort.text = string.format("[%s %s damage]", nTotal, sDamageType);
 			msgLong.text = string.format("[%s %s damage]", nTotal, sDamageType);
 		else
@@ -320,12 +339,6 @@ function applyArmor(rSource, rTarget, nTotal, sStat, sDamageType, bPiercing, nPi
 	-- Because it's handling as healing
 	if nTotal < 0 then
 		return nTotal;
-	end
-
-	-- if damage type is not specified, then we make sure it has
-	-- the untyped value here. This makes all of the calcs easier
-	if (sDamageType or "") == "" then
-		sDamageType = "untyped";
 	end
 	
 	if ActorManagerCypher.isImmune(rTarget, rSource, { sDamageType, sDamageStat }) then

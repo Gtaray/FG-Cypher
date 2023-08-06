@@ -164,6 +164,7 @@ function applyOngoingDamageAdjustment(nodeActor, nodeEffect, rEffectComp)
 		rAction.label = "Ongoing damage";
 		rAction.aDice = rEffectComp.dice;
 		rAction.nDamage = rEffectComp.mod;
+		rAction.bOngoing = true;
 
 		for _, sFilter in ipairs(rEffectComp.filters) do
 			if sFilter == "might" or sFilter == "speed" or sFilter == "might" then
