@@ -328,8 +328,21 @@ function getPowerAction(nodeAction)
 		rAction.sName = DB.getValue(nodeAction, "label", "");
 		rAction.sApply = DB.getValue(nodeAction, "apply", "");
 		rAction.sTargeting = DB.getValue(nodeAction, "targeting", "");
-		rAction.nDuration = DB.getValue(nodeAction, "durmod", 0);
-		rAction.sUnits = DB.getValue(nodeAction, "durunit", "");
+		rAction.aDice = DB.getValue(nodeAction, "durationdice", {})
+		rAction.nDuration = DB.getValue(nodeAction, "duration", 0)
+		rAction.sUnits = DB.getValue(nodeAction, "duractionunit", "");
+
+		rAction.rEffectScaling = {
+			nBase = DB.getValue(nodeAction, "scaling_effect_base", 0),
+			nMod = DB.getValue(nodeAction, "scaling_effect_mod", 0),
+			sModMult = DB.getValue(nodeAction, "scaling_effect_mod_mult", ""),
+		};
+		rAction.rDurationScaling = {
+			nMod = DB.getValue(nodeAction, "scaling_duration_mod", 0),
+			sModMult = DB.getValue(nodeAction, "scaling_duration_mod_mult", ""),
+			aDice = DB.getValue(nodeAction, "scaling_duration_dice", {}),
+			sDiceMult = DB.getValue(nodeAction, "scaling_duration_dice_mult", "")
+		};
 	end
 
 	-- Resolve cost of the ability

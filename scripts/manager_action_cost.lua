@@ -280,6 +280,6 @@ function invokeSourceAction(rSource, rAction)
 	elseif rAction.sSourceRollType == "heal" then
 		ActionHeal.performRoll(nil, rSource, rAction);
 	elseif rAction.sSourceRollType == "effect" then
-		ActionEffect.performRoll(nil, rSource, rAction);
+		ActionEffectCypher.performRoll(nil, rSource, rAction);
 	end
 end

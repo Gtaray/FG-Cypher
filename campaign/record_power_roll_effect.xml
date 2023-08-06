@@ -90,26 +90,212 @@
 				<center />
 			</header_column>
 			<string_column_full name="label" />
-			
-			<header_column name="header_duration">
-				<static textres="power_header_effect_duration" />
-				<center />
-			</header_column>
-			<basicnumber name="durmod">
+
+			<!-- Effect Scaling -->
+			<label_column name="scaling_effect_label">
+				<anchored>
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="20" />
+				</anchored>
+				<static textres="power_label_effect_scaling" />
+			</label_column>
+			<basicnumber name="scaling_effect_base">
 				<anchored width="30" height="20">
-					<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
-					<left offset="5" />
+					<top parent="scaling_effect_label" />
+					<left offset="97" />
 				</anchored>
 				<hideonvalue value="0" />
 			</basicnumber>
-			<button_stringcycler name="durunit">
-				<anchored to="durmod" position="righthigh" offset="10,0" width="40" height="20" />
+			<label_fieldtop>
+				<anchored to="scaling_effect_base" />
+				<static textres="power_label_effect_scaling_base" />
+			</label_fieldtop>
+			<label>
+				<anchored to="scaling_effect_base" width="15">
+					<top />
+					<left relation="relative" anchor="right" offset="8" />
+				</anchored>
+				<static>+ (</static>
+				<center />
+			</label>
+			<basicnumber name="scaling_effect_mod">
+				<anchored to="scaling_effect_base" width="30" height="20">
+					<top />
+					<left relation="relative" anchor="right" offset="8" />
+				</anchored>
+				<hideonvalue value="0" />
+			</basicnumber>
+			<label_fieldtop>
+				<anchored to="scaling_effect_mod" />
+				<static textres="power_label_effect_scaling_mod" />
+			</label_fieldtop>
+			<label>
+				<anchored to="scaling_effect_base" width="10">
+					<top />
+					<left relation="relative" anchor="right" offset="6" />
+				</anchored>
+				<static>x</static>
+				<center />
+			</label>
+			<button_stringcycler name="scaling_effect_mod_mult">
+				<anchored to="scaling_effect_base" width="60" height="20">
+					<top />
+					<left relation="relative" anchor="right" offset="5" />
+				</anchored>
+				<parameters>
+					<defaultlabelres>dash</defaultlabelres>
+					<labelsres>power_effect_scaling_effort</labelsres>
+					<values>effort</values>
+				</parameters>
+			</button_stringcycler>
+			<label_fieldtop>
+				<anchored to="scaling_effect_mod_mult" />
+				<static textres="power_label_effect_scaling_modmult" />
+			</label_fieldtop>
+			<label>
+				<anchored to="scaling_effect_base" width="10">
+					<top />
+					<left relation="relative" anchor="right" offset="6" />
+				</anchored>
+				<static>)</static>
+				<center />
+			</label>
+			
+			<header_column name="header_duration">
+				<static textres="power_header_duration" />
+				<center />
+			</header_column>
+			<label_column name="duration_label">
+				<anchored>
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="20" />
+				</anchored>
+				<static textres="power_label_effect_duration" />
+			</label_column>
+			<basicnumber name="duration">
+				<anchored width="30" height="20">
+					<top parent="duration_label" />
+					<left offset="97" />
+				</anchored>
+				<min>0</min>
+			</basicnumber>
+			<label_fieldtop>
+				<anchored to="duration" />
+				<static textres="power_label_effect_duration_base" />
+			</label_fieldtop>
+			<label>
+				<anchored to="duration" width="15">
+					<top />
+					<left relation="relative" anchor="right" offset="8" />
+				</anchored>
+				<static>+</static>
+				<center />
+			</label>
+			<basicdice name="durationdice">
+				<anchored to="duration" width="60" height="20">
+					<top />
+					<left relation="relative" anchor="right" offset="5" />
+				</anchored>
+			</basicdice>
+			<label_fieldtop>
+				<anchored to="durationdice" />
+				<static textres="power_label_effect_duration_dice" />
+			</label_fieldtop>
+			<button_stringcycler name="duractionunit">
+				<anchored to="duration" width="80" height="20">
+					<top />
+					<left relation="relative" anchor="right" offset="20" />
+				</anchored>
 				<parameters>
 					<defaultlabelres>effect_label_durunitrnd</defaultlabelres>
 					<labelsres>effect_label_durunitmin|effect_label_durunithr|effect_label_durunitday</labelsres>
 					<values>minute|hour|day</values>
 				</parameters>
 			</button_stringcycler>
+			<label_fieldtop>
+				<anchored to="duractionunit" />
+				<static textres="power_label_effect_duration_unit" />
+			</label_fieldtop>
+
+			<label_column name="scaling_duration_label">
+				<anchored>
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="20" />
+				</anchored>
+				<static textres="power_label_effect_scaling" />
+			</label_column>
+			<basicnumber name="scaling_duration_mod">
+				<anchored to="scaling_duration_label" width="30" height="20">
+					<top />
+					<left parent="" offset="97" />
+				</anchored>
+				<hideonvalue value="0" />
+			</basicnumber>
+			<label_fieldtop>
+				<anchored to="scaling_duration_mod" />
+				<static textres="power_label_effect_scaling_mod" />
+			</label_fieldtop>
+			<label>
+				<anchored to="scaling_duration_mod" width="10">
+					<top />
+					<left relation="relative" anchor="right" offset="6" />
+				</anchored>
+				<static>x</static>
+				<center />
+			</label>
+			<button_stringcycler name="scaling_duration_mod_mult">
+				<anchored to="scaling_duration_mod" width="60" height="20">
+					<top />
+					<left relation="relative" anchor="right" offset="5" />
+				</anchored>
+				<parameters>
+					<defaultlabelres>dash</defaultlabelres>
+					<labelsres>power_effect_scaling_effort</labelsres>
+					<values>effort</values>
+				</parameters>
+			</button_stringcycler>
+			<label_fieldtop>
+				<anchored to="scaling_duration_mod_mult" />
+				<static textres="power_label_effect_scaling_modmult" />
+			</label_fieldtop>
+			<label>
+				<anchored to="scaling_duration_mod" width="10">
+					<top />
+					<left relation="relative" anchor="right" offset="8" />
+				</anchored>
+				<static>+</static>
+				<center />
+			</label>
+			<basicdice name="scaling_duration_dice">
+				<anchored to="scaling_duration_mod" width="60" height="20">
+					<top />
+					<left relation="relative" anchor="right" offset="5" />
+				</anchored>
+			</basicdice>
+			<label_fieldtop>
+				<anchored to="scaling_duration_dice" />
+				<static textres="power_label_effect_scaling_dice" />
+			</label_fieldtop>
+			<label>
+				<anchored to="scaling_duration_mod" width="10">
+					<top />
+					<left relation="relative" anchor="right" offset="6" />
+				</anchored>
+				<static>x</static>
+				<center />
+			</label>
+			<button_stringcycler name="scaling_duration_dice_mult">
+				<anchored to="scaling_duration_mod" width="60" height="20">
+					<top />
+					<left relation="relative" anchor="right" offset="5" />
+				</anchored>
+				<parameters>
+					<defaultlabelres>dash</defaultlabelres>
+					<labelsres>power_effect_scaling_effort</labelsres>
+					<values>effort</values>
+				</parameters>
+			</button_stringcycler>
+			<label_fieldtop>
+				<anchored to="scaling_duration_dice_mult" />
+				<static textres="power_label_effect_scaling_dicemult" />
+			</label_fieldtop>
 			
 			<header_column name="header_other">
 				<static textres="power_header_effect_other" />

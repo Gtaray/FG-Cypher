@@ -339,6 +339,19 @@
 
 	<string name="power_header_description">DESCRIPTION</string>
 
+	<string name="power_header_duration">DURATION</string>
+	<string name="power_label_effect_duration">Duration</string>
+	<string name="power_label_effect_duration_base">Base</string>
+	<string name="power_label_effect_duration_dice">Dice</string>
+	<string name="power_label_effect_duration_unit">Unit</string>
+	<string name="power_label_effect_scaling">Scaling</string>
+	<string name="power_label_effect_scaling_base">Base</string>
+	<string name="power_label_effect_scaling_dice">Dice</string>
+	<string name="power_label_effect_scaling_dicemult">Dice Mult</string>
+	<string name="power_label_effect_scaling_mod">Mod</string>
+	<string name="power_label_effect_scaling_modmult">Mod Mult</string>
+	<string name="power_effect_scaling_effort">Effort</string>
+
 	<!-- Power adjustment by Cypher Level -->
 	<string name="power_header_cypher">Adjustments by Cypher Level</string>
 	<string name="power_label_cypher_text_1">Set</string>
