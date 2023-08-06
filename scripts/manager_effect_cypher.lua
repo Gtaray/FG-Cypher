@@ -97,13 +97,13 @@ function onEffectActorStartTurn(nodeActor, nodeEffect)
 	for _,sEffectComp in ipairs(aEffectComps) do
 		local rEffectComp = EffectManagerCypher.parseEffectComp(sEffectComp);
 		-- Conditionals
-		if rEffectComp.type == "IFT" then
+		if rEffectComp.type == "ift" then
 			break;
-		elseif rEffectComp.type == "IF" then
-			-- local rActor = ActorManager.resolveActor(nodeActor);
-			-- if not checkConditional(rActor, nodeEffect, rEffectComp.remainder) then
-			-- 	break;
-			-- end
+		elseif rEffectComp.type == "if" then
+			local rActor = ActorManager.resolveActor(nodeActor);
+			if not checkConditional(rActor, nodeEffect, rEffectComp.filters) then
+				break;
+			end
 		
 		-- Ongoing damage and regeneration
 		elseif rEffectComp.type == "dmgo" or rEffectComp.type == "regen" then
@@ -355,7 +355,20 @@ function hasEffect(rActor, sEffect, rTarget, bTargetedOnly, bCheckEffectTargets)
 			for kEffectComp, sEffectComp in ipairs(tEffectComps) do
 				local rEffectComp = EffectManagerCypher.parseEffectComp(sEffectComp);
 
-				if rEffectComp.original:lower() == sLowerEffect then
+				if rEffectComp.type == "if" then
+					if not EffectManagerCypher.checkConditional(rActor, v, rEffectComp.filters) then
+						break;
+					end
+
+				elseif rEffectComp.type == "ift" then
+					if not rTarget then
+						break;
+					end
+					if not EffectManagerCypher.checkConditional(rTarget, v, rEffectComp.filters, rActor) then
+						break;
+					end
+			
+				elseif rEffectComp.original:lower() == sLowerEffect then
 					if bTargeted and not bIgnoreEffectTargets then
 						if EffectManager.isEffectTarget(v, rTarget) then
 							nMatch = kEffectComp;
@@ -459,8 +472,21 @@ function getEffectsByType(rActor, sEffectType, aFilter, bExclusiveFilters, aCont
 			local nMatch = 0;
 			for kEffectComp, sEffectComp in ipairs(aEffectComps) do
 				local rEffectComp = EffectManagerCypher.parseEffectComp(sEffectComp);
+
+				if rEffectComp.type == "if" then
+					if not EffectManagerCypher.checkConditional(rActor, v, rEffectComp.filters) then
+						break;
+					end
+
+				elseif rEffectComp.type == "ift" then
+					if not rFilterActor then
+						break;
+					end
+					if not EffectManagerCypher.checkConditional(rFilterActor, v, rEffectComp.filters, rActor) then
+						break;
+					end
 			
-				if  EffectManagerCypher.checkEffectCompType(rEffectComp, sEffectType) and
+				elseif EffectManagerCypher.checkEffectCompType(rEffectComp, sEffectType) and
 					EffectManagerCypher.checkFilters(rEffectComp, aFilter, bExclusiveFilters) and 
 					EffectManagerCypher.checkContent(rEffectComp, aContent, bExclusiveContent) and 
 					EffectManagerCypher.checkDamageType(rEffectComp, sEffectType, aFilter) then
@@ -492,6 +518,70 @@ end
 -------------------------------------------------------------------------------
 -- INTERNAL EFFECT PROCESSING HELPERS
 -------------------------------------------------------------------------------
+
+function checkConditional(rActor, nodeEffect, aConditions, rTarget, aIgnore)
+	local bReturn = true;
+	
+	if not aIgnore then
+		aIgnore = {};
+	end
+	table.insert(aIgnore, DB.getPath(nodeEffect));
+	
+	for _,v in ipairs(aConditions) do
+		local sLower = v:lower();
+		if sLower == "hale" then
+			if not ActorManagerCypher.isHale(rActor) then
+				bReturn = false;
+				break;
+			end
+		elseif sLower == "impaired" then
+			if not ActorManagerCypher.isImpaired(rActor) then
+				bReturn = false;
+				break;
+			end
+		elseif sLower == "debilitated" then
+			if not ActorManagerCypher.isDebilitated(rActor) then
+				bReturn = false;
+				break;
+			end
+		elseif sLower == "wounded" then
+			if not ActorManagerCypher.isWounded(rActor) then
+				bReturn = false;
+				break;
+			end
+		else
+			-- local sAlignCheck = sLower:match("^align%s*%(([^)]+)%)$");
+			-- local sSizeCheck = sLower:match("^size%s*%(([^)]+)%)$");
+			-- local sTypeCheck = sLower:match("^type%s*%(([^)]+)%)$");
+			-- local sCustomCheck = sLower:match("^custom%s*%(([^)]+)%)$");
+			-- if sAlignCheck then
+			-- 	if not ActorCommonManager.isCreatureAlignmentDnD(rActor, sAlignCheck) then
+			-- 		bReturn = false;
+			-- 		break;
+			-- 	end
+			-- elseif sSizeCheck then
+			-- 	if not ActorCommonManager.isCreatureSizeDnD5(rActor, sSizeCheck) then
+			-- 		bReturn = false;
+			-- 		break;
+			-- 	end
+			-- elseif sTypeCheck then
+			-- 	if not ActorCommonManager.isCreatureTypeDnD(rActor, sTypeCheck) then
+			-- 		bReturn = false;
+			-- 		break;
+			-- 	end
+			-- elseif sCustomCheck then
+			-- 	if not checkConditionalHelper(rActor, sCustomCheck, rTarget, aIgnore) then
+			-- 		bReturn = false;
+			-- 		break;
+			-- 	end
+			-- end
+		end
+	end
+	
+	table.remove(aIgnore);
+	
+	return bReturn;
+end
 
 function checkDamageType(rEffectComp, sEffectType, aFilter)
 	if not (sEffectType == "armor" or sEffectType == "immune" or sEffectType == "vuln") then

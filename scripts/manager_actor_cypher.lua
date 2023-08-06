@@ -79,6 +79,35 @@ function getPCWoundPercent(rActor)
 	return nPercentWounded, sStatus;
 end
 
+function isHale(rActor)
+	if ActorManager.isPC(rActor) then
+		return ActorManagerCypher.getDamageTrack(rActor) == 0;
+	end
+
+	return ActorManagerCypher.getWoundPercent(rActor) < 0.33
+end
+
+function isWounded(rActor)
+	return ActorManagerCypher.getWoundPercent(rActor) > 0;
+end
+
+function isImpaired(rActor)
+	if ActorManager.isPC(rActor) then
+		return ActorManagerCypher.getDamageTrack(rActor) >= 1;
+	end
+
+	local nPercentWounded = ActorManagerCypher.getWoundPercent(rActor)
+	return nPercentWounded >= 0.33 and nPercentWounded < 0.66;
+end
+
+function isDebilitated(rActor)
+	if ActorManager.isPC(rActor) then
+		return ActorManagerCypher.getDamageTrack(rActor) >= 2;
+	end
+
+	return ActorManagerCypher.getWoundPercent(rActor) >= 0.66
+end
+
 ---------------------------------------------------------------
 -- CHARACTER STAT ACCESSORS AND SETTERS
 ---------------------------------------------------------------

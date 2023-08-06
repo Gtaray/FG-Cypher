@@ -104,7 +104,7 @@
 				</script>
 			</basicnumber>
 
-			<button_text name="ease">
+			<button_text_toggle name="ease">
 				<anchored width="60" height="22">
 					<top parent="description" anchor="bottom" relation="current" offset="10" />
 					<right parent="frame" anchor="center" offset="-10" />
@@ -115,8 +115,8 @@
 						window.updateDifficulty();
 					end
 				</script>
-			</button_text>
-			<button_text name="hinder">
+			</button_text_toggle>
+			<button_text_toggle name="hinder">
 				<anchored width="60" height="22">
 					<top parent="description" anchor="bottom" relation="relative" offset="10" />
 					<left parent="frame" anchor="center" offset="10" />
@@ -127,7 +127,7 @@
 						window.updateDifficulty();
 					end
 				</script>
-			</button_text>
+			</button_text_toggle>
 
 			<button_text name="button_roll">
 				<script>
