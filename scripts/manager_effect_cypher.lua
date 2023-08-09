@@ -101,7 +101,7 @@ function onEffectActorStartTurn(nodeActor, nodeEffect)
 			break;
 		elseif rEffectComp.type == "if" then
 			local rActor = ActorManager.resolveActor(nodeActor);
-			if not checkConditional(rActor, nodeEffect, rEffectComp.filters) then
+			if not checkConditional(rActor, nodeEffect, rEffectComp) then
 				break;
 			end
 		
@@ -313,6 +313,10 @@ function getImmunityEffects(rActor, rTarget)
 	return EffectManagerCypher.getEffectsByType(rActor, "IMMUNE", {}, false, nil, false, rTarget, false);
 end
 
+function getShieldEffects(rActor, aFilter)
+	return EffectManagerCypher.getEffectsByType(rActor, "SHIELD", aFilter, false, nil, false, rTarget, false);
+end
+
 -------------------------------------------------------------------------------
 -- EFFECT PROCESSORS
 -------------------------------------------------------------------------------
@@ -356,7 +360,7 @@ function hasEffect(rActor, sEffect, rTarget, bTargetedOnly, bCheckEffectTargets)
 				local rEffectComp = EffectManagerCypher.parseEffectComp(sEffectComp);
 
 				if rEffectComp.type == "if" then
-					if not EffectManagerCypher.checkConditional(rActor, v, rEffectComp.filters) then
+					if not EffectManagerCypher.checkConditional(rActor, v, rEffectComp) then
 						break;
 					end
 
@@ -364,7 +368,7 @@ function hasEffect(rActor, sEffect, rTarget, bTargetedOnly, bCheckEffectTargets)
 					if not rTarget then
 						break;
 					end
-					if not EffectManagerCypher.checkConditional(rTarget, v, rEffectComp.filters, rActor) then
+					if not EffectManagerCypher.checkConditional(rTarget, v, rEffectComp, rActor) then
 						break;
 					end
 			
@@ -457,6 +461,7 @@ function getEffectsByType(rActor, sEffectType, aFilter, bExclusiveFilters, aCont
 	end
 
 	local results = {};
+	local resultdata = {}; -- Keeps track of the effect node and component index of entries in the results table
 	aFilter = toLower(aFilter);
 	aContent = toLower(aContent);
 	
@@ -471,10 +476,10 @@ function getEffectsByType(rActor, sEffectType, aFilter, bExclusiveFilters, aCont
 			-- Look for type/subtype match
 			local nMatch = 0;
 			for kEffectComp, sEffectComp in ipairs(aEffectComps) do
-				local rEffectComp = EffectManagerCypher.parseEffectComp(sEffectComp);
+				local rEffectComp = EffectManagerCypher.parseEffectComp(sEffectComp); 
 
 				if rEffectComp.type == "if" then
-					if not EffectManagerCypher.checkConditional(rActor, v, rEffectComp.filters) then
+					if not EffectManagerCypher.checkConditional(rActor, v, rEffectComp) then
 						break;
 					end
 
@@ -482,7 +487,7 @@ function getEffectsByType(rActor, sEffectType, aFilter, bExclusiveFilters, aCont
 					if not rFilterActor then
 						break;
 					end
-					if not EffectManagerCypher.checkConditional(rFilterActor, v, rEffectComp.filters, rActor) then
+					if not EffectManagerCypher.checkConditional(rFilterActor, v, rEffectComp, rActor) then
 						break;
 					end
 			
@@ -499,6 +504,7 @@ function getEffectsByType(rActor, sEffectType, aFilter, bExclusiveFilters, aCont
 						-- skipped effects
 						if EffectManagerCypher.checkActive(v) then
 							table.insert(results, rEffectComp);
+							table.insert(resultdata, { node = v, index = kEffectComp });
 						end
 				end
 			end -- END EFFECT COMPONENT LOOP
@@ -512,14 +518,14 @@ function getEffectsByType(rActor, sEffectType, aFilter, bExclusiveFilters, aCont
 	end  -- END EFFECT LOOP
 	
 	-- RESULTS
-	return results;
+	return results, resultdata;
 end
 
 -------------------------------------------------------------------------------
 -- INTERNAL EFFECT PROCESSING HELPERS
 -------------------------------------------------------------------------------
 
-function checkConditional(rActor, nodeEffect, aConditions, rTarget, aIgnore)
+function checkConditional(rActor, nodeEffect, rEffectComp, rTarget, aIgnore)
 	local bReturn = true;
 	
 	if not aIgnore then
@@ -527,54 +533,60 @@ function checkConditional(rActor, nodeEffect, aConditions, rTarget, aIgnore)
 	end
 	table.insert(aIgnore, DB.getPath(nodeEffect));
 	
-	for _,v in ipairs(aConditions) do
-		local sLower = v:lower();
-		if sLower == "hale" then
-			if not ActorManagerCypher.isHale(rActor) then
+	for _,v in ipairs(rEffectComp.conditionals) do
+		if v.sConditional == "hale" then
+			if  (v.bInvert and ActorManagerCypher.isHale(rActor)) or 
+				(not v.bInvert and not ActorManagerCypher.isHale(rActor)) then
 				bReturn = false;
 				break;
 			end
-		elseif sLower == "impaired" then
-			if not ActorManagerCypher.isImpaired(rActor) then
+		elseif v.sConditional == "impaired" then
+			if  (v.bInvert and ActorManagerCypher.isImpaired(rActor)) or 
+				(not v.bInvert and not ActorManagerCypher.isImpaired(rActor)) then
 				bReturn = false;
 				break;
 			end
-		elseif sLower == "debilitated" then
-			if not ActorManagerCypher.isDebilitated(rActor) then
+		elseif v.sConditional == "debilitated" then
+			if  (v.bInvert and ActorManagerCypher.isDebilitated(rActor)) or 
+				(not v.bInvert and not ActorManagerCypher.isDebilitated(rActor)) then
 				bReturn = false;
 				break;
 			end
-		elseif sLower == "wounded" then
-			if not ActorManagerCypher.isWounded(rActor) then
+		elseif v.sConditional == "wounded" then
+			if  (v.bInvert and ActorManagerCypher.isWounded(rActor)) or 
+				(not v.bInvert and not ActorManagerCypher.isWounded(rActor)) then
 				bReturn = false;
 				break;
 			end
-		else
-			-- local sAlignCheck = sLower:match("^align%s*%(([^)]+)%)$");
-			-- local sSizeCheck = sLower:match("^size%s*%(([^)]+)%)$");
-			-- local sTypeCheck = sLower:match("^type%s*%(([^)]+)%)$");
-			-- local sCustomCheck = sLower:match("^custom%s*%(([^)]+)%)$");
-			-- if sAlignCheck then
-			-- 	if not ActorCommonManager.isCreatureAlignmentDnD(rActor, sAlignCheck) then
-			-- 		bReturn = false;
-			-- 		break;
-			-- 	end
-			-- elseif sSizeCheck then
-			-- 	if not ActorCommonManager.isCreatureSizeDnD5(rActor, sSizeCheck) then
-			-- 		bReturn = false;
-			-- 		break;
-			-- 	end
-			-- elseif sTypeCheck then
-			-- 	if not ActorCommonManager.isCreatureTypeDnD(rActor, sTypeCheck) then
-			-- 		bReturn = false;
-			-- 		break;
-			-- 	end
-			-- elseif sCustomCheck then
-			-- 	if not checkConditionalHelper(rActor, sCustomCheck, rTarget, aIgnore) then
-			-- 		bReturn = false;
-			-- 		break;
-			-- 	end
-			-- end
+		elseif v.sConditional == "level" then
+			-- LEVEL condition cannot be on PCs, so always fail
+			if ActorManager.isPC(rActor) then
+				bReturn = false;
+				break;
+			end
+
+			local nLevel = ActorManagerCypher.getCreatureLevel(rActor);
+			if  (v.bInvert and EffectManagerCypher.checkConditionValues(v, nLevel)) or 
+				(not v.bInvert and not EffectManagerCypher.checkConditionValues(v, nLevel)) then
+				bReturn = false;
+				break;
+			end
+		elseif v.sConditional == "might" or v.sConditional == "speed" or v.sConditional == "intellect" then
+			-- MIGHT condition cannot be on NPCs, so always fail
+			if not ActorManager.isPC(rActor) then
+				bReturn = false;
+				break;
+			end
+
+			local nCur, nMax = ActorManagerCypher.getStatPool(rActor, v.sConditional);
+			if v.bMax then
+				v.nOperand = nMax
+			end
+			if  (v.bInvert and EffectManagerCypher.checkConditionValues(v, nCur)) or 
+				(not v.bInvert and not EffectManagerCypher.checkConditionValues(v, nCur)) then
+				bReturn = false;
+				break;
+			end
 		end
 	end
 	
@@ -583,32 +595,71 @@ function checkConditional(rActor, nodeEffect, aConditions, rTarget, aIgnore)
 	return bReturn;
 end
 
+function checkConditionValues(rConditional, nComparison)
+	-- If there's no operation specified (i.e. SPEED(5)) then
+	-- we treat it as an equals operation
+	if (rConditional.sOperation or "") == "" then
+		return nComparison == rConditional.nOperand;
+	end
+
+	if rConditional.sOperation == "<" then
+		return nComparison < rConditional.nOperand;
+	elseif rConditional.sOperation == ">" then
+		return nComparison > rConditional.nOperand;
+	elseif rConditional.sOperation == "<=" then
+		return nComparison <= rConditional.nOperand;
+	elseif rConditional.sOperation == ">=" then
+		return nComparison >= rConditional.nOperand;
+	elseif rConditional.sOperation == "=" then
+		return nComparison == rConditional.nOperand;
+	end
+
+	return false;
+end
+
 function checkDamageType(rEffectComp, sEffectType, aFilter)
-	if not (sEffectType == "armor" or sEffectType == "immune" or sEffectType == "vuln") then
+	if not (sEffectType == "armor" or sEffectType == "immune" or sEffectType == "vuln" or sEffectType == "shield") then
+		return true;
+	end
+
+	-- if we matched "any" or "all" filters, return match
+	if 	StringManager.contains(rEffectComp.filters, "all") or
+		StringManager.contains(rEffectComp.filters, "any") then 
 		return true;
 	end
 
 	local bUntyped = StringManager.contains(aFilter, "untyped");
-	local bMatch = false;
-
+	local aStatFilters = {};
+	local aDmgTypeFilters = {};
 	for _,tag in pairs(rEffectComp.filters) do
-		if tag == "all" or tag == "any" then
-			bMatch = true;
-			break
+		if tag == "might" or tag == "speed" or tag == "intellect" then
+			table.insert(aStatFilters, tag);
+		else
+			table.insert(aDmgTypeFilters, tag);
 		end
+	end
+	if #aDmgTypeFilters == 0 then
+		table.insert(aDmgTypeFilters, "untyped");
+	end
 
-		-- Any tag that's not a stat means that we cannot match with untyped damage.
-		if not (tag == "might" or tag == "speed" or tag == "intellect") and bUntyped then
-			bMatch = false;
-			break;
-		elseif StringManager.contains(aFilter, tag) then
-			bMatch = true;
-			break;
+	local bContainsStat = false;
+	local bContainsDmgType = false;
+	for _, sFilter in ipairs(aFilter) do
+		if StringManager.contains(aStatFilters, sFilter) then
+			bContainsStat = true;
+		end
+		if StringManager.contains(aDmgTypeFilters, sFilter) then
+			bContainsDmgType = true;
 		end
 	end
 
-	-- Either we have a match, or we're untyped with no filters
-	return bMatch or (bUntyped and #(rEffectComp.filters) == 0);
+	-- If stats are present in the effect filter, then we need to match at least one of those
+	-- if dmg types are present in the effect filter, then we need to match at least one of those
+	-- If there are 0 of either, then we ignore that requirement
+	-- This way we can have stat filters and dmg type filters act as an AND filter when mixed together
+	-- but treated as an OR filter when looked at separately
+	return 	(#aStatFilters == 0 or (#aStatFilters > 0 and bContainsStat)) and
+			(#aDmgTypeFilters > 0 and bContainsDmgType)
 end
 
 function checkEffectCompType(rEffectComp, sEffectType)
@@ -717,6 +768,7 @@ function parseEffectComp(s)
 	local nMod = 0;
 	local aContent = {}; -- Data in parenthesis before the colon, separated by a comma. i.e. IF (CONTENT): ...
 	local aFilters = {}; -- Data after the colon separated by a comma that contains no parenthesis. i.e. ASSET: might, speed
+	local aConditionals = {}; -- Condition data for IF and IFT
 
 	if sType then
 		local sContent = sType:match("%(([^%)]+)%)");
@@ -731,24 +783,28 @@ function parseEffectComp(s)
 
 	local sData = s:match(":(.-)$"); -- Matches to everything to the right of the colon
 	if sData then
-		local nFilterIndex = 1;
-		local aWords = StringManager.parseWords(sData, "/\\%.%[%]%(%):{}");
+		if sType == "if" or sType == "ift" then
+			aConditionals = EffectManagerCypher.parseEffectConditional(sData)
+		else
+			local nFilterIndex = 1;
+			local aWords = StringManager.parseWords(sData, "/\\%.%[%]%(%):{}");
 
-		if #aWords > 0 then
-			-- Check the very first bit of text to see if it's a text string
-			if StringManager.isDiceString(aWords[1]) then
-				aDice, nMod = StringManager.convertStringToDice(aWords[1]);
-				nFilterIndex = 2;
+			if #aWords > 0 then
+				-- Check the very first bit of text to see if it's a text string
+				if StringManager.isDiceString(aWords[1]) then
+					aDice, nMod = StringManager.convertStringToDice(aWords[1]);
+					nFilterIndex = 2;
+				end
 			end
-		end
-
-		while nFilterIndex <= #aWords do
-			local sWord = aWords[nFilterIndex]
-			if sWord then
-				sWord = StringManager.trim(sWord:lower());
-				table.insert(aFilters, sWord);
+	
+			while nFilterIndex <= #aWords do
+				local sWord = aWords[nFilterIndex]
+				if sWord then
+					sWord = StringManager.trim(sWord:lower());
+					table.insert(aFilters, sWord);
+				end
+				nFilterIndex = nFilterIndex + 1;
 			end
-			nFilterIndex = nFilterIndex + 1;
 		end
 	end
 
@@ -758,14 +814,51 @@ function parseEffectComp(s)
 		dice = aDice,
 		content = toLower(aContent),
 		filters = toLower(aFilters),
+		conditionals = aConditionals,
 		original = StringManager.trim(s):lower();
 	}
+end
+
+function parseEffectConditional(sData)
+	local aConditionals = {};
+	local aConditions = StringManager.split(sData, ',');
+
+	for _, sCondition in ipairs(aConditions) do
+		sCondition = sCondition:lower();
+		local bInvert = sCondition:match("not%s") ~= nil;
+		if bInvert then
+			sCondition = string.gsub(sCondition, "not%s", "");
+		end
+		local sConditional = sCondition:match("n?o?t?%s?([^%s(]+)")
+		local rCondition = {
+			sConditional = sConditional:lower();
+			bInvert = bInvert
+		}
+
+		local sOpData = sCondition:match("%(([^%)]+)%)")
+		if sOpData then
+			local sOperation = sOpData:match("[><=]+");
+			local sValue = sOpData:match("%d+")
+			local bMax = sOpData:match("max") ~= nil
+
+			rCondition.sOperation = (sOperation or ""):lower();
+			rCondition.nOperand = tonumber(sValue or "0");
+			rCondition.bMax = bMax;
+		end
+
+		table.insert(aConditionals, rCondition);
+	end
+
+	return aConditionals;
 end
 
 function toLower(aList)
 	local temp = {};
 	for k,v in ipairs(aList or {}) do
-		temp[k] = v:lower();
+		if type(v) == "string" then
+			v = v:lower();
+		end
+		temp[k] = v;
 	end
 	return temp;
 end

@@ -248,7 +248,7 @@ function applyDamage(rSource, rTarget, bSecret, rResult)
 		sDamageType = "untyped";
 	end
 
-	if not bAmbient and (bOngoing and sDamageType ~= "untyped") then
+	if not bAmbient or (bOngoing and sDamageType ~= "untyped") then
 		nTotal = ActionDamage.applyArmor(
 			rSource, 
 			rTarget, 
@@ -258,7 +258,11 @@ function applyDamage(rSource, rTarget, bSecret, rResult)
 			bPiercing, 
 			nPierceAmount, 
 			aNotifications);
+		Debug.chat('apply armor', nTotal)
 	end
+
+	local nShieldAdjust = ActionDamage.handleShield(rTarget, nTotal, { sDamageType, sStat }, aNotifications)
+	nTotal = nTotal - nShieldAdjust;
 
 	if sTargetNodeType == "pc" then
 		ActionDamage.applyDamageToPc(rSource, rTarget, nTotal, sStat, sDamageType, aNotifications);
@@ -445,4 +449,157 @@ function applyDamageToNpc(rSource, rTarget, nDamage, sDamageStat, sDamageType, a
 
 	nWounds = math.max(math.min(nWounds + nDamage, nHP), 0);
 	DB.setValue(nodeNPC, "wounds", "number", nWounds);
+end
+
+-------------------------------------------------------------------------------
+-- SHIELD (Temporary HP)
+-------------------------------------------------------------------------------
+function handleShield(rActor, nDmg, aFilters, aNotifications)
+    if not rActor or nDmg == 0 then
+        return 0;
+    end
+    local aEffects, nShield = getShield(rActor, aFilters);
+    
+    if nShield == 0 then 
+        return 0; 
+    end
+
+    local nAdjust = deductShield(rActor, nDmg, aEffects);
+	if nAdjust >= nDmg then
+		table.insert(aNotifications, "[ABSORBED]");
+	elseif nAdjust > 0 then
+		table.insert(aNotifications, "[PARTIALLY ABSORBED]");
+	end
+	return nAdjust;
+end
+
+-- This gets an ordered list of data for shield effects, as well as the total
+-- shield effect bonus
+function getShield(rActor, aFilter)
+    if not rActor then
+        return {}, 0;
+    end
+    local aEffects = {};
+    local nTotal = 0;
+    local nMaxPriority = 0;
+    local rEffectComps, rEffectData = EffectManagerCypher.getShieldEffects(rActor, aFilter)    
+
+	for i, rEffectComp in ipairs(rEffectComps) do
+		nTotal = nTotal + rEffectComp.mod;
+
+		-- These counts are used to determine the effect's priority
+		-- The more specific a SHIELD effect is, the higher priority it is
+		local nStatFilterCount = 0;
+		local nDmgTypeFilterCount = 0;
+		for _, sFilter in ipairs(rEffectComp.filters) do
+			if StringManager.contains({ "might", "speed", "intellect"}, sFilter) then
+				nStatFilterCount = nStatFilterCount + 1;
+			else
+				nDmgTypeFilterCount = nDmgTypeFilterCount + 1;
+			end
+		end
+
+		local nPriority = 0;
+		if nDmgTypeFilterCount > 0 then
+			-- The more damage types it matches with, the lower priority
+			nPriority = nPriority + nDmgTypeFilterCount;
+		end
+		if nStatFilterCount > 0 then
+			-- The more stat types it matches with, the lower priority
+			-- The x2 here is to weight the priority in favor of stats
+			-- so that damage types are generally prioritized first
+			nPriority = nPriority + (nStatFilterCount * 2);
+
+		end
+		-- At this point, if both filter counts are 0, priority is 0, which is a
+		-- Special case. This effect matches ANY damage, so it is always prioritized last.
+
+		if nPriority > nMaxPriority then
+			nMaxPriority = nPriority;
+		end
+
+		if not aEffects[nPriority] then
+			aEffects[nPriority] = {};
+		end
+		table.insert(aEffects[nPriority], { 
+			node = rEffectData[i].node, 
+			index = rEffectData[i].index,
+			comp = rEffectComp
+		});
+	end
+    
+    -- -- Flatten effects table
+	local aFlatten = {};
+    for i = 1, nMaxPriority do
+        if aEffects[i] then
+            for _, v in ipairs(aEffects[i]) do
+                table.insert(aFlatten, v)
+            end
+        end
+    end
+    if aEffects[0] then
+        for _, v in ipairs(aEffects[0]) do
+            table.insert(aFlatten, v)
+        end
+    end
+
+    return aFlatten, nTotal
+end
+
+-- Handles adjusting shield effects as damage is taken
+-- Returns the amount of damage that shields absorbed
+function deductShield(rActor, nVal, aEffects)
+    if not rActor or nVal == 0 then
+        return 0;
+    end
+
+    local nAdjust = 0;
+    local nRemainder = nVal;
+    for _,v in ipairs(aEffects) do
+        local rEffectComp = v.comp;
+        -- Only continue parsing if we have more damage to deduct
+        if nRemainder > 0 then
+            local nShield = rEffectComp.mod;
+            local nOrigShield = nShield;    -- Save original value for gsub later
+            if nShield > 0 then
+				-- Either we take the rest of the damage, 
+				-- or we take all of the shield effect's value
+                local nLocalAdjust = math.min(nShield, nRemainder);
+
+                nShield = math.max(nShield - nLocalAdjust, 0);  -- determine what this effect's new shield value should be
+                nRemainder = nRemainder - nLocalAdjust; -- keep track of how much damage we have left to block
+                nAdjust = nAdjust + nLocalAdjust;   -- keep track of total dmg adjustment
+            end
+
+            if nShield <= 0 then
+                ActionDamage.expireShield(rActor, v.node, v.index);
+            else
+                ActionDamage.setShield(rActor, nOrigShield, nShield, v.node);
+            end
+        end
+    end
+
+    return nAdjust;
+end
+
+function setShield(rActor, nOrigShield, nShield, effectNode)
+	Debug.chat('setShield()', rActor, nShield, effectNode);
+    if not rActor or not nShield or not effectNode then
+        return;
+    end
+
+    local sLabel = DB.getValue(effectNode, "label", "");
+    local sOrigComp = "SHIELD: " .. nOrigShield;
+    local sNewComp = "SHIELD: " .. nShield;
+
+    sLabel = sLabel:gsub(sOrigComp, sNewComp);
+    DB.setValue(effectNode, "label", "string",  sLabel);
+end
+
+function expireShield(rActor, effectNode, compIndex)
+    if not rActor or not effectNode or not compIndex then
+        return;
+    end
+
+    EffectManager.notifyExpire(effectNode, compIndex);
 end
