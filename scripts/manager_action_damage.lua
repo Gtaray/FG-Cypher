@@ -258,7 +258,6 @@ function applyDamage(rSource, rTarget, bSecret, rResult)
 			bPiercing, 
 			nPierceAmount, 
 			aNotifications);
-		Debug.chat('apply armor', nTotal)
 	end
 
 	local nShieldAdjust = ActionDamage.handleShield(rTarget, nTotal, { sDamageType, sStat }, aNotifications)
@@ -583,7 +582,6 @@ function deductShield(rActor, nVal, aEffects)
 end
 
 function setShield(rActor, nOrigShield, nShield, effectNode)
-	Debug.chat('setShield()', rActor, nShield, effectNode);
     if not rActor or not nShield or not effectNode then
         return;
     end

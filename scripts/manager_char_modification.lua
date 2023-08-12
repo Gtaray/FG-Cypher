@@ -339,7 +339,7 @@ end
 function applyArmorEffortPenaltyModification(rActor, rData)
 	local charnode = ActorManager.getCreatureNode(rActor);
 
-	CharModManager.applyModToModifierNode(charnode, "armorspeedcost", rData.nMod);
+	CharModManager.applyModToModifierNode(charnode, "ArmorSpeedPenalty.mod", rData.nMod);
 
 	rData.sSummary = "Armor: " .. rData.sSummary;
 	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);

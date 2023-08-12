@@ -1,3 +1,5 @@
+local _dmgTypeEffects = {};
+
 function onInit()
 	EffectManager.registerEffectVar("sUnits", { sDBType = "string", sDBField = "unit", bSkipAdd = true });
 	EffectManager.registerEffectVar("sApply", { sDBType = "string", sDBField = "apply", sDisplay = "[%s]" });
@@ -10,6 +12,14 @@ function onInit()
 	EffectManager.setCustomOnEffectTextDecode(onEffectTextDecode);
 
 	EffectManager.setCustomOnEffectActorStartTurn(onEffectActorStartTurn);
+
+	_dmgTypeEffects = {
+		"dmg",
+		"pierce",
+		"armor",
+		"immune",
+		"vuln"
+	}
 end
 
 ---------------------------------
@@ -617,8 +627,12 @@ function checkConditionValues(rConditional, nComparison)
 	return false;
 end
 
+-- All of this extra logic to check for damage types stems from the singular fact that
+-- untyped damage is treated as its own damage type (the 'physical' damage type)
+-- This means that DMG: 1 is different than DMG: 1 fire or even DMG: 1 all
+-- so we need to make sure that they are treated differently.
 function checkDamageType(rEffectComp, sEffectType, aFilter)
-	if not (sEffectType == "armor" or sEffectType == "immune" or sEffectType == "vuln" or sEffectType == "shield") then
+	if not StringManager.contains(_dmgTypeEffects, sEffectType) then
 		return true;
 	end
 

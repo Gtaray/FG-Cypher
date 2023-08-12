@@ -32,7 +32,7 @@ function buildAbilityPromptTable(nodeChar, nodeFocus, nTier, rData)
 				table.insert(rData.aAbilitiesGiven, sRecord);
 			else	
 				table.insert(rData.aAbilityOptions, {
-					nTier = 1,
+					nTier = nTier,
 					sRecord = sRecord
 				});
 			end

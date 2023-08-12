@@ -263,7 +263,7 @@ end
 
 function promptAbilitiesForNextTier(nodeChar)
 	local nTier = DB.getValue(nodeChar, "tier", 0);
-	local _, sRecord = DB.getValue(nodeChar, "typelink", "");
+	local _, sRecord = DB.getValue(nodeChar, "class.typelink", "");
 	local typenode = DB.findNode(sRecord);
 
 	local rData = { nodeChar = nodeChar, sSourceName = DB.getValue(nodeChar, "class.type", ""), nTier = nTier };
@@ -287,6 +287,7 @@ function applyTypeAbilitiesAndPromptFocusAbilities(rData)
 	-- This re-initializes the ability lists for the focus
 	rData.sSourceName = DB.getValue(nodeChar, "class.focus", "");
 	CharFocusManager.buildAbilityPromptTable(rData.nodeChar, focusnode, rData.nTier, rData);
+	Debug.chat(rData);
 	if #(rData.aAbilityOptions) > 0 then
 		local w = Interface.openWindow("select_dialog_char", "");
 		w.setData(rData, CharManager.applyFocusAbilities);

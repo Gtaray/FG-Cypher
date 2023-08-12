@@ -293,6 +293,9 @@ function processStandardConditionsForActor(rActor)
 end
 
 function processPiercing(rSource, rTarget, bPiercing, nPierceAmount, sDamageType, sStat)
+	if not nPierceAmount then
+		nPierceAmount = -1;
+	end
 	if type(bPiercing) == "string" then
 		bPiercing = bPiercing == "true";
 	end

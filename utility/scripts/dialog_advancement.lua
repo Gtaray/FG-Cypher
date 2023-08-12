@@ -61,7 +61,7 @@ function setData(data, callback)
 		nRecovery + 2
 	))
 
-	local nArmorPenalty = DB.getValue(rData.nodeChar, "armorspeedcost", 1);
+	local nArmorPenalty = DB.getValue(rData.nodeChar, "ArmorSpeedPenalty.total", 0);
 	armor.subwindow.armor.setValue(string.format(
 		Interface.getString("summary_dialog_armor"),
 		nArmorPenalty,
