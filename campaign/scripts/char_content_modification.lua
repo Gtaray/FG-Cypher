@@ -104,6 +104,7 @@ function updateSuperArmor()
 end
 
 function updateLinkName()
+
 	local sClass, sRecord = link.getValue()
 	local node = DB.findNode(sRecord);
 	if not node then

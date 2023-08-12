@@ -170,7 +170,7 @@
 				</anchored>
 				<static textres="power_label_effect_duration" />
 			</label_column>
-			<basicnumber name="duration">
+			<basicnumber name="durmod">
 				<anchored width="30" height="20">
 					<top parent="duration_label" />
 					<left offset="97" />
@@ -178,11 +178,11 @@
 				<min>0</min>
 			</basicnumber>
 			<label_fieldtop>
-				<anchored to="duration" />
+				<anchored to="durmod" />
 				<static textres="power_label_effect_duration_base" />
 			</label_fieldtop>
 			<label>
-				<anchored to="duration" width="15">
+				<anchored to="durmod" width="15">
 					<top />
 					<left relation="relative" anchor="right" offset="8" />
 				</anchored>
@@ -190,7 +190,7 @@
 				<center />
 			</label>
 			<basicdice name="durationdice">
-				<anchored to="duration" width="60" height="20">
+				<anchored to="durmod" width="60" height="20">
 					<top />
 					<left relation="relative" anchor="right" offset="5" />
 				</anchored>
@@ -199,8 +199,8 @@
 				<anchored to="durationdice" />
 				<static textres="power_label_effect_duration_dice" />
 			</label_fieldtop>
-			<button_stringcycler name="duractionunit">
-				<anchored to="duration" width="80" height="20">
+			<button_stringcycler name="durunit">
+				<anchored to="durmod" width="80" height="20">
 					<top />
 					<left relation="relative" anchor="right" offset="20" />
 				</anchored>
@@ -211,7 +211,7 @@
 				</parameters>
 			</button_stringcycler>
 			<label_fieldtop>
-				<anchored to="duractionunit" />
+				<anchored to="durunit" />
 				<static textres="power_label_effect_duration_unit" />
 			</label_fieldtop>
 

@@ -267,7 +267,7 @@
 					addItems({ "", "Might", "Speed", "Intellect", "Flex" });
 				end
 				function onValueChanged()
-					window.onPropertyChanged();
+					window.update();
 				end
 			</script>
 		</combobox_column>
@@ -283,7 +283,7 @@
 					addItems({ "", "Trained", "Specialized", "Inability" });
 				end
 				function onValueChanged()
-					window.onPropertyChanged();
+					window.update();
 				end
 			</script>
 		</combobox_column>
@@ -302,7 +302,7 @@
 					end
 				end
 				function onValueChanged()
-					window.onPropertyChanged();
+					window.update();
 				end
 			</script>
 		</combobox_column>

@@ -34,7 +34,8 @@ function onDataChanged()
 end
 
 function getSummaryText()
-	return CharModManager.getCharacterModificationSummary(getDatabaseNode());
+	local sText = CharModManager.getCharacterModificationSummary(getDatabaseNode());
+	return sText;
 end
 
 function updateSummary()

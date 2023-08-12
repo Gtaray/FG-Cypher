@@ -93,6 +93,10 @@ function processOK()
 		if bStats then
 			rData.nMight, rData.nSpeed, rData.nIntellect = stats.subwindow.getData();
 		end
+
+		if not rData.aEdgeGiven then
+			rData.aEdgeGiven = {};
+		end
 		
 		if bEdge then
 			for sStat, nAmount in pairs(edge.subwindow.getData()) do

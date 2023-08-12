@@ -287,7 +287,6 @@ function applyTypeAbilitiesAndPromptFocusAbilities(rData)
 	-- This re-initializes the ability lists for the focus
 	rData.sSourceName = DB.getValue(nodeChar, "class.focus", "");
 	CharFocusManager.buildAbilityPromptTable(rData.nodeChar, focusnode, rData.nTier, rData);
-	Debug.chat(rData);
 	if #(rData.aAbilityOptions) > 0 then
 		local w = Interface.openWindow("select_dialog_char", "");
 		w.setData(rData, CharManager.applyFocusAbilities);
