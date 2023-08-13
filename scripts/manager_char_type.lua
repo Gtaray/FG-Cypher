@@ -133,6 +133,7 @@ end
 
 function applyTier(rData)
 	CharTypeManager.addAbilities(rData);
+	CharFlavorManager.addAbilities(rData);
 end
 
 --------------------------------------------------------------

@@ -480,6 +480,7 @@
 	<string name="npc_label_hp">Health</string>
 	<string name="npc_label_damage">Damage</string>
 	<string name="npc_label_armor">Armor</string>
+	<string name="npc_label_type">Type</string>
 	<string name="npc_label_move">Movement</string>
 	<string name="npc_label_mod">Modifications</string>
 	<string name="npc_label_combat">Combat</string>

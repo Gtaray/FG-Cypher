@@ -7,6 +7,26 @@ function onInit()
 	initActorHealth();
 end
 
+---------------------------------------------------------------
+-- CHARACTER STAT ACCESSORS AND SETTERS
+---------------------------------------------------------------
+
+function getCreatureType(rActor)
+	local nodeActor = ActorManager.getCreatureNode(rActor);
+	if not nodeActor then
+		return nil;
+	end
+
+	local sField;
+	if ActorManager.isPC(rActor) then
+		sField = "class.ancestry";
+	else
+		sField = "type";
+	end
+	local sType = DB.getValue(nodeActor, sField, "");
+	return sType:lower();
+end
+
 --
 --	HEALTH
 -- 

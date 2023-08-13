@@ -125,7 +125,7 @@ function applyFloatingStatsAndEdge(rData)
 		["intellect"] = 0
 	};
 
-	for _, sStat in ipairs(rData.aEdgeGiven) do
+	for _, sStat in ipairs(rData.aEdgeGiven or {}) do
 		aEdge[sStat] = aEdge[sStat] + 1;
 	end
 
@@ -196,7 +196,10 @@ function applyDefenseModification(rActor, rData)
 		return;
 	end
 
-
+	local defnode = DB.getChild(statnode, "def");
+	if not defnode then
+		return;
+	end
 
 	CharModManager.applyModToTrainingNode(defnode, "training", rData.sTraining);
 	CharModManager.applyModToAssetNode(defnode, "asset", rData.nAsset);

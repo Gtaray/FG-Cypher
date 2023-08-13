@@ -163,7 +163,7 @@ function completeAdvancement(rData)
 	rData.sSource = "Advancement"
 
 	if rData.sType == "stats" then
-		CharModManager.applyFloatingStatModificationCallback(rData);
+		CharModManager.applyFloatingStatsAndEdge(rData);
 		
 	elseif rData.sType == "edge" then
 		for sStat, nEdge in pairs(rData.aEdgeGiven) do

@@ -117,6 +117,7 @@
 	<script name="DifficultyManager" file="scripts/manager_difficulty.lua" />
 	<script name="IntrusionManager" file="scripts/manager_intrusion.lua" />
 	<script name="TokenManagerCypher" file="scripts/manager_token_cypher.lua" />
+	<script name="DeathMarkers" file="scripts/manager_deathmarkers.lua" />
 
 	<script name="ActionStat" file="scripts/manager_action_stat.lua" />
 	<script name="ActionSkill" file="scripts/manager_action_skill.lua" />
