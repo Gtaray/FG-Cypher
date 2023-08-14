@@ -46,7 +46,7 @@
 		<script file="common/scripts/record_header_simple.lua" />
 		<sheetdata>
 			<link_record_header>
-				<class>focus</class>
+				<class>flavor</class>
 			</link_record_header>
 
 			<anchor_record_header_right />

@@ -90,6 +90,11 @@
 			</label_column>
 			<number_column_armor name="armor" />
 
+			<label_column name="type_label">
+				<static textres="npc_label_type" />
+			</label_column>
+			<string_columnh name="type" />
+
 			<label_column name="move_label">
 				<static textres="npc_label_move" />
 			</label_column>

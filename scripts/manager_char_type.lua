@@ -21,6 +21,20 @@ function addTypeDrop(nodeChar, sClass, sRecord)
 	CharTypeManager.applyTier1(rAdd);
 end
 
+function getTypeNode(nodeChar)
+	local _, sRecord = DB.getValue(nodeChar, "class.typelink");
+	return DB.findNode(sRecord);
+end
+
+function characterHasType(nodeChar)
+	return CharTypeManager.getTypeNode(nodeChar) ~= nil;
+end
+
+function getAbilitiesForCharacter(nodeChar, nTier)
+	local nodeType = CharTypeManager.getTypeNode(nodeChar);
+	return CharTypeManager.getAbilities(nodeType, nTier);
+end
+
 function buildTier1AddTable(rAdd)
 	rAdd.nMight = DB.getValue(rAdd.nodeSource, "mightpool", 0);
 	rAdd.nSpeed = DB.getValue(rAdd.nodeSource, "speedpool", 0);
@@ -79,12 +93,15 @@ function buildAbilityPromptTable(nodeChar, nodeType, nTier, rData)
 				table.insert(rData.aAbilitiesGiven, sRecord);
 			else	
 				table.insert(rData.aAbilityOptions, {
-					nTier = 1,
+					nTier = nTier,
 					sRecord = sRecord
 				});
 			end
 		end
 	end
+
+	-- Add abilities from flavor (if it is present)
+	CharFlavorManager.buildAbilityPromptTable(nodeChar, nTier, rData);
 end
 
 function applyTier1(rData)
@@ -111,10 +128,12 @@ function applyTier1(rData)
 
 	-- Give starting abilities
 	CharTypeManager.addAbilities(rData);
+	CharFlavorManager.addAbilities(rData);
 end
 
 function applyTier(rData)
 	CharTypeManager.addAbilities(rData);
+	CharFlavorManager.addAbilities(rData);
 end
 
 --------------------------------------------------------------
@@ -193,21 +212,6 @@ end
 
 function addAbilities(rData)
 	for _, sAbility in ipairs(rData.aAbilitiesGiven) do
-		CharTypeManager.addAbility(rData.nodeChar, sAbility, rData.sSourceName);
-	end
-end
-
-function addAbility(nodeChar, sAbilityRecord, sSourceName)
-	local rActor = ActorManager.resolveActor(nodeChar);
-
-	local rMod = {
-		sLinkRecord = sAbilityRecord,
-		sSource = string.format("%s (Type)", StringManager.capitalize(sSourceName))
-	}
-	rMod.sSummary = CharModManager.getAbilityModSummary(rMod)
-
-	local nodeAbility = DB.findNode(sAbilityRecord);
-	if nodeAbility then
-		return CharModManager.applyAbilityModification(rActor, rMod);
+		CharAbilityManager.addAbility(rData.nodeChar, sAbility, rData.sSourceName, "Type");
 	end
 end

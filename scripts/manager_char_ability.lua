@@ -17,13 +17,32 @@ function addAbilityDrop(nodeChar, sClass, sRecord)
 	-- Notification
 	CharManager.outputUserMessage("char_message_add_ability", rAdd.sSourceName, rAdd.sCharName);
 
-    -- Add ability (via the character modification system)
-	CharModManager.addModificationToChar(nodeChar, {
+    -- Add ability (via the character modification system)	
+	local rPromptData = CharModManager.addModificationToChar(nodeChar, {
 		sProperty = "ability",
 		sLinkRecord = DB.getPath(rAdd.nodeSource),
 		sLinkClass = "ability",
 		sSource = "Manual"
 	});
+
+	if (rPromptData.nFloatingStats or 0) > 0 or #(rPromptData.aEdgeOptions or {}) > 0 then
+		-- Prompt player for the data
+		rPromptData.nodeSource = rAdd.nodeSource;
+		rPromptData.sSourceName = rAdd.sSourceName;
+		rPromptData.sSourceType = rAdd.sSourceType;
+		rPromptData.sSourceClass = rAdd.sSourceClass;
+		rPromptData.nodeChar = rAdd.nodeChar;
+		rPrmoptData.sCharName = rAdd.sCharName;
+		rPrmoptData.nMight = ActorManagerCypher.getStatPool(rAdd.nodeChar, "might");
+		rPrmoptData.nSpeed = ActorManagerCypher.getStatPool(rAdd.nodeChar, "speed");
+		rPrmoptData.nIntellect = ActorManagerCypher.getStatPool(rAdd.nodeChar, "intellect");
+		rPromptData.sSource = string.format("%s (%s)", 
+			StringManager.capitalize(rPromptData.sSourceName), 
+			StringManager.capitalize(rPromptData.sSourceType))
+
+		local w = Interface.openWindow("select_dialog_char", "");
+		w.setData(rAdd, CharModManager.applyFloatingStatsAndEdge);
+	end
 end
 
 function addTrainingToAbility(nodeChar, nodeAbility)
@@ -48,4 +67,21 @@ function addTrainingToAbilityAction(nodeAction)
 	sTraining = RollManager.resolveTraining(nTraining)
 
 	DB.setValue(nodeAction, "training", "string", sTraining);
+end
+
+function addAbility(nodeChar, sAbilityRecord, sSourceName, sSourceType)
+	local rActor = ActorManager.resolveActor(nodeChar);
+
+	local rMod = {
+		sLinkRecord = sAbilityRecord,
+		sSource = string.format("%s (%s)", 
+			StringManager.capitalize(sSourceName), 
+			StringManager.capitalize(sSourceType))
+	}
+	rMod.sSummary = CharModManager.getAbilityModSummary(rMod)
+
+	local nodeAbility = DB.findNode(sAbilityRecord);
+	if nodeAbility then
+		return CharModManager.applyAbilityModification(rActor, rMod);
+	end
 end

@@ -205,7 +205,16 @@
 			<label_column name="dmgtype_label">
 				<static textres="char_mod_label_dmgtype" />
 			</label_column>
-			<string_columnh name="dmgtype" />
+			<string_columnh name="dmgtype">
+				<script>
+					function onValueChanged()
+						if super and super.onValueChanged then
+							super.onValueChanged();
+						end
+						window.updateSuperArmor();
+					end
+				</script>
+			</string_columnh>
 
 			<label_column name="link_label">
 				<static textres="char_mod_label_link" />
@@ -219,6 +228,11 @@
 				<readonly />
 			</string_columnh>
 			<linkfield_column name="link" />
+
+			<label_column name="superarmor_label">
+				<static textres="char_mod_label_superarmor" />
+			</label_column>
+			<combobox_yesno name="superarmor" />
 		</sheetdata>
 	</windowclass>
 
@@ -253,7 +267,7 @@
 					addItems({ "", "Might", "Speed", "Intellect", "Flex" });
 				end
 				function onValueChanged()
-					window.onPropertyChanged();
+					window.update();
 				end
 			</script>
 		</combobox_column>
@@ -269,7 +283,26 @@
 					addItems({ "", "Trained", "Specialized", "Inability" });
 				end
 				function onValueChanged()
-					window.onPropertyChanged();
+					window.update();
+				end
+			</script>
+		</combobox_column>
+	</template>
+
+	<template name="combobox_yesno">
+		<combobox_column>
+			<listdirection>down</listdirection>
+			<unsorted />
+			<script>
+				function onInit()
+					super.onInit();
+					addItems({ "No", "Yes" });
+					if getValue() == "" then
+						super.setListValue("No")
+					end
+				end
+				function onValueChanged()
+					window.update();
 				end
 			</script>
 		</combobox_column>

@@ -50,6 +50,7 @@ function update()
 	damagestr.setReadOnly(bReadOnly);
 	WindowManager.callSafeControlUpdate(self, "armor", bReadOnly);
 	move.setReadOnly(bReadOnly);
+	WindowManager.callSafeControlUpdate(self, "type", bReadOnly);
 	WindowManager.callSafeControlUpdate(self, "modifications", bReadOnly);
 	WindowManager.callSafeControlUpdate(self, "combat", bReadOnly);
 	WindowManager.callSafeControlUpdate(self, "intrusion", bReadOnly);

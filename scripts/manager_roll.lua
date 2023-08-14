@@ -189,6 +189,7 @@ function resolveTraining(nTraining)
 	elseif nTraining == 0 then
 		return "inability";
 	end
+	return "";
 end
 
 function convertTrainingStringToNumber(sTraining)
@@ -225,7 +226,7 @@ function processFlatModifiers(rSource, rTarget, rRoll, aEffects, aFilter)
 		rRoll.nMod = 0;
 	end
 
-	local nEffectMod = EffectManagerCypher.getEffectsBonusByType(rSource, aEffects, aFilter, rTarget);
+	local nEffectMod = EffectManagerCypher.getEffectsBonusByType(rSource, aEffects, aFilter, true, nil, true, rTarget);
 	rRoll.nMod = rRoll.nMod + nEffectMod;
 	local nAssets = math.floor(rRoll.nMod / 3); -- For every +3 to the roll, add an asset
 	rRoll.nMod = rRoll.nMod % 3; -- Reduce the modifier to only 0 to 2
@@ -235,14 +236,14 @@ function processFlatModifiers(rSource, rTarget, rRoll, aEffects, aFilter)
 end
 
 function processAssets(rSource, rTarget, aFilter, nAssets)
-	local nAssetEffect = EffectManagerCypher.getEffectsBonusByType(rSource, "ASSET", aFilter, rTarget)
+	local nAssetEffect = EffectManagerCypher.getAssetEffectBonus(rSource, aFilter, rTarget)
 	local nMaxAssets = ActorManagerCypher.getMaxAssets(rSource, aFilter);
 
 	return math.min(nAssetEffect, nMaxAssets - nAssets), nMaxAssets;
 end
 
 function processEffort(rSource, rTarget, aFilter, nEffort, nMaxEffort)
-	local nEffortEffect = EffectManagerCypher.getEffectsBonusByType(rSource, "EFFORT", aFilter, rTarget)
+	local nEffortEffect = EffectManagerCypher.getEffortEffectBonus(rSource, aFilter, rTarget)
 
 	if not nMaxEffort then
 		nMaxEffort = ActorManagerCypher.getMaxEffort(rSource, aFilter);
@@ -260,19 +261,41 @@ function processTraining(bInability, bTrained, bSpecialized)
 	else return 0 end
 end
 
+function processTrainingEffects(rSource, rTarget, rRoll, aFilter)
+	local nTrained = #(EffectManagerCypher.getTrainedEffects(rSource, aFilter, rTarget))
+	local nSpecialized = #(EffectManagerCypher.getSpecializedEffects(rSource, aFilter, rTarget))
+	local nInability = #(EffectManagerCypher.getInabilityEffects(rSource, aFilter, rTarget))
+
+	-- This combines the total number values of each training level
+	-- Which can then be added to the base training value
+	local nTraining = RollManager.convertTrainingStringToNumber(rRoll.sTraining);
+	nTraining = nTraining + nTrained + (2 * nSpecialized) + (-1 * nInability)
+	nTraining = math.min(3, math.max(0, nTraining));
+
+	-- 0 = inability
+	-- 1 = practiced
+	-- 2 = trained
+	-- 3 = specialized
+	rRoll.sTraining = RollManager.resolveTraining(nTraining);
+	return rRoll.sTraining;
+end
+
 function processStandardConditionsForActor(rActor)
 	-- Dazed and Stunned don't stack with the other conditions
-	if EffectManager.hasCondition(rSource, "Dazed") or 
-	   EffectManager.hasCondition(rSource, "Stunned") or
-	   (sStat == "might" and EffectManager.hasCondition(rSource, "Staggered")) or
-	   (sStat == "speed" and (EffectManager.hasCondition(rSource, "Frostbitten") or EffectManager.hasCondition(rSource, "Slowed"))) or
-	   (sStat == "intellect" and EffectManager.hasCondition(rSource, "Confused")) then
+	if EffectManagerCypher.hasEffect(rSource, "Dazed") or 
+	EffectManagerCypher.hasEffect(rSource, "Stunned") or
+	   (sStat == "might" and EffectManagerCypher.hasEffect(rSource, "Staggered")) or
+	   (sStat == "speed" and (EffectManagerCypher.hasEffect(rSource, "Frostbitten") or EffectManagerCypher.hasEffect(rSource, "Slowed"))) or
+	   (sStat == "intellect" and EffectManagerCypher.hasEffect(rSource, "Confused")) then
 		return 1;
 	end
 	return 0;
 end
 
-function processPiercing(rSource, rTarget, bPiercing, nPierceAmount, aFilter)
+function processPiercing(rSource, rTarget, bPiercing, nPierceAmount, sDamageType, sStat)
+	if not nPierceAmount then
+		nPierceAmount = -1;
+	end
 	if type(bPiercing) == "string" then
 		bPiercing = bPiercing == "true";
 	end
@@ -280,7 +303,7 @@ function processPiercing(rSource, rTarget, bPiercing, nPierceAmount, aFilter)
 		nPierceAmount = tonumber(nPierceAmount);
 	end
 
-	local nPierceEffectAmount, nPierceEffectCount = EffectManagerCypher.getEffectsBonusByType(rSource, { "pierce", "piercing" }, aFilter, rTarget);
+	local nPierceEffectAmount, nPierceEffectCount = EffectManagerCypher.getPiercingEffectBonus(rSource, sDamageType, sStat, rTarget);
 	if nPierceEffectCount > 0 then
 		-- if we have pierce effects, then bPiercing is locked to true.
 		bPiercing = true;
@@ -306,10 +329,10 @@ function processPiercing(rSource, rTarget, bPiercing, nPierceAmount, aFilter)
 end
 
 function processAdvantage(rSource, rTarget, rRoll, aFilter)
-	local aAdvEffects = #(EffectManagerCypher.getEffectsByType(rSource, "ADV", aFilter, rTarget)) > 0;
-	local aDisEffects = #(EffectManagerCypher.getEffectsByType(rSource, "DISADV", aFilter, rTarget)) > 0;
-	local bGrantAdv = #(EffectManagerCypher.getEffectsByType(rTarget, "GRANTADV", aFilter, rSource)) > 0;
-	local bGrantDisadv = #(EffectManagerCypher.getEffectsByType(rTarget, "GRANTDISADV", aFilter, rSource)) > 0;
+	local aAdvEffects = #(EffectManagerCypher.getAdvantageEffects(rSource, aFilter, rTarget)) > 0;
+	local aDisEffects = #(EffectManagerCypher.getDisadvantageEffects(rSource, aFilter, rTarget)) > 0;
+	local bGrantAdv = #(EffectManagerCypher.getGrantDisadvantageEffects(rTarget, aFilter, rSource)) > 0;
+	local bGrantDisadv = #(EffectManagerCypher.getGrantDisadvantageEffects(rTarget, aFilter, rSource)) > 0;
 
 	return aAdvEffects or bGrantAdv, aDisEffects or bGrantDisadv;
 end
@@ -822,6 +845,30 @@ function decodePiercing(vRoll, bPersist)
 	end
 
 	return bPiercing, nPierceAmount
+end
+
+function encodeOngoingDamage(rAction, rRoll)
+	if rAction.bOngoing then
+		rRoll.sDesc = RollManager.addOrOverwriteText(
+			rRoll.sDesc,
+			"%[ONGOING%]",
+			"[ONGOING]"
+		);
+	end
+end
+
+function decodeOngoingDamage(vRoll, bPersist)
+	local sDesc = vRoll;
+	if type(vRoll) == "table" then
+		sDesc = vRoll.sDesc;
+	end
+
+	return RollManager.decodeTextAsBoolean(
+		sDesc,
+		"%[ONGOING%]",
+		nil,
+		bPersist
+	);
 end
 
 function encodeAmbientDamage(rAction, rRoll)

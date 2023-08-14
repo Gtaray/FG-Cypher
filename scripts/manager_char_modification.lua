@@ -6,13 +6,16 @@
 ---------------------------------------------------------------
 -- APPLY MODS TO CHAR
 ---------------------------------------------------------------
-
-function addModificationToChar(rActor, vMod)
+function addModificationToChar(rActor, vMod, rPromptData)
 	if type(rActor) == "databasenode" then
 		rActor = ActorManager.resolveActor(rActor);
 	end
 	if not rActor and not vMod then
 		return;
+	end
+
+	if not rPromptData then
+		rPromptData = {};
 	end
 
 	local rData = vMod;
@@ -23,7 +26,13 @@ function addModificationToChar(rActor, vMod)
 	rData.sSummary = CharModManager.getCharacterModificationSummary(rData);
 
 	if rData.sProperty == "stat" then
-		CharModManager.applyStatModification(rActor, rData);
+		if rData.sStat == "flex" then
+			-- Add any flex stats to the prmopt table to prompt the player to select
+			-- when everything is done
+			rPromptData.nFloatingStats = (rPromptData.nFloatingStats or 0) + rData.nMod;
+		else
+			CharModManager.applyStatModification(rActor, rData);
+		end
 
 	elseif rData.sProperty == "skill" then
 		CharModManager.applySkillModification(rActor, rData);
@@ -38,13 +47,21 @@ function addModificationToChar(rActor, vMod)
 		CharModManager.applyInitiativeModification(rActor, rData);
 
 	elseif rData.sProperty == "ability" then
-		CharModManager.applyAbilityModification(rActor, rData);
+		CharModManager.applyAbilityModification(rActor, rData, rPromptData);
 
 	elseif rData.sProperty == "recovery" then
 		CharModManager.applyRecoveryModification(rActor, rData);
 
 	elseif rData.sProperty == "edge" then
-		CharModManager.applyEdgeModification(rActor, rData);
+		if rData.sStat == "flex" then
+			if not rPromptData.aEdgeOptions then
+				rPromptData.aEdgeOptions = {}
+			end
+			-- Add flex edge to the prompt table for later prompting
+			table.insert(rPromptData.aEdgeOptions, { "might", "speed", "intellect" });
+		else
+			CharModManager.applyEdgeModification(rActor, rData);
+		end
 
 	elseif rData.sProperty == "effort" then
 		CharModManager.applyEffortModification(rActor, rData);
@@ -59,31 +76,13 @@ function addModificationToChar(rActor, vMod)
 		CharModManager.applyArmorEffortPenaltyModification(rActor, rData);
 		
 	end
+
+	-- This is really only used for when an ability is dropped onto a PC
+	-- descriptor/ancestries handle mod prompting using the table directly
+	return rPromptData;
 end
 
-function applyStatModification(rActor, rData)
-	if rData.sStat == "flex" then
-		local rDialog = {
-			sType = "stats",
-			nodeChar = ActorManager.getCreatureNode(rActor),
-			nMight = ActorManagerCypher.getStatPool(rActor, "might"),
-			nSpeed = ActorManagerCypher.getStatPool(rActor, "speed");
-			nIntellect = ActorManagerCypher.getStatPool(rActor, "intellect");
-			nFloatingStats = rData.nMod,
-			sSource = rData.sSource
-		};
-		
-		PromptManager.promptForCharacterModifications(rDialog);
-		return;
-	end
-
-	ActorManagerCypher.addToStatMax(rActor, rData.sStat, rData.nMod);
-
-	rData.sSummary = "Stats: " .. rData.sSummary;
-	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
-end
-
-function applyFloatingStatModificationCallback(rData)
+function applyFloatingStatsAndEdge(rData)
 	local rActor = ActorManager.resolveActor(rData.nodeChar);
 	local nCurMight = ActorManagerCypher.getStatPool(rActor, "might");
 	local nCurSpeed = ActorManagerCypher.getStatPool(rActor, "speed");
@@ -119,6 +118,37 @@ function applyFloatingStatModificationCallback(rData)
 			sSource = rData.sSource
 		});
 	end
+
+	local aEdge = {
+		["might"] = 0,
+		["speed"] = 0,
+		["intellect"] = 0
+	};
+
+	for _, sStat in ipairs(rData.aEdgeGiven or {}) do
+		aEdge[sStat] = aEdge[sStat] + 1;
+	end
+
+	for sStat, nEdge in pairs(aEdge) do
+		if nEdge > 0 then
+			local rEdge = {
+				sProperty = "edge",
+				sStat = sStat,
+				nMod = nEdge,
+				sSource = rData.sSource,
+			}
+			rEdge.sSummary = CharModManager.getEdgeModSummary(rEdge);
+
+			CharModManager.applyEdgeModification(rActor, rEdge)
+		end
+	end
+end
+
+function applyStatModification(rActor, rData)
+	ActorManagerCypher.addToStatMax(rActor, rData.sStat, rData.nMod);
+
+	rData.sSummary = "Stats: " .. rData.sSummary;
+	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
 end
 
 function applySkillModification(rActor, rData)
@@ -166,7 +196,10 @@ function applyDefenseModification(rActor, rData)
 		return;
 	end
 
-
+	local defnode = DB.getChild(statnode, "def");
+	if not defnode then
+		return;
+	end
 
 	CharModManager.applyModToTrainingNode(defnode, "training", rData.sTraining);
 	CharModManager.applyModToAssetNode(defnode, "asset", rData.nAsset);
@@ -186,8 +219,13 @@ function applyArmorModification(rActor, rData)
 	-- First we handle the case where the damage type is empty
 	-- thus we place the armor in the character's Armor node
 	if (sDmgType or "") == "" then
-		nCurArmor = DB.getValue(charnode, "armor", 0);
-		DB.setValue(charnode, "armor", "number", nCurArmor + rData.nMod);
+		nCurArmor = DB.getValue(charnode, "Armor.mod", 0);
+		DB.setValue(charnode, "Armor.mod", "number", nCurArmor + rData.nMod);
+
+		if rData.bSuperArmor then
+			local nSuperArmor = DB.getValue(charnode, "Armor.superarmor", 0);
+			DB.setValue(charnode, "Armor.superarmor", "number", nSuperArmor + rData.nMod);
+		end
 
 		CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
 		return;
@@ -248,7 +286,7 @@ function applyInitiativeModification(rActor, rData)
 	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
 end
 
-function applyAbilityModification(rActor, rData)
+function applyAbilityModification(rActor, rData, rPromptData)
 	-- Add ability to list
 	local charnode = ActorManager.getCreatureNode(rActor);
     local abilitylist = DB.createChild(charnode, "abilitylist");
@@ -269,7 +307,7 @@ function applyAbilityModification(rActor, rData)
 	for _, modnode in ipairs(DB.getChildList(sourcenode, "features")) do
 		local rMod = CharModManager.getModificationData(modnode)
 		rMod.sSource = string.format("%s (Ability)", sAbilityName);
-		CharModManager.addModificationToChar(rActor, rMod);
+		CharModManager.addModificationToChar(rActor, rMod, rPromptData);
 	end
 
 	return abilitynode;
@@ -334,7 +372,7 @@ end
 function applyArmorEffortPenaltyModification(rActor, rData)
 	local charnode = ActorManager.getCreatureNode(rActor);
 
-	CharModManager.applyModToModifierNode(charnode, "armorspeedcost", rData.nMod);
+	CharModManager.applyModToModifierNode(charnode, "ArmorSpeedPenalty.mod", rData.nMod);
 
 	rData.sSummary = "Armor: " .. rData.sSummary;
 	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
@@ -420,6 +458,9 @@ function getModificationData(modNode)
 		rMod.sProperty = "armor"
 		rMod.nMod = DB.getValue(modNode, "mod", 0);
 		rMod.sDamageType = DB.getValue(modNode, "dmgtype", "");
+		-- Only apply super armor to untyped damage
+		-- Capitalization on "Yes" is necessary
+		rMod.bSuperArmor = rMod.sDamageType == "" and DB.getValue(modNode, "superarmor", "") == "Yes";
 		
 	elseif rMod.sProperty == "Initiative" then
 		rMod.sProperty = "initiative"
@@ -566,10 +607,16 @@ function getArmorModSummary(rMod)
 		sDmgType = string.format(" %s", rMod.sDamageType);
 	end
 
-	return string.format("%s%s Armor",
+	local sText = string.format("%s%s Armor",
 		DiceManager.convertDiceToString({}, rMod.nMod or 0, true),
 		sDmgType
 	);
+
+	if rMod.bSuperArmor then
+		sText = string.format("%s (Immune to Armor piercing)", sText);
+	end
+
+	return sText;
 end
 
 function getInitiativeModSummary(rMod)

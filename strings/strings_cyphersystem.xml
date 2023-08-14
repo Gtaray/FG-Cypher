@@ -51,6 +51,9 @@
 	<string name="option_label_ARCXPCLIMAX_SUCCESS">Charater Arcs: How much XP is gained when successfully completing a character arc's climax</string>
 	<string name="option_label_ARCXPCLIMAX_FAILURE">Charater Arcs: How much XP is gained when failing to complete a character arc's climax</string>
 	<string name="option_label_ARCXPRESOLVE">Character Arcs: How much XP is gained when resolving a character arc</string>
+	<string name="option_label_DEATHMARKER_ONDELETE">Death Markers: Place death markers when a dead or dying creature is removed from the combat tracker</string>
+	<string name="option_label_DEATHMARKER_ONDAMAGE">Death Markers: Place death markers when an NPC on the combat tracker is reduced to 0 HP</string>
+	<string name="option_label_DEATHMARKER_ONWOUND">Death Markers: Place death markers when a PC becomes impaired, debilitated, or dead</string>
 
 	<string name="option_val_yes">Yes</string>
 	<string name="option_val_no">No</string>
@@ -124,9 +127,11 @@
 	<string name="char_armorcalc_title">Armor Calc</string>
 	<string name="char_label_armorbase">Base</string>
 	<string name="char_label_armormod">Mod</string>
+	<string name="char_label_superarmor">Pierce-Proof</string>
 	<string name="char_label_armor">Armor: </string>
 	<string name="char_tooltip_armorbase">Base Armor granted from armor</string>
 	<string name="char_tooltip_armormod">Armor granted from abilities or other features</string>
+	<string name="char_tooltip_superarmor">How much of your Armor is immune to effects that would pierce or bypass Armor?</string>
 	<string name="char_label_armorspeedcost">Effort Penalty:</string>
 	<string name="char_tooltip_armorspeedcostbase">Base amount that your armor increases the cost of applying Speed Effort.</string>
 	<string name="char_tooltip_armorspeedcostmod">Modifier for the Speed Effort cost penalty (due to advancements or abilities).</string>
@@ -337,6 +342,19 @@
 
 	<string name="power_header_description">DESCRIPTION</string>
 
+	<string name="power_header_duration">DURATION</string>
+	<string name="power_label_effect_duration">Duration</string>
+	<string name="power_label_effect_duration_base">Base</string>
+	<string name="power_label_effect_duration_dice">Dice</string>
+	<string name="power_label_effect_duration_unit">Unit</string>
+	<string name="power_label_effect_scaling">Scaling</string>
+	<string name="power_label_effect_scaling_base">Base</string>
+	<string name="power_label_effect_scaling_dice">Dice</string>
+	<string name="power_label_effect_scaling_dicemult">Dice Mult</string>
+	<string name="power_label_effect_scaling_mod">Mod</string>
+	<string name="power_label_effect_scaling_modmult">Mod Mult</string>
+	<string name="power_effect_scaling_effort">Effort</string>
+
 	<!-- Power adjustment by Cypher Level -->
 	<string name="power_header_cypher">Adjustments by Cypher Level</string>
 	<string name="power_label_cypher_text_1">Set</string>
@@ -432,7 +450,7 @@
 	<string name="char_mod_header_skill">Skill</string>
 	<string name="char_mod_header_defense">Defense</string>
 	<string name="char_mod_header_armor">Armor</string>
-	<string name="char_mod_header_initiative">Initiative</string>
+	<string name="char_fmod_header_initiative">Initiative</string>
 	<string name="char_mod_header_ability">Ability</string>
 	<string name="char_mod_header_recovery">Recovery</string>
 	<string name="char_mod_header_edge">Edge</string>
@@ -449,6 +467,7 @@
 	<string name="char_mod_label_dmgtype">Dmg Type</string>
 	<string name="char_mod_label_link">Link</string>
 	<string name="char_mod_link_empty">Drop record here to assign</string>
+	<string name="char_mod_label_superarmor">Pierce-Proof</string>
 
 	<string name="char_mod_edge_label">Option</string>
 	<string name="char_mod_edge_might">Might</string>
@@ -464,6 +483,7 @@
 	<string name="npc_label_hp">Health</string>
 	<string name="npc_label_damage">Damage</string>
 	<string name="npc_label_armor">Armor</string>
+	<string name="npc_label_type">Type</string>
 	<string name="npc_label_move">Movement</string>
 	<string name="npc_label_mod">Modifications</string>
 	<string name="npc_label_combat">Combat</string>
@@ -536,6 +556,10 @@
 	<string name="defense_prompt_ease">Ease</string>
 	<string name="defense_prompt_hinder">Hinder</string>
 
+	<!-- Cost Conversion Prompt -->
+	<string name="cost_conversion_prompt_window_title">Select Stat</string>
+	<string name="cost_conversion_prompt_description">Select which stat you would like to pay the cost with</string>
+
 	<!-- Character Builder Dialog Boxes -->
 	<string name="dialog_nav_stats">Stat Pools</string>
 	<string name="dialog_nav_edge">Edge</string>
@@ -549,7 +573,8 @@
 	<string name="header_dialog_edge">Select Edge</string>
 	<string name="label_dialog_select_edge">Select Option</string>
 
-	<string name="header_dialog_abilities">Select Abilities</string>
+	<string name="header_dialog_abilities_type">Select Abilities from Type</string>
+	<string name="header_dialog_abilities_flavor">Select Abilities from Flavor</string>
 	<string name="label_dialog_abilities_remaining">Abilities Remaining</string>
 	<string name="label_dialog_abilities_multiple">Take Multiple Times</string>
 	<string name="tooltip_dialog_abilities_multiple">This ability can be selected multiple times. How many times would you like to take it?</string>

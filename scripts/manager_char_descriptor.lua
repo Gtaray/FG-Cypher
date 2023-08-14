@@ -24,6 +24,16 @@ function addDescriptorDrop(nodeChar, sClass, sRecord)
 	for _, modnode in ipairs(DB.getChildList(rAdd.nodeSource, "features")) do
 		local rMod = CharModManager.getModificationData(modnode)
 		rMod.sSource = string.format("%s (Descriptor)", StringManager.capitalize(rAdd.sSourceName));
-		CharModManager.addModificationToChar(rAdd.nodeChar, rMod);
+		CharModManager.addModificationToChar(rAdd.nodeChar, rMod, rAdd);
+	end
+
+	if (rAdd.nFloatingStats or 0) > 0 or #(rAdd.aEdgeOptions or {}) > 0 then
+		-- Prompt player for the data
+		rAdd.nMight = ActorManagerCypher.getStatPool(rAdd.nodeChar, "might");
+		rAdd.nSpeed = ActorManagerCypher.getStatPool(rAdd.nodeChar, "speed");
+		rAdd.nIntellect = ActorManagerCypher.getStatPool(rAdd.nodeChar, "intellect");
+		rAdd.sSource = string.format("%s (Descriptor)", StringManager.capitalize(rAdd.sSourceName));
+		local w = Interface.openWindow("select_dialog_char", "");
+		w.setData(rAdd, CharModManager.applyFloatingStatsAndEdge);
 	end
 end

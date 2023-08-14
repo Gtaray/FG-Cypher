@@ -82,6 +82,7 @@ function update()
 	WindowManager.callSafeControlUpdate(self, "asset", false, not (bSkill or bDef or bInit))
 	WindowManager.callSafeControlUpdate(self, "mod", false, bEmpty or bAbility or bItem)
 	WindowManager.callSafeControlUpdate(self, "dmgtype", false, not bArmor);
+	updateSuperArmor();
 
 	-- Not using WindowManager.callSafeControlUpdate as that function
 	-- will hide an empty stringfield if readonly is true. 
@@ -94,7 +95,16 @@ function update()
 	updateLinkName();
 end
 
+function updateSuperArmor()
+	local sProp = property.getSelectedValue();
+	local bEmpty = (sProp or "") == "";
+	local bArmor = not bEmpty and sProp == "Armor";
+	local bHasDmgType = dmgtype.getValue() ~= "";
+	updateCombobox("superarmor", not bArmor or bHasDmgType);
+end
+
 function updateLinkName()
+
 	local sClass, sRecord = link.getValue()
 	local node = DB.findNode(sRecord);
 	if not node then

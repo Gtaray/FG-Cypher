@@ -327,7 +327,7 @@
 				<icon>char_encumbrance</icon>
 				<invisible />
 			</genericcontrol>
-			<hn name="armorspeedcost">
+			<hn name="armorspeedcost" source="Armor.total">
 				<script>
 					function onInit()
 						onValueChanged();
@@ -417,21 +417,29 @@
 				</anchored>	
 				<static textres="char_label_armor" />
 			</label>
-			<number_linked name="armortotal">
+			<hn name="armorbase" source="Armor.base" />
+			<hn name="armormod" source="Armor.mod" />
+			<number_linked name="armortotal" source="Armor.total">
+				<script file="common/scripts/number_migrate_value.lua" />
+				<migrate>armortotal</migrate>
 				<anchored to="armor_label" position="righthigh" offset="5,0" height="20" width="20" />
-				<source><name>armorbase</name><op>+</op></source>
-				<source><name>armor</name><op>+</op></source>
+				<source><name>Armor.base</name><op>+</op></source>
+				<source><name>Armor.mod</name><op>+</op></source>
 				<nodrag />
 			</number_linked>
 			<label name="armorspeedcost_label">
 				<anchored to="armortotal" position="righthigh" offset="20,0" height="20" width="100" />
 				<static textres="char_label_armorspeedcost" />
 			</label>
-			<number_linked name="armorspeedcosttotal">
+			<hn name="armorspeedpenaltybase" source="ArmorSpeedPenalty.base" />
+			<hn name="armorspeedpenaltytotal" source="ArmorSpeedPenalty.mod" />
+			<number_linked name="armorspeedcosttotal" source="ArmorSpeedPenalty.total">
+				<script file="common/scripts/number_migrate_value.lua" />
+				<migrate>armorspeedcosttotal</migrate>
 				<anchored to="armorspeedcost_label" position="righthigh" offset="5,0" height="20" width="20" />
 				<tooltip textres="char_tooltip_armorspeedcost" />
-				<source><name>armorspeedcostbase</name><op>+</op></source>
-				<source><name>armorspeedcost</name><op>+</op></source>
+				<source><name>ArmorSpeedPenalty.base</name><op>+</op></source>
+				<source><name>ArmorSpeedPenalty.mod</name><op>+</op></source>
 				<nodrag />
 			</number_linked>
 
@@ -594,7 +602,9 @@
 				</anchored>
 				<static textres="char_label_armor" />
 			</label>
-			<basicnumber name="armorbase">
+			<basicnumber name="armorbase" source="Armor.base">
+				<script file="common/scripts/number_migrate_value.lua" />
+				<migrate>armorbase</migrate>
 				<anchored to="label_armor" position="righthigh" offset="5,0" width="45" height="20" />
 				<tooltip textres="char_tooltip_armorbase"/>
 			</basicnumber>
@@ -607,13 +617,26 @@
 				<static>+</static>
 				<center />
 			</label>
-			<basicnumber name="armor">
+			<basicnumber name="armor" source="Armor.mod">
+				<script file="common/scripts/number_migrate_value.lua" />
+				<migrate>armor</migrate>
 				<anchored to="label_armorplus" position="right" offset="5,0" width="45" />
 				<tooltip textres="char_tooltip_armormod"/>
 			</basicnumber>
 			<label_fieldtop name="label_armormod">
 				<anchored to="armor" />
 				<static textres="char_label_armormod" />
+			</label_fieldtop>
+			<basicnumber name="superarmor" source="Armor.superarmor">
+				<anchored to="armor" position="right" offset="15,0" width="45" />
+				<tooltip textres="char_tooltip_superarmor"/>
+			</basicnumber>
+			<label_fieldtop name="label_superarmor">
+				<anchored to="superarmor">
+					<left offset="-10" />
+					<right offset="10" />
+				</anchored>
+				<static textres="char_label_superarmor" />
 			</label_fieldtop>
 			
 			<!-- Speed Effort Penalty -->
@@ -624,7 +647,9 @@
 				</anchored>
 				<static textres="char_label_armorspeedcost" />
 			</label>
-			<basicnumber name="armorspeedcostbase">
+			<basicnumber name="armorspeedcostbase" source="ArmorSpeedPenalty.base">
+				<script file="common/scripts/number_migrate_value.lua" />
+				<migrate>armorspeedcostbase</migrate>
 				<anchored to="label_armorspeedcost" position="righthigh" offset="5,0" width="45" height="20" />
 				<tooltip textres="char_tooltip_armorspeedcostbase" />
 			</basicnumber>
@@ -637,7 +662,9 @@
 				<static>+</static>
 				<center />
 			</label>
-			<basicnumber name="armorspeedcost">
+			<basicnumber name="armorspeedcost" source="ArmorSpeedPenalty.mod">
+				<script file="common/scripts/number_migrate_value.lua" />
+				<migrate>armorspeedcost</migrate>
 				<anchored to="label_armorspeedcostplus" position="righthigh" offset="5,0" width="45" height="20" />
 				<tooltip textres="char_tooltip_armorspeedcostmod" />
 			</basicnumber>

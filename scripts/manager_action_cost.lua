@@ -83,7 +83,21 @@ function performRoll(draginfo, rActor, rAction)
 	local rRoll = ActionCost.getRoll(rActor, rAction);
 
 	if rRoll.nMod > 0 or rRoll.nEffort > 0 then
+		-- Need to set the last action BEFORE we prompt for cost conversion
 		ActionCost.setLastAction(rAction)
+
+		-- Check to see if the actor has a CONVERT effect that lets them convert
+		-- one cost into another
+		local aConvert = EffectManagerCypher.getConversionEffect(rTarget, rRoll.sCostStat, { "cost" });
+		if #aConvert > 0 then
+			local w = Interface.openWindow("prompt_cost_conversion", "");
+			w.setData(aConvert, rRoll.sCostStat);
+			w.setRoll(rActor, rRoll);
+
+			-- Don't want the original roll to fire so we return true;
+			return true;
+		end
+
 		ActionsManager.performAction(draginfo, rActor, rRoll);
 		return true;
 	end
@@ -146,10 +160,11 @@ function modRoll(rSource, rTarget, rRoll)
 	end
 
 	-- Handle cost increase for being wounded
-	if ActorManagerCypher.getDamageTrack(rSource) > 0 then
+	if CharManager.isImpaired(rSource) then
 		-- If the user is wounded, then add 1 for every level of
 		-- effort spent
 		rRoll.nMod = rRoll.nMod + rRoll.nEffort; 
+		rRoll.sDesc = string.format("%s [IMPAIRED]", rRoll.sDesc);
 	end
 
 	-- Add effort penalty based on armor
@@ -165,7 +180,7 @@ function modRoll(rSource, rTarget, rRoll)
 	end
 
 	-- Finally, adjust based on COST effects
-	local nEffectMod = EffectManagerCypher.getEffectsBonusByType(rSource, "COST", aFilter);
+	local nEffectMod = EffectManagerCypher.getCostEffectBonus(rSource, aFilter);
 	rRoll.nMod = rRoll.nMod + nEffectMod;
 
 	-- Final clamping of the mod to a min of 0
@@ -265,6 +280,6 @@ function invokeSourceAction(rSource, rAction)
 	elseif rAction.sSourceRollType == "heal" then
 		ActionHeal.performRoll(nil, rSource, rAction);
 	elseif rAction.sSourceRollType == "effect" then
-		ActionEffect.performRoll(nil, rSource, rAction);
+		ActionEffectCypher.performRoll(nil, rSource, rAction);
 	end
 end

@@ -36,7 +36,7 @@ end
 
 function isDamageType(sType)
 	sType = sType:lower();
-	if sType == "all" then
+	if sType == "all" or sType == "any" then
 		return true;
 	end
 	return StringManager.isWord(sType, DamageTypeManager.get());

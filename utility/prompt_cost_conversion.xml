@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!--
+	Please see the license.html file included with this distribution for
+	attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="prompt_cost_conversion">
+		<frame>referencelist</frame>
+		<placement>
+			<size width="300" height="300" />
+		</placement>
+		<nodelete />
+		<script file="utility/scripts/cost_conversion_prompt.lua" />
+		<sheetdata>
+			<windowtitlebar name="reftitle">
+				<resource>cost_conversion_prompt_window_title</resource>
+			</windowtitlebar>
+			<frame_char name="frame">
+				<anchored>
+					<top offset="40"/>
+					<left offset="15" />
+					<right offset="-15" />
+					<bottom offset="-15" />
+				</anchored>
+			</frame_char>
+
+			<stringcontrol name="description">
+				<anchored to="frame">
+					<right anchor="right" offset="-15" />
+					<left anchor="left" offset="15"/>
+					<top anchor="top" offset="15" />
+				</anchored>
+				<multilinespacing>20</multilinespacing>
+				<font>sheetlabel</font>
+				<center/>
+				<readonly />
+				<static textres="cost_conversion_prompt_description" />
+			</stringcontrol>
+
+			<label_ccp_type name="might_label">
+				<static textres="might" />
+			</label_ccp_type>
+			<checkbox_ccp_type name="might_checkbox">
+				<anchored to="might_label" />
+				<target>might</target>
+			</checkbox_ccp_type>
+
+			<label_ccp_type name="speed_label">
+				<static textres="speed" />
+			</label_ccp_type>
+			<checkbox_ccp_type name="speed_checkbox">
+				<anchored to="speed_label" />
+				<target>speed</target>
+			</checkbox_ccp_type>
+
+			<label_ccp_type name="intellect_label">
+				<static textres="intellect" />
+			</label_ccp_type>
+			<checkbox_ccp_type name="intellect_checkbox">
+				<anchored to="intellect_label" />
+				<target>intellect</target>
+			</checkbox_ccp_type>
+
+			<button_text name="accept">
+				<script>
+					function onButtonPress()
+						window.roll();
+					end
+				</script>
+				<anchored height="22" width="160">
+					<bottom parent="frame" anchor="bottom" offset="-20" />
+					<right parent="frame" anchor="right" offset="-20" />
+				</anchored>
+				<textres>defense_prompt_button_roll</textres>
+			</button_text>
+
+			<button_text name="close">
+				<script>
+					function onButtonPress()
+						window.close();
+					end
+				</script>
+				<anchored height="22">
+					<bottom parent="frame" anchor="bottom" offset="-20" />
+					<left parent="frame" anchor="left" offset="20" />
+					<right parent="accept" anchor="left" offset="-10" />
+				</anchored>
+				<textres>defense_prompt_button_close</textres>
+			</button_text>
+		</sheetdata>
+	</windowclass>
+
+	<template name="label_ccp_type">
+		<stringcontrol>
+			<anchored to="description" width="70">
+				<left offset="75" />
+				<top anchor="bottom" relation="relative" offset="3" />
+			</anchored>
+			<multilinespacing>20</multilinespacing>
+			<font>sheetlabel</font>
+			<invisible />
+		</stringcontrol>
+	</template>
+	<template name="checkbox_ccp_type">
+		<button_checkbox>
+			<script>
+				function onButtonPress()
+					window.onOptionSelected(target[1], getValue() == 1);
+				end
+			</script>
+			<anchored height="20" width="20">
+				<top />
+				<left anchor="right" offset="0" />
+			</anchored>
+			<invisible />
+		</button_checkbox>
+	</template>
+</root>

@@ -7,6 +7,26 @@ function onInit()
 	initActorHealth();
 end
 
+---------------------------------------------------------------
+-- CHARACTER STAT ACCESSORS AND SETTERS
+---------------------------------------------------------------
+
+function getCreatureType(rActor)
+	local nodeActor = ActorManager.getCreatureNode(rActor);
+	if not nodeActor then
+		return nil;
+	end
+
+	local sField;
+	if ActorManager.isPC(rActor) then
+		sField = "class.ancestry";
+	else
+		sField = "type";
+	end
+	local sType = DB.getValue(nodeActor, sField, "");
+	return sType:lower();
+end
+
 --
 --	HEALTH
 -- 
@@ -77,6 +97,35 @@ function getPCWoundPercent(rActor)
 	end
 
 	return nPercentWounded, sStatus;
+end
+
+function isHale(rActor)
+	if ActorManager.isPC(rActor) then
+		return ActorManagerCypher.getDamageTrack(rActor) == 0;
+	end
+
+	return ActorManagerCypher.getWoundPercent(rActor) < 0.33
+end
+
+function isWounded(rActor)
+	return ActorManagerCypher.getWoundPercent(rActor) > 0;
+end
+
+function isImpaired(rActor)
+	if ActorManager.isPC(rActor) then
+		return ActorManagerCypher.getDamageTrack(rActor) >= 1;
+	end
+
+	local nPercentWounded = ActorManagerCypher.getWoundPercent(rActor)
+	return nPercentWounded >= 0.33 and nPercentWounded < 0.66;
+end
+
+function isDebilitated(rActor)
+	if ActorManager.isPC(rActor) then
+		return ActorManagerCypher.getDamageTrack(rActor) >= 2;
+	end
+
+	return ActorManagerCypher.getWoundPercent(rActor) >= 0.66
 end
 
 ---------------------------------------------------------------
@@ -274,7 +323,7 @@ function getMaxAssets(rActor, aFilter)
 		return 0;
 	end
 
-	return 2 + EffectManagerCypher.getEffectsBonusByType(rActor, "MAXASSETS", aFilter);
+	return 2 + EffectManagerCypher.getMaxAssetsEffectBonus(rActor, aFilter);
 end
 
 function getMaxEffort(rActor, aFilter)
@@ -284,7 +333,7 @@ function getMaxEffort(rActor, aFilter)
 	end
 
 	local nBase = DB.getValue(nodeActor, "effort", 1);
-	local nEffectMaxEffort = EffectManagerCypher.getEffectsBonusByType(rActor, "MAXEFF", aFilter);
+	local nEffectMaxEffort = EffectManagerCypher.getMaxEffortEffectBonus(rActor, aFilter);
 	
 	-- clamp max effort to between 0 and 6
 	return math.max(math.min(nBase + nEffectMaxEffort, 6), 1);
@@ -299,7 +348,7 @@ function getEdge(rActor, sStat, aFilter)
 	sStat = sStat:lower();
 
 	local nBase = DB.getValue(nodeActor, "abilities." .. sStat .. ".edge", 0);
-	local nBonus = EffectManagerCypher.getEffectsBonusByType(rActor, "EDGE", aFilter);
+	local nBonus = EffectManagerCypher.getEdgeEffectBonus(rActor, aFilter);
 
 	return nBase + nBonus;
 end
@@ -322,8 +371,8 @@ function getArmorSpeedCost(rActor)
 		return 0;
 	end
 
-	local nBase = DB.getValue(nodeActor, "armorspeedcosttotal", 0);
-	local nBonus = EffectManagerCypher.getEffectsBonusByType(rActor, "COST", { "armor" });
+	local nBase = DB.getValue(nodeActor, "ArmorSpeedPenalty.total", 0);
+	local nBonus = EffectManagerCypher.getCostEffectBonus(rActor, { "armor" });
 
 	-- This value can never be lower than 0, because 0 means there's no penalty
 	return math.max(nBase + nBonus, 0);
@@ -413,16 +462,22 @@ function getArmor(rActor, rTarget, sStat, sDamageType)
 	end
 
 	-- if for some reason damage type isn't specified, default to untyped
-	if not sDamageType then
+	if (sDamageType or "") == "" then
 		sDamageType = "untyped";
 	end
-	
-	local nArmor = 0;
+
+	-- Get ARMOR effects
+	-- This can modify both untyped and typed damage
+	-- Do this before checking for damage type so that we can correctly apply this
+	-- if the damage type is untyped, and thus only applies if the stat is Might
+	local nArmorEffects = EffectManagerCypher.getArmorEffectBonus(rActor, sStat, sDamageType, rTarget)
 
 	-- Only apply the character's base armor to Might damage.
 	if sDamageType == "untyped" and sStat == "might" then
-		nArmor = DB.getValue(node, "armortotal", 0);
+		return nArmorEffects + DB.getValue(node, "Armor.total", 0);
 	end
+
+	local nArmor = 0;
 
 	-- Start by getting special armor values from the creature node
 	-- This list does NOT include untyped armor, 
@@ -436,11 +491,36 @@ function getArmor(rActor, rTarget, sStat, sDamageType)
 		end
 	end
 
-	-- Get ARMOR effects
-	-- This can modify both untyped and typed damage
-	local nArmorEffects = EffectManagerCypher.getArmorEffectBonusForDamageType(rActor, sStat, sDamageType, rTarget)
-
 	return nArmor + nArmorEffects;
+end
+
+function getSuperArmor(rActor, rTarget, sStat, sDamageType)
+	local _, node = ActorManager.getTypeAndNode(rActor);
+
+	if not node then
+		return 0, 0;
+	end
+
+	-- Default to might, since that's the default for damage dealt
+	if not sStat then
+		sStat = "might";
+	end
+
+	-- if for some reason damage type isn't specified, default to untyped
+	if (sDamageType or "") == "" then
+		sDamageType = "untyped";
+	end
+
+	-- Base super armor only applies to untyped damage, which only applies
+	-- to Might damage
+	local nSuperArmor = 0
+	if sStat == "might" and sDamageType == "untyped" then
+		nSuperArmor = DB.getValue(node, "Armor.superarmor", 0);
+	end
+	
+	local nSuperArmorEffects = EffectManagerCypher.getSuperArmorEffectBonus(rActor, sStat, sDamageType, rTarget)
+
+	return nSuperArmor + nSuperArmorEffects;
 end
 
 function isImmune(rActor, rTarget, aDmgTypes)
@@ -471,12 +551,12 @@ function getImmunities(rActor, rTarget)
 	end
 
 	-- Then get values from effects
-	local aEffects = EffectManagerCypher.getEffectsByType(rActor, "IMMUNE", {}, rTarget);
+	local aEffects = EffectManagerCypher.getImmunityEffects(rActor, rTarget);
 	for _,v in pairs(aEffects) do
-		if #(v.remainder) == 0 then
+		if #(v.filters) == 0 then
 			tDmgMods["untyped"] = 0;
 		end
-		for _,vType in pairs(v.remainder) do
+		for _,vType in pairs(v.filters) do
 			if vType ~= "untyped" then
 				tDmgMods[vType] = 0;
 			end
@@ -508,10 +588,6 @@ function resistanceCheckerHelper(tDmgMods, aDmgTypes)
 
 	return false, 0;
 end
-
----------------------------------------------------------------
--- SHIELD (Temporary HP)
----------------------------------------------------------------
 
 ---------------------------------------------------------------
 -- EQUIPPED WEAPONS
@@ -583,7 +659,7 @@ function getCreatureLevel(rCreature, rAttacker, aFilter)
 	end
 
 	local nBase = DB.getValue(creatureNode, "level", 0);
-	local nLevelBonus = EffectManagerCypher.getEffectsBonusByType(rCreature, "LEVEL", aFilter, rAttacker);
+	local nLevelBonus = EffectManagerCypher.getLevelEffectBonus(rCreature, aFilter, rAttacker);
 
 	return nBase + nLevelBonus;
 end

@@ -32,7 +32,7 @@ function buildAbilityPromptTable(nodeChar, nodeFocus, nTier, rData)
 				table.insert(rData.aAbilitiesGiven, sRecord);
 			else	
 				table.insert(rData.aAbilityOptions, {
-					nTier = 1,
+					nTier = nTier,
 					sRecord = sRecord
 				});
 			end
@@ -54,22 +54,11 @@ function applyTier1(rData)
 	DB.setValue(rData.nodeChar, "class.focuslink", "windowreference", rData.sSourceClass, DB.getPath(rData.nodeSource));
 
 	-- Give starting abilities
-	CharFocusManager.addStartingAbilities(rData);
+	CharFocusManager.addAbilities(rData);
 end
 
 function addAbilities(rData)
-	local rActor = ActorManager.resolveActor(rData.nodeChar);
-
 	for _, sAbility in ipairs(rData.aAbilitiesGiven) do
-		local rMod = {
-			sLinkRecord = sAbility,
-			sSource = string.format("%s (Focus)", StringManager.capitalize(rData.sSourceName))
-		}
-		rMod.sSummary = CharModManager.getAbilityModSummary(rMod)
-
-		local nodeAbility = DB.findNode(sAbility);
-		if nodeAbility then
-			CharModManager.applyAbilityModification(rActor, rMod);
-		end
+		CharAbilityManager.addAbility(rData.nodeChar, sAbility, rData.sSourceName, "Focus");
 	end
 end

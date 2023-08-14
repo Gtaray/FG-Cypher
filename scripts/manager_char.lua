@@ -163,7 +163,7 @@ function completeAdvancement(rData)
 	rData.sSource = "Advancement"
 
 	if rData.sType == "stats" then
-		CharModManager.applyFloatingStatModificationCallback(rData);
+		CharModManager.applyFloatingStatsAndEdge(rData);
 		
 	elseif rData.sType == "edge" then
 		for sStat, nEdge in pairs(rData.aEdgeGiven) do
@@ -188,12 +188,11 @@ function completeAdvancement(rData)
 
 	elseif rData.sType == "ability" or rData.sType == "focus" then
 		for _, rAbility in ipairs(rData.aAbilitiesGiven) do
-			local rMod = {
-				sLinkRecord = DB.getPath(rAbility.node),
-				sSource = rData.sSource
-			}
-			rMod.sSummary = CharModManager.getAbilityModSummary(rMod);
-			CharModManager.applyAbilityModification(rActor, rMod);
+			CharAbilityManager.addAbility(
+				rData.nodeChar, 
+				rAbility.sRecord, 
+				"Advancement",
+				rAbility.sSourceType)
 		end
 
 	elseif rData.sType == "recovery" then
@@ -264,7 +263,7 @@ end
 
 function promptAbilitiesForNextTier(nodeChar)
 	local nTier = DB.getValue(nodeChar, "tier", 0);
-	local _, sRecord = DB.getValue(nodeChar, "typelink", "");
+	local _, sRecord = DB.getValue(nodeChar, "class.typelink", "");
 	local typenode = DB.findNode(sRecord);
 
 	local rData = { nodeChar = nodeChar, sSourceName = DB.getValue(nodeChar, "class.type", ""), nTier = nTier };
@@ -541,4 +540,27 @@ function sendCharacterArcMessage(nodeChar, sMessageResource, nXp)
 	};
 
 	Comm.deliverChatMessage(rMessage);
+end
+
+-------------------------------------------------------------------------------
+-- HEALTH
+-------------------------------------------------------------------------------
+function isImpaired(rActor)
+	rActor = ActorManager.resolveActor(rActor);
+	if not ActorManager.isPC(rActor) then
+		return false;
+	end	
+
+	local nWounds = ActorManagerCypher.getDamageTrack(rActor);
+	if EffectManagerCypher.hasEffect(rActor, "IGNOREIMPAIRED", nil, false, true) then
+		nWounds = nWounds - 1;
+	end
+
+	return nWounds >= 1;
+end
+
+-------------------------------------------------------------------------------
+-- STAT CONVERSIONS
+-------------------------------------------------------------------------------
+function canConvertStat(rActor, sConversionType, aFilter)
 end

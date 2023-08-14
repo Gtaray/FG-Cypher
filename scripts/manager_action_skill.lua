@@ -50,6 +50,9 @@ function modRoll(rSource, rTarget, rRoll)
 	rTarget = RollManager.decodeTarget(rRoll, rTarget, true);
 	aFilter = { "skill", "skills", rRoll.sStat, rRoll.sSkill }
 
+	-- Process training effects
+	RollManager.processTrainingEffects(rSource, rTarget, rRoll, aFilter);
+
 	--Adjust raw modifier, converting every increment of 3 to a difficultly modifier
 	local nAssetMod, nEffectMod = RollManager.processFlatModifiers(rSource, rTarget, rRoll, aFilter, { rRoll.sStat, rRoll.sSkill })
 	rRoll.nAssets = rRoll.nAssets + nAssetMod + RollManager.getAssetsFromDifficultyPanel();
@@ -59,12 +62,12 @@ function modRoll(rSource, rTarget, rRoll)
 	rRoll.nEffort = rRoll.nEffort + RollManager.processEffort(rSource, rTarget, aFilter, rRoll.nEffort, rRoll.nMaxEffort);
 
 	-- Get ease/hinder effects
-	rRoll.nEase = rRoll.nEase + EffectManagerCypher.getEffectsBonusByType(rSource, "EASE", aFilter, rTarget);
+	rRoll.nEase = rRoll.nEase + EffectManagerCypher.getEaseEffectBonus(rSource, aFilter, rTarget);
 	if ModifierManager.getKey("EASE") then
 		rRoll.nEase = rRoll.nEase + 1;
 	end
 
-	rRoll.nHinder = rRoll.nHinder + EffectManagerCypher.getEffectsBonusByType(rSource, "HINDER", aFilter, rTarget);
+	rRoll.nHinder = rRoll.nHinder + EffectManagerCypher.getHinderEffectBonus(rSource, aFilter, rTarget);
 	if ModifierManager.getKey("HINDER") then
 		rRoll.nHinder = rRoll.nHinder + 1;
 	end

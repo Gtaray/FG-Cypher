@@ -26,6 +26,7 @@ function getRoll(rActor, rAction)
 	rRoll.nLevel = rAction.nLevel or 0;
 	rRoll.sStat = rAction.sStat;
 	rRoll.sDefenseStat = rAction.sDefenseStat;
+	rRoll.sAttackRange = rAction.sAttackRange;
 
 	rRoll.sDesc = string.format("[ATTACK (%s", StringManager.capitalize(rRoll.sStat));
 
@@ -79,6 +80,7 @@ function applyRoll(rSource, rTarget, rRoll)
 	rAction.sStat = rRoll.sDefenseStat;
 	rAction.rTarget = rSource;
 	rAction.sTraining, rAction.nAssets, rAction.nModifier = ActorManagerCypher.getDefense(rTarget, rRoll.sDefenseStat);
+	rAction.sAttackRange = rRoll.sAttackRange;
 
 	-- Attempt to prompt the target to defend
 	-- if there's no one controlling the defending PC, then automatically roll defense
@@ -109,6 +111,9 @@ function rebuildRoll(rSource, rTarget, rRoll)
 	end
 	if not rRoll.sDefenseStat then
 		rRoll.sDefenseStat = StringManager.trim(rRoll.sDesc:match("%[ATTACK.-%][^%[]+ vs ([^]%s]*)") or "");
+	end
+	if not rRoll.sAttackRange then
+		rRoll.sAttackRange = StringManager.trim(rRoll.sDesc:match("^%[.-%s%(%w+,?%s?(%w+)%)%]") or "");
 	end
 	if not rRoll.nDifficulty then
 		rRoll.nDifficulty = tonumber(rRoll.sDesc:match("%(Lvl (%d+)%)") or "0");

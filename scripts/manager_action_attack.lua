@@ -52,7 +52,8 @@ function getRoll(rActor, rAction)
 	rRoll.nEffort = rAction.nEffort or 0;
 	rRoll.nEase = rAction.nEase or 0;
 	rRoll.nHinder = rAction.nHinder or 0;
-	rRoll.bLightWeapon = rAction.sWeaponType == "light";
+	rRoll.sWeaponType = rAction.sWeaponType;
+	-- rRoll.bLightWeapon = rAction.sWeaponType == "light";
 	
 	RollManager.encodeTarget(rAction.rTarget, rRoll);
 
@@ -66,6 +67,15 @@ function modRoll(rSource, rTarget, rRoll)
 
 	rTarget = RollManager.decodeTarget(rRoll, rTarget, true);
 	local aFilter = { "attack", "atk", rRoll.sStat };
+	if (rRoll.sAttackRange or "") ~= "" then
+		table.insert(aFilter, rRoll.sAttackRange:lower());
+	end
+	if (rRoll.sWeaponType or "") ~= "" then
+		table.insert(aFilter, rRoll.sWeaponType:lower());
+	end
+
+	-- Process training effects
+	RollManager.processTrainingEffects(rSource, rTarget, rRoll, aFilter);
 
 	--Adjust raw modifier, converting every increment of 3 to a difficultly modifier
 	local nAssetMod, nEffectMod = RollManager.processFlatModifiers(rSource, rTarget, rRoll, aFilter, { rRoll.sStat })
@@ -76,12 +86,12 @@ function modRoll(rSource, rTarget, rRoll)
 	rRoll.nEffort = rRoll.nEffort + RollManager.processEffort(rSource, rTarget, aFilter, rRoll.nEffort, rRoll.nMaxEffort);
 
 	-- Get ease/hinder effects
-	rRoll.nEase = rRoll.nEase + EffectManagerCypher.getEffectsBonusByType(rSource, "EASE", aFilter, rTarget);
+	rRoll.nEase = rRoll.nEase + EffectManagerCypher.getEaseEffectBonus(rSource, aFilter, rTarget);
 	if ModifierManager.getKey("EASE") then
 		rRoll.nEase = rRoll.nEase + 1;
 	end
 
-	rRoll.nHinder = rRoll.nHinder + EffectManagerCypher.getEffectsBonusByType(rSource, "HINDER", aFilter, rTarget);
+	rRoll.nHinder = rRoll.nHinder + EffectManagerCypher.getHinderEffectBonus(rSource, aFilter, rTarget);
 	if ModifierManager.getKey("HINDER") then
 		rRoll.nHinder = rRoll.nHinder + 1;
 	end
@@ -98,7 +108,7 @@ function modRoll(rSource, rTarget, rRoll)
 	RollManager.encodeEaseHindrance(rRoll, rRoll.nEase, rRoll.nHinder);
 	RollManager.encodeAdvantage(rRoll, bAdv, bDis);
 
-	if rRoll.bLightWeapon == "true" then
+	if rRoll.sWeaponType == "light" then
 		rRoll.sDesc = string.format("%s [LIGHT]", rRoll.sDesc)
 	end
 	if rRoll.nConditionMod > 0 then
@@ -296,8 +306,8 @@ function rebuildRoll(rSource, rTarget, rRoll)
 	if not rRoll.sTraining then
 		rRoll.sTraining = RollManager.decodeTraining(rRoll, true);
 	end
-	if rRoll.bLightWeapon == nil then
-		rRoll.bLightWeapon = rRoll.sDesc:match("%[LIGHT%]") ~= nil;
+	if rRoll.sWeaponType == nil and rRoll.sDesc:match("%[LIGHT%]") ~= nil then
+		rRoll.sWeaponType = "light";
 	end
 	if rRoll.bMajorEffect == nil then
 		rRoll.bMajorEffect = rRoll.sDesc:match("%[MAJOR EFFECT%]") ~= nil;

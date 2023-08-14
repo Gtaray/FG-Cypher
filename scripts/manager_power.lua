@@ -72,7 +72,7 @@ function getActionText(node, tData)
 	elseif tData.sType == "heal" then
 		return PowerManager.getPowerHealActionText(node);
 	elseif tData.sType == "effect" then
-		return PowerActionManagerCore.getActionEffectText(node, tData);
+		return PowerManager.getActionEffectText(node, tData);
 	end
 	return "";
 end
@@ -86,7 +86,10 @@ function getActionTooltip(node, tData)
 	elseif tData.sType == "heal" then
 		return string.format("%s: %s", Interface.getString("power_tooltip_heal"), PowerActionManagerCore.getActionText(node, tData));
 	elseif tData.sType == "effect" then
-		return PowerActionManagerCore.getActionEffectTooltip(node, tData);
+		if tData and tData.sSubRoll == "duration" then
+			return string.format("%s: %s", Interface.getString("power_tooltip_duration"), PowerActionManagerCore.getActionText(node, tData));
+		end
+		return string.format("%s: %s", Interface.getString("power_tooltip_effect"), PowerActionManagerCore.getActionText(node, tData));
 	end
 	return "";
 end
@@ -228,6 +231,52 @@ function getPowerHealActionText(nodeAction)
 	return sHeal;
 end
 
+function getActionEffectText(node, tData)
+	local tOutput = {};
+
+	if tData and tData.sSubRoll == "duration" then
+		local nDuration = DB.getValue(node, "durmod", 0);
+		local aDice = DB.getValue(node, "durationdice", {});
+		if nDuration ~= 0 or #aDice > 0 then
+			local sDice = StringManager.convertDiceToString(aDice, nDuration);
+			table.insert(tOutput, sDice or "");
+
+			local sUnits = DB.getValue(node, "durunit", "");
+			if sUnits == "minute" then
+				table.insert(tOutput, "min");
+			elseif sUnits == "hour" then
+				table.insert(tOutput, "hr");
+			elseif sUnits == "day" then
+				table.insert(tOutput, "dy");
+			else
+				table.insert(tOutput, "rd");
+			end
+		end
+		return table.concat(tOutput, " ");
+	end
+
+	local sLabel = DB.getValue(node, "label", "");
+	if sLabel ~= "" then
+		table.insert(tOutput, sLabel);
+
+		local sApply = DB.getValue(node, "apply", "");
+		if sApply == "action" then
+			table.insert(tOutput, "[ACTION]");
+		elseif sApply == "roll" then
+			table.insert(tOutput, "[ROLL]");
+		elseif sApply == "single" then
+			table.insert(tOutput, "[SINGLE]");
+		end
+		
+		local sTargeting = DB.getValue(node, "targeting", "");
+		if sTargeting == "self" then
+			table.insert(tOutput, "[SELF]");
+		end
+	end
+
+	return table.concat(tOutput, "; ");
+end
+
 function getPowerActionOutputOrder(nodeAction)
 	if not nodeAction then
 		return 1;
@@ -328,8 +377,21 @@ function getPowerAction(nodeAction)
 		rAction.sName = DB.getValue(nodeAction, "label", "");
 		rAction.sApply = DB.getValue(nodeAction, "apply", "");
 		rAction.sTargeting = DB.getValue(nodeAction, "targeting", "");
-		rAction.nDuration = DB.getValue(nodeAction, "durmod", 0);
-		rAction.sUnits = DB.getValue(nodeAction, "durunit", "");
+		rAction.aDice = DB.getValue(nodeAction, "durationdice", {})
+		rAction.nDuration = DB.getValue(nodeAction, "duration", 0)
+		rAction.sUnits = DB.getValue(nodeAction, "duractionunit", "");
+
+		rAction.rEffectScaling = {
+			nBase = DB.getValue(nodeAction, "scaling_effect_base", 0),
+			nMod = DB.getValue(nodeAction, "scaling_effect_mod", 0),
+			sModMult = DB.getValue(nodeAction, "scaling_effect_mod_mult", ""),
+		};
+		rAction.rDurationScaling = {
+			nMod = DB.getValue(nodeAction, "scaling_duration_mod", 0),
+			sModMult = DB.getValue(nodeAction, "scaling_duration_mod_mult", ""),
+			aDice = DB.getValue(nodeAction, "scaling_duration_dice", {}),
+			sDiceMult = DB.getValue(nodeAction, "scaling_duration_dice_mult", "")
+		};
 	end
 
 	-- Resolve cost of the ability

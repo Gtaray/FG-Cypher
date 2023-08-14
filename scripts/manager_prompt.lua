@@ -16,16 +16,6 @@ function getUser(rPlayer)
 end
 
 -------------------------------------------------------------------------------
--- CHARACTER BUILDING / ADVANCEMENT PROMPTS
--------------------------------------------------------------------------------
-function promptForCharacterModifications(rData)
-	local w = Interface.openWindow("select_dialog_stats", "");
-	if w then
-		w.addModification(rData);
-	end
-end
-
--------------------------------------------------------------------------------
 -- DEFENSE PROMPT
 -------------------------------------------------------------------------------
 
@@ -50,6 +40,7 @@ function initiateDefensePrompt(rSource, rPlayer, rResult)
 	msgOOB.sTargetNode = ActorManager.getCTNodeName(rPlayer);
 	msgOOB.nDifficulty = rResult.nDifficulty;
 	msgOOB.sStat = rResult.sStat
+	msgOOB.sAttackRange = rResult.sAttackRange;
 
 	Comm.deliverOOBMessage(msgOOB);
 end
@@ -60,12 +51,13 @@ function handleInitiateDefensePrompt(msgOOB)
 	end
 
 	local rPlayer = ActorManager.resolveActor(msgOOB.sTargetNode);
+	local rTarget = ActorManager.resolveActor(msgOOb.sAttackerNode);
 
 	-- Gets the username of the player who owns rPlayer
 	local sUser = getUser(rPlayer);
 	-- if there's no user, then auto-roll
 	if sUser == nil then
-		local rAction = getActionFromOobMsg(msgOOB);
+		local rAction = getActionFromOobMsg(rPlayer, rTarget, msgOOB);
 		ActionDefense.payCostAndRoll(nil, rPlayer, rAction);
 	end
 
@@ -84,6 +76,7 @@ function promptDefenseRoll(rSource, rPlayer, rResult)
 	msgOOB.sTargetNode = ActorManager.getCTNodeName(rPlayer);
 	msgOOB.nDifficulty = rResult.nDifficulty;
 	msgOOB.sStat = rResult.sStat
+	msgOOB.sAttackRange = rResult.sAttackRange;
 
 	Comm.deliverOOBMessage(msgOOB, sUser);
 	return true;
@@ -92,14 +85,22 @@ end
 function handlePromptDefenseRoll(msgOOB)
 	local rTarget = ActorManager.resolveActor(msgOOB.sTargetNode);
 	local rSource = ActorManager.resolveActor(msgOOB.sAttackerNode);
-	local nDifficulty = tonumber(msgOOB.nDifficulty)
-	local sStat = msgOOB.sStat;
+	local rAction = getActionFromOobMsg(rTarget, rSource, msgOOB);
 
 	local window = Interface.openWindow("prompt_defense", "")
+	local aStats = { rAction.sStat }
 	if window then
-		window.setData(rSource, rTarget, sStat, nDifficulty);
+		-- Check to see if the actor has a CONVERT effect that lets them convert
+		-- one defense roll into another
+		local aConvert = EffectManagerCypher.getConversionEffect(rTarget, rAction.sStat, { "defense", "def" });
+		for _, sConvert in ipairs(aConvert) do
+			if sConvert ~= rAction.sStat then
+				table.insert(aStats, sConvert);
+			end
+		end
+
+		window.setData(rTarget, rAction, aStats);
 	else
-		local rAction = getActionFromOobMsg(rSource, rTarget, msgOOB);
 		ActionDefense.payCostAndRoll(nil, rTarget, rAction);
 	end
 end
@@ -111,6 +112,7 @@ function getActionFromOobMsg(rSource, rTarget, msgOOB)
 	rAction.rTarget = rTarget
 	rAction.sTraining, rAction.nAssets, rAction.nModifier = ActorManagerCypher.getDefense(rSource, rAction.sStat)
 	rAction.label = StringManager.capitalize(rAction.sStat);
+	rAction.sAttackRange = msgOOB.sAttackRange or "";
 
 	return rAction
 end

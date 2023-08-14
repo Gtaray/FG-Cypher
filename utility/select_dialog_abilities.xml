@@ -16,7 +16,7 @@
 						updateLabel()
 					end
 					function onValueChanged()
-						window.abilities.applyFilter();
+						window.lists.applyFilter()
 						updateLabel();
 					end
 					function updateLabel()
@@ -28,11 +28,6 @@
 			</hnc>
 			<anchor_column name="columnanchor" />
 
-			<header_column name="header_abilities">
-				<static textres="header_dialog_abilities" />
-				<center />
-			</header_column>
-
 			<label_column name="label_abilities_remaining">
 				<anchored width="150" />
 				<static textres="label_dialog_abilities_remaining" />
@@ -40,7 +35,7 @@
 			<basicnumberc name="abilities_remaining">
 				<anchored width="30" height="20">
 					<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
-					<right offset="-35" />
+					<right offset="-15" />
 				</anchored>
 				<readonly />
 			</basicnumberc>
@@ -61,25 +56,93 @@
 				<stat>tier</stat>
 			</button_increase>
 
-			<windowlist name="abilities">
+			<subwindow name="lists">
 				<script>
-					function addEntry(nodeRecord, nTier)
-						local w = createWindow();
-						w.setRecord(nodeRecord);
-						w.tier.setValue(nTier);
+					function applyFilter()
+						subwindow.applyFilter()
+					end		
+					function clear()
+						subwindow.clear()
 					end
-					function onFilter(w)
-						return w.tier.getValue() == window.tier.getValue();
+					function addTypeAbility(nodeRecord, nTier)
+						subwindow.addTypeAbility(nodeRecord, nTier);
+					end
+					function addFlavorAbility(nodeRecord, nTier)
+						subwindow.addFlavorAbility(nodeRecord, nTier)
+					end	
+					function getData()
+						return subwindow.getData();
+					end
+					function getNumberSelected()
+						return subwindow.getNumberSelected();
 					end
 				</script>
-				<class>dialog_ability_item</class>
 				<anchored>
-					<top parent="columnanchor" anchor="bottom" relation="relative" offset="5" />
-					<left offset="0" />
-					<right offset="0" />
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+					<left />
+					<right offset="-15" />
+					<bottom parent="label_tier" anchor="top" offset="-5" />
 				</anchored>
-				<noscroll />
-			</windowlist>
+				<class>subwindow_dialog_ability_lists</class>
+				<activate />
+				<fastinit />
+			</subwindow>
+			<scrollbar>
+				<anchored to="lists" />
+				<target>lists</target>
+			</scrollbar>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="subwindow_dialog_ability_lists">
+		<script>
+			function applyFilter()
+				abilities_type.applyFilter();
+				abilities_flavor.applyFilter();
+			end
+			function clear()
+				abilities_type.closeAll();
+				abilities_flavor.closeAll();
+			end
+			function addTypeAbility(nodeRecord, nTier)
+				abilities_type.addEntry(nodeRecord, nTier);
+			end
+			function addFlavorAbility(nodeRecord, nTier)
+				abilities_flavor.addEntry(nodeRecord, nTier);
+				header_flavor.setVisible(true);
+				abilities_flavor.setVisible(true);
+			end	
+			function getData()
+				return abilities_type.getSelected(), abilities_flavor.getSelected();
+			end
+			function getNumberSelected()
+				return abilities_type.getNumberSelected() + abilities_flavor.getNumberSelected();
+			end
+			function hasRemaining()
+				return parentcontrol.window.hasRemaining()
+			end
+			function onSelectionChanged()
+				parentcontrol.window.onSelectionChanged();
+			end
+		</script>
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+			<header_column name="header_type">
+				<static textres="header_dialog_abilities_type" />
+				<center />
+			</header_column>
+
+			<list_abilities name="abilities_type" />
+
+			<header_column name="header_flavor">
+				<static textres="header_dialog_abilities_flavor" />
+				<center />
+				<invisible />
+			</header_column>
+
+			<list_abilities name="abilities_flavor">
+				<invisible />
+			</list_abilities>
 		</sheetdata>
 	</windowclass>
 
@@ -190,4 +253,55 @@
 			</basicnumberc>
 		</sheetdata>
 	</windowclass>
+
+	<template name="list_abilities">
+		<windowlist>
+			<script>
+				function addEntry(nodeRecord, nTier)
+					local w = createWindow();
+					w.setRecord(nodeRecord);
+					w.tier.setValue(nTier);
+				end
+				function onFilter(w)
+					local nTier = window.parentcontrol.window.tier.getValue();
+					return w.tier.getValue() == nTier;
+				end
+				function getNumberSelected()
+					local nSelections = 0;
+					for _,w in pairs(getWindows()) do
+						if w.selected.getValue() == 1 then
+							nSelections = nSelections + (w.multiselect.getValue() or 1);
+						end
+					end
+					return nSelections;
+				end
+				function getSelected()
+					local aAbilities = {};
+
+					for _,w in pairs(getWindows()) do
+						if w.selected.getValue() == 1 then
+							local _, sRecord = w.shortcut.getValue();
+							local nMultiselect = w.multiselect.getValue() or 1;
+							local node = DB.findNode(sRecord);
+							if node then
+								table.insert(aAbilities, {
+									node = node,
+									multiselect = nMultiselect,
+								});
+							end
+						end
+					end
+
+					return aAbilities;
+				end
+			</script>
+			<class>dialog_ability_item</class>
+			<anchored>
+				<top parent="columnanchor" anchor="bottom" relation="relative" offset="5" />
+				<left offset="0" />
+				<right offset="0" />
+			</anchored>
+			<noscroll />
+		</windowlist>
+	</template>
 </root>

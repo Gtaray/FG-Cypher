@@ -9,7 +9,7 @@
 	<windowclass name="prompt_defense">
 		<frame>referencelist</frame>
 		<placement>
-			<size width="300" height="300" />
+			<size width="300" height="350" />
 		</placement>
 		<nodelete />
 		<script file="utility/scripts/defense_prompt.lua"/>
@@ -37,6 +37,30 @@
 				<center/>
 				<readonly />
 			</stringcontrol>
+
+			<label_ccp_type name="might_label">
+				<static textres="might" />
+			</label_ccp_type>
+			<checkbox_ccp_type name="might_checkbox">
+				<anchored to="might_label" />
+				<target>might</target>
+			</checkbox_ccp_type>
+
+			<label_ccp_type name="speed_label">
+				<static textres="speed" />
+			</label_ccp_type>
+			<checkbox_ccp_type name="speed_checkbox">
+				<anchored to="speed_label" />
+				<target>speed</target>
+			</checkbox_ccp_type>
+
+			<label_ccp_type name="intellect_label">
+				<static textres="intellect" />
+			</label_ccp_type>
+			<checkbox_ccp_type name="intellect_checkbox">
+				<anchored to="intellect_label" />
+				<target>intellect</target>
+			</checkbox_ccp_type>
 
 			<label name="effort_label">
 				<static textres="diffadj_label_effort" />
@@ -80,7 +104,7 @@
 				</script>
 			</basicnumber>
 
-			<button_text name="ease">
+			<button_text_toggle name="ease">
 				<anchored width="60" height="22">
 					<top parent="description" anchor="bottom" relation="current" offset="10" />
 					<right parent="frame" anchor="center" offset="-10" />
@@ -91,8 +115,8 @@
 						window.updateDifficulty();
 					end
 				</script>
-			</button_text>
-			<button_text name="hinder">
+			</button_text_toggle>
+			<button_text_toggle name="hinder">
 				<anchored width="60" height="22">
 					<top parent="description" anchor="bottom" relation="relative" offset="10" />
 					<left parent="frame" anchor="center" offset="10" />
@@ -103,9 +127,9 @@
 						window.updateDifficulty();
 					end
 				</script>
-			</button_text>
+			</button_text_toggle>
 
-			<button_text name="roll">
+			<button_text name="button_roll">
 				<script>
 					function onButtonPress()
 						window.roll();
@@ -118,7 +142,7 @@
 				<textres>defense_prompt_button_roll</textres>
 			</button_text>
 
-			<button_text name="close">
+			<button_text name="button_close">
 				<script>
 					function onButtonPress()
 						window.closeWindow();
@@ -127,7 +151,7 @@
 				<anchored height="22">
 					<bottom parent="frame" anchor="bottom" offset="-20" />
 					<left parent="frame" anchor="left" offset="20" />
-					<right parent="roll" anchor="left" offset="-10" />
+					<right parent="button_roll" anchor="left" offset="-10" />
 				</anchored>
 				<textres>defense_prompt_button_close</textres>
 			</button_text>
