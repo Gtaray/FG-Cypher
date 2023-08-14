@@ -419,6 +419,12 @@ function applyDamageToPc(rSource, rTarget, nDamage, sStat, sDamageType, aNotific
 	-- Start by applying damage to the stat specified
 	local nOverflow = ActorManagerCypher.addToStatPool(rTarget, sStat, -nDamage);
 
+	-- if there's overflow to the damage, then that means a stat was reduced to 0
+	-- in which case we want to drop a blood marker.
+	if OptionsManagerCypher.getDeathMarkerOnWound() and (nOverflow * nNegativeIfDamage) < 0 then
+		ImageDeathMarkerManager.addMarker(ActorManager.getCTNode(rTarget));
+	end
+
 	-- the return overflow value that addToStatPool returns is always positive
 	-- which means we need to apply an inversion depending on if we're healing or damaging
 	-- Overflow will follow the normal might -> speed -> intellect damage
@@ -448,6 +454,11 @@ function applyDamageToNpc(rSource, rTarget, nDamage, sDamageStat, sDamageType, a
 
 	nWounds = math.max(math.min(nWounds + nDamage, nHP), 0);
 	DB.setValue(nodeNPC, "wounds", "number", nWounds);
+
+	-- If the NPC was reduced to 0 HP, add a death marker
+	if OptionsManagerCypher.getDeathMarkerOnDamage() and nWounds >= nHP then
+		ImageDeathMarkerManager.addMarker(ActorManager.getCTNode(rTarget));
+	end
 end
 
 -------------------------------------------------------------------------------

@@ -51,6 +51,9 @@
 	<string name="option_label_ARCXPCLIMAX_SUCCESS">Charater Arcs: How much XP is gained when successfully completing a character arc's climax</string>
 	<string name="option_label_ARCXPCLIMAX_FAILURE">Charater Arcs: How much XP is gained when failing to complete a character arc's climax</string>
 	<string name="option_label_ARCXPRESOLVE">Character Arcs: How much XP is gained when resolving a character arc</string>
+	<string name="option_label_DEATHMARKER_ONDELETE">Death Markers: Place death markers when a dead or dying creature is removed from the combat tracker</string>
+	<string name="option_label_DEATHMARKER_ONDAMAGE">Death Markers: Place death markers when an NPC on the combat tracker is reduced to 0 HP</string>
+	<string name="option_label_DEATHMARKER_ONWOUND">Death Markers: Place death markers when a PC becomes impaired, debilitated, or dead</string>
 
 	<string name="option_val_yes">Yes</string>
 	<string name="option_val_no">No</string>

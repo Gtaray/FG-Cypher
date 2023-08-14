@@ -28,6 +28,12 @@ function registerOptions()
 		{ labels = "option_val_detailed|option_val_status", values = "detailed|status", baselabel = "option_val_off", baseval = "off", default = "detailed" });
 	OptionsManager.registerOption2("SHNPC", false, "option_header_combat", "option_label_SHNPC", "option_entry_cycler", 
 		{ labels = "option_val_detailed|option_val_status", values = "detailed|status", baselabel = "option_val_off", baseval = "off", default = "status" });
+	OptionsManager.registerOption2("DEATHMARKER_ONDELETE", false, "option_header_combat", "option_label_DEATHMARKER_ONDELETE", "option_entry_cycler", 
+		{ labels = "option_val_yes", values = "yes", baselabel = "option_val_no", baseval = "no", default = "yes" });
+	OptionsManager.registerOption2("DEATHMARKER_ONDAMAGE", false, "option_header_combat", "option_label_DEATHMARKER_ONDAMAGE", "option_entry_cycler", 
+		{ labels = "option_val_yes", values = "yes", baselabel = "option_val_no", baseval = "no", default = "no" });
+	OptionsManager.registerOption2("DEATHMARKER_ONWOUND", false, "option_header_combat", "option_label_DEATHMARKER_ONWOUND", "option_entry_cycler", 
+		{ labels = "option_val_yes", values = "yes", baselabel = "option_val_no", baseval = "no", default = "no" });
 
 	OptionsManager.registerOption2("MAXTARGET", false, "option_header_houserule", "option_label_MAXTARGET", "option_entry_cycler",
 		{ labels = "option_val_maxtarget_15", values = "15", baselabel = "option_val_maxtarget_10", baseval = "10", default = "10" });
@@ -59,6 +65,18 @@ end
 -------------------------------------------------------------------------------
 function getMaxTarget()
 	return tonumber(OptionsManager.getOption("MAXTARGET"));
+end
+
+function getDeathMarkerOnDelete()
+	return OptionsManager.getOption("DEATHMARKER_ONDELETE") == "yes";
+end
+
+function getDeathMarkerOnDamage()
+	return OptionsManager.getOption("DEATHMARKER_ONDAMAGE") == "yes";
+end
+
+function getDeathMarkerOnWound()
+	return OptionsManager.getOption("DEATHMARKER_ONWOUND") == "yes";
 end
 
 function getXpCostToAddArc()
