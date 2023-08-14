@@ -78,6 +78,7 @@
 	<includefile source="ct/ct_client.xml" />
 
 	<!-- Utility windows -->
+	<includefile source="utility/utility_effects.xml" />
 	<includefile source="utility/prompt_defense.xml" />
 	<includefile source="utility/options_damagetypes.xml" />
 	<includefile source="utility/prompt_gm_intrusion.xml" />

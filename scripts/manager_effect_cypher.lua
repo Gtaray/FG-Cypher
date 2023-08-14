@@ -1,4 +1,5 @@
 local _dmgTypeEffects = {};
+local _conditions = {};
 
 function onInit()
 	EffectManager.registerEffectVar("sUnits", { sDBType = "string", sDBField = "unit", bSkipAdd = true });
@@ -20,6 +21,43 @@ function onInit()
 		"immune",
 		"vuln"
 	}
+
+	local node = DB.findNode("conditions");
+	if not node then
+		node = DB.createNode("conditions");
+		DB.setPublic(node, true);
+	end
+
+	DB.addHandler("conditions.*", "onChildUpdate", EffectManagerCypher.updateConditions);
+
+	EffectManagerCypher.updateConditions();
+end
+
+---------------------------------
+-- CONDITION MANAGEMENT
+---------------------------------
+function updateConditions()
+	_conditions = {};
+
+	local node = DB.findNode("conditions");
+
+	for _, condition in ipairs(DB.getChildList(node)) do
+		local sName = DB.getValue(condition, "label", "");
+		if sName ~= "" then
+			sName = StringManager.trim(sName);
+			_conditions[sName:lower()] = DB.getValue(condition, "effect", "");
+		end
+	end
+end
+
+function getConditions()
+	return _conditions;
+end
+
+function getConditionEffect(sCondition)
+	sCondition = StringManager.trim(sCondition);
+	sCondition = sCondition:lower();
+	return _conditions[sCondition];
 end
 
 ---------------------------------
@@ -362,11 +400,12 @@ function hasEffect(rActor, sEffect, rTarget, bTargetedOnly, bCheckEffectTargets)
 			if bCheckEffectTargets then
 				bTargeted = EffectManager.isTargetedEffect(v);
 			end
-			local tEffectComps = EffectManager.parseEffect(sLabel);
+			local aEffectComps = EffectManager.parseEffect(sLabel);
+			EffectManagerCypher.replaceConditionsWithEffects(aEffectComps);
 
 			-- Iterate through each effect component looking for a type match
 			local nMatch = 0;
-			for kEffectComp, sEffectComp in ipairs(tEffectComps) do
+			for kEffectComp, sEffectComp in ipairs(aEffectComps) do
 				local rEffectComp = EffectManagerCypher.parseEffectComp(sEffectComp);
 
 				if rEffectComp.type == "if" then
@@ -482,6 +521,7 @@ function getEffectsByType(rActor, sEffectType, aFilter, bExclusiveFilters, aCont
 		if nActive ~= 0 and EffectManagerCypher.checkTargeting(v, rFilterActor) then
 			local sLabel = DB.getValue(v, "label", "");
 			local aEffectComps = EffectManager.parseEffect(sLabel);
+			EffectManagerCypher.replaceConditionsWithEffects(aEffectComps);
 
 			-- Look for type/subtype match
 			local nMatch = 0;
@@ -534,6 +574,15 @@ end
 -------------------------------------------------------------------------------
 -- INTERNAL EFFECT PROCESSING HELPERS
 -------------------------------------------------------------------------------
+-- This function replaces any configured conditions with the effect text for those conditions
+function replaceConditionsWithEffects(aEffectComps)
+	for i, sEffect in ipairs(aEffectComps) do
+		local sConditionEffect = EffectManagerCypher.getConditionEffect(sEffect);
+		if (sConditionEffect or "") ~= "" then
+			aEffectComps[i] = sEffect:gsub(sEffect, sConditionEffect);
+		end
+	end
+end
 
 function checkConditional(rActor, nodeEffect, rEffectComp, rTarget, aIgnore)
 	local bReturn = true;

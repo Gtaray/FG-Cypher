@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="effectlist_preset_content" merge="join">
+		<script file="utility/scripts/effectlist_presets.lua" />
+		<sheetdata>
+			<header_content_framed_headersimple name="conditions_label" />
+
+			<button_iedit name="conditions_iedit">
+				<anchored to="conditions_label" position="righthigh" offset="-15,0" />
+				<edittarget>conditions_list</edittarget>
+				<gmonly />
+			</button_iedit>
+			<button_iadd name="conditions_iadd">
+				<anchored to="conditions_iedit" position="lefthigh" offset="3,0" />
+				<target>conditions_list</target>
+				<gmonly />
+			</button_iadd>
+
+			<list_content_noscroll_top name="conditions_list" merge="delete" />
+			<list_content_base name="conditions_list">
+				<anchored>
+					<top relation="relative" offset="0" postoffset="0" />
+					<right offset="0" />
+				</anchored>
+				<script>
+					function update(bReadOnly)
+						for _,w in ipairs(getWindows()) do
+							if w.update then
+								w.update(bReadOnly);
+							end
+						end
+					end
+					function addEntry(sClass, sRecord)
+						local w = createWindow();
+						return w;
+					end
+				</script>
+				<class>condition_item</class>
+				<datasource>..conditions</datasource>
+				<sortby><control>name</control></sortby>
+				<child merge="resetandadd"></child>
+				<child merge="add"><backcolor>1A40301E</backcolor></child>
+			</list_content_base>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="condition_item">
+		<margins control="0,5,0,10" />
+		<script file="utility/scripts/effect.lua" />
+		<sheetdata>
+			<genericcontrol name="rightanchor">
+				<anchored width="0" height="0">
+					<top />
+					<right />
+				</anchored>
+				<invisible />
+			</genericcontrol>
+			<button_idelete name="idelete">
+				<anchored width="20" height="20">
+					<top offset="0" />
+					<right parent="rightanchor" anchor="left" relation="relative" offset="-2" />
+				</anchored>
+				<editmode>conditions_iedit</editmode>
+			</button_idelete>
+			<button_condition_activate name="activate" />
+
+			<string_labeled name="label">
+				<anchored height="20">
+					<top parent="rightanchor" />
+					<left parent="activate" anchor="right" offset="5" />
+					<right parent="rightanchor" anchor="left" relation="relative" offset="-5" />
+				</anchored>
+				<empty textres="label_condition_name_empty" />
+				<labelres>label_condition_name</labelres>
+				<gmeditonly />
+			</string_labeled>
+			<string_labeled name="effect">
+				<anchored height="20">
+					<top parent="label" anchor="bottom" offset="5" />
+					<left offset="5" />
+					<right offset="-5" />
+				</anchored>
+				<labelres>label_condition_effect</labelres>
+				<gmeditonly />
+			</string_labeled>
+		</sheetdata>
+	</windowclass>
+
+	<template name="button_condition_activate">
+		<buttoncontrol>
+			<icon normal="button_action_effect" pressed="button_action_effect_down" />
+			<anchored width="20" height="20">
+				<top />
+				<left offset="0" />
+			</anchored>
+			<script>
+				function onDragStart(button, x, y, draginfo)
+					return window.actionDrag(draginfo);
+				end
+				function onButtonPress(x, y)
+					return window.action();
+				end
+			</script>
+		</buttoncontrol>
+	</template>
+</root>

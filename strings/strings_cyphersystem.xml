@@ -609,6 +609,11 @@
 	<string name="label_advancement_armor">Reduce armor's Speed Effort cost by 1</string>
 	<string name="label_advancement_focus">Select another Focus ability at tier 3</string>
 
+	<!-- Effect Conditions -->
+	<string name="label_condition_name_empty">&#171; New Condition &#187;</string>
+	<string name="label_condition_name">Name</string>
+	<string name="label_condition_effect">Effect</string>
+
 	<!-- Desktop -->
 	<string name="diffadj_label_effort">Effort</string>
 	<string name="diffadj_label_assets">Assets</string>
