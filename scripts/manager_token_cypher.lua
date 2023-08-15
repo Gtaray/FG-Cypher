@@ -4,6 +4,7 @@
 --
 
 healthfields = {
+	"level",
 	"hp", 
 	"wounds",
 	"mightmax",
@@ -77,18 +78,23 @@ function onInit()
 	-- TokenManager.setDefaultEffectInfoFunction(getEffectInfoDefault);
 
 	-- This makes sure that when health fields update we update the IF effect icons
-	-- for _,sField in ipairs(healthfields) do
-	-- 	CombatManager.addCombatantFieldChangeHandler(sField, "onUpdate", TokenManager.updateEffectsField);
-	-- end
+	for _,sField in ipairs(healthfields) do
+		CombatManager.addCombatantFieldChangeHandler(sField, "onUpdate", TokenManagerCypher.updateActorHealthField);
+	end
+	DB.addHandler("conditions.*", "onChildUpdate", EffectManagerCypher.updateConditions);
 end
+
+function updateActorHealthField(nodeEffectField)
+	TokenManager.updateEffects(DB.getChild(nodeEffectField, ".."));
+end
+
 
 function getEffectConditionIcons()
 	return EffectManagerCypher.getConditionIcons();
 end
 
 function handleIFEffectTag(rActor, nodeEffect, vComp)
-	Debug.chat('handleIFEffectTag()', EffectManagerCypher.checkConditional(rActor, nodeEffect, vComp));
-	return EffectManagerCypher.checkConditional(rActor, nodeEffect, vComp);
+	return EffectManagerCypher.checkConditional(rActor, {}, nodeEffect, vComp, nil);
 end
 
 function updateConditionsOnTokens()

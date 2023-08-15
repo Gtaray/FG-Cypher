@@ -74,9 +74,6 @@ function onInit()
 	end
 
 	EffectManagerCypher.addDefaultConditions();
-
-	DB.addHandler("conditions.*", "onChildUpdate", EffectManagerCypher.updateConditions);
-
 	EffectManagerCypher.updateConditions();
 end
 
@@ -226,7 +223,7 @@ function onEffectActorStartTurn(nodeActor, nodeEffect)
 			break;
 		elseif rEffectComp.type == "if" then
 			local rActor = ActorManager.resolveActor(nodeActor);
-			if not checkConditional(rActor, nodeEffect, rEffectComp) then
+			if not checkConditional(rActor, {}, nodeEffect, rEffectComp) then
 				break;
 			end
 		
@@ -324,8 +321,8 @@ function getPiercingEffectBonus(rActor, sDamageType, sStat, rTarget)
 	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, { "PIERCE", "PIERCING" }, sStat, sDamageType, rTarget);
 end
 
-function getLevelEffectBonus(rActor, aFilter, rTarget)
-	return EffectManagerCypher.getEffectsBonusByType(rActor, "LEVEL", aFilter, true, nil, true, rTarget);
+function getLevelEffectBonus(rActor, aFilter, rTarget, aIgnore)
+	return EffectManagerCypher.getEffectsBonusByType(rActor, "LEVEL", aFilter, true, nil, true, rTarget, false, aIgnore);
 end
 
 function getEdgeEffectBonus(rActor, aFilter)
@@ -445,7 +442,7 @@ end
 -------------------------------------------------------------------------------
 -- EFFECT PROCESSORS
 -------------------------------------------------------------------------------
-function getEffectsBonusForDamageType(rActor, sEffectType, sStat, sDamageType, rFilterActor)
+function getEffectsBonusForDamageType(rActor, sEffectType, sStat, sDamageType, rFilterActor, aIgnore)
 	if not rActor then
 		return 0, 0;
 	end
@@ -458,20 +455,30 @@ function getEffectsBonusForDamageType(rActor, sEffectType, sStat, sDamageType, r
 		table.insert(aFilter, sDamageType);
 	end
 
-	return EffectManagerCypher.getEffectsBonusByType(rActor, sEffectType, aFilter, false, nil, false, rFilterActor, false);
+	return EffectManagerCypher.getEffectsBonusByType(rActor, sEffectType, aFilter, false, nil, false, rFilterActor, false, aIgnore);
 end
 
-function hasEffect(rActor, sEffect, rTarget, bTargetedOnly, bCheckEffectTargets)
+function hasEffect(rActor, sEffect, rTarget, bTargetedOnly, bCheckEffectTargets, aIgnore)
 	if not rActor or ((sEffect or "") == "") then
 		return false;
+	end
+	if not aIgnore then
+		aIgnore = {};
 	end
 	local sLowerEffect = sEffect:lower();
 	
 	local aMatch = {};
 	for _,v in pairs(ActorManager.getEffects(rActor)) do
-		local nActive = DB.getValue(v, "isactive", 0);
+		local bIgnore = false;
+		for _, sEffectNodePath in ipairs(aIgnore) do 
+			if sEffectNodePath == DB.getPath(v) then
+				bIgnore = true;
+				break;
+			end
+		end
 
-		if nActive ~= 0 then
+		local nActive = DB.getValue(v, "isactive", 0);
+		if not bIgnore and nActive ~= 0 then
 			local sLabel = DB.getValue(v, "label", "");
 			local bTargeted = false;
 			if bCheckEffectTargets then
@@ -486,7 +493,7 @@ function hasEffect(rActor, sEffect, rTarget, bTargetedOnly, bCheckEffectTargets)
 				local rEffectComp = EffectManagerCypher.parseEffectComp(sEffectComp);
 
 				if rEffectComp.type == "if" then
-					if not EffectManagerCypher.checkConditional(rActor, v, rEffectComp) then
+					if not EffectManagerCypher.checkConditional(rActor, {}, v, rEffectComp, aIgnore) then
 						break;
 					end
 
@@ -494,7 +501,7 @@ function hasEffect(rActor, sEffect, rTarget, bTargetedOnly, bCheckEffectTargets)
 					if not rTarget then
 						break;
 					end
-					if not EffectManagerCypher.checkConditional(rTarget, v, rEffectComp, rActor) then
+					if not EffectManagerCypher.checkConditional(rTarget, {}, v, rEffectComp, rActor, aIgnore) then
 						break;
 					end
 			
@@ -521,7 +528,7 @@ function hasEffect(rActor, sEffect, rTarget, bTargetedOnly, bCheckEffectTargets)
 	return #aMatch > 0;
 end
 
-function getEffectsBonusByType(rActor, aEffectType, aFilter, bExclusiveFilters, aContent, bExclusiveContent, rFilterActor, bTargetedOnly)
+function getEffectsBonusByType(rActor, aEffectType, aFilter, bExclusiveFilters, aContent, bExclusiveContent, rFilterActor, bTargetedOnly, aIgnore)
 	if not rActor or not aEffectType then
 		return 0, 0;
 	end
@@ -543,7 +550,7 @@ function getEffectsBonusByType(rActor, aEffectType, aFilter, bExclusiveFilters, 
 
 	for k, v in pairs(aEffectType) do
 		-- LOOK FOR EFFECTS THAT MATCH BONUSTYPE
-		local aEffectsByType = EffectManagerCypher.getEffectsByType(rActor, v, aFilter, bExclusiveFilters, aContent, bExclusiveContent, rFilterActor, bTargetedOnly);
+		local aEffectsByType = EffectManagerCypher.getEffectsByType(rActor, v, aFilter, bExclusiveFilters, aContent, bExclusiveContent, rFilterActor, bTargetedOnly, aIgnore);
 
 		-- ITERATE THROUGH EFFECTS THAT MATCHED
 		for k2,v2 in pairs(aEffectsByType) do
@@ -565,7 +572,7 @@ function getEffectsBonusByType(rActor, aEffectType, aFilter, bExclusiveFilters, 
 	return nBonus, nEffectCount;
 end
 
-function getEffectsByType(rActor, sEffectType, aFilter, bExclusiveFilters, aContent, bExclusiveContent, rFilterActor, bTargetedOnly)
+function getEffectsByType(rActor, sEffectType, aFilter, bExclusiveFilters, aContent, bExclusiveContent, rFilterActor, bTargetedOnly, aIgnore)
 	if not rActor or not sEffectType then
 		return {};
 	end
@@ -586,6 +593,10 @@ function getEffectsByType(rActor, sEffectType, aFilter, bExclusiveFilters, aCont
 		aContent = { aContent:lower() };
 	end
 
+	if not aIgnore then
+		aIgnore = {};
+	end
+
 	local results = {};
 	local resultdata = {}; -- Keeps track of the effect node and component index of entries in the results table
 	aFilter = toLower(aFilter);
@@ -593,9 +604,18 @@ function getEffectsByType(rActor, sEffectType, aFilter, bExclusiveFilters, aCont
 	
 	-- Iterate through effects
 	for _,v in pairs(DB.getChildList(ActorManager.getCTNode(rActor), "effects")) do
+
+		local bIgnore = false;
+		for _, sEffectNodePath in ipairs(aIgnore) do 
+			if sEffectNodePath == DB.getPath(v) then
+				bIgnore = true;
+				break;
+			end
+		end
+
 		-- Check active
 		local nActive = DB.getValue(v, "isactive", 0);
-		if nActive ~= 0 and EffectManagerCypher.checkTargeting(v, rFilterActor) then
+		if not bIgnore and nActive ~= 0 and EffectManagerCypher.checkTargeting(v, rFilterActor) then
 			local sLabel = DB.getValue(v, "label", "");
 			local aEffectComps = EffectManager.parseEffect(sLabel);
 			EffectManagerCypher.replaceConditionsWithEffects(aEffectComps);
@@ -606,7 +626,7 @@ function getEffectsByType(rActor, sEffectType, aFilter, bExclusiveFilters, aCont
 				local rEffectComp = EffectManagerCypher.parseEffectComp(sEffectComp); 
 
 				if rEffectComp.type == "if" then
-					if not EffectManagerCypher.checkConditional(rActor, v, rEffectComp) then
+					if not EffectManagerCypher.checkConditional(rActor, aFilter, v, rEffectComp, aIgnore) then
 						break;
 					end
 
@@ -614,7 +634,7 @@ function getEffectsByType(rActor, sEffectType, aFilter, bExclusiveFilters, aCont
 					if not rFilterActor then
 						break;
 					end
-					if not EffectManagerCypher.checkConditional(rFilterActor, v, rEffectComp, rActor) then
+					if not EffectManagerCypher.checkConditional(rFilterActor, aFilter, v, rEffectComp, rActor, aIgnore) then
 						break;
 					end
 			
@@ -661,7 +681,7 @@ function replaceConditionsWithEffects(aEffectComps)
 	end
 end
 
-function checkConditional(rActor, nodeEffect, rEffectComp, rTarget, aIgnore)
+function checkConditional(rActor, aFilter, nodeEffect, rEffectComp, rTarget, aIgnore)
 	local bReturn = true;
 	
 	if not aIgnore then
@@ -701,7 +721,7 @@ function checkConditional(rActor, nodeEffect, rEffectComp, rTarget, aIgnore)
 				break;
 			end
 
-			local nLevel = ActorManagerCypher.getCreatureLevel(rActor);
+			local nLevel = ActorManagerCypher.getCreatureLevel(rActor, aFilter, nil, aIgnore);
 			if  (v.bInvert and EffectManagerCypher.checkConditionValues(v, nLevel)) or 
 				(not v.bInvert and not EffectManagerCypher.checkConditionValues(v, nLevel)) then
 				bReturn = false;

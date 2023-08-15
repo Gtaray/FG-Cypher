@@ -641,7 +641,7 @@ end
 ---------------------------------------------------------------
 -- NPCs
 ---------------------------------------------------------------
-function getCreatureLevel(rCreature, rAttacker, aFilter)
+function getCreatureLevel(rCreature, rAttacker, aFilter, aIgnore)
 	if not aFilter then
 		aFilter = {};
 	end
@@ -659,7 +659,7 @@ function getCreatureLevel(rCreature, rAttacker, aFilter)
 	end
 
 	local nBase = DB.getValue(creatureNode, "level", 0);
-	local nLevelBonus = EffectManagerCypher.getLevelEffectBonus(rCreature, aFilter, rAttacker);
+	local nLevelBonus = EffectManagerCypher.getLevelEffectBonus(rCreature, aFilter, rAttacker, aIgnore);
 
 	return nBase + nLevelBonus;
 end
