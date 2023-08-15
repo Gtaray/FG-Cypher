@@ -613,6 +613,8 @@
 	<string name="label_condition_name_empty">&#171; New Condition &#187;</string>
 	<string name="label_condition_name">Name</string>
 	<string name="label_condition_effect">Effect</string>
+	
+	<string name="title_condition_icon_selector">Select Icon</string>
 
 	<!-- Desktop -->
 	<string name="diffadj_label_effort">Effort</string>

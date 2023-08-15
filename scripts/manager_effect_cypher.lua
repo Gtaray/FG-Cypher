@@ -1,5 +1,50 @@
 local _dmgTypeEffects = {};
 local _conditions = {};
+local _condition_icons = {};
+
+local _defaultConditions = {
+	["Dazed"] = {
+		["effect"] = "HINDER: 1 all",
+		["icon"] = "cond_dazed"
+	}
+}
+local _allconditionicons = {
+	"cond_more",
+	"cond_generic",
+	"cond_bonus",
+	"cond_penalty",
+	"cond_blinded",
+	"cond_charmed",
+	"cond_confused",
+	"cond_dazed",
+	"cond_deafened",
+	"cond_encumbered",
+	"cond_frightened",
+	"cond_grappled",
+	"cond_helpless",
+	"cond_incorporeal",
+	"cond_invisible",
+	"cond_paralyzed",
+	"cond_pinned",
+	"cond_prone",
+	"cond_restrained",
+	"cond_sickened",
+	"cond_slowed",
+	"cond_stunned",
+	"cond_surprised",
+	"cond_turned",
+	"cond_unconscious",
+	"cond_weakened",
+	"cond_advantage",
+	"cond_bleed",
+	"cond_cover",
+	"cond_conceal",
+	"cond_disadvantage",
+	"cond_immune",
+	"cond_regeneration",
+	"cond_resistance",
+	"cond_vulnerable",
+}
 
 function onInit()
 	EffectManager.registerEffectVar("sUnits", { sDBType = "string", sDBField = "unit", bSkipAdd = true });
@@ -28,6 +73,8 @@ function onInit()
 		DB.setPublic(node, true);
 	end
 
+	EffectManagerCypher.addDefaultConditions();
+
 	DB.addHandler("conditions.*", "onChildUpdate", EffectManagerCypher.updateConditions);
 
 	EffectManagerCypher.updateConditions();
@@ -36,8 +83,20 @@ end
 ---------------------------------
 -- CONDITION MANAGEMENT
 ---------------------------------
+function addDefaultConditions()
+	if DB.getChildCount("conditions") == 0 then
+		for sCondition, rEffect in pairs(_defaultConditions) do
+			local node = DB.createChild("conditions")
+			DB.setValue(node, "label", "string", sCondition);
+			DB.setValue(node, "effect", "string", rEffect.effect);
+			DB.setValue(node, "icon", "string", rEffect.icon)
+		end
+	end
+end
+
 function updateConditions()
 	_conditions = {};
+	_condition_icons = {};
 
 	local node = DB.findNode("conditions");
 
@@ -45,19 +104,37 @@ function updateConditions()
 		local sName = DB.getValue(condition, "label", "");
 		if sName ~= "" then
 			sName = StringManager.trim(sName);
-			_conditions[sName:lower()] = DB.getValue(condition, "effect", "");
+			sName = sName:lower();
+			_conditions[sName] = DB.getValue(condition, "effect", "");
+			_condition_icons[sName] = DB.getValue(condition, "icon", "");
 		end
 	end
+
+	TokenManagerCypher.updateConditionsOnTokens();
 end
 
 function getConditions()
 	return _conditions;
 end
 
+function getConditionIcons()
+	return _condition_icons;
+end
+
+function getAllConditionIcons()
+	return _allconditionicons;
+end
+
 function getConditionEffect(sCondition)
 	sCondition = StringManager.trim(sCondition);
 	sCondition = sCondition:lower();
 	return _conditions[sCondition];
+end
+
+function getConditionIcon(sCondition)
+	sCondition = StringManager.trim(sCondition);
+	sCondition = sCondition:lower();
+	return _condition_icons[sCondition];
 end
 
 ---------------------------------

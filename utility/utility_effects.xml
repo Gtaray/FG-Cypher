@@ -69,16 +69,18 @@
 				<editmode>conditions_iedit</editmode>
 			</button_idelete>
 			<button_condition_activate name="activate" />
+			<button_condition_icon name="icon" />
 
 			<string_labeled name="label">
 				<anchored height="20">
 					<top parent="rightanchor" />
-					<left parent="activate" anchor="right" offset="5" />
+					<left parent="icon" anchor="right" offset="5" />
 					<right parent="rightanchor" anchor="left" relation="relative" offset="-5" />
 				</anchored>
 				<empty textres="label_condition_name_empty" />
 				<labelres>label_condition_name</labelres>
 				<gmeditonly />
+				<delaykeyupdate />
 			</string_labeled>
 			<string_labeled name="effect">
 				<anchored height="20">
@@ -88,7 +90,87 @@
 				</anchored>
 				<labelres>label_condition_effect</labelres>
 				<gmeditonly />
+				<delaykeyupdate />
 			</string_labeled>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="condition_icon_selector">
+		<frame>utilitybox</frame>
+		<placement>
+			<size width="400" height="400" />
+		</placement>
+		<sizelimits>
+			<dynamic />
+			<minimum width="650" height="300" />
+		</sizelimits>
+		<script>
+			function onInit()
+				local aIcons = EffectManagerCypher.getAllConditionIcons();
+
+				for _, sIcon in ipairs(aIcons) do
+					icons.addEntry(sIcon);
+				end
+			end
+			function onSelect(sIcon) 
+				DB.setValue(getDatabaseNode(), "icon", "string", sIcon);
+				close();
+			end
+		</script>
+		<sheetdata>
+			<windowtitlebar name="title">
+				<resource>title_condition_icon_selector</resource>
+			</windowtitlebar>
+			<anchor_content_utilitybox_top />
+
+			<list_content_base name="icons">
+				<anchored>
+					<top relation="relative" offset="0" postoffset="0" />
+					<right offset="0" />
+				</anchored>
+				<script>
+					function addEntry(sIcon)
+						local w = createWindow();
+						if w then
+							w.name.setValue(sIcon);
+							w.icon.setIcon(sIcon);
+						end
+						return w;
+					end
+				</script>
+				<class>condition_icon</class>
+				<sourceless />
+				<columns width="55" fillwidth="true" />
+			</list_content_base>
+
+			<resize_utilitybox />
+			<close_utilitybox />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="condition_icon">
+		<margins control="0,0,0,2" />
+		<script>
+			function onSelect()
+				windowlist.window.onSelect(name.getValue())
+			end
+		</script>
+		<sheetdata>
+			<hs name="name" />
+			<genericcontrol name="icon">
+				<anchored width="50" height="50">
+					<top />
+					<left />
+				</anchored>
+				<script>
+					function onClickDown(button, x, y)
+						return Session.IsHost and button == 1;
+					end
+					function onClickRelease(button, x, y)
+						window.onSelect();
+					end
+				</script>
+			</genericcontrol>
 		</sheetdata>
 	</windowclass>
 
@@ -108,5 +190,40 @@
 				end
 			</script>
 		</buttoncontrol>
+	</template>
+
+	<template name="button_condition_icon">
+		<genericcontrol>
+			<script>
+				function onInit()
+					local node = window.getDatabaseNode()
+					local sIcon = DB.getValue(node, "icon", "");
+					if sIcon == "" then
+						DB.setValue(node, "icon", "string", "cond_generic");
+					end
+
+					DB.addHandler(DB.getPath(node, "icon"), "onUpdate", update);
+					update();
+				end
+				function onClose()
+					local node = window.getDatabaseNode()
+					DB.removeHandler(DB.getPath(node, "icon"), "onUpdate", update);
+				end
+				function update()
+					local sIcon = DB.getValue(window.getDatabaseNode(), "icon", "");
+					setIcon(sIcon);
+				end
+				function onClickDown(button, x, y)
+					return Session.IsHost and button == 1;
+				end
+				function onClickRelease(button, x, y)
+					Interface.openWindow("condition_icon_selector", window.getDatabaseNode().getNodeName());
+				end
+			</script>
+			<anchored to="activate" width="20" height="20">
+				<top />
+				<left offset="2" anchor="right" />
+			</anchored>
+		</genericcontrol>
 	</template>
 </root>
