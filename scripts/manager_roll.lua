@@ -55,13 +55,29 @@ function isEdgeDisabled(bRetain)
 	return bDisableEdge;
 end
 
+function disableEdge()
+	if not _panelWindow then
+		return;
+	end
+
+	_panelWindow.disableedge.setValue(1);
+end
+
+function enableEdge()
+	if not _panelWindow then
+		return;
+	end
+
+	_panelWindow.disableedge.setValue(0);
+end
+
 function resetDifficultyPanel()
 	if not _panelWindow then
 		return;
 	end
 	_panelWindow.effort.setValue(0);
 	_panelWindow.assets.setValue(0);
-	_panelWindow.disableedge.setValue(0);
+	RollManager.enableEdge()
 end
 
 -----------------------------------------------------------------------

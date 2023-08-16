@@ -275,8 +275,13 @@ function onRoll(rSource, rTarget, rRoll)
 		ActorManagerCypher.addToStatPool(rSource, rRoll.sCostStat, -nTotal)
 	end
 
+	-- if edge is enabled, and the roll included edge
+	-- we disable edge for the remainder of the turn
+	if not rRoll.bDisableEdge and rRoll.nEdge > 0 then
+		RollManager.disableEdge();
+	end
+
 	local rAction = ActionCost.getLastAction();
-	
 	if rAction then
 		-- Make sure to update the relevant properties
 		rAction.nEffort = rRoll.nEffort;

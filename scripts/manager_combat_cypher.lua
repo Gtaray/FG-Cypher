@@ -7,6 +7,7 @@ function onInit()
 	CombatManager.setCustomSort(CombatManager.sortfuncStandard);
 
 	CombatManager.setCustomCombatReset(resetInit);
+	CombatManager.setCustomTurnEnd(RollManager.enableEdge)
 
 	CombatRecordManager.setRecordTypePostAddCallback("npc", onNPCPostAdd);
 end
