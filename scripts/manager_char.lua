@@ -558,9 +558,3 @@ function isImpaired(rActor)
 
 	return nWounds >= 1;
 end
-
--------------------------------------------------------------------------------
--- STAT CONVERSIONS
--------------------------------------------------------------------------------
-function canConvertStat(rActor, sConversionType, aFilter)
-end

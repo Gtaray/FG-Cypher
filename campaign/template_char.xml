@@ -135,6 +135,17 @@
 		</button_stringcycler>
 	</template>
 
+	<template name="button_coststat">
+		<button_stringcycler>
+			<parameters>
+				<labelsres>char_label_might|char_label_speed|char_label_intellect|xp</labelsres>
+				<values>might|speed|intellect|xp</values>
+				<defaultlabel>-</defaultlabel>
+			</parameters>
+			<tooltip textres="char_tooltip_stat" />
+		</button_stringcycler>
+	</template>
+
 	<template name="button_skill">
 		<buttonfield>
 			<frame name="fielddark" offset="7,5,7,5" hidereadonly="true" />
@@ -155,6 +166,15 @@
 				<left offset="97" />
 			</anchored>
 		</button_stat>
+	</template>
+
+	<template name="column_coststat">
+		<button_coststat>
+			<anchored>
+				<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+				<left offset="97" />
+			</anchored>
+		</button_coststat>
 	</template>
 
 	<template name="cycler_training">
