@@ -618,6 +618,13 @@
 
 	<!-- Desktop -->
 	<string name="diffadj_label_effort">Effort</string>
+	<string name="diffadj_label_0">0</string>
+	<string name="diffadj_label_1">1</string>
+	<string name="diffadj_label_2">2</string>
+	<string name="diffadj_label_3">3</string>
+	<string name="diffadj_label_4">4</string>
+	<string name="diffadj_label_5">5</string>
+	<string name="diffadj_label_6">6</string>
 	<string name="diffadj_label_assets">Assets</string>
 	<string name="diffadj_label_edge">Use Edge?</string>
 	<string name="modifier_label_EASE">Ease</string>

@@ -77,6 +77,7 @@ function getPCWoundPercent(rActor)
 	local nIntCur, nIntMax = ActorManagerCypher.getStatPool(rActor, "intellect");
 	local nCur = nMightCur + nSpeedCur + nIntCur;
 	local nMax = nMightMax + nSpeedMax + nIntMax;
+	local nodePC = ActorManager.getCreatureNode(rActor);
 
 	local nPercentWounded = 0;
 	if nMax > 0 then
@@ -418,6 +419,31 @@ function getRecoveryRollMod(rActor)
 	end
 
 	return DB.getValue(nodeActor, "recoveryrollmod", 0);
+end
+
+-------------------------------------------------------------------------------
+-- XP
+-------------------------------------------------------------------------------
+function getXP(rActor)
+	local nodeActor;
+	if type(rActor) == "databasenode" then
+		nodeActor = rActor;
+	else
+		nodeActor = ActorManager.getCreatureNode(rActor);
+	end
+	return DB.getValue(nodeActor, "xp", 0);
+end
+
+function deductXP(rActor, nDelta)
+	local nodeActor;
+	if type(rActor) == "databasenode" then
+		nodeActor = rActor;
+	else
+		nodeActor = ActorManager.getCreatureNode(rActor);
+	end
+
+	local nXP = ActorManagerCypher.getXP(nodeActor);
+	DB.setValue(nodeActor, "xp", "number", math.max(nXP - nDelta, 0));
 end
 
 ---------------------------------------------------------------
