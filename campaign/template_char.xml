@@ -307,6 +307,20 @@
 		</button_checkbox>
 	</template>
 
+	<template name="buttongroup_counter_power">
+		<genericcontrol>
+			<anchored to="leftanchor">
+				<top offset="0" />
+				<left anchor="right" relation="relative" />
+			</anchored>
+			<stateicons>
+				<on>button_checkon</on>
+				<off>button_checkoff</off>
+			</stateicons>
+			<script file="campaign/scripts/buttongroup_counter_power.lua" />
+		</genericcontrol>
+	</template>
+
 	<template name="list_poweraction">
 		<windowlist>
 			<anchored>

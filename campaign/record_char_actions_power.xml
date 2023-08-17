@@ -36,7 +36,7 @@
 				<invisible />
 			</genericcontrol>
 
-			<button_use_power name="used" />
+			<buttongroup_counter_power name="used" />
 
 			<stringcontrol name="statcostview">
 				<script>

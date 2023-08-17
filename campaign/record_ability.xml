@@ -158,12 +158,27 @@
 			</label_column>
 			<cycler_column name="period">
 				<anchored width="200" />
+				<script>
+					function onValueChanged()
+						if super and super.onValueChanged then
+							super.onValueChanged()
+						end
+						window.update();
+					end
+				</script>
 				<parameters>
 					<labelsres>power_recharge_any|power_recharge_first|power_recharge_last|power_recharge_manual</labelsres>
 					<values>any|first|last|manual</values>
 					<defaultlabelres>dash</defaultlabelres>
 				</parameters>
 			</cycler_column>
+			<label_column name="uses_label">
+				<static textres="power_label_recharge_uses" />
+			</label_column>
+			<number_column name="uses">
+				<min>1</min>
+				<default>1</default>
+			</number_column>
 
 			<!-- COST -->
 			<header_column name="header_cost">

@@ -271,6 +271,7 @@
 	<string name="power_header_properties">PROPERTIES</string>
 	<string name="power_label_useequipped">Use Equipped</string>
 	<string name="power_tooltip_useequipped">Should this ability use the attack and damage properties from the currently equipped weapon.</string>
+	<string name="power_label_recharge_uses">Uses per Period</string>
 	<string name="power_label_recharge_on">Recharge</string>
 	<string name="power_recharge_any">On any recovery action</string>
 	<string name="power_recharge_first">On the first recovery of the day</string>
