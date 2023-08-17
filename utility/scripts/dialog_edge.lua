@@ -1,4 +1,5 @@
 function setData(rEdgeOptions)
+	edge.closeAll();
 	local nTotal = 0;
 	for i, aOptions in ipairs(rEdgeOptions) do
 		edge.addEntry(aOptions)

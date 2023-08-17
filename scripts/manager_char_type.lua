@@ -143,13 +143,15 @@ function applyTier1(rData)
 		CharModManager.addModificationToChar(rData.nodeChar, rMod, rData);
 	end
 
-	Debug.chat(rData);
 	if (rData.nFloatingStats or 0) > 0 or #(rData.aEdgeOptions or {}) > 0 then
 		-- Prompt player for the data
 		rData.sSource = string.format("%s (Type)", StringManager.capitalize(rData.sSourceName));
 		local w = Interface.openWindow("select_dialog_char", "");
 		w.setData(rData, CharModManager.applyFloatingStatsAndEdge);
+		return true;
 	end
+
+	return false;
 end
 
 function applyTier(rData)
