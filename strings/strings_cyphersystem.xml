@@ -403,6 +403,7 @@
 	<string name="type_label_starting_effort">Effort</string>
 	<string name="type_label_cypherlimit">Cypher Use</string>
 	<string name="type_header_edge">Starting Edge</string>
+	<string name="type_header_features">Features</string>
 	<string name="type_header_ability_amount">Number of Abilities</string>
 	<string name="type_label_tier123">Tier 1, 2, and 3</string>
 	<string name="type_label_tier456">Tier 4, 5, and 6</string>

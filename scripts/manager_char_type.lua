@@ -129,6 +129,27 @@ function applyTier1(rData)
 	-- Give starting abilities
 	CharTypeManager.addAbilities(rData);
 	CharFlavorManager.addAbilities(rData);
+
+	-- Apply starting features
+	-- reset these properties, which we'll reuse when applying features
+	rData.nFloatingStats = 0;
+	rData.aEdgeGiven = nil;
+	rData.aEdgeOptions = nil;
+	rData.aAbilitiesGiven = nil;
+	rData.aAbilityOptions = nil;
+	for _, modnode in ipairs(DB.getChildList(rData.nodeSource, "features")) do
+		local rMod = CharModManager.getModificationData(modnode)
+		rMod.sSource = string.format("%s (Type)", StringManager.capitalize(rData.sSourceName));
+		CharModManager.addModificationToChar(rData.nodeChar, rMod, rData);
+	end
+
+	Debug.chat(rData);
+	if (rData.nFloatingStats or 0) > 0 or #(rData.aEdgeOptions or {}) > 0 then
+		-- Prompt player for the data
+		rData.sSource = string.format("%s (Type)", StringManager.capitalize(rData.sSourceName));
+		local w = Interface.openWindow("select_dialog_char", "");
+		w.setData(rData, CharModManager.applyFloatingStatsAndEdge);
+	end
 end
 
 function applyTier(rData)
