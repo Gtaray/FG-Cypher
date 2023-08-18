@@ -289,7 +289,10 @@ function applyOngoingDamageAdjustment(nodeActor, nodeEffect, rEffectComp)
 		rAction.bOngoing = true;
 
 		for _, sFilter in ipairs(rEffectComp.filters) do
-			if sFilter == "might" or sFilter == "speed" or sFilter == "might" then
+			if sFilter == "pierce" then
+				rAction.bPiercing = true;
+				rAction.nPierceAmount = 0;
+			elseif sFilter == "might" or sFilter == "speed" or sFilter == "might" then
 				if rAction.sDamageStat ~= nil then
 					return; -- Multiple damage stats are illegal. Bail
 				end

@@ -249,8 +249,7 @@ function applyDamage(rSource, rTarget, rRoll)
 			rRoll.sDamageStat, 
 			rRoll.sDamageType,
 			rRoll.bPiercing, 
-			rRoll.nPierceAmount, 
-			rRoll.bOngoing,
+			rRoll.nPierceAmount,
 			aNotifications);
 	end
 
@@ -344,7 +343,7 @@ function applyDamage(rSource, rTarget, rRoll)
 	ActionsManager.outputResult(rRoll.bSecret, rSource, rTarget, msgLong, msgShort);
 end
 
-function applyArmor(rSource, rTarget, nTotal, sStat, sDamageType, bPiercing, nPierceAmount, bOngoing, aNotifications)
+function applyArmor(rSource, rTarget, nTotal, sStat, sDamageType, bPiercing, nPierceAmount, aNotifications)
 	-- If for some reason the amount of damage is negative, then we don't need to do any processing
 	-- Because it's handled as healing
 	if nTotal < 0 then
@@ -357,13 +356,6 @@ function applyArmor(rSource, rTarget, nTotal, sStat, sDamageType, bPiercing, nPi
 	end
 
 	local nArmorAdjust = ActorManagerCypher.getArmor(rTarget, rSource, sStat, sDamageType);
-
-	-- For untyped ongoing damage, we want to always ignore armor
-	-- For typed ongoing damage, we don't ignore armor (though piercing and pierce amount will always be nil)
-	if bOngoing and sDamageType == "untyped" then
-		bPiercing = true;
-		nPierceAmount = 0;
-	end
 
 	-- only apply piercing if the armor adjustment is positive. 
 	-- negative armor adjust means there's a vulnerability to a dmg type
