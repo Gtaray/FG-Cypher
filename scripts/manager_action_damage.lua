@@ -89,6 +89,7 @@ function modRoll(rSource, rTarget, rRoll)
 	RollManager.encodePiercing({ bPierce = rRoll.bPiercing, nPierceAmount = rRoll.nPierceAmount }, rRoll);
 	RollManager.encodeEffort(nEffort, rRoll)
 	RollManager.encodeEffects(rRoll, nDmgBonus);
+	RollManager.convertBooleansToNumbers(rRoll);
 end
 
 -- Returns boolean determining whether the roll was rebuilt from a chat message
@@ -125,6 +126,7 @@ function rebuildRoll(rSource, rTarget, rRoll)
 end
 
 function onRoll(rSource, rTarget, rRoll)
+	RollManager.convertNumbersToBooleans(rRoll);
 	ActionDamage.buildRollResult(rSource, rTarget, rRoll);
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 
@@ -145,16 +147,6 @@ function buildRollResult(rSource, rTarget, rRoll)
 	rRoll.bSourceNPC = (rSource and not ActorManager.isPC(rSource)) or false;
 	rRoll.bTargetNPC = (rTarget and not ActorManager.isPC(rTarget)) or false;
 	rRoll.sDamageType = (rRoll.sDamageType or ""):lower()
-
-	if type(rRoll.bAmbient) == "string" then
-		rRoll.bAmbient = rRoll.bAmbient == "true";
-	end
-	if type(rRoll.bPiercing) == "string" then
-		rRoll.bPiercing = rRoll.bPiercing == "true";
-	end
-	if type(rRoll.bOngoing) == "string" then
-		rRoll.bOngoing = rRoll.bOngoing == "true";
-	end
 	
 	if not rRoll.nTotal  then
 		rRoll.nTotal = ActionsManager.total(rRoll);
@@ -169,34 +161,24 @@ function notifyApplyDamage(rSource, rTarget, rRoll)
 	local msgOOB = {};
 	msgOOB.type = OOB_MSGTYPE_APPLYDMG;
 	
-	if rRoll.bTower or rRoll.bSecret then
-		msgOOB.bSecret = "true";
-	else
-		msgOOB.bSecret = "false";
-	end
+	msgOOB.bSecret = rRoll.bTower or rRoll.bSecret;
 	msgOOB.nTargetOrder = rTarget.nOrder;
 	msgOOB.sDesc = rRoll.sDesc;
 	msgOOB.sSourceNode = ActorManager.getCreatureNodeName(rSource);
 	msgOOB.sTargetNode = ActorManager.getCreatureNodeName(rTarget);
 	msgOOB.nTotal = rRoll.nTotal or 0;
 	msgOOB.sDamageStat = rRoll.sDamageStat
+	msgOOB.sHealStat = rRoll.sHealStat
 	msgOOB.sDamageType = rRoll.sDamageType
 
-	msgOOB.bPiercing = "false";
-	if rRoll.bPiercing then
-		msgOOB.bPiercing = "true";
-	end
+	msgOOB.bPiercing = rRoll.bPiercing;
 	msgOOB.nPierceAmount = rRoll.nPierceAmount
 
-	msgOOB.bAmbient = "false";
-	if rRoll.bAmbient then
-		msgOOB.bAmbient = "true";
-	end
+	msgOOB.bAmbient = rRoll.bAmbient;
+	msgOOB.bOngoing = rRoll.bOngoing;
+	msgOOB.bNoOverflow = rRoll.bNoOverflow;
 
-	msgOOB.bOngoing = "false";
-	if rRoll.bOngoing then
-		msgOOB.bOngoing = "true";
-	end
+	RollManager.convertBooleansToNumbers(msgOOB)
 
 	Comm.deliverOOBMessage(msgOOB, "");
 end
@@ -213,13 +195,16 @@ function handleApplyDamage(msgOOB)
 		nTotal = tonumber(msgOOB.nTotal),
 		sDamageStat = msgOOB.sDamageStat,
 		sDamageType = msgOOB.sDamageType,
-		bPiercing = msgOOB.bPiercing == "true",
+		sHealStat = msgOOB.sHealStat,
+		bPiercing = msgOOB.bPiercing,
 		nPierceAmount = tonumber(msgOOB.nPierceAmount),
-		bAmbient = msgOOB.bAmbient == "true",
-		bOngoing = msgOOB.bOngoing == "true",
-		bSecret = msgOOB.bSecret == "true"
+		bAmbient = msgOOB.bAmbient,
+		bOngoing = msgOOB.bOngoing,
+		bNoOverflow = msgOOB.bNoOverflow,
+		bSecret = msgOOB.bSecret
 	}
 	ActionDamage.buildRollResult(rSource, rTarget, rRoll);
+	RollManager.convertNumbersToBooleans(rRoll);
 	applyDamage(rSource, rTarget, rRoll);
 end
 
@@ -261,21 +246,24 @@ function applyDamage(rSource, rTarget, rRoll)
 
 	rRoll.nTotal = rRoll.nTotal - nShieldAdjust;
 
+	local sStat = rRoll.sDamageStat;
+	if rRoll.nTotal < 0 then
+		sStat = rRoll.sHealStat;
+	end
+
 	if sTargetNodeType == "pc" then
 		ActionDamage.applyDamageToPc(
 			rSource, 
 			rTarget, 
 			rRoll.nTotal, 
-			rRoll.sDamageStat, 
-			rRoll.sDamageType, 
+			sStat,  
+			rRoll.bNoOverflow,
 			aNotifications);
 	elseif sTargetNodeType == "ct" then
 		ActionDamage.applyDamageToNpc(
 			rSource, 
 			rTarget, 
 			rRoll.nTotal, 
-			rRoll.sDamageStat, 
-			rRoll.sDamageType, 
 			aNotifications);
 	else
 		return;
@@ -399,7 +387,7 @@ function applyArmor(rSource, rTarget, nTotal, sStat, sDamageType, bPiercing, nPi
 	return nTotal 
 end
 
-function applyDamageToPc(rSource, rTarget, nDamage, sStat, sDamageType, aNotifications)
+function applyDamageToPc(rSource, rTarget, nDamage, sStat, bNoOverflow, aNotifications)
 	local sTargetNodeType, nodePC = ActorManager.getTypeAndNode(rTarget);
 	if not nodePC then
 		return;
@@ -431,6 +419,12 @@ function applyDamageToPc(rSource, rTarget, nDamage, sStat, sDamageType, aNotific
 		ImageDeathMarkerManager.addMarker(ActorManager.getCTNode(rTarget));
 	end
 
+	-- if we shouldn't handle overflowing damage or healing to other stats
+	-- then exit here
+	if bNoOverflow then
+		return;
+	end
+
 	-- the return overflow value that addToStatPool returns is always positive
 	-- which means we need to apply an inversion depending on if we're healing or damaging
 	-- Overflow will follow the normal might -> speed -> intellect damage
@@ -449,7 +443,7 @@ function applyDamageToPc(rSource, rTarget, nDamage, sStat, sDamageType, aNotific
 	-- tracking here
 end
 
-function applyDamageToNpc(rSource, rTarget, nDamage, sDamageStat, sDamageType, aNotifications)
+function applyDamageToNpc(rSource, rTarget, nDamage, aNotifications)
 	local sTargetNodeType, nodeNPC = ActorManager.getTypeAndNode(rTarget);
 	if not nodeNPC then
 		return;

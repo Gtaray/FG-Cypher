@@ -266,12 +266,29 @@ function applyOngoingDamageAdjustment(nodeActor, nodeEffect, rEffectComp)
 		rAction.nHeal = rEffectComp.mod;
 		rAction.bSecret = EffectManager.isGMEffect(nodeActor, nodeEffect);
 
-		if #(rEffectComp.filters) == 0 then
-			rAction.sHealStat = "might" -- Default to healing might
-		elseif #(rEffectComp.filters) == 1 then
-			rAction.sHealStat = rEffectComp.filters[1]
-		else
-			return; -- Multiple regen stats are illegal. Bail
+		for _, sFilter in ipairs(rEffectComp.filters) do
+			if sFilter == "single" then
+				rAction.bNoOverflow = true;
+			else
+				if rAction.sHealStat ~= nil then
+					return; -- Multiple stats are not illegal. Bail.
+				end
+				rAction.sHealStat = sFilter;
+			end
+		end
+
+		-- if no stat is specified for healing, then bail
+		if not rAction.sHealStat then
+			return;
+		end
+
+		-- if there's no overflow regen, and the stat we're healing is already
+		-- maxed out, then we bail early.
+		if rAction.bNoOverflow then
+			local nCur, nMax = ActorManagerCypher.getStatPool(rActor, rAction.sHealStat);
+			if nCur == nMax then
+				return;
+			end
 		end
 
 		local rRoll = ActionHeal.getRoll(nil, rAction);
@@ -289,14 +306,22 @@ function applyOngoingDamageAdjustment(nodeActor, nodeEffect, rEffectComp)
 		rAction.bOngoing = true;
 
 		for _, sFilter in ipairs(rEffectComp.filters) do
-			if sFilter == "pierce" then
+			if sFilter == "ambient" then
+				rAction.bAmbient = true;
+				
+			elseif sFilter == "pierce" or sFilter == "piercing" then
 				rAction.bPiercing = true;
 				rAction.nPierceAmount = 0;
+
+			elseif sFilter == "single" then
+				rAction.bNoOverflow = true;
+
 			elseif sFilter == "might" or sFilter == "speed" or sFilter == "might" then
 				if rAction.sDamageStat ~= nil then
 					return; -- Multiple damage stats are illegal. Bail
 				end
 				rAction.sDamageStat = sFilter;
+
 			else
 				if rAction.sDamageType ~= nil then
 					return; -- Multiple damage types are illegal. Bail
@@ -307,6 +332,15 @@ function applyOngoingDamageAdjustment(nodeActor, nodeEffect, rEffectComp)
 
 		if not rAction.sDamageStat then
 			rAction.sDamageStat = "might";
+		end
+
+		-- if there's no overflow damagestat, and the stat we're damaging is already
+		-- maxed out, then we bail early.
+		if rAction.bNoOverflow then
+			local nCur = ActorManagerCypher.getStatPool(rActor, rAction.sDamageStat);
+			if nCur == 0 then
+				return;
+			end
 		end
 		
 		local rRoll = ActionDamage.getRoll(nil, rAction);

@@ -102,9 +102,11 @@ function modRoll(rSource, rTarget, rRoll)
 	if rRoll.nConditionMod > 0 then
 		rRoll.sDesc = string.format("%s [EFFECTS %s]", rRoll.sDesc, rRoll.nConditionMod)
 	end
+	RollManager.convertBooleansToNumbers(rRoll);
 end
 
 function onRoll(rSource, rTarget, rRoll)
+	RollManager.convertNumbersToBooleans(rRoll);
 	RollManager.decodeAdvantage(rRoll);
 
 	-- Hacky way to force the rebuilt flag to either be true or false, never an empty string

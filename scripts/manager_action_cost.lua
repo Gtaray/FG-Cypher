@@ -216,6 +216,8 @@ function modRoll(rSource, rTarget, rRoll)
 	elseif nEffectMod < 0 then
 		rRoll.sDesc = string.format("%s [EFFECTS %s]", rRoll.sDesc, nEffectMod)
 	end
+
+	RollManager.convertBooleansToNumbers(rRoll);
 end
 
 -- Not entirely necessary, but for completeness' sake
@@ -238,6 +240,8 @@ function rebuildRoll(rSource, rTarget, rRoll)
 end
 
 function onRoll(rSource, rTarget, rRoll)
+	RollManager.convertNumbersToBooleans(rRoll);
+
 	-- dragging from chat results in a nil rSource, but there is the drop target
 	-- so we just set one to the other
 	if not rSource then

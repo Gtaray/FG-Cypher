@@ -49,9 +49,11 @@ function modRoll(rSource, rTarget, rRoll)
 
 	-- This has to go here because it requires a source and target
 	rRoll.nDifficulty = rRoll.nLevel + RollManager.getBaseRollDifficulty(rTarget, rSource, { "attack", "atk", rRoll.sStat });
+	RollManager.convertBooleansToNumbers(rRoll);
 end
 
 function onRoll(rSource, rTarget, rRoll)
+	RollManager.convertNumbersToBooleans(rRoll);
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 
 	if not rRoll.bRebuilt then

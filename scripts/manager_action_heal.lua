@@ -27,7 +27,7 @@ function getRoll(rActor, rAction)
 	rRoll.sStat = rAction.sStat;
 	rRoll.sHealStat = rAction.sHealStat;
 	rRoll.nEffort = rAction.nEffort or 0;
-	rRoll.bOverflow = rAction.bOverflow or false;
+	rRoll.bNoOverflow = rAction.bNoOverflow or false;
 	
 	rRoll.sDesc = string.format(
 		"[HEAL (%s)] %s", 
@@ -69,9 +69,11 @@ function modRoll(rSource, rTarget, rRoll)
 
 	RollManager.encodeEffort(nEffort, rRoll)
 	RollManager.encodeEffects(rRoll, nHealBonus);
-	if rRoll.bOverflow then
-		rRoll.sDesc = rRoll.sDesc .. " [OVERFLOW]"
+	if rRoll.bNoOverflow then
+		rRoll.sDesc = rRoll.sDesc .. " [SINGLE STAT]"
 	end
+
+	RollManager.convertBooleansToNumbers(rRoll);
 end
 
 function rebuildRoll(rSource, rTarget, rRoll)
@@ -81,14 +83,14 @@ function rebuildRoll(rSource, rTarget, rRoll)
 		rRoll.sLabel = StringManager.trim(rRoll.sDesc:match("%[HEAL.*%]([^%[]+)"));
 		bRebuilt = true;
 	end
-	if not rRoll.sStat then
-		rRoll.sStat = RollManager.decodeStat(rRoll, true);
+	if not rRoll.sHealStat then
+		rRoll.sHealStat = RollManager.decodeStat(rRoll, true);
 	end
 	if not rRoll.nEffort then
 		rRoll.nEffort = RollManager.decodeEffort(rRoll, true);
 	end
-	if not rRoll.bOverflow then
-		rRoll.bOverflow = rRoll.sDesc:match("%[OVERFLOW%]") ~= nil;
+	if not rRoll.bNoOverflow then
+		rRoll.bNoOverflow = rRoll.sDesc:match("%[SINGLE STAT%]") ~= nil;
 	end
 
 	rRoll.bRebuilt = bRebuilt;
@@ -96,6 +98,11 @@ function rebuildRoll(rSource, rTarget, rRoll)
 end
 
 function onRoll(rSource, rTarget, rRoll)
+	RollManager.convertNumbersToBooleans(rRoll);
+	-- For some reason the boolean bNoOverflow is entirely stripped out here
+	-- so we need to re-build it from the description
+	rRoll.bNoOverflow = rRoll.sDesc:match("%[SINGLE STAT%]") ~= nil;
+
 	ActionDamage.buildRollResult(rSource, rTarget, rRoll);
 	rRoll.nTotal = rRoll.nTotal * -1; --Invert the roll total because negative damage is healing
 
@@ -104,7 +111,7 @@ function onRoll(rSource, rTarget, rRoll)
 	Comm.deliverChatMessage(rMessage);
 
 	-- Apply damage to the PC or CT entry referenced
-	if rResult.nTotal ~= 0 then
+	if rRoll.nTotal ~= 0 then
 		ActionDamage.notifyApplyDamage(rSource, rTarget, rRoll);
 	end
 end

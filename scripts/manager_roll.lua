@@ -1050,3 +1050,40 @@ function decodeLevel(vRoll, bPersist)
 
 	return nLevel;
 end
+
+-----------------------------------------------------------------------
+-- ROLL PROPERTY CONVERSIONS
+-----------------------------------------------------------------------
+-- I'm tired of having booleans stripped out of rRoll tables
+-- these will convert all boolean properties to numbers
+-- and then convert all number properties back to booleans
+function convertBooleansToNumbers(rRoll)
+	for sKey, vValue in pairs(rRoll) do
+		if string.sub(sKey, 1, 1) == "b" then
+			if type(vValue) == "boolean" then
+				if vValue then
+					rRoll[sKey] = 1
+				else
+					rRoll[sKey] = 0;
+				end
+			end
+		end
+	end
+end
+
+function convertNumbersToBooleans(rRoll)
+	for sKey, vValue in pairs(rRoll) do
+		if string.sub(sKey, 1, 1) == "b" then
+			if type(vValue) == "string" then
+				vValue = tonumber(vValue);
+			end
+			if vValue and type(vValue) == "number" then
+				if vValue  == 1 then
+					rRoll[sKey] = true
+				elseif vValue == 0 then
+					rRoll[sKey] = false;
+				end
+			end
+		end
+	end
+end

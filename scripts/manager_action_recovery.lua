@@ -35,9 +35,11 @@ function modRoll(rSource, rTarget, rRoll)
 	end
 	rRoll.nMod = rRoll.nMod + nRecoveryEffect;
 	RollManager.encodeEffects(rRoll, nRecoveryEffect);
+	RollManager.convertBooleansToNumbers(rRoll);
 end
 
 function onRoll(rSource, rTarget, rRoll)
+	RollManager.convertNumbersToBooleans(rRoll);
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 	
 	local sNodeType, nodeActor = ActorManager.getTypeAndNode(rSource);
