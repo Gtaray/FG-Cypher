@@ -40,7 +40,6 @@
 				<font>sheetlabel</font>
 				<center/>
 				<readonly />
-				<static textres="pci_prompt_description" />
 			</stringcontrol>
 
 			<label_pci_type name="reroll_label">

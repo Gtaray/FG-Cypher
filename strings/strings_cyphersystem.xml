@@ -652,7 +652,7 @@
 	<string name="gmi_prompt_tooltip_refuse_missing_xp">You don't have enough XP to refuse this intrusion.</string>
 
 	<string name="pci_prompt_window_title">PC INTRUSION</string>
-	<string name="pci_prompt_description">You are invoking a player intrusion! Select from the options below.</string>
+	<string name="pci_prompt_description">You are invoking a player intrusion! Select from the options below (you have %s XP).</string>
 	<string name="pmi_prompt_button_accept">Accept</string>
 	<string name="pmi_prompt_button_cancel">Cancel</string>
 	<string name="pci_label_reroll">Spend 1 XP to reroll any roll</string>

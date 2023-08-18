@@ -82,16 +82,53 @@
 	</windowclass>
 
 	<windowclass name="charsheet_overview" merge="join">
+		<script file="campaign/scripts/char_overview.lua" />
 		<sheetdata>
 			<frame_char name="overviewframe">
 				<anchored height="50" />
-			</frame_char>			
+			</frame_char>		
+			<genericcontrol name="nameanchor" insertbefore="name">
+				<anchored to="overviewframe" width="0" height="0">
+					<top />
+					<right anchor="right" />
+				</anchored>
+				<invisible />
+			</genericcontrol>
+
+			<buttoncontrol name="button_pc_intrusion" insertbefore="name">
+				<anchored width="30" height="30">
+					<bottom parent="overviewframe" anchor="bottom" offset="-10" />
+					<right parent="nameanchor" anchor="left" relation="relative" offset="-10" />
+				</anchored>
+				<icon normal="playerintrusion" />
+				<tooltip textres="char_tooltip_pc_intrusion" />
+				<script>
+					function onButtonPress()
+						PromptManager.promptPlayerIntrusion(window.getDatabaseNode());
+					end
+				</script>
+			</buttoncontrol>
+
+			<basicnumber name="hero" insertbefore="name">
+				<anchored width="30" height="20">
+					<bottom parent="overviewframe" anchor="bottom" offset="-10" />
+					<right parent="nameanchor" anchor="left" relation="relative" offset="-10" />
+				</anchored>
+				<min>0</min>
+			</basicnumber>
+			<label_fieldtop name="hero_label" insertbefore="name">
+				<anchored to="hero">
+					<left offset="-12" />
+					<right offset="12" />
+				</anchored>
+				<static textres="char_label_hero" />
+			</label_fieldtop>
 
 			<string_labeled name="name" merge="replace">
 				<anchored to="overviewframe" height="20">
 					<left offset="15" />
 					<bottom offset="-20" />
-					<right offset="-15" />
+					<right parent="nameanchor" anchor="left" relation="relative" offset="-10" />
 				</anchored>
 				<labelres>char_label_name</labelres>
 			</string_labeled>
