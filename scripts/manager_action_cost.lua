@@ -113,6 +113,7 @@ function getRoll(rActor, rAction)
 	rRoll.sType = "cost";
 	rRoll.aDice = { };
 	rRoll.nMod = rAction.nCost or 0;
+	rRoll.nEffort = 0;
 
 	RollManager.resolveStatUsedForCost(rAction); -- resolve the cost stat first
 	rRoll.sCostStat = rAction.sCostStat;

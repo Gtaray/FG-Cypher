@@ -149,6 +149,19 @@
 				<static textres="power_label_healstat" />
 			</label_fieldtop>
 
+			<label_column name="overflow_label">
+				<static textres="power_label_heal_overflow" />
+			</label_column>
+			<cycler_column name="overflow">
+				<anchored width="100" />
+				<parameters>
+					<labelsres>yes</labelsres>
+					<values>yes</values>
+					<defaultlabelres>no</defaultlabelres>
+				</parameters>
+				<tooltip textres="power_tooltip_heal_overflow" />
+			</cycler_column>
+
 			<header_column name="header_cost">
 				<static textres="power_header_cost" />
 				<center />

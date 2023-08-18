@@ -340,6 +340,8 @@
 	<string name="power_label_healamount">Amt</string>
 	<string name="power_label_healstat">Stat Pool</string>
 	<string name="power_tooltip_healstat">Heal which stat pool?</string>
+	<string name="power_label_heal_overflow">Overflow</string>
+	<string name="power_tooltip_heal_overflow">If this heals a stat fully, does any extra healing overflow to other stats?</string>
 
 	<string name="power_header_description">DESCRIPTION</string>
 

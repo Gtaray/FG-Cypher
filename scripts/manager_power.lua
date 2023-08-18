@@ -219,6 +219,10 @@ function getPowerHealActionText(nodeAction)
 	if rAction then		
 		sHeal = string.format("%s %s", rAction.nHeal, StringManager.capitalize(rAction.sHealStat));
 
+		if rAction.bOverflow then
+			sHeal = sHeal .. " [OVERFLOW]"
+		end
+
 		if DB.getValue(nodeAction, "healtargeting", "") == "self" then
 			sHeal = sHeal .. " [SELF]";
 		end
@@ -372,6 +376,7 @@ function getPowerAction(nodeAction)
 		rAction.sTargeting = DB.getValue(nodeAction, "healtargeting", "");
 		rAction.nHeal = DB.getValue(nodeAction, "heal", 0);
 		rAction.sHealStat = RollManager.resolveStat(DB.getValue(nodeAction, "healstat", ""));
+		rAction.bOverflow = DB.getValue(nodeAction, "overflow", "") == "yes";
 
 	elseif rAction.type == "effect" then
 		rAction.sName = DB.getValue(nodeAction, "label", "");
