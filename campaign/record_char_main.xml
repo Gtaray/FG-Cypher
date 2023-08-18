@@ -7,7 +7,6 @@
 
 <root>
 	<windowclass name="charsheet_main">
-		<script file="campaign/scripts/char_main.lua" />
 		<sheetdata>
 			<!-- ADVANCEMENT -->
 			<frame_char name="overviewframe">
