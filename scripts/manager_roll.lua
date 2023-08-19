@@ -433,6 +433,19 @@ function updateRollMessageIcons(rMessage, aAddIcons, sFirstIcon)
 	end
 end
 
+function processRollSpecialEffects(rRoll, bAttack)
+	local bAutomaticSuccess = rRoll.nDifficulty <= 0;
+	if #(rRoll.aDice) >= 1 then
+		local nFirstDie = rRoll.aDice[1].result or 0;
+		
+		rRoll.bMajorEffect = not bAutomaticSuccess and nFirstDie == 20;
+		rRoll.bMinorEffect = not bAutomaticSuccess and nFirstDie == 19;
+		rRoll.bRolled18 = not bAutomaticSuccess and bAttack and nFirstDie == 18;
+		rRoll.bRolled17 = not bAutomaticSuccess and bAttack and nFirstDie == 17;
+		rRoll.bGmIntrusion = not bAutomaticSuccess and nFirstDie <= DifficultyManager.getGmiThreshold();
+	end
+end
+
 function updateMessageWithConvertedTotal(rRoll, rMessage)
 	if rMessage.dice and rMessage.dice[1] and rMessage.dice[1].value then
 		rMessage.dice[1].value = RollManager.getConvertedTotal(rRoll)

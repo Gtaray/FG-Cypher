@@ -9,12 +9,24 @@
 	<windowclass name="global_difficulty">
 		<sheetdata>
 			<genericcontrol name="difficulty">
-				<anchored height="32" width="32">
-					<top offset="10" />
-					<left offset="10" />
+				<anchored height="32" width="40">
+					<top offset="0" />
+					<left offset="0" />
 				</anchored>
 				<script file="desktop/scripts/global_difficulty.lua" />
 				<tooltip textres="desktop_tooltip_difficulty" />
+			</genericcontrol>
+		</sheetdata>
+	</windowclass>
+	<windowclass name="global_gmi_threshold">
+		<sheetdata>
+			<genericcontrol name="gmi_threshold">
+				<anchored height="25" width="25">
+					<top offset="0" />
+					<left offset="0" />
+				</anchored>
+				<script file="desktop/scripts/global_gmi_threshold.lua" />
+				<tooltip textres="desktop_tooltip_gmi_threshold" />
 			</genericcontrol>
 		</sheetdata>
 	</windowclass>

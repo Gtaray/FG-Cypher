@@ -106,17 +106,7 @@ function onRoll(rSource, rTarget, rRoll)
 	RollManager.calculateDifficultyForRoll(rSource, rTarget, rRoll);
 
 	local aAddIcons = {};
-	local bAutomaticSuccess = rRoll.nDifficulty <= 0;
-
-	-- Only assign these booleans if we have dice. If there are no dice, then the 
-	-- rebuildRoll() function will assign these booleans
-	if #(rRoll.aDice) == 1 then
-		local nFirstDie = rRoll.aDice[1].result or 0;
-		
-		rRoll.bMajorEffect = not bAutomaticSuccess and nFirstDie == 20;
-		rRoll.bMinorEffect = not bAutomaticSuccess and nFirstDie == 19;
-		rRoll.bGmIntrusion = not bAutomaticSuccess and nFirstDie == 1;
-	end
+	RollManager.processRollSpecialEffects(rRoll);
 
 	if rRoll.bMajorEffect then
 		if not rRoll.bRebuilt then

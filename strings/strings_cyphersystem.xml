@@ -634,6 +634,7 @@
 	<string name="modifier_label_EASE">Ease</string>
 	<string name="modifier_label_HINDER">Hinder</string>
 	<string name="desktop_tooltip_difficulty">Difficulty that all non-targeted rolls are made against. Use the scroll wheel to increase or decrease this value.</string>
+	<string name="desktop_tooltip_gmi_threshold">A d20 roll of equal to or lower than this value triggers a GM intrusion.</string>
 
 	<!-- Intrusions -->
 	<string name="menu_gm_intrusion">Invoke a GM Intrusion on this PC (and grant them 1 XP)</string>

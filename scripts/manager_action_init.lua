@@ -107,14 +107,7 @@ function onRoll(rSource, rTarget, rRoll)
 	local aAddIcons = {};
 
 	rMessage.icon = "action_roll";
-
-	if #(rRoll.aDice) == 1 then
-		local nFirstDie = rRoll.aDice[1].result or 0;
-		
-		rRoll.bMajorEffect = nFirstDie == 20;
-		rRoll.bMinorEffect = nFirstDie == 19;
-		rRoll.bGmIntrusion = nFirstDie == 1;
-	end
+	RollManager.processRollSpecialEffects(rRoll);
 
 	if rRoll.bMajorEffect then
 		rMessage.text = rMessage.text .. " [MAJOR EFFECT]";

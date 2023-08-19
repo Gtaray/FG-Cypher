@@ -8,7 +8,13 @@
 <root>
 	<panel name="global_difficulty">
 		<class>global_difficulty</class>
-		<bounds>15,-95,52,52</bounds>
+		<bounds>15,-90,32,32</bounds>
+		<locked />
+	</panel>
+
+	<panel name="global_gmi_threshold">
+		<class>global_gmi_threshold</class>
+		<bounds>50,-70,25,25</bounds>
 		<locked />
 	</panel>
 

@@ -4,7 +4,7 @@
 --
 
 function onInit()
-	DifficultyManager.addDifficultyUpdateHandler(onGmiThresholdChanged)
+	DifficultyManager.addGmiThresholdUpdateHandler(onGmiThresholdChanged)
 	onGmiThresholdChanged()
 end
 
@@ -13,11 +13,11 @@ function onWheel(notches)
         return;
 	end
 
-	DifficultyManager.adjustGlobalDifficulty(notches);
+	DifficultyManager.adjustGmiThreshold(notches);
 end
 
 function onGmiThresholdChanged()
-	local nDiff = DifficultyManager.getGlobalDifficulty();
-	local iconName = string.format("task%s", nDiff);
+	local nGmi = DifficultyManager.getGmiThreshold();
+	local iconName = string.format("gmi%s", nGmi);
 	setIcon(iconName)
 end
