@@ -382,4 +382,25 @@
 			</string_textlistitem>
 		</sheetdata>
 	</windowclass>
+
+	<windowclass name="power_action_item" copy="power_action">
+		<sheetdata>
+			<button_poweractioneditor name="detail" merge="delete" />
+			<button_idelete name="idelete" merge="delete" />
+
+			<button_idelete name="idelete" insertbefore="ireorder">
+				<anchored to="rightanchor">
+					<top />
+					<right anchor="left" relation="relative" offset="-5" />
+				</anchored>
+				<editmode>actions_iedit</editmode>
+			</button_idelete>
+			<button_poweractioneditor name="detail" insertbefore="ireorder">
+				<anchored to="rightanchor">
+					<top />
+					<right anchor="left" relation="relative" offset="-5" />
+				</anchored>
+			</button_poweractioneditor>
+		</sheetdata>
+	</windowclass>
 </root>

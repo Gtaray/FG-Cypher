@@ -116,9 +116,23 @@
 	<!-- Entry in a power_item's list_poweraction list -->
 	<windowclass name="pc_power_action" copy="power_action">
 		<sheetdata>
-			<button_idelete name="idelete" mergerule="resetandadd">
+			<button_poweractioneditor name="detail" merge="delete" />
+			<button_idelete name="idelete" merge="delete" />
+
+			<button_idelete name="idelete" insertbefore="ireorder">
+				<anchored to="rightanchor">
+					<top />
+					<right anchor="left" relation="relative" offset="-5" />
+				</anchored>
 				<editmode>abilitylist_iedit</editmode>
 			</button_idelete>
+			<button_poweractioneditor name="detail" insertbefore="ireorder">
+				<anchored to="rightanchor">
+					<top />
+					<right anchor="left" relation="relative" offset="-5" />
+				</anchored>
+			</button_poweractioneditor>
+			
 			<button_ireorder name="ireorder" mergerule="resetandadd">
 				<editmode>abilitylist_iedit</editmode>
 			</button_ireorder>

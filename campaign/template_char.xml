@@ -329,7 +329,7 @@
 				<right offset="-20" />
 			</anchored>
 			<datasource>.actions</datasource>
-			<class>power_action</class>
+			<class>power_action_item</class>
 			<noscroll />
 			<sortby><field>order</field></sortby>
 			<script>
