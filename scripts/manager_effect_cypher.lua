@@ -379,7 +379,7 @@ function getAssetEffectBonus(rActor, aFilter, rTarget)
 end
 
 function getMaxAssetsEffectBonus(rActor, aFilter)
-	return EffectManagerCypher.getEffectsBonusByType(rActor, "MAXASSETS", aFilter, true);
+	return EffectManagerCypher.getEffectsBonusByType(rActor, "MAXASSET", aFilter, true);
 end
 
 function getRecoveryEffectBonus(rActor, aFilter)
