@@ -56,7 +56,13 @@ function getAttackAction()
 	rAction.nModifier = DB.getValue(nodeAction, "modifier", 0);
 	rAction.nLevel = DB.getValue(nodeAction, "level", 0);
 	rAction.nCost = DB.getValue(nodeAction, "cost", 0);
-	rAction.sCostStat = rAction.sStat; -- Might be a limitation, but right now the attack/damage all uses the same stat
+	rAction.sCostStat = DB.getValue(nodeAction, "coststat", "");
+
+	-- If there's a cost but no cost stat specified, use the stat.
+	-- otherwise we use the cost stat
+	if rAction.nCost > 0 and rAction.sCostStat == "" then
+		rAction.sCostStat = rAction.sStat;
+	end
 
 	-- If the attack type is set to weapon, add the weapon type
 	if DB.getValue(nodeAction, "type", "") == "" then

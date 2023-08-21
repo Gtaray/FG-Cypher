@@ -3,16 +3,21 @@
 -- attribution and copyright information.
 --
 
-DIFFICULTY_DEFAULT = 3
-DIFFICULTY_MINIMUM = 1
-DIFFICULTY_PATH = "global.difficulty";
-
 function onInit()
 	if not Session.IsHost then
 		return
 	end
-	initializeGlobalDifficulty()
+
+	DifficultyManager.initializeGlobalDifficulty()
+	DifficultyManager.initializeGmiThreshold()
 end
+
+-------------------------------------------------------------------------------
+-- DIFFICULTY
+-------------------------------------------------------------------------------
+DIFFICULTY_DEFAULT = 3
+DIFFICULTY_MINIMUM = 1
+DIFFICULTY_PATH = "global.difficulty";
 
 function initializeGlobalDifficulty()
 	local node = DB.findNode(DifficultyManager.DIFFICULTY_PATH);
@@ -29,7 +34,7 @@ function initializeGlobalDifficulty()
 	end
 end
 
-function addUpdateHandler(fHandler)
+function addDifficultyUpdateHandler(fHandler)
 	DB.addHandler(DifficultyManager.DIFFICULTY_PATH, "onUpdate", fHandler);
 end
 
@@ -51,4 +56,51 @@ end
 function adjustGlobalDifficulty(nIncrement)
 	local nDiff = DifficultyManager.getGlobalDifficulty();
 	DifficultyManager.setGlobalDifficulty(nDiff + nIncrement);
+end
+
+-------------------------------------------------------------------------------
+-- GMI THRESHOLD
+-------------------------------------------------------------------------------
+GMI_DEFAULT = 1
+GMI_MINIMUM = 1
+GMI_MAXIMUM = 5
+GMI_PATH = "global.gmi_threshold";
+
+function initializeGmiThreshold()
+	local node = DB.findNode(DifficultyManager.GMI_PATH);
+
+	if not node then
+		node = DB.createNode(DifficultyManager.GMI_PATH, "number");
+		DB.setValue(node, "", "number", DifficultyManager.GMI_DEFAULT)
+	end
+
+	if node then
+		local globalnode = DB.getParent(node);
+		DB.setPublic(node, true);
+		DB.setPublic(globalnode, true);
+	end
+end
+
+function addGmiThresholdUpdateHandler(fHandler)
+	DB.addHandler(DifficultyManager.GMI_PATH, "onUpdate", fHandler);
+end
+
+function getGmiThreshold()
+	return DB.getValue(DifficultyManager.GMI_PATH, DifficultyManager.GMI_DEFAULT);
+end
+
+function setGmiThreshold(nDifficulty)
+	-- Clamp difficulty between min and max
+	nDifficulty = math.min(
+		math.max(
+			DifficultyManager.GMI_MINIMUM, 
+			nDifficulty), 
+		DifficultyManager.GMI_MAXIMUM
+	)
+	DB.setValue(DifficultyManager.GMI_PATH, "number", nDifficulty);
+end
+
+function adjustGmiThreshold(nIncrement)
+	local nDiff = DifficultyManager.getGmiThreshold();
+	DifficultyManager.setGmiThreshold(nDiff + nIncrement);
 end

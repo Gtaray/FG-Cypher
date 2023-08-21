@@ -2,13 +2,34 @@
 -- Please see the license.html file included with this distribution for 
 -- attribution and copyright information.
 --
+OOB_MSGTYPE_RESETEDGE = "resetedge";
 
 function onInit()
 	CombatManager.setCustomSort(CombatManager.sortfuncStandard);
 
 	CombatManager.setCustomCombatReset(resetInit);
+	CombatManager.setCustomTurnEnd(sendTurnEndMessage)
+	OOBManager.registerOOBMsgHandler(OOB_MSGTYPE_RESETEDGE, handleTurnEndMessage);
 
 	CombatRecordManager.setRecordTypePostAddCallback("npc", onNPCPostAdd);
+end
+
+-- Because we want EVERYONE to reset their edge when a turn changes, we have to use
+-- an OOB, since the normal turn end event is host-only
+function sendTurnEndMessage()
+	if not Session.IsHost then
+		return;
+	end
+
+	local msgOOB = {
+		type = OOB_MSGTYPE_RESETEDGE
+	};
+
+	Comm.deliverOOBMessage(msgOOB);
+end
+
+function handleTurnEndMessage()
+	RollManager.enableEdge();
 end
 
 --

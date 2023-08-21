@@ -157,12 +157,27 @@
 			</label_column>
 			<cycler_column name="period">
 				<anchored width="200" />
+				<script>
+					function onValueChanged()
+						if super and super.onValueChanged then
+							super.onValueChanged()
+						end
+						window.update();
+					end
+				</script>
 				<parameters>
 					<labelsres>power_recharge_any|power_recharge_first|power_recharge_last|power_recharge_manual</labelsres>
 					<values>any|first|last|manual</values>
 					<defaultlabelres>dash</defaultlabelres>
 				</parameters>
 			</cycler_column>
+			<label_column name="uses_label">
+				<static textres="power_label_recharge_uses" />
+			</label_column>
+			<number_column name="uses">
+				<min>1</min>
+				<default>1</default>
+			</number_column>
 
 			<!-- COST -->
 			<header_column name="header_cost">
@@ -193,13 +208,13 @@
 				</anchored>
 				<static textres="power_label_cost_texft_2" />
 			</label>
-			<button_stat name="coststat">
+			<button_coststat name="coststat">
 				<anchored to="cost" width="70" height="20">
 					<top />
 					<left anchor="right" relation="relative" offset="10" />
 				</anchored>
 				<tooltip textres="power_tooltip_coststat" />
-			</button_stat>
+			</button_coststat>
 			<label_fieldtop name="label_coststat">
 				<anchored to="coststat" />
 				<static textres="power_label_coststat" />
@@ -364,6 +379,27 @@
 				</script>
 				<readonly />
 			</string_textlistitem>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="power_action_item" copy="power_action">
+		<sheetdata>
+			<button_poweractioneditor name="detail" merge="delete" />
+			<button_idelete name="idelete" merge="delete" />
+
+			<button_idelete name="idelete" insertbefore="ireorder">
+				<anchored to="rightanchor">
+					<top />
+					<right anchor="left" relation="relative" offset="-5" />
+				</anchored>
+				<editmode>actions_iedit</editmode>
+			</button_idelete>
+			<button_poweractioneditor name="detail" insertbefore="ireorder">
+				<anchored to="rightanchor">
+					<top />
+					<right anchor="left" relation="relative" offset="-5" />
+				</anchored>
+			</button_poweractioneditor>
 		</sheetdata>
 	</windowclass>
 </root>

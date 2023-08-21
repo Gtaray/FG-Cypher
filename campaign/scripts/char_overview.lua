@@ -4,11 +4,17 @@
 --
 
 function onInit()
+	if super and super.onInit then
+		super.onInit();
+	end
 	onXPOptionChanged();
 	OptionsManager.registerCallback("HRXP", onXPOptionChanged);
 end
 
 function onClose()
+	if super and super.onClose then
+		super.onClose();
+	end
 	OptionsManager.unregisterCallback("HRXP", onXPOptionChanged);
 end
 

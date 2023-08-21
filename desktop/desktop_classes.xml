@@ -9,12 +9,24 @@
 	<windowclass name="global_difficulty">
 		<sheetdata>
 			<genericcontrol name="difficulty">
-				<anchored height="32" width="32">
-					<top offset="10" />
-					<left offset="10" />
+				<anchored height="32" width="40">
+					<top offset="0" />
+					<left offset="0" />
 				</anchored>
 				<script file="desktop/scripts/global_difficulty.lua" />
 				<tooltip textres="desktop_tooltip_difficulty" />
+			</genericcontrol>
+		</sheetdata>
+	</windowclass>
+	<windowclass name="global_gmi_threshold">
+		<sheetdata>
+			<genericcontrol name="gmi_threshold">
+				<anchored height="25" width="25">
+					<top offset="0" />
+					<left offset="0" />
+				</anchored>
+				<script file="desktop/scripts/global_gmi_threshold.lua" />
+				<tooltip textres="desktop_tooltip_gmi_threshold" />
 			</genericcontrol>
 		</sheetdata>
 	</windowclass>
@@ -33,21 +45,42 @@
 			end
 		</script>
 		<sheetdata>
-			<numbercontrol name="effort">
+			<!-- For some reason putting these button controls in a template
+				breaks the states and prevents clicking, so I'm not using a template -->
+			<buttoncontrol name="effort">
 				<bounds>10,7,30,22</bounds>
+				<script>
+					function onWheel(notches)
+						setValue(math.max(math.min(getValue() + notches, 6), 0))
+					end
+				</script>
 				<font>modcollector</font>
-				<min>0</min>
-			</numbercontrol>
+
+				<state textres="diffadj_label_0" />
+				<state textres="diffadj_label_1" />
+				<state textres="diffadj_label_2" />
+				<state textres="diffadj_label_3" />
+				<state textres="diffadj_label_4" />
+				<state textres="diffadj_label_5" />
+				<state textres="diffadj_label_6" />
+			</buttoncontrol>
 			<label_fieldtop name="label_effort">
 				<anchored to="effort" position="below" />
 				<static textres="diffadj_label_effort" />
 			</label_fieldtop>
-			<numbercontrol name="assets">
+			<buttoncontrol name="assets">
 				<bounds>50,7,30,22</bounds>
+				<script>
+					function onWheel(notches)
+						setValue(math.max(math.min(getValue() + notches, 2), 0))
+					end
+				</script>
 				<font>modcollector</font>
-				<min>0</min>
-				<max>2</max>
-			</numbercontrol>
+
+				<state textres="diffadj_label_0" />
+				<state textres="diffadj_label_1" />
+				<state textres="diffadj_label_2" />
+			</buttoncontrol>
 			<label_fieldtop name="label_assets">
 				<anchored to="assets" position="below" />
 				<static textres="diffadj_label_assets" />

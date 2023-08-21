@@ -13,6 +13,7 @@ end
 
 function performRoll(draginfo, rActor, rAction)
 	local rRoll = ActionStat.getRoll(rActor, rAction);
+	RollManager.convertBooleansToNumbers(rRoll);
 	ActionsManager.performAction(draginfo, rActor, rRoll);
 end
 
@@ -51,6 +52,7 @@ function getRoll(rActor, rAction)
 end
 
 function modRoll(rSource, rTarget, rRoll)
+	RollManager.convertNumbersToBooleans(rRoll);
 	-- Rebuild roll data from a chat message in the case of drag/drop
 	-- from the chat window. If we rebuild a roll from chat, we do not want to
 	-- process any other modifiers
@@ -102,9 +104,11 @@ function modRoll(rSource, rTarget, rRoll)
 	if rRoll.nConditionMod > 0 then
 		rRoll.sDesc = string.format("%s [EFFECTS %s]", rRoll.sDesc, rRoll.nConditionMod)
 	end
+	RollManager.convertBooleansToNumbers(rRoll);
 end
 
 function onRoll(rSource, rTarget, rRoll)
+	RollManager.convertNumbersToBooleans(rRoll);
 	RollManager.decodeAdvantage(rRoll);
 
 	-- Hacky way to force the rebuilt flag to either be true or false, never an empty string
@@ -121,17 +125,7 @@ function onRoll(rSource, rTarget, rRoll)
 	RollManager.calculateDifficultyForRoll(rSource, rTarget, rRoll);
 
 	local aAddIcons = {};
-	local bAutomaticSuccess = rRoll.nDifficulty <= 0;
-
-	-- Only assign these booleans if we have dice. If there are no dice, then the 
-	-- rebuildRoll() function will assign these booleans
-	if #(rRoll.aDice) == 1 then
-		local nFirstDie = rRoll.aDice[1].result or 0;
-
-		rRoll.bMajorEffect = not bAutomaticSuccess and nFirstDie == 20;
-		rRoll.bMinorEffect = not bAutomaticSuccess and nFirstDie == 19;
-		rRoll.bGmIntrusion = not bAutomaticSuccess and nFirstDie == 1;
-	end
+	RollManager.processRollSpecialEffects(rRoll);
 
 	if rRoll.bMajorEffect then
 		if not rRoll.bRebuilt then

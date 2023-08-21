@@ -219,6 +219,10 @@ function getPowerHealActionText(nodeAction)
 	if rAction then		
 		sHeal = string.format("%s %s", rAction.nHeal, StringManager.capitalize(rAction.sHealStat));
 
+		if rAction.bNoOverflow then
+			sHeal = sHeal .. " [SINGLE STAT]"
+		end
+
 		if DB.getValue(nodeAction, "healtargeting", "") == "self" then
 			sHeal = sHeal .. " [SELF]";
 		end
@@ -372,14 +376,15 @@ function getPowerAction(nodeAction)
 		rAction.sTargeting = DB.getValue(nodeAction, "healtargeting", "");
 		rAction.nHeal = DB.getValue(nodeAction, "heal", 0);
 		rAction.sHealStat = RollManager.resolveStat(DB.getValue(nodeAction, "healstat", ""));
+		rAction.bNoOverflow = DB.getValue(nodeAction, "overflow", "") ~= "yes";
 
 	elseif rAction.type == "effect" then
 		rAction.sName = DB.getValue(nodeAction, "label", "");
 		rAction.sApply = DB.getValue(nodeAction, "apply", "");
 		rAction.sTargeting = DB.getValue(nodeAction, "targeting", "");
 		rAction.aDice = DB.getValue(nodeAction, "durationdice", {})
-		rAction.nDuration = DB.getValue(nodeAction, "duration", 0)
-		rAction.sUnits = DB.getValue(nodeAction, "duractionunit", "");
+		rAction.nDuration = DB.getValue(nodeAction, "durmod", 0)
+		rAction.sUnits = DB.getValue(nodeAction, "durunit", "");
 
 		rAction.rEffectScaling = {
 			nBase = DB.getValue(nodeAction, "scaling_effect_base", 0),

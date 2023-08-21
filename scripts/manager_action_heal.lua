@@ -13,6 +13,7 @@ end
 
 function performRoll(draginfo, rActor, rAction)
 	local rRoll = ActionHeal.getRoll(rActor, rAction);
+	RollManager.convertBooleansToNumbers(rRoll);
 	ActionsManager.performAction(draginfo, rActor, rRoll);
 end
 
@@ -27,6 +28,7 @@ function getRoll(rActor, rAction)
 	rRoll.sStat = rAction.sStat;
 	rRoll.sHealStat = rAction.sHealStat;
 	rRoll.nEffort = rAction.nEffort or 0;
+	rRoll.bNoOverflow = rAction.bNoOverflow or false;
 	
 	rRoll.sDesc = string.format(
 		"[HEAL (%s)] %s", 
@@ -42,6 +44,7 @@ function getRoll(rActor, rAction)
 end
 
 function modRoll(rSource, rTarget, rRoll)
+	RollManager.convertNumbersToBooleans(rRoll);
 	if ActionHeal.rebuildRoll(rSource, rTarget, rRoll) then
 		return;
 	end
@@ -68,6 +71,11 @@ function modRoll(rSource, rTarget, rRoll)
 
 	RollManager.encodeEffort(nEffort, rRoll)
 	RollManager.encodeEffects(rRoll, nHealBonus);
+	if rRoll.bNoOverflow then
+		rRoll.sDesc = rRoll.sDesc .. " [SINGLE STAT]"
+	end
+
+	RollManager.convertBooleansToNumbers(rRoll);
 end
 
 function rebuildRoll(rSource, rTarget, rRoll)
@@ -77,11 +85,14 @@ function rebuildRoll(rSource, rTarget, rRoll)
 		rRoll.sLabel = StringManager.trim(rRoll.sDesc:match("%[HEAL.*%]([^%[]+)"));
 		bRebuilt = true;
 	end
-	if not rRoll.sStat then
-		rRoll.sStat = RollManager.decodeStat(rRoll, true);
+	if not rRoll.sHealStat then
+		rRoll.sHealStat = RollManager.decodeStat(rRoll, true);
 	end
 	if not rRoll.nEffort then
 		rRoll.nEffort = RollManager.decodeEffort(rRoll, true);
+	end
+	if not rRoll.bNoOverflow then
+		rRoll.bNoOverflow = rRoll.sDesc:match("%[SINGLE STAT%]") ~= nil;
 	end
 
 	rRoll.bRebuilt = bRebuilt;
@@ -89,15 +100,20 @@ function rebuildRoll(rSource, rTarget, rRoll)
 end
 
 function onRoll(rSource, rTarget, rRoll)
-	local rResult = ActionDamage.buildRollResult(rSource, rTarget, rRoll);
-	rResult.nTotal = rResult.nTotal * -1; --Invert the roll total because negative damage is healing
+	RollManager.convertNumbersToBooleans(rRoll);
+	-- For some reason the boolean bNoOverflow is entirely stripped out here
+	-- so we need to re-build it from the description
+	rRoll.bNoOverflow = rRoll.sDesc:match("%[SINGLE STAT%]") ~= nil;
+
+	ActionDamage.buildRollResult(rSource, rTarget, rRoll);
+	rRoll.nTotal = rRoll.nTotal * -1; --Invert the roll total because negative damage is healing
 
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 	rMessage.icon = "action_heal";
 	Comm.deliverChatMessage(rMessage);
 
 	-- Apply damage to the PC or CT entry referenced
-	if rResult.nTotal ~= 0 then
-		ActionDamage.notifyApplyDamage(rSource, rTarget, rRoll, rResult);
+	if rRoll.nTotal ~= 0 then
+		ActionDamage.notifyApplyDamage(rSource, rTarget, rRoll);
 	end
 end

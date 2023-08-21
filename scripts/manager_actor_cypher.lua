@@ -77,6 +77,7 @@ function getPCWoundPercent(rActor)
 	local nIntCur, nIntMax = ActorManagerCypher.getStatPool(rActor, "intellect");
 	local nCur = nMightCur + nSpeedCur + nIntCur;
 	local nMax = nMightMax + nSpeedMax + nIntMax;
+	local nodePC = ActorManager.getCreatureNode(rActor);
 
 	local nPercentWounded = 0;
 	if nMax > 0 then
@@ -420,6 +421,31 @@ function getRecoveryRollMod(rActor)
 	return DB.getValue(nodeActor, "recoveryrollmod", 0);
 end
 
+-------------------------------------------------------------------------------
+-- XP
+-------------------------------------------------------------------------------
+function getXP(rActor)
+	local nodeActor;
+	if type(rActor) == "databasenode" then
+		nodeActor = rActor;
+	else
+		nodeActor = ActorManager.getCreatureNode(rActor);
+	end
+	return DB.getValue(nodeActor, "xp", 0);
+end
+
+function deductXP(rActor, nDelta)
+	local nodeActor;
+	if type(rActor) == "databasenode" then
+		nodeActor = rActor;
+	else
+		nodeActor = ActorManager.getCreatureNode(rActor);
+	end
+
+	local nXP = ActorManagerCypher.getXP(nodeActor);
+	DB.setValue(nodeActor, "xp", "number", math.max(nXP - nDelta, 0));
+end
+
 ---------------------------------------------------------------
 -- INVENTORY
 ---------------------------------------------------------------
@@ -641,7 +667,7 @@ end
 ---------------------------------------------------------------
 -- NPCs
 ---------------------------------------------------------------
-function getCreatureLevel(rCreature, rAttacker, aFilter)
+function getCreatureLevel(rCreature, rAttacker, aFilter, aIgnore)
 	if not aFilter then
 		aFilter = {};
 	end
@@ -659,7 +685,7 @@ function getCreatureLevel(rCreature, rAttacker, aFilter)
 	end
 
 	local nBase = DB.getValue(creatureNode, "level", 0);
-	local nLevelBonus = EffectManagerCypher.getLevelEffectBonus(rCreature, aFilter, rAttacker);
+	local nLevelBonus = EffectManagerCypher.getLevelEffectBonus(rCreature, aFilter, rAttacker, aIgnore);
 
 	return nBase + nLevelBonus;
 end
