@@ -32,7 +32,7 @@
 					<top anchor="top" offset="15" />
 				</anchored>
 				<multilinespacing>20</multilinespacing>
-				<font>reference-title</font>
+				<font>recordsheet_header</font>
 				<center/>
 				<readonly />
 				<static textres="arc_climax_prompt_label" />
@@ -100,7 +100,7 @@
 					<top anchor="top" offset="15" />
 				</anchored>
 				<multilinespacing>20</multilinespacing>
-				<font>reference-title</font>
+				<font>recordsheet_header</font>
 				<center/>
 				<readonly />
 				<static textres="arc_resolution_prompt_label" />
