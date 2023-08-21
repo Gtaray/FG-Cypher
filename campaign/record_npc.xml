@@ -61,6 +61,7 @@
 						local rActor = self.getActor();
 						local rAction = {};
 						rAction.label = ActorManager.getDisplayName(rActor);
+						rAction.sStat = "might";
 						rAction.sDefenseStat = "speed";
 						ActionDefenseVs.performRoll(draginfo, rActor, rAction);
 					end

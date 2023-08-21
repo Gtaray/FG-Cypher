@@ -21,6 +21,7 @@ end
 
 function performRoll(draginfo, rActor, rAction)
 	local rRoll = ActionAttack.getRoll(rActor, rAction);
+	RollManager.convertBooleansToNumbers(rRoll);
 	ActionsManager.performAction(draginfo, rActor, rRoll);
 end
 
@@ -61,6 +62,7 @@ function getRoll(rActor, rAction)
 end
 
 function modRoll(rSource, rTarget, rRoll)
+	RollManager.convertNumbersToBooleans(rRoll);
 	if ActionAttack.rebuildRoll(rSource, rTarget, rRoll) then
 		return;
 	end

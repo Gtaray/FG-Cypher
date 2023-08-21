@@ -22,6 +22,7 @@ end
 
 function performRoll(draginfo, rActor, rAction)
 	local rRoll = ActionInit.getRoll(rActor, rAction);
+	RollManager.convertBooleansToNumbers(rRoll);
 	ActionsManager.performAction(draginfo, rActor, rRoll);
 end
 
@@ -49,6 +50,7 @@ function getRoll(rActor, rAction)
 end
 
 function modRoll(rSource, rTarget, rRoll)
+	RollManager.convertNumbersToBooleans(rRoll);
 	local aFilter = { "initiative", "init", rRoll.sStat }
 
 	-- Process training effects

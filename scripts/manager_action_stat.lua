@@ -13,6 +13,7 @@ end
 
 function performRoll(draginfo, rActor, rAction)
 	local rRoll = ActionStat.getRoll(rActor, rAction);
+	RollManager.convertBooleansToNumbers(rRoll);
 	ActionsManager.performAction(draginfo, rActor, rRoll);
 end
 
@@ -51,6 +52,7 @@ function getRoll(rActor, rAction)
 end
 
 function modRoll(rSource, rTarget, rRoll)
+	RollManager.convertNumbersToBooleans(rRoll);
 	-- Rebuild roll data from a chat message in the case of drag/drop
 	-- from the chat window. If we rebuild a roll from chat, we do not want to
 	-- process any other modifiers

@@ -43,30 +43,47 @@ function onRoll(rSource, rTarget, rRoll)
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 	
 	local sNodeType, nodeActor = ActorManager.getTypeAndNode(rSource);
+	local nTotal = ActionsManager.total(rRoll);
 
+	sFilter = nil;
 	if sNodeType == "pc" then
 		local c = DB.getValue(nodeActor, "recoveryused", 0);
 		if c >= 4 then
 			rMessage.text = rMessage.text .. " [NO RECOVERIES REMAINING]";
+			sFilter= "day"
 		elseif c == 3 then
 			rMessage.text = rMessage.text .. " [10 HOURS]";
+			sFilter = "day"
 		elseif c == 2 then
 			rMessage.text = rMessage.text .. " [1 HOUR]";
+			sFilter = "hour"
 		elseif c == 1 then
 			rMessage.text = rMessage.text .. " [10 MINUTES]";
+			sFilter = "minute"
 		else
 			rMessage.text = rMessage.text .. " [1 ACTION]";
+			sFilter = "action"
 		end
 		if c < 4 then
 			DB.setValue(nodeActor, "recoveryused", "number", c + 1);
+		end
+
+		if EffectManagerCypher.ignoreRecovery(rSource, sFilter) then
+			rMessage.text = rMessage.text .. " [NONE]";
+			nTotal = 0;
+		elseif EffectManagerCypher.isRecoveryHalved(rSource, sFilter) then
+			rMessage.text = rMessage.text .. " [HALF]";
+			nTotal = math.floor(nTotal / 2);
 		end
 	end
 	
 	Comm.deliverChatMessage(rMessage);
 
     -- Now open the dialog to assign the recovery points
-    local wRecovery = Interface.openWindow("recovery", DB.getPath(nodeActor));
-    wRecovery.setRecoveryAmount(ActionsManager.total(rRoll));
+	if nTotal > 0 then
+		local wRecovery = Interface.openWindow("recovery", DB.getPath(nodeActor));
+		wRecovery.setRecoveryAmount(nTotal);
+	end
 end
 
 function applyRecovery(nodeChar, nMightNew, nSpeedNew, nIntellectNew, nRemainder)
@@ -123,9 +140,9 @@ function applyRecovery(nodeChar, nMightNew, nSpeedNew, nIntellectNew, nRemainder
 
     Comm.deliverChatMessage(rMessage);
 
-	-- Handle recharging powers
 	local nRecoveryUsed = DB.getValue(nodeChar, "recoveryused", 0);
 
+	-- Handle recharging powers
 	for _, abilityNode in ipairs(DB.getChildList(nodeChar, "abilitylist")) do
 		local sPeriod = DB.getValue(abilityNode, "period", "");
 		local bRecharge = (sPeriod == "first" and nRecoveryUsed == 1) or 
@@ -136,4 +153,38 @@ function applyRecovery(nodeChar, nMightNew, nSpeedNew, nIntellectNew, nRemainder
 			DB.setValue(abilityNode, "used", "number", 0);
 		end
 	end
+
+	-- Handle advancing and expiring effects
+	for _,nodeEffect in pairs(DB.getChildList(ActorManager.getCTNode(nodeChar), "effects")) do
+		ActionRecovery.adjustEffectDuration(nodeEffect, nRecoveryUsed);
+	end
+end
+
+function adjustEffectDuration(nodeEffect, nRecoveryUsed)
+	local nDur = DB.getValue(nodeEffect, "duration", 0);
+
+	-- effects with no duration get ignored
+	if nDur == 0 then
+		return;
+	end
+
+	-- just took 10 minute recovery
+	if nRecoveryUsed == 2 then
+		nDur = nDur - 600; -- 600 rounds per 10 minutes
+		
+	-- just took 1 hour recovery
+	elseif nRecoveryUsed == 3 then
+		nDur = nDur - 3600
+
+	-- just took 10 hour recovery
+	elseif nRecoveryUsed == 4 then
+		nDur = nDur - 36000
+	end
+
+	if nDur <= 0 then
+		EffectManager.notifyExpire(nodeEffect, 0, true);
+		return;
+	end
+
+	DB.setValue(nodeEffect, "duration", "number", nDur);
 end

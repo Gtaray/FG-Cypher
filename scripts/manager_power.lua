@@ -383,8 +383,8 @@ function getPowerAction(nodeAction)
 		rAction.sApply = DB.getValue(nodeAction, "apply", "");
 		rAction.sTargeting = DB.getValue(nodeAction, "targeting", "");
 		rAction.aDice = DB.getValue(nodeAction, "durationdice", {})
-		rAction.nDuration = DB.getValue(nodeAction, "duration", 0)
-		rAction.sUnits = DB.getValue(nodeAction, "duractionunit", "");
+		rAction.nDuration = DB.getValue(nodeAction, "durmod", 0)
+		rAction.sUnits = DB.getValue(nodeAction, "durunit", "");
 
 		rAction.rEffectScaling = {
 			nBase = DB.getValue(nodeAction, "scaling_effect_base", 0),

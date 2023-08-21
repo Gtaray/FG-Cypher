@@ -101,6 +101,7 @@ function performRoll(draginfo, rActor, rAction)
 			end
 		end
 
+		RollManager.convertBooleansToNumbers(rRoll);
 		ActionsManager.performAction(draginfo, rActor, rRoll);
 		return true;
 	end
@@ -150,6 +151,7 @@ function getRoll(rActor, rAction)
 end
 
 function modRoll(rSource, rTarget, rRoll)
+	RollManager.convertNumbersToBooleans(rRoll);
 	if ActionCost.rebuildRoll(rSource, rTarget, rRoll) then
 		return;
 	end

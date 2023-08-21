@@ -6,8 +6,8 @@
 --
 --	Difficulty Panel Management
 --
-
 local _panelWindow = nil;
+
 function registerDifficultyPanel(w)
 	_panelWindow = w;
 	self.resetDifficultyPanel();

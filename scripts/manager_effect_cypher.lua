@@ -81,6 +81,9 @@ end
 -- CONDITION MANAGEMENT
 ---------------------------------
 function addDefaultConditions()
+	if not Session.IsHost then
+		return;
+	end
 	if DB.getChildCount("conditions") == 0 then
 		for sCondition, rEffect in pairs(_defaultConditions) do
 			local node = DB.createChild("conditions")
@@ -141,8 +144,10 @@ function onEffectAddStart(rEffect)
 	rEffect.nDuration = rEffect.nDuration or 1;
 	if rEffect.sUnits == "minute" then
 		rEffect.nDuration = rEffect.nDuration * 10;
-	elseif rEffect.sUnits == "hour" or rEffect.sUnits == "day" then
-		rEffect.nDuration = 0;
+	elseif rEffect.sUnits == "hour" then
+		rEffect.nDuration = rEffect.nDuration * 600
+	elseif rEffect.sUnits == "day" then
+		rEffect.nDuration = rEffect.nDuration * 14400
 	end
 	rEffect.sUnits = "";
 end
@@ -391,6 +396,9 @@ function getHealEffectBonus(rActor, aFilter, rTarget)
 end
 
 function getDamageEffectBonus(rActor, sDamageType, sStat, rTarget)
+	if (sDamageType or "") == "" then
+		sDamageType = "untyped";
+	end
 	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, { "DAMAGE", "DMG" }, sStat, sDamageType, rTarget);
 end
 
@@ -474,6 +482,16 @@ end
 
 function getShieldEffects(rActor, aFilter)
 	return EffectManagerCypher.getEffectsByType(rActor, "SHIELD", aFilter, false, nil, false, rTarget, false);
+end
+
+function isRecoveryHalved(rActor, sFilter)
+	local aEffects = EffectManagerCypher.getEffectsByType(rActor, "HALFRECOVERY", sFilter, false);
+	return #aEffects > 0
+end
+
+function ignoreRecovery(rActor, sFilter)
+	local aEffects = EffectManagerCypher.getEffectsByType(rActor, "NORECOVERY", sFilter, false);
+	return #aEffects > 0
 end
 
 -------------------------------------------------------------------------------
