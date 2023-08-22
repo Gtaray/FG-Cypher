@@ -33,6 +33,12 @@
 	<icon name="task14" file="graphics/icons/task14.png" />
 	<icon name="task15" file="graphics/icons/task15.png" />
 
+	<icon name="gmi1" file="graphics/icons/gmi1.png" />
+	<icon name="gmi2" file="graphics/icons/gmi2.png" />
+	<icon name="gmi3" file="graphics/icons/gmi3.png" />
+	<icon name="gmi4" file="graphics/icons/gmi4.png" />
+	<icon name="gmi5" file="graphics/icons/gmi5.png" />
+
 	<icon name="playerintrusion" file="graphics/icons/player_intrusion.png" />
 
 

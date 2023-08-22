@@ -22,6 +22,7 @@ end
 
 function performRoll(draginfo, rActor, rAction)
 	local rRoll = getRoll(rActor, rAction);
+	RollManager.convertBooleansToNumbers(rRoll);
 	ActionsManager.performAction(draginfo, rActor, rRoll);
 end
 
@@ -62,6 +63,7 @@ function getRoll(rActor, rAction)
 end
 
 function modRoll(rSource, rTarget, rRoll)
+	RollManager.convertNumbersToBooleans(rRoll);
 	if ActionDamage.rebuildRoll(rSource, rTarget, rRoll) then
 		return;
 	end
@@ -89,6 +91,7 @@ function modRoll(rSource, rTarget, rRoll)
 	RollManager.encodePiercing({ bPierce = rRoll.bPiercing, nPierceAmount = rRoll.nPierceAmount }, rRoll);
 	RollManager.encodeEffort(nEffort, rRoll)
 	RollManager.encodeEffects(rRoll, nDmgBonus);
+	RollManager.convertBooleansToNumbers(rRoll);
 end
 
 -- Returns boolean determining whether the roll was rebuilt from a chat message
@@ -125,45 +128,34 @@ function rebuildRoll(rSource, rTarget, rRoll)
 end
 
 function onRoll(rSource, rTarget, rRoll)
-	local rResult = ActionDamage.buildRollResult(rSource, rTarget, rRoll);
+	RollManager.convertNumbersToBooleans(rRoll);
+	ActionDamage.buildRollResult(rSource, rTarget, rRoll);
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 
-	if rResult.bSourceNPC and rResult.bTargetPC then
+	if rRoll.bSourceNPC and rRoll.bTargetPC then
 		rMessage.text = rMessage.text .. " -> " .. (ActorManager.getDisplayName(rTarget) or "")
 	end
 	rMessage.icon = "action_damage";
 	Comm.deliverChatMessage(rMessage);
 
 	if rTarget then
-		ActionDamage.notifyApplyDamage(rSource, rTarget, rRoll, rResult);	
+		ActionDamage.notifyApplyDamage(rSource, rTarget, rRoll);	
 	end	
 end
 
 function buildRollResult(rSource, rTarget, rRoll)
-	local rResult = {};
-
-	rResult.sDesc = rRoll.sDesc;
-	rResult.bSourcePC = (rSource and ActorManager.isPC(rSource)) or false;
-	rResult.bTargetPC = (rTarget and ActorManager.isPC(rTarget)) or false;
-	rResult.bSourceNPC = (rSource and not ActorManager.isPC(rSource)) or false;
-	rResult.bTargetNPC = (rTarget and not ActorManager.isPC(rTarget)) or false;
-	rResult.sDamageStat = rRoll.sDamageStat
-	rResult.sDamageType = (rRoll.sDamageType or ""):lower()
-	rResult.bPiercing = rRoll.bPiercing;
-	rResult.nPierceAmount = rRoll.nPierceAmount
-	rResult.bAmbient = rRoll.bAmbient
-	rResult.bOngoing = rRoll.bOngoing;
+	rRoll.bSourcePC = (rSource and ActorManager.isPC(rSource)) or false;
+	rRoll.bTargetPC = (rTarget and ActorManager.isPC(rTarget)) or false;
+	rRoll.bSourceNPC = (rSource and not ActorManager.isPC(rSource)) or false;
+	rRoll.bTargetNPC = (rTarget and not ActorManager.isPC(rTarget)) or false;
+	rRoll.sDamageType = (rRoll.sDamageType or ""):lower()
 	
-	if rRoll.nTotal  then
-		rResult.nTotal = rRoll.nTotal;
-	else
-		rResult.nTotal = ActionsManager.total(rRoll);
+	if not rRoll.nTotal  then
+		rRoll.nTotal = ActionsManager.total(rRoll);
 	end
-	
-	return rResult;
 end
 
-function notifyApplyDamage(rSource, rTarget, rRoll, rResult)
+function notifyApplyDamage(rSource, rTarget, rRoll)
 	if not rTarget then
 		return;
 	end
@@ -171,34 +163,24 @@ function notifyApplyDamage(rSource, rTarget, rRoll, rResult)
 	local msgOOB = {};
 	msgOOB.type = OOB_MSGTYPE_APPLYDMG;
 	
-	if rRoll.bTower or rRoll.bSecret then
-		msgOOB.nSecret = 1;
-	else
-		msgOOB.nSecret = 0;
-	end
+	msgOOB.bSecret = rRoll.bTower or rRoll.bSecret;
 	msgOOB.nTargetOrder = rTarget.nOrder;
 	msgOOB.sDesc = rRoll.sDesc;
 	msgOOB.sSourceNode = ActorManager.getCreatureNodeName(rSource);
 	msgOOB.sTargetNode = ActorManager.getCreatureNodeName(rTarget);
-	msgOOB.nTotal = rResult.nTotal or 0;
-	msgOOB.sDamageStat = rResult.sDamageStat
-	msgOOB.sDamageType = rResult.sDamageType
+	msgOOB.nTotal = rRoll.nTotal or 0;
+	msgOOB.sDamageStat = rRoll.sDamageStat
+	msgOOB.sHealStat = rRoll.sHealStat
+	msgOOB.sDamageType = rRoll.sDamageType
 
-	msgOOB.bPiercing = "false";
-	if rRoll.bPiercing then
-		msgOOB.bPiercing = "true";
-	end
+	msgOOB.bPiercing = rRoll.bPiercing;
 	msgOOB.nPierceAmount = rRoll.nPierceAmount
 
-	msgOOB.bAmbient = "false";
-	if rRoll.bAmbient then
-		msgOOB.bAmbient = "true";
-	end
+	msgOOB.bAmbient = rRoll.bAmbient;
+	msgOOB.bOngoing = rRoll.bOngoing;
+	msgOOB.bNoOverflow = rRoll.bNoOverflow;
 
-	msgOOB.bOngoing = "false";
-	if rRoll.bOngoing then
-		msgOOB.bOngoing = "true";
-	end
+	RollManager.convertBooleansToNumbers(msgOOB)
 
 	Comm.deliverOOBMessage(msgOOB, "");
 end
@@ -215,22 +197,20 @@ function handleApplyDamage(msgOOB)
 		nTotal = tonumber(msgOOB.nTotal),
 		sDamageStat = msgOOB.sDamageStat,
 		sDamageType = msgOOB.sDamageType,
-		bPiercing = msgOOB.bPiercing == "true",
-		nPierceAmount = msgOOB.nPierceAmount,
-		bAmbient = msgOOB.bAmbient == "true",
-		bOngoing = msgOOB.bOngoing == "true"
+		sHealStat = msgOOB.sHealStat,
+		bPiercing = msgOOB.bPiercing,
+		nPierceAmount = tonumber(msgOOB.nPierceAmount),
+		bAmbient = msgOOB.bAmbient,
+		bOngoing = msgOOB.bOngoing,
+		bNoOverflow = msgOOB.bNoOverflow,
+		bSecret = msgOOB.bSecret
 	}
-	local rResult = ActionDamage.buildRollResult(rSource, rTarget, rRoll);
-	applyDamage(rSource, rTarget, (tonumber(msgOOB.nSecret) == 1), rResult);
+	ActionDamage.buildRollResult(rSource, rTarget, rRoll);
+	RollManager.convertNumbersToBooleans(rRoll);
+	applyDamage(rSource, rTarget, rRoll);
 end
 
-function applyDamage(rSource, rTarget, bSecret, rResult)
-	local sStat = RollManager.decodeStat(rResult, false);
-	local bPiercing, nPierceAmount = RollManager.decodePiercing(rResult, true);
-	local bOngoing = RollManager.decodeOngoingDamage(rResult, true);
-	local sDamageType = rResult.sDamageType;
-	local nTotal = rResult.nTotal;
-
+function applyDamage(rSource, rTarget, rRoll)
 	-- Remember current health status
 	local sOriginalStatus = ActorHealthManager.getHealthStatus(rTarget);
 
@@ -244,29 +224,49 @@ function applyDamage(rSource, rTarget, bSecret, rResult)
 
 	-- if damage type is not specified, then we make sure it has
 	-- the untyped value here. This makes all of the calcs easier
-	if (sDamageType or "") == "" then
-		sDamageType = "untyped";
+	if (rRoll.sDamageType or "") == "" then
+		rRoll.sDamageType = "untyped";
 	end
 
-	if not bAmbient or (bOngoing and sDamageType ~= "untyped") then
-		nTotal = ActionDamage.applyArmor(
+	if not rRoll.bAmbient then
+		rRoll.nTotal = ActionDamage.applyArmor(
 			rSource, 
 			rTarget, 
-			nTotal, 
-			sStat, 
-			sDamageType,
-			bPiercing, 
-			nPierceAmount, 
+			rRoll.nTotal, 
+			rRoll.sDamageStat, 
+			rRoll.sDamageType,
+			rRoll.bPiercing, 
+			rRoll.nPierceAmount,
 			aNotifications);
 	end
 
-	local nShieldAdjust = ActionDamage.handleShield(rTarget, nTotal, { sDamageType, sStat }, aNotifications)
-	nTotal = nTotal - nShieldAdjust;
+	local nShieldAdjust = ActionDamage.handleShield(
+		rTarget, 
+		rRoll.nTotal, 
+		{ rRoll.sDamageType, rRoll.sDamageStat }, 
+		aNotifications)
+
+	rRoll.nTotal = rRoll.nTotal - nShieldAdjust;
+
+	local sStat = rRoll.sDamageStat;
+	if rRoll.nTotal < 0 then
+		sStat = rRoll.sHealStat;
+	end
 
 	if sTargetNodeType == "pc" then
-		ActionDamage.applyDamageToPc(rSource, rTarget, nTotal, sStat, sDamageType, aNotifications);
+		ActionDamage.applyDamageToPc(
+			rSource, 
+			rTarget, 
+			rRoll.nTotal, 
+			sStat,  
+			rRoll.bNoOverflow,
+			aNotifications);
 	elseif sTargetNodeType == "ct" then
-		ActionDamage.applyDamageToNpc(rSource, rTarget, nTotal, sStat, sDamageType, aNotifications);
+		ActionDamage.applyDamageToNpc(
+			rSource, 
+			rTarget, 
+			rRoll.nTotal, 
+			aNotifications);
 	else
 		return;
 	end
@@ -286,34 +286,30 @@ function applyDamage(rSource, rTarget, bSecret, rResult)
 		end
 	end
 
-	-- Output
-	if not (rTarget or sExtraResult ~= "") then
-		return;
-	end
-	
+	-- Output	
 	local msgShort = {font = "msgfont"};
 	local msgLong = {font = "msgfont"};
 	
 	msgLong.text = "";
-	if nTotal < 0 then
+	if rRoll.nTotal < 0 then
 		msgShort.icon = "roll_heal";
 		msgLong.icon = "roll_heal";
 
 		-- Report positive values only
-		nTotal = math.abs(nTotal);
-		msgShort.text = string.format("[heal %s]", nTotal);
-		msgLong.text = string.format("[heal %s]", nTotal);
+		rRoll.nTotal = math.abs(rRoll.nTotal);
+		msgShort.text = string.format("[heal %s]", rRoll.nTotal);
+		msgLong.text = string.format("[heal %s]", rRoll.nTotal);
 		
 	else
 		msgShort.icon = "roll_damage";
 		msgLong.icon = "roll_damage";
 
-		if sDamageType ~= "untyped" then
-			msgShort.text = string.format("[%s %s damage]", nTotal, sDamageType);
-			msgLong.text = string.format("[%s %s damage]", nTotal, sDamageType);
+		if rRoll.sDamageType ~= "untyped" then
+			msgShort.text = string.format("[%s %s damage]", rRoll.nTotal, rRoll.sDamageType);
+			msgLong.text = string.format("[%s %s damage]", rRoll.nTotal, rRoll.sDamageType);
 		else
-			msgShort.text = string.format("[%s damage]", nTotal);
-			msgLong.text = string.format("[%s damage]", nTotal);
+			msgShort.text = string.format("[%s damage]", rRoll.nTotal);
+			msgLong.text = string.format("[%s damage]", rRoll.nTotal);
 		end
 	end
 
@@ -322,9 +318,9 @@ function applyDamage(rSource, rTarget, bSecret, rResult)
 		msgLong.text = string.format("%s -> [to %s", msgLong.text, ActorManager.getDisplayName(rTarget));
 	end
 
-	if ActorManager.isPC(rTarget) and (sStat or "") ~= "" then
-		msgShort.text = string.format("%s's %s", msgShort.text, sStat);
-		msgLong.text = string.format("%s's %s", msgLong.text, sStat);
+	if ActorManager.isPC(rTarget) and (rRoll.sDamageStat or "") ~= "" then
+		msgShort.text = string.format("%s's %s", msgShort.text, rRoll.sDamageStat);
+		msgLong.text = string.format("%s's %s", msgLong.text, rRoll.sDamageStat);
 	end
 
 	msgShort.text = msgShort.text .. "]";
@@ -334,12 +330,12 @@ function applyDamage(rSource, rTarget, bSecret, rResult)
 		msgLong.text = string.format("%s %s", msgLong.text, table.concat(aNotifications, " "));
 	end
 	
-	ActionsManager.outputResult(bSecret, rSource, rTarget, msgLong, msgShort);
+	ActionsManager.outputResult(rRoll.bSecret, rSource, rTarget, msgLong, msgShort);
 end
 
 function applyArmor(rSource, rTarget, nTotal, sStat, sDamageType, bPiercing, nPierceAmount, aNotifications)
 	-- If for some reason the amount of damage is negative, then we don't need to do any processing
-	-- Because it's handling as healing
+	-- Because it's handled as healing
 	if nTotal < 0 then
 		return nTotal;
 	end
@@ -393,7 +389,7 @@ function applyArmor(rSource, rTarget, nTotal, sStat, sDamageType, bPiercing, nPi
 	return nTotal 
 end
 
-function applyDamageToPc(rSource, rTarget, nDamage, sStat, sDamageType, aNotifications)
+function applyDamageToPc(rSource, rTarget, nDamage, sStat, bNoOverflow, aNotifications)
 	local sTargetNodeType, nodePC = ActorManager.getTypeAndNode(rTarget);
 	if not nodePC then
 		return;
@@ -425,6 +421,12 @@ function applyDamageToPc(rSource, rTarget, nDamage, sStat, sDamageType, aNotific
 		ImageDeathMarkerManager.addMarker(ActorManager.getCTNode(rTarget));
 	end
 
+	-- if we shouldn't handle overflowing damage or healing to other stats
+	-- then exit here
+	if bNoOverflow then
+		return;
+	end
+
 	-- the return overflow value that addToStatPool returns is always positive
 	-- which means we need to apply an inversion depending on if we're healing or damaging
 	-- Overflow will follow the normal might -> speed -> intellect damage
@@ -443,7 +445,7 @@ function applyDamageToPc(rSource, rTarget, nDamage, sStat, sDamageType, aNotific
 	-- tracking here
 end
 
-function applyDamageToNpc(rSource, rTarget, nDamage, sDamageStat, sDamageType, aNotifications)
+function applyDamageToNpc(rSource, rTarget, nDamage, aNotifications)
 	local sTargetNodeType, nodeNPC = ActorManager.getTypeAndNode(rTarget);
 	if not nodeNPC then
 		return;

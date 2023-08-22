@@ -139,13 +139,13 @@
 				</anchored>
 				<static textres="power_label_cost_texft_2" />
 			</label>
-			<button_stat name="coststat">
+			<button_coststat name="coststat">
 				<anchored to="cost" width="70" height="20">
 					<top />
 					<left anchor="right" relation="relative" offset="10" />
 				</anchored>
 				<tooltip textres="power_tooltip_coststat" />
-			</button_stat>
+			</button_coststat>
 			<label_fieldtop name="coststat_label">
 				<anchored to="coststat" />
 				<static textres="power_label_coststat" />

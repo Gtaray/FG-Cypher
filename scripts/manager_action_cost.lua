@@ -87,17 +87,21 @@ function performRoll(draginfo, rActor, rAction)
 		ActionCost.setLastAction(rAction)
 
 		-- Check to see if the actor has a CONVERT effect that lets them convert
-		-- one cost into another
-		local aConvert = EffectManagerCypher.getConversionEffect(rTarget, rRoll.sCostStat, { "cost" });
-		if #aConvert > 0 then
-			local w = Interface.openWindow("prompt_cost_conversion", "");
-			w.setData(aConvert, rRoll.sCostStat);
-			w.setRoll(rActor, rRoll);
+		-- one cost into another.
+		-- But you cannot convert XP costs
+		if rRoll.sStat ~= "xp" then
+			local aConvert = EffectManagerCypher.getConversionEffect(rTarget, rRoll.sCostStat, { "cost" });
+			if #aConvert > 0 then
+				local w = Interface.openWindow("prompt_cost_conversion", "");
+				w.setData(aConvert, rRoll.sCostStat);
+				w.setRoll(rActor, rRoll);
 
-			-- Don't want the original roll to fire so we return true;
-			return true;
+				-- Don't want the original roll to fire so we return true;
+				return true;
+			end
 		end
 
+		RollManager.convertBooleansToNumbers(rRoll);
 		ActionsManager.performAction(draginfo, rActor, rRoll);
 		return true;
 	end
@@ -110,6 +114,7 @@ function getRoll(rActor, rAction)
 	rRoll.sType = "cost";
 	rRoll.aDice = { };
 	rRoll.nMod = rAction.nCost or 0;
+	rRoll.nEffort = 0;
 
 	RollManager.resolveStatUsedForCost(rAction); -- resolve the cost stat first
 	rRoll.sCostStat = rAction.sCostStat;
@@ -118,6 +123,9 @@ function getRoll(rActor, rAction)
 	rRoll.sDesc = "[COST"
 	if (rRoll.sCostStat or "") ~= "" then
 		local sStat = StringManager.capitalize(rRoll.sCostStat);
+		if rRoll.sCostStat == "xp" then
+			sStat = sStat:upper();
+		end
 
 		-- This prevents double-writing the stat used to chat
 		if rAction.label ~= sStat then
@@ -135,13 +143,21 @@ function getRoll(rActor, rAction)
 	-- i.e. a skill roll normally never has a cost, but if effort is applied 
 	-- then it will. So we need to know if effort was applied here, and not
 	-- in modRoll()
-	rRoll.nEffort = (rAction.nEffort or 0) + RollManager.getEffortFromDifficultyPanel();
+	if rRoll.sCostStat == "might" or rRoll.sCostStat == "speed" or rRoll.sCostStat == "intellect" then
+		rRoll.nEffort = (rAction.nEffort or 0) + RollManager.getEffortFromDifficultyPanel();
+	end
 
 	return rRoll;
 end
 
 function modRoll(rSource, rTarget, rRoll)
+	RollManager.convertNumbersToBooleans(rRoll);
 	if ActionCost.rebuildRoll(rSource, rTarget, rRoll) then
+		return;
+	end
+
+	-- XP costs cannot be modified in any way.
+	if rRoll.sCostStat == "xp" then
 		return;
 	end
 
@@ -202,6 +218,8 @@ function modRoll(rSource, rTarget, rRoll)
 	elseif nEffectMod < 0 then
 		rRoll.sDesc = string.format("%s [EFFECTS %s]", rRoll.sDesc, nEffectMod)
 	end
+
+	RollManager.convertBooleansToNumbers(rRoll);
 end
 
 -- Not entirely necessary, but for completeness' sake
@@ -224,20 +242,32 @@ function rebuildRoll(rSource, rTarget, rRoll)
 end
 
 function onRoll(rSource, rTarget, rRoll)
+	RollManager.convertNumbersToBooleans(rRoll);
+
 	-- dragging from chat results in a nil rSource, but there is the drop target
 	-- so we just set one to the other
 	if not rSource then
 		rSource = rTarget;
 	end
 
-	local nCurStat = ActorManagerCypher.getStatPool(rSource, rRoll.sCostStat);
-	local nTotal = ActionsManager.total(rRoll);
-	local bNotEnoughStats = nCurStat < nTotal;
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 	rMessage.icon = "roll_damage";
 
-	if bNotEnoughStats then
-		rMessage.text = rMessage.text .. " [INSUFFICIENT STATS]";
+	local nTotal = ActionsManager.total(rRoll);
+	local bNotEnoughStats = false;
+	local sNotEnoughStatsMsg = "";
+
+	if rRoll.sCostStat == "xp" then
+		bNotEnoughStats = ActorManagerCypher.getXP(rSource) < nTotal
+		sNotEnoughStatsMsg = "[INSUFFICIENT XP]";
+	else
+		local nCurStat = ActorManagerCypher.getStatPool(rSource, rRoll.sCostStat);
+		bNotEnoughStats = nCurStat < nTotal;
+		sNotEnoughStatsMsg = "[INSUFFICIENT STATS]";
+	end
+
+	if bNotEnoughStats and sNotEnoughStatsMsg ~= "" then
+		rMessage.text = string.format("%s %s", rMessage.text, sNotEnoughStatsMsg);
 	end
 
 	Comm.deliverChatMessage(rMessage);
@@ -246,10 +276,19 @@ function onRoll(rSource, rTarget, rRoll)
 		return;
 	end
 
-	ActorManagerCypher.addToStatPool(rSource, rRoll.sCostStat, -nTotal)
+	if rRoll.sCostStat == "xp" then
+		ActorManagerCypher.deductXP(rSource, nTotal);
+	else
+		ActorManagerCypher.addToStatPool(rSource, rRoll.sCostStat, -nTotal)
+	end
+
+	-- if edge is enabled, and the roll included edge
+	-- we disable edge for the remainder of the turn
+	if not rRoll.bDisableEdge and rRoll.nEdge > 0 then
+		RollManager.disableEdge();
+	end
 
 	local rAction = ActionCost.getLastAction();
-	
 	if rAction then
 		-- Make sure to update the relevant properties
 		rAction.nEffort = rRoll.nEffort;

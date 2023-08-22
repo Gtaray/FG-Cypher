@@ -36,7 +36,7 @@
 				<invisible />
 			</genericcontrol>
 
-			<button_use_power name="used" />
+			<buttongroup_counter_power name="used" />
 
 			<stringcontrol name="statcostview">
 				<script>
@@ -116,9 +116,23 @@
 	<!-- Entry in a power_item's list_poweraction list -->
 	<windowclass name="pc_power_action" copy="power_action">
 		<sheetdata>
-			<button_idelete name="idelete" mergerule="resetandadd">
+			<button_poweractioneditor name="detail" merge="delete" />
+			<button_idelete name="idelete" merge="delete" />
+
+			<button_idelete name="idelete" insertbefore="ireorder">
+				<anchored to="rightanchor">
+					<top />
+					<right anchor="left" relation="relative" offset="-5" />
+				</anchored>
 				<editmode>abilitylist_iedit</editmode>
 			</button_idelete>
+			<button_poweractioneditor name="detail" insertbefore="ireorder">
+				<anchored to="rightanchor">
+					<top />
+					<right anchor="left" relation="relative" offset="-5" />
+				</anchored>
+			</button_poweractioneditor>
+			
 			<button_ireorder name="ireorder" mergerule="resetandadd">
 				<editmode>abilitylist_iedit</editmode>
 			</button_ireorder>
@@ -148,43 +162,14 @@
 		</script>
 	</windowclass>
 
-	<windowclass name="power">
-		<frame>recordsheet</frame>
-		<placement>
-			<size width="400" height="350" />
-		</placement>
-		<sizelimits>
-			<dynamic />
-		</sizelimits>
-		<minimize>minimized_reference</minimize>
-		<tooltip field="name" />
-		<script file="common/scripts/record_window.lua" />
+	<windowclass name="power" copy="record_window">
 		<sheetdata>
 			<sub_record_header name="header">
 				<class>ability_header</class>
 			</sub_record_header>
-
-			<frame_record name="contentframe">
-				<anchored>
-					<top parent="header" anchor="bottom" offset="15" />
-					<left offset="35" />
-					<right offset="-35" />
-					<bottom offset="-32" />
-				</anchored>
-				<frame offset="20,17,20,17" />
-			</frame_record>
-
-			<subwindow_record name="main">
+			<subwindow_record name="content">
 				<class>ability_main</class>
-				<activate />
 			</subwindow_record>
-
-			<scrollbar_record>
-				<target>main</target>
-			</scrollbar_record>
-
-			<resize_recordsheet />
-			<close_recordsheet />
 		</sheetdata>
 	</windowclass>
 </root>

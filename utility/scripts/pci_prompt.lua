@@ -8,6 +8,11 @@ function setData(node)
 	end
 
 	nodeChar = node;
+
+	description.setValue(string.format(
+		Interface.getString("pci_prompt_description"), 
+		ActorManagerCypher.getXP(nodeChar)
+	))
 end
 
 function onOptionSelected(sType, nCost, bSelected)

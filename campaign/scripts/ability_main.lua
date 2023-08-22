@@ -35,6 +35,8 @@ function update()
 	period.setVisible(bAction and (bHasRecharge or not bReadOnly));
 	period_label.setReadOnly(bReadOnly);
 	period_label.setVisible(bAction and (bHasRecharge or not bReadOnly));
+	WindowManager.callSafeControlUpdate(self, "uses", bReadOnly);
+	WindowManager.setControlVisibleWithLabel(self, "uses", bHasRecharge);
 
 	header_cost.setVisible(bShowCost);
 	costtext1.setVisible(bShowCost);

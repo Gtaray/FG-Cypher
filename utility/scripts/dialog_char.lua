@@ -20,6 +20,7 @@ function setData(data, callback)
 	end
 
 	bEdge = #(rData.aEdgeOptions or {}) > 0;
+	edge.subwindow.clear();
 	button_edge.setVisible(bEdge);
 	edge.setVisible(bEdge)
 	if bEdge then
@@ -27,6 +28,7 @@ function setData(data, callback)
 	end
 
 	bAbilities = #(rData.aAbilityOptions or {}) > 0;
+	abilities.subwindow.clear();
 	button_abilities.setVisible(bAbilities)
 	abilities.setVisible(bAbilities)
 	if bAbilities then

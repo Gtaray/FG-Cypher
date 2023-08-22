@@ -61,6 +61,7 @@
 						local rActor = self.getActor();
 						local rAction = {};
 						rAction.label = ActorManager.getDisplayName(rActor);
+						rAction.sStat = "might";
 						rAction.sDefenseStat = "speed";
 						ActionDefenseVs.performRoll(draginfo, rActor, rAction);
 					end
@@ -230,8 +231,24 @@
 
 	<!-- Entry in a power_item's list_poweraction list -->
 	<windowclass name="npc_power_action" copy="power_action">
-		<!-- Don't need to add anything, this is just here because it needs
-		to be distinct from the PC entry -->
+		<sheetdata>
+			<button_poweractioneditor name="detail" merge="delete" />
+			<button_idelete name="idelete" merge="delete" />
+
+			<button_idelete name="idelete" insertbefore="ireorder">
+				<anchored to="rightanchor">
+					<top />
+					<right anchor="left" relation="relative" offset="-5" />
+				</anchored>
+				<editmode>actions_iedit</editmode>
+			</button_idelete>
+			<button_poweractioneditor name="detail" insertbefore="ireorder">
+				<anchored to="rightanchor">
+					<top />
+					<right anchor="left" relation="relative" offset="-5" />
+				</anchored>
+			</button_poweractioneditor>
+		</sheetdata>
 	</windowclass>
 
 	<windowclass name="npc_notes">

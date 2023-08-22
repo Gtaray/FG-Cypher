@@ -271,6 +271,7 @@
 	<string name="power_header_properties">PROPERTIES</string>
 	<string name="power_label_useequipped">Use Equipped</string>
 	<string name="power_tooltip_useequipped">Should this ability use the attack and damage properties from the currently equipped weapon.</string>
+	<string name="power_label_recharge_uses">Uses per Period</string>
 	<string name="power_label_recharge_on">Recharge</string>
 	<string name="power_recharge_any">On any recovery action</string>
 	<string name="power_recharge_first">On the first recovery of the day</string>
@@ -339,6 +340,8 @@
 	<string name="power_label_healamount">Amt</string>
 	<string name="power_label_healstat">Stat Pool</string>
 	<string name="power_tooltip_healstat">Heal which stat pool?</string>
+	<string name="power_label_heal_overflow">Overflow</string>
+	<string name="power_tooltip_heal_overflow">If this heals a stat fully, does any extra healing overflow to other stats?</string>
 
 	<string name="power_header_description">DESCRIPTION</string>
 
@@ -403,6 +406,7 @@
 	<string name="type_label_starting_effort">Effort</string>
 	<string name="type_label_cypherlimit">Cypher Use</string>
 	<string name="type_header_edge">Starting Edge</string>
+	<string name="type_header_features">Features</string>
 	<string name="type_header_ability_amount">Number of Abilities</string>
 	<string name="type_label_tier123">Tier 1, 2, and 3</string>
 	<string name="type_label_tier456">Tier 4, 5, and 6</string>
@@ -609,13 +613,28 @@
 	<string name="label_advancement_armor">Reduce armor's Speed Effort cost by 1</string>
 	<string name="label_advancement_focus">Select another Focus ability at tier 3</string>
 
+	<!-- Effect Conditions -->
+	<string name="label_condition_name_empty">&#171; New Condition &#187;</string>
+	<string name="label_condition_name">Name</string>
+	<string name="label_condition_effect">Effect</string>
+	
+	<string name="title_condition_icon_selector">Select Icon</string>
+
 	<!-- Desktop -->
 	<string name="diffadj_label_effort">Effort</string>
+	<string name="diffadj_label_0">0</string>
+	<string name="diffadj_label_1">1</string>
+	<string name="diffadj_label_2">2</string>
+	<string name="diffadj_label_3">3</string>
+	<string name="diffadj_label_4">4</string>
+	<string name="diffadj_label_5">5</string>
+	<string name="diffadj_label_6">6</string>
 	<string name="diffadj_label_assets">Assets</string>
 	<string name="diffadj_label_edge">Use Edge?</string>
 	<string name="modifier_label_EASE">Ease</string>
 	<string name="modifier_label_HINDER">Hinder</string>
 	<string name="desktop_tooltip_difficulty">Difficulty that all non-targeted rolls are made against. Use the scroll wheel to increase or decrease this value.</string>
+	<string name="desktop_tooltip_gmi_threshold">A d20 roll of equal to or lower than this value triggers a GM intrusion.</string>
 
 	<!-- Intrusions -->
 	<string name="menu_gm_intrusion">Invoke a GM Intrusion on this PC (and grant them 1 XP)</string>
@@ -634,7 +653,7 @@
 	<string name="gmi_prompt_tooltip_refuse_missing_xp">You don't have enough XP to refuse this intrusion.</string>
 
 	<string name="pci_prompt_window_title">PC INTRUSION</string>
-	<string name="pci_prompt_description">You are invoking a player intrusion! Select from the options below.</string>
+	<string name="pci_prompt_description">You are invoking a player intrusion! Select from the options below (you have %s XP).</string>
 	<string name="pmi_prompt_button_accept">Accept</string>
 	<string name="pmi_prompt_button_cancel">Cancel</string>
 	<string name="pci_label_reroll">Spend 1 XP to reroll any roll</string>

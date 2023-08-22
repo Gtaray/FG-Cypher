@@ -22,6 +22,7 @@ end
 
 function performRoll(draginfo, rActor, rAction)
 	local rRoll = ActionInit.getRoll(rActor, rAction);
+	RollManager.convertBooleansToNumbers(rRoll);
 	ActionsManager.performAction(draginfo, rActor, rRoll);
 end
 
@@ -49,6 +50,7 @@ function getRoll(rActor, rAction)
 end
 
 function modRoll(rSource, rTarget, rRoll)
+	RollManager.convertNumbersToBooleans(rRoll);
 	local aFilter = { "initiative", "init", rRoll.sStat }
 
 	-- Process training effects
@@ -92,9 +94,11 @@ function modRoll(rSource, rTarget, rRoll)
 	if rRoll.nConditionMod > 0 then
 		rRoll.sDesc = string.format("%s [EFFECTS %s]", rRoll.sDesc, rRoll.nConditionMod)
 	end
+	RollManager.convertBooleansToNumbers(rRoll);
 end
 
 function onRoll(rSource, rTarget, rRoll)
+	RollManager.convertNumbersToBooleans(rRoll);
 	RollManager.decodeAdvantage(rRoll);
 
 	-- Hacky way to force the rebuilt flag to either be true or false, never an empty string
@@ -105,14 +109,7 @@ function onRoll(rSource, rTarget, rRoll)
 	local aAddIcons = {};
 
 	rMessage.icon = "action_roll";
-
-	if #(rRoll.aDice) == 1 then
-		local nFirstDie = rRoll.aDice[1].result or 0;
-		
-		rRoll.bMajorEffect = nFirstDie == 20;
-		rRoll.bMinorEffect = nFirstDie == 19;
-		rRoll.bGmIntrusion = nFirstDie == 1;
-	end
+	RollManager.processRollSpecialEffects(rRoll);
 
 	if rRoll.bMajorEffect then
 		rMessage.text = rMessage.text .. " [MAJOR EFFECT]";

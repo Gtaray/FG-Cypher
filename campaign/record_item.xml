@@ -17,8 +17,19 @@
 		</button_stringcycler>
 	</template>
 
-	<windowclass name="item" copy="record_window">
+	<windowclass name="item">
+		<frame>recordsheet</frame>
+		<placement>
+			<size width="350" height="400" />
+		</placement>
+		<sizelimits>
+			<minimum width="350" height="350" />
+			<dynamic />
+		</sizelimits>
 		<minimize>minimized_item</minimize>
+		<sharable />
+		<tooltip field="name" />
+		<script file="common/scripts/record_window.lua" />
 		<script>
 			function onLockChanged()
 				super.onLockChanged();
@@ -27,16 +38,13 @@
 					actions.subwindow.update();
 				end
 			end
-			function onIDChanged()
-				if content.subwindow then
-					content.subwindow.update();
-				end
-			end
 		</script>
 		<sheetdata>
 			<sub_record_header name="header">
 				<class>item_header</class>
 			</sub_record_header>
+
+			<frame_record_content_tabbed name="contentframe" />
 
 			<subwindow_record name="content">
 				<class>item_main</class>
@@ -48,6 +56,9 @@
 
 			<scrollbar_record>
 				<target>content</target>
+			</scrollbar_record>
+			<scrollbar_record>
+				<target>actions</target>
 			</scrollbar_record>
 
 			<tabs_recordsheet name="tabs">
@@ -61,6 +72,9 @@
 					<subwindow>actions</subwindow>
 				</tab>
 			</tabs_recordsheet>
+			
+			<resize_recordsheet />
+			<close_recordsheet />
 		</sheetdata>
 	</windowclass>
 

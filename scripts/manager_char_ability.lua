@@ -69,7 +69,7 @@ function addTrainingToAbilityAction(nodeAction)
 	DB.setValue(nodeAction, "training", "string", sTraining);
 end
 
-function addAbility(nodeChar, sAbilityRecord, sSourceName, sSourceType)
+function addAbility(nodeChar, sAbilityRecord, sSourceName, sSourceType, rPromptData)
 	local rActor = ActorManager.resolveActor(nodeChar);
 
 	local rMod = {
@@ -82,6 +82,6 @@ function addAbility(nodeChar, sAbilityRecord, sSourceName, sSourceType)
 
 	local nodeAbility = DB.findNode(sAbilityRecord);
 	if nodeAbility then
-		return CharModManager.applyAbilityModification(rActor, rMod);
+		return CharModManager.applyAbilityModification(rActor, rMod, rPromptData);
 	end
 end

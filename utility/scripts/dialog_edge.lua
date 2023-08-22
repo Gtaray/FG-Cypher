@@ -1,3 +1,7 @@
+function clear()
+	edge.closeAll();
+end
+
 function setData(rEdgeOptions)
 	local nTotal = 0;
 	for i, aOptions in ipairs(rEdgeOptions) do

@@ -2,6 +2,10 @@ local nMax = 0;
 local nMinTier = 6;
 local nMaxTier = 1;
 
+function clear()
+	lists.clear();
+end
+
 function setData(aAbilities, aFlavorAbilities, nCount)
 	nMax = nCount;
 
@@ -11,8 +15,6 @@ function setData(aAbilities, aFlavorAbilities, nCount)
 	else
 		abilities_remaining.setValue(nCount);
 	end
-
-	lists.clear();
 
 	-- This is here to keep track of what abilities are added so that
 	-- the same ability isn't added in both the Type and Flavor sections

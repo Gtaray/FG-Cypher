@@ -6,8 +6,8 @@
 -->
 
 <root>
-	<windowclass name="ability" copy="record_window">
-		<minimize>minimized_reference</minimize>
+	<windowclass name="ability">
+		<frame>recordsheet</frame>
 		<placement>
 			<size width="375" height="400" />
 		</placement>
@@ -15,14 +15,14 @@
 			<minimum width="375" height="350" />
 			<dynamic />
 		</sizelimits>
+		<minimize>minimized_reference</minimize>
+		<tooltip field="name" />
+		<sharable />
 		<script>
-			function onInit()
-				if super and super.onInit then
-					super.onInit()
-				end
-			end
 			function onLockChanged()
-				super.onLockChanged();
+				if header and header.subwindow then
+					header.subwindow.update();
+				end
 
 				if main.subwindow then
 					main.subwindow.update();
@@ -31,12 +31,18 @@
 				if actions.subwindow then
 					actions.subwindow.update();
 				end
+
+				if content and content.subwindow then
+					content.subwindow.update();
+				end
 			end
 		</script>
 		<sheetdata>
 			<sub_record_header name="header">
 				<class>ability_header</class>
 			</sub_record_header>
+
+			<frame_record_content_tabbed name="contentframe" />
 
 			<subwindow_record name="main">
 				<class>ability_main</class>
@@ -74,28 +80,21 @@
 					<subwindow>content</subwindow>
 				</tab>
 			</tabs_recordsheet>
+
+			<resize_recordsheet />
+			<close_recordsheet />
 		</sheetdata>
 	</windowclass>
-
-	<windowclass name="ability_header">
-		<margins control="0,0,0,7" />
-		<script file="common/scripts/record_header_simple.lua" />
+	<windowclass name="ability_header" copy="record_header_simple">
 		<sheetdata>
-			<link_record_header>
+			<link_record_header name="link">
 				<class>ability</class>
 			</link_record_header>
-
-			<anchor_record_header_right />
-			<icon_record_locked />
-			<button_record_locked />
-
-			<string_record_name name="name" />
 			<label_recordtype name="recordtype_label">
 				<static textres="library_recordtype_ref_ability" />
 			</label_recordtype>
 		</sheetdata>
 	</windowclass>
-
 	<windowclass name="ability_main">
 		<margins control="0,0,0,2" />
 		<script file="campaign/scripts/ability_main.lua" />
@@ -158,12 +157,27 @@
 			</label_column>
 			<cycler_column name="period">
 				<anchored width="200" />
+				<script>
+					function onValueChanged()
+						if super and super.onValueChanged then
+							super.onValueChanged()
+						end
+						window.update();
+					end
+				</script>
 				<parameters>
 					<labelsres>power_recharge_any|power_recharge_first|power_recharge_last|power_recharge_manual</labelsres>
 					<values>any|first|last|manual</values>
 					<defaultlabelres>dash</defaultlabelres>
 				</parameters>
 			</cycler_column>
+			<label_column name="uses_label">
+				<static textres="power_label_recharge_uses" />
+			</label_column>
+			<number_column name="uses">
+				<min>1</min>
+				<default>1</default>
+			</number_column>
 
 			<!-- COST -->
 			<header_column name="header_cost">
@@ -194,13 +208,13 @@
 				</anchored>
 				<static textres="power_label_cost_texft_2" />
 			</label>
-			<button_stat name="coststat">
+			<button_coststat name="coststat">
 				<anchored to="cost" width="70" height="20">
 					<top />
 					<left anchor="right" relation="relative" offset="10" />
 				</anchored>
 				<tooltip textres="power_tooltip_coststat" />
-			</button_stat>
+			</button_coststat>
 			<label_fieldtop name="label_coststat">
 				<anchored to="coststat" />
 				<static textres="power_label_coststat" />
@@ -365,6 +379,27 @@
 				</script>
 				<readonly />
 			</string_textlistitem>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="power_action_item" copy="power_action">
+		<sheetdata>
+			<button_poweractioneditor name="detail" merge="delete" />
+			<button_idelete name="idelete" merge="delete" />
+
+			<button_idelete name="idelete" insertbefore="ireorder">
+				<anchored to="rightanchor">
+					<top />
+					<right anchor="left" relation="relative" offset="-5" />
+				</anchored>
+				<editmode>actions_iedit</editmode>
+			</button_idelete>
+			<button_poweractioneditor name="detail" insertbefore="ireorder">
+				<anchored to="rightanchor">
+					<top />
+					<right anchor="left" relation="relative" offset="-5" />
+				</anchored>
+			</button_poweractioneditor>
 		</sheetdata>
 	</windowclass>
 </root>

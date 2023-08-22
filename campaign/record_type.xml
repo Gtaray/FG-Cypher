@@ -6,8 +6,8 @@
 -->
 
 <root>
-	<windowclass name="type" copy="record_window">
-		<minimize>minimized_reference</minimize>
+	<windowclass name="type">
+		<frame>recordsheet</frame>
 		<placement>
 			<size width="370" height="400" />
 		</placement>
@@ -15,12 +15,17 @@
 			<minimum width="370" height="350" />
 			<dynamic />
 		</sizelimits>
+		<minimize>minimized_reference</minimize>
+		<tooltip field="name" />
+		<sharable />
+		<script file="common/scripts/record_window.lua" />
 		<sheetdata>
 			<sub_record_header name="header">
 				<class>type_header</class>
 			</sub_record_header>
 
 			<frame_record_content_tabbed name="contentframe" />
+
 			<ft_record name="text">
 				<anchored to="contentframe" position="over" />
 			</ft_record>
@@ -45,28 +50,21 @@
 					<subwindow>content</subwindow>
 				</tab>
 			</tabs_recordsheet>
+
+			<resize_recordsheet />
+			<close_recordsheet />
 		</sheetdata>
 	</windowclass>
-
-	<windowclass name="type_header">
-		<margins control="0,0,0,7" />
-		<script file="common/scripts/record_header_simple.lua" />
+	<windowclass name="type_header" copy="record_header_simple">
 		<sheetdata>
-			<link_record_header>
+			<link_record_header name="link">
 				<class>type</class>
 			</link_record_header>
-
-			<anchor_record_header_right />
-			<icon_record_locked />
-			<button_record_locked />
-
-			<string_record_name name="name" />
 			<label_recordtype name="recordtype_label">
 				<static textres="library_recordtype_ref_type" />
 			</label_recordtype>
 		</sheetdata>
 	</windowclass>
-
 	<windowclass name="type_stats">
 		<margins control="0,0,0,2" />
 		<script file="campaign/scripts/char_content_type_stats.lua" />
@@ -167,6 +165,20 @@
 			<button_iadd name="edge_iadd">
 				<anchored to="edge_iedit" position="lefthigh" offset="3,0" />
 				<target>edge</target>
+			</button_iadd>
+
+			<header_column name="features_header">
+				<static textres="type_header_features"/>
+				<center />
+			</header_column>
+			<list_char_mod name="features" />
+			<button_iedit name="features_iedit">
+				<anchored to="features_header" position="righthigh" offset="-15,0" />
+				<edittarget>features</edittarget>
+			</button_iedit>
+			<button_iadd name="features_iadd">
+				<anchored to="features_iedit" position="lefthigh" offset="3,0" />
+				<target>features</target>
 			</button_iadd>
 
 			<header_column name="ability_amount_header">

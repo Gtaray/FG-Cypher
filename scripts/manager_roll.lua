@@ -6,8 +6,8 @@
 --
 --	Difficulty Panel Management
 --
-
 local _panelWindow = nil;
+
 function registerDifficultyPanel(w)
 	_panelWindow = w;
 	self.resetDifficultyPanel();
@@ -55,13 +55,29 @@ function isEdgeDisabled(bRetain)
 	return bDisableEdge;
 end
 
+function disableEdge()
+	if not _panelWindow then
+		return;
+	end
+
+	_panelWindow.disableedge.setValue(1);
+end
+
+function enableEdge()
+	if not _panelWindow then
+		return;
+	end
+
+	_panelWindow.disableedge.setValue(0);
+end
+
 function resetDifficultyPanel()
 	if not _panelWindow then
 		return;
 	end
 	_panelWindow.effort.setValue(0);
 	_panelWindow.assets.setValue(0);
-	_panelWindow.disableedge.setValue(0);
+	RollManager.enableEdge()
 end
 
 -----------------------------------------------------------------------
@@ -414,6 +430,19 @@ function updateRollMessageIcons(rMessage, aAddIcons, sFirstIcon)
 	-- Add the rest of the icons
 	for _,v in ipairs(aAddIcons) do
 		table.insert(rMessage.icon, v);
+	end
+end
+
+function processRollSpecialEffects(rRoll, bAttack)
+	local bAutomaticSuccess = rRoll.nDifficulty <= 0;
+	if #(rRoll.aDice) >= 1 then
+		local nFirstDie = rRoll.aDice[1].result or 0;
+		
+		rRoll.bMajorEffect = not bAutomaticSuccess and nFirstDie == 20;
+		rRoll.bMinorEffect = not bAutomaticSuccess and nFirstDie == 19;
+		rRoll.bRolled18 = not bAutomaticSuccess and bAttack and nFirstDie == 18;
+		rRoll.bRolled17 = not bAutomaticSuccess and bAttack and nFirstDie == 17;
+		rRoll.bGmIntrusion = not bAutomaticSuccess and nFirstDie <= DifficultyManager.getGmiThreshold();
 	end
 end
 
@@ -1033,4 +1062,41 @@ function decodeLevel(vRoll, bPersist)
 	rRoll.sDesc = sText;
 
 	return nLevel;
+end
+
+-----------------------------------------------------------------------
+-- ROLL PROPERTY CONVERSIONS
+-----------------------------------------------------------------------
+-- I'm tired of having booleans stripped out of rRoll tables
+-- these will convert all boolean properties to numbers
+-- and then convert all number properties back to booleans
+function convertBooleansToNumbers(rRoll)
+	for sKey, vValue in pairs(rRoll) do
+		if string.sub(sKey, 1, 1) == "b" then
+			if type(vValue) == "boolean" then
+				if vValue then
+					rRoll[sKey] = 1
+				else
+					rRoll[sKey] = 0;
+				end
+			end
+		end
+	end
+end
+
+function convertNumbersToBooleans(rRoll)
+	for sKey, vValue in pairs(rRoll) do
+		if string.sub(sKey, 1, 1) == "b" then
+			if type(vValue) == "string" then
+				vValue = tonumber(vValue);
+			end
+			if vValue and type(vValue) == "number" then
+				if vValue  == 1 then
+					rRoll[sKey] = true
+				elseif vValue == 0 then
+					rRoll[sKey] = false;
+				end
+			end
+		end
+	end
 end

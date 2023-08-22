@@ -6,14 +6,26 @@
 -->
 
 <root>
-	<windowclass name="flavor" copy="record_window">
+	<windowclass name="flavor">
+		<frame>recordsheet</frame>
+		<placement>
+			<size width="400" height="400" />
+		</placement>
+		<sizelimits>
+			<minimum width="350" height="350" />
+			<dynamic />
+		</sizelimits>
 		<minimize>minimized_reference</minimize>
+		<tooltip field="name" />
+		<sharable />
+		<script file="common/scripts/record_window.lua" />
 		<sheetdata>
 			<sub_record_header name="header">
 				<class>flavor_header</class>
 			</sub_record_header>
 
 			<frame_record_content_tabbed name="contentframe" />
+
 			<ft_record name="text">
 				<anchored to="contentframe" position="over" />
 			</ft_record>
@@ -38,28 +50,21 @@
 					<subwindow>content</subwindow>
 				</tab>
 			</tabs_recordsheet>
+
+			<resize_recordsheet />
+			<close_recordsheet />
 		</sheetdata>
 	</windowclass>
-
-	<windowclass name="flavor_header">
-		<margins control="0,0,0,7" />
-		<script file="common/scripts/record_header_simple.lua" />
+	<windowclass name="flavor_header" copy="record_header_simple">
 		<sheetdata>
-			<link_record_header>
+			<link_record_header name="link">
 				<class>flavor</class>
 			</link_record_header>
-
-			<anchor_record_header_right />
-			<icon_record_locked />
-			<button_record_locked />
-
-			<string_record_name name="name" />
 			<label_recordtype name="recordtype_label">
 				<static textres="library_recordtype_ref_flavor" />
 			</label_recordtype>
 		</sheetdata>
 	</windowclass>
-
 	<windowclass name="flavor_stats">
 		<margins control="0,0,0,2" />
 		<script file="campaign/scripts/char_content_flavor_stats.lua" />

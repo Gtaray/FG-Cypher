@@ -78,6 +78,6 @@ end
 function addAbilities(rData)
 	local sFlavorName = CharFlavorManager.getFlavorNameForCharacter(rData.nodeChar);
 	for _, sAbility in ipairs(rData.aFlavorAbilities) do
-		CharAbilityManager.addAbility(rData.nodeChar, sAbility, sFlavorName, "Flavor");
+		CharAbilityManager.addAbility(rData.nodeChar, sAbility, sFlavorName, "Flavor", rData);
 	end
 end
