@@ -81,6 +81,7 @@
 				</tab>
 			</tabs_recordsheet>
 
+			<help_ability />
 			<resize_recordsheet />
 			<close_recordsheet />
 		</sheetdata>

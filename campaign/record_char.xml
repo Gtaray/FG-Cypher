@@ -76,6 +76,7 @@
 				<activate>1</activate>
 			</tabs_charsheet>
 		
+			<help_charsheet />
 			<close_charsheet />
 			<resize_charsheet />
 		</sheetdata>

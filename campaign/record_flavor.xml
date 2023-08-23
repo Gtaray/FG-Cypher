@@ -51,6 +51,7 @@
 				</tab>
 			</tabs_recordsheet>
 
+			<help_flavor />
 			<resize_recordsheet />
 			<close_recordsheet />
 		</sheetdata>

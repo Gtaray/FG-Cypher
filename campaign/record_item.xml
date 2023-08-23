@@ -78,6 +78,7 @@
 				</tab>
 			</tabs_recordsheet>
 			
+			<help_item />
 			<resize_recordsheet />
 			<close_recordsheet />
 		</sheetdata>

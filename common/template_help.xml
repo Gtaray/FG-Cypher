@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<template name="help_record">
+		<help>
+			<anchored>
+				<top offset="0" />
+				<right offset="-32" />
+			</anchored>
+		</help>
+	</template>
+	<template name="help_record_tabbed">
+		<help_record>
+			<script file="common/scripts/help_record_tabbed.lua" />
+		</help_record>
+	</template>
+
+	<!-- Character Sheet -->
+	<template name="help_charsheet">
+		<help_record_tabbed>
+			<tabs>
+				<tab>
+					<subwindow>main</subwindow>
+					<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Character+Sheet/Main+Tab</url>
+				</tab>
+				<tab>
+					<subwindow>skills</subwindow>
+					<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Character+Sheet/Skills+Tab</url>
+				</tab>
+				<tab>
+					<subwindow>inventory</subwindow>
+					<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Character+Sheet/Inventory+Tab</url>
+				</tab>
+				<tab>
+					<subwindow>abilities</subwindow>
+					<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Character+Sheet/Abilities+Tab</url>
+				</tab>
+				<tab>
+					<subwindow>arcs</subwindow>
+					<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Character+Sheet/Character+Arcs+Tab</url>
+				</tab>
+				<tab>
+					<subwindow>notes</subwindow>
+					<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Character+Sheet/Notes+Tab</url>
+				</tab>
+				<tab>
+					<subwindow>actions</subwindow>
+					<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Character+Sheet/Actions+Tab</url>
+				</tab>
+			</tabs>
+		</help_record_tabbed>
+	</template>
+
+	<template name="help_charsheet_weapon">
+		<help_record>
+			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Character+Sheet/Actions+Tab#Weapons</url>
+		</help_record>
+	</template>
+	<template name="help_charsheet_action_stat">
+		<help_record>
+			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Character+Sheet/Actions+Tab#Stat+Action</url>
+		</help_record>
+	</template>
+	<template name="help_charsheet_action_attack">
+		<help_record>
+			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Character+Sheet/Actions+Tab#Attack+Action</url>
+		</help_record>
+	</template>
+	<template name="help_charsheet_action_damage">
+		<help_record>
+			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Character+Sheet/Actions+Tab#Damage+Action</url>
+		</help_record>
+	</template>
+	<template name="help_charsheet_action_heal">
+		<help_record>
+			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Character+Sheet/Actions+Tab#Heal+Action</url>
+		</help_record>
+	</template>
+	<template name="help_charsheet_action_effect">
+		<help_record>
+			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Character+Sheet/Actions+Tab#Effect+Action</url>
+		</help_record>
+	</template>
+
+	<!-- Library Types -->
+	<template name="help_modification">
+		<help_record>
+			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Features</url>
+		</help_record>
+	</template>
+
+	<template name="help_ability">
+		<help_record_tabbed>
+			<default>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Abilities</default>
+			<tabs>
+				<tab>
+					<subwindow>main</subwindow>
+					<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Abilities</url>
+				</tab>
+				<tab>
+					<subwindow>actions</subwindow>
+					<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Abilities#Actions+Tab</url>
+				</tab>
+				<tab>
+					<subwindow>content</subwindow>
+					<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Abilities#Other+Tab</url>
+				</tab>
+			</tabs>
+		</help_record_tabbed>
+	</template>
+
+	<template name="help_item">
+		<help_record>
+			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Items</url>
+		</help_record>
+	</template>
+
+	<template name="help_type">
+		<help_record>
+			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Types</url>
+		</help_record>
+	</template>
+
+	<template name="help_focus">
+		<help_record>
+			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Foci</url>
+		</help_record>
+	</template>
+
+	<template name="help_descriptor">
+		<help_record>
+			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Descriptors</url>
+		</help_record>
+	</template>
+
+	<template name="help_ancestry">
+		<help_record>
+			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Ancestries</url>
+		</help_record>
+	</template>
+
+	<template name="help_flavor">
+		<help_record>
+			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Flavors</url>
+		</help_record>
+	</template>
+
+	<template name="help_npc">
+		<help_record>
+			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/NPCs</url>
+		</help_record>
+	</template>
+	<!-- Above here is all done -->
+
+	<!-- Utility Windows -->
+	<!-- None of these are applied -->
+	<template name="help_effects">
+		<help>
+			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Effects/Effects</url>
+		</help>
+	</template>
+
+	<template name="help_damagetypes">
+		<help>
+			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/System/Damage+Types</url>
+		</help>
+	</template>
+
+	<template name="help_deathmarkers">
+		<help>
+			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/System/Death+Markers</url>
+		</help>
+	</template>
+</root>
