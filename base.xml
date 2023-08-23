@@ -83,6 +83,7 @@
 	<includefile source="utility/utility_effects.xml" />
 	<includefile source="utility/prompt_defense.xml" />
 	<includefile source="utility/options_damagetypes.xml" />
+	<includefile source="utility/utility_image_deathmarkers.xml" />
 	<includefile source="utility/prompt_gm_intrusion.xml" />
 	<includefile source="utility/prompt_pc_intrusion.xml" />
 	<includefile source="utility/prompt_cost_conversion.xml" />

@@ -16,6 +16,8 @@
 				<class>damagetype</class>
 				<datasource>.</datasource>
 			</list_utility_setting>
+
+			<help_damagetypes />
 		</sheetdata>
 	</windowclass>
 

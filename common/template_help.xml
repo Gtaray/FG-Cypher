@@ -155,25 +155,17 @@
 			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/NPCs</url>
 		</help_record>
 	</template>
-	<!-- Above here is all done -->
 
 	<!-- Utility Windows -->
-	<!-- None of these are applied -->
-	<template name="help_effects">
-		<help>
-			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Effects/Effects</url>
-		</help>
-	</template>
-
 	<template name="help_damagetypes">
-		<help>
+		<help_utilitybox>
 			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/System/Damage+Types</url>
-		</help>
+		</help_utilitybox>
 	</template>
 
 	<template name="help_deathmarkers">
-		<help>
+		<help_utilitybox>
 			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/System/Death+Markers</url>
-		</help>
+		</help_utilitybox>
 	</template>
 </root>

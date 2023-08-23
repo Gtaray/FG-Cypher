@@ -668,4 +668,6 @@
 	<string name="pci_message_shortterm">%s has invoked a player intrusion to adjust the scenario! (1 XP)</string>
 	<string name="pci_message_mediumterm">%s has invoked a player intrusion to gain training a skill! (2 XP)</string>
 	<string name="pci_message_longterm">%s has invoked a player intrusion to gain a long-term benefit! (3 XP)</string>
+
+	<string name="help_tool_effects">https://publish.obsidian.md/fantasygrounds-cypher-wiki/Effects/Effects</string>
 </root>
