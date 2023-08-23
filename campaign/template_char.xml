@@ -284,20 +284,6 @@
         </button_text_sm>        
     </template>
 
-	<template name="sub_charsheet_overview">
-		<subwindow>
-			<bounds>15,20,-30,50</bounds>
-			<activate />
-			<fastinit />
-			<class>charsheet_overview</class>
-		</subwindow>
-	</template>
-	<template name="sub_charsheet">
-		<subwindow>
-			<bounds>0,70,-1,-20</bounds>
-		</subwindow>
-	</template>
-
 	<template name="button_use_power">
 		<button_checkbox>
 			<anchored to="leftanchor" width="20" height="10">

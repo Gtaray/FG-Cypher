@@ -29,10 +29,15 @@
 		<minimize>minimized_item</minimize>
 		<sharable />
 		<tooltip field="name" />
-		<script file="common/scripts/record_window.lua" />
 		<script>
 			function onLockChanged()
-				super.onLockChanged();
+				if header and header.subwindow then
+					header.subwindow.update();
+				end
+				
+				if content and content.subwindow then
+					content.subwindow.update();
+				end
 
 				if actions.subwindow then
 					actions.subwindow.update();
