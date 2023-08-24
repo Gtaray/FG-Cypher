@@ -126,33 +126,23 @@ function onRoll(rSource, rTarget, rRoll)
 
 	local aAddIcons = {};
 	RollManager.processRollSpecialEffects(rRoll);
-
-	if rRoll.bMajorEffect then
-		if not rRoll.bRebuilt then
-			rMessage.text = rMessage.text .. " [MAJOR EFFECT]";
-		end
-		table.insert(aAddIcons, "roll20");
-	elseif rRoll.bMinorEffect then
-		if not rRoll.bRebuilt then
-			rMessage.text = rMessage.text .. " [MINOR EFFECT]";
-		end
-		table.insert(aAddIcons, "roll19");
-	elseif rRoll.bGmIntrusion then
-		if not rRoll.bRebuilt then
-			rMessage.text = rMessage.text .. " [GM INTRUSION]";
-		end
-		table.insert(aAddIcons, "roll1");
-	end
-
+	RollManager.updateChatMessageWithSpecialEffects(rRoll, rMessage, aAddIcons);
 	RollManager.updateRollMessageIcons(rMessage, aAddIcons);
 	Comm.deliverChatMessage(rMessage);
 
-	ActionStat.applyRoll(rSource, rTarget, rRoll)
+	if rTarget or OptionsManagerCypher.isGlobalDifficultyEnabled() then
+		ActionStat.applyRoll(rSource, rTarget, rRoll)
+	end
 end
 
 function applyRoll(rSource, rTarget, rRoll)
 	local nTotal, bSuccess, bAutomaticSuccess = RollManager.processRollResult(rSource, rTarget, rRoll);
 	local bPvP = ActorManager.isPC(rSource) and ActorManager.isPC(rTarget);
+
+	if (rRoll.nDifficulty or 0) < 0 then
+		rRoll.nDifficulty = 0
+	end
+	
 	local msgShort = { font = "msgfont", icon = "task" .. (rRoll.nDifficulty or 0) };
 	local msgLong = { font = "msgfont", icon = "task" .. (rRoll.nDifficulty or 0) };
 

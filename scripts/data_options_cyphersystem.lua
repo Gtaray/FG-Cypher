@@ -20,6 +20,8 @@ function onClose()
 end
 
 function registerOptions()
+	OptionsManager.registerOption2("GDIFF", false, "option_header_game", "option_label_GDIFF", "option_entry_cycler", 
+		{ labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "on" });
 	OptionsManager.registerOption2("INITNPC", false, "option_header_combat", "option_label_INITNPC", "option_entry_cycler", 
 		{ labels = "option_val_group", values = "group", baselabel = "option_val_standard", baseval = "off", default = "off" });
 	OptionsManager.registerOption2("INITPC", false, "option_header_combat", "option_label_INITPC", "option_entry_cycler", 
@@ -63,6 +65,10 @@ end
 -------------------------------------------------------------------------------
 -- ACCESSORS
 -------------------------------------------------------------------------------
+function isGlobalDifficultyEnabled()
+	return OptionsManager.getOption("GDIFF") == "on";
+end
+
 function getMaxTarget()
 	return tonumber(OptionsManager.getOption("MAXTARGET"));
 end

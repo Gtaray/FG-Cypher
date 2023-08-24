@@ -4,8 +4,20 @@
 --
 
 function onInit()
-	DifficultyManager.addDifficultyUpdateHandler(onGmiThresholdChanged)
-	onGmiThresholdChanged()
+	OptionsManager.registerCallback("GDIFF", onEnabledChanged)
+	onEnabledChanged();
+
+	DifficultyManager.addDifficultyUpdateHandler(onDifficultyChanged)
+	onDifficultyChanged()
+end
+
+function onEnabledChanged()
+	local bEnabled = OptionsManagerCypher.isGlobalDifficultyEnabled();
+	setVisible(bEnabled);
+
+	if bEnabled then
+		onDifficultyChanged();
+	end
 end
 
 function onWheel(notches)
@@ -16,7 +28,11 @@ function onWheel(notches)
 	DifficultyManager.adjustGlobalDifficulty(notches);
 end
 
-function onGmiThresholdChanged()
+function onDifficultyChanged()
+	if not OptionsManagerCypher.isGlobalDifficultyEnabled() then
+		return;
+	end
+
 	local nDiff = DifficultyManager.getGlobalDifficulty();
 	local iconName = string.format("task%s", nDiff);
 	setIcon(iconName)

@@ -42,6 +42,7 @@
 	<string name="library_recordtype_label_damagetypes">Damage Types</string>
 
 	<!-- Options -->
+	<string name="option_label_GDIFF">Enable global difficulty</string>
 	<string name="option_label_INITPC">Init: PC</string>
 	<string name="option_label_INITNPC">Init: NPC</string>
 	<string name="option_label_MAXTARGET">Maximum Difficulty Level for Rolls</string>
