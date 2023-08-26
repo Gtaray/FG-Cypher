@@ -87,7 +87,9 @@
 			<label_column name="damagestr_label">
 				<static textres="npc_label_damage" />
 			</label_column>
-			<string_column name="damagestr" />
+			<string_column name="damagestr">
+				<script file="campaign/scripts/npc_damage.lua" />
+			</string_column>
 
 			<label_column name="armor_label">
 				<static textres="npc_label_armor" />
