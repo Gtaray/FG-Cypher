@@ -234,7 +234,7 @@
 			<label_column name="armor_label">
 				<static textres="item_label_armor" />
 			</label_column>
-			<number_column_armor name="armor" />
+			<number_column name="armor" />
 			<label_column name="shieldbonus_label">
 				<static textres="item_label_shieldbonus" />
 			</label_column>

@@ -94,7 +94,7 @@
 			<label_column name="armor_label">
 				<static textres="npc_label_armor" />
 			</label_column>
-			<number_column_armor name="armor" />
+			<number_column name="armor" />
 
 			<label_column name="type_label">
 				<static textres="npc_label_type" />
@@ -124,7 +124,7 @@
 			<string_columnh name="intrusion" />
 
 			<header_column name="resistances_header">
-				<static textres="header_damage_modifications"/>
+				<static textres="header_special_armor"/>
 			</header_column>
 			<button_iedit name="resistances_iedit">
 				<anchored to="resistances_header" position="righthigh" offset="-20,0" />

@@ -546,10 +546,18 @@
 	
 	<string name="depletion_tag">DEPLETION</string>
 
-	<!-- Damage Modifications -->
-	<string name="header_damage_modifications">Special Defenses &amp; Armor</string>
-	<string name="damage_modification_tooltip_name">Damage Type (fire, cold, lightning, etc.)</string>
-	<string name="damage_modification_tooltip_armor">Armor value applied against the specified damage type. Positive armor reduces damage taken. Negative armor increases damage taken. A value of 0 indicates immunity to the damage type.</string>
+	<!-- Special Armor -->
+	<string name="header_special_armor">Special Defenses &amp; Armor</string>
+	<string name="special_armor_tooltip_name">Damage Type (fire, cold, lightning, etc.)</string>
+	<string name="special_armor_tooltip_armor">Armor value applied against the specified damage type. Positive armor reduces damage taken. Negative armor increases damage taken. A value of 0 indicates immunity to the damage type.</string>
+
+	<string name="special_armor_title_editor">Special Armor</string>
+	<string name="special_armor_header_properties">Properties</string>
+	<string name="special_armor_label_damagetype">Damage Type</string>
+	<string name="special_armor_label_armor">Armor</string>
+	<string name="special_armor_summary_immune">Immune to %s damage</string>
+	<string name="special_armor_summary_resist">Reduce %s damage taken by %s</string>
+	<string name="special_armor_summary_vuln">Increase %s damage taken by %s</string>
 
 	<!-- Defense Prompt -->
 	<string name="defense_prompt_window_title">Defend Thyself</string>
