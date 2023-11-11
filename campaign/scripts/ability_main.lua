@@ -7,7 +7,7 @@ function update()
 	local bReadOnly = WindowManager.getReadOnlyState(node);
 	local bAction = usetype.getValue() == "Action";
 	local bHasCost = cost.getValue() ~= 0 and coststat.getValue() ~= "-";
-	local bShowCost = bAction and (bHasCost or not bReadOnly);
+	local bShowCost = bHasCost or not bReadOnly;
 	local bHasType = type.getValue() ~= "";
 	local bHasRecharge = period.getValue() ~= "-";
 	local bHasUseType = usetype.getValue() ~= "-";
