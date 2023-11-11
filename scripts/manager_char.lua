@@ -124,6 +124,9 @@ function takeSkillAdvancement(nodeChar)
 end
 
 function takeAdvancement(nodeChar, sMessage, rData)
+	if bProcessing then
+		return false;
+	end
 	if not nodeChar then
 		return false;
 	end

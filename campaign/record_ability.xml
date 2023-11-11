@@ -81,6 +81,7 @@
 				</tab>
 			</tabs_recordsheet>
 
+			<help_ability />
 			<resize_recordsheet />
 			<close_recordsheet />
 		</sheetdata>
@@ -382,7 +383,7 @@
 		</sheetdata>
 	</windowclass>
 
-	<windowclass name="power_action_item" copy="power_action">
+	<!-- <windowclass name="power_action_item" copy="power_action">
 		<sheetdata>
 			<button_poweractioneditor name="detail" merge="delete" />
 			<button_idelete name="idelete" merge="delete" />
@@ -400,6 +401,51 @@
 					<right anchor="left" relation="relative" offset="-5" />
 				</anchored>
 			</button_poweractioneditor>
+		</sheetdata>
+	</windowclass> -->
+
+	<windowclass name="power_action_item">
+		<margins control="0,0,0,5" />
+		<script file="campaign/scripts/power_action.lua" />
+		<sheetdata>
+			<hs name="type">
+				<script>
+					function onValueChanged()
+						window.onTypeChanged();
+					end
+				</script>
+			</hs>
+
+			<genericcontrol name="rightanchor">
+				<anchored position="insidetopright" offset="0,2" width="0" height="20" />
+			</genericcontrol>
+			<button_idelete name="idelete">
+				<anchored to="rightanchor">
+					<top />
+					<right anchor="left" relation="relative" offset="-5" />
+				</anchored>
+				<editmode>actions_iedit</editmode>
+			</button_idelete>
+			<button_poweractioneditor name="detail">
+				<anchored to="rightanchor">
+					<top />
+					<right anchor="left" relation="relative" offset="-5" />
+				</anchored>
+			</button_poweractioneditor>
+			<button_ireorder name="ireorder">
+				<anchored to="rightanchor">
+					<top />
+					<right anchor="left" relation="relative" offset="-5" />
+				</anchored>
+				<editmode>actions_iedit</editmode>
+			</button_ireorder>
+
+			<subwindow name="contents">
+				<anchored position="insidetopleft">
+					<right parent="rightanchor" anchor="left" relation="relative" offset="-5" />
+				</anchored>
+				<activate />
+			</subwindow>
 		</sheetdata>
 	</windowclass>
 </root>

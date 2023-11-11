@@ -170,6 +170,8 @@
 			<subwindow_record name="content">
 				<class>ability_main</class>
 			</subwindow_record>
+
+			<help_ability />
 		</sheetdata>
 	</windowclass>
 </root>

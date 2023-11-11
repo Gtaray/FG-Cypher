@@ -145,6 +145,7 @@
 				<target>pc_weapon_editor_main</target>
 			</scrollbar_record>
 
+			<help_charsheet_weapon />
 			<resize_charsheethelper />
 			<close_charsheethelper />
 		</sheetdata>

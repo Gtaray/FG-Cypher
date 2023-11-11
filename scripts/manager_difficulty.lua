@@ -39,6 +39,9 @@ function addDifficultyUpdateHandler(fHandler)
 end
 
 function getGlobalDifficulty()
+	if not OptionsManagerCypher.isGlobalDifficultyEnabled() then
+		return nil;
+	end
 	return DB.getValue(DifficultyManager.DIFFICULTY_PATH, DifficultyManager.DIFFICULTY_DEFAULT);
 end
 
@@ -54,6 +57,10 @@ function setGlobalDifficulty(nDifficulty)
 end
 
 function adjustGlobalDifficulty(nIncrement)
+	if not OptionsManagerCypher.isGlobalDifficultyEnabled() then
+		return nil;
+	end
+	
 	local nDiff = DifficultyManager.getGlobalDifficulty();
 	DifficultyManager.setGlobalDifficulty(nDiff + nIncrement);
 end
