@@ -475,4 +475,29 @@
 			<maxslotperrow>30</maxslotperrow>
 		</buttongroup_counter>
 	</template>
+
+	<template name="button_checkbox_advancement">
+		<button_checkbox>
+			<anchored to="xp" position="righthigh" width="12" height="12" />
+			<script>
+				local bProcessing = false
+				function processAdvancement(fAdvFunc)
+					if bProcessing then return end
+
+					bProcessing = true
+
+					if getValue() == 0 then 
+						bProcessing = false
+						return
+					end
+
+					if not fAdvFunc(window.getDatabaseNode()) then
+						setValue(0)
+					end
+
+					bProcessing = false
+				end
+			</script>
+		</button_checkbox>
+	</template>
 </root>

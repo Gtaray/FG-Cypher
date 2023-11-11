@@ -62,65 +62,53 @@
 				</anchored>
 				<min>0</min>
 			</basicnumber>
-			<button_checkbox name="adv_stats" source="advancement.abilities">
-				<anchored to="xp" position="righthigh" offset="35,-2" width="12" height="12" />
+			<button_checkbox_advancement name="adv_stats" source="advancement.abilities">
+				<anchored offset="35,-2"/>
 				<script>
-					function onValueChanged()
-						if getValue() == 0 then return end
-						if not CharManager.takeAbilityAdvancement(window.getDatabaseNode()) then
-							setValue(0)
-						end
+					function onButtonPress()
+						super.processAdvancement(CharManager.takeAbilityAdvancement)
 					end
 				</script>
-			</button_checkbox>
+			</button_checkbox_advancement>
 			<stringcontrol>
 				<anchored to="adv_stats" position="lefthigh" offset="2,0" />
 				<font>sheetlabelmini</font>
 				<static textres="char_label_adv_stats" />
 			</stringcontrol>
-			<button_checkbox name="adv_edge" source="advancement.edge">
-				<anchored to="xp" position="righthigh" offset="82,-2" width="12" height="12" />
+			<button_checkbox_advancement name="adv_edge" source="advancement.edge">
+				<anchored offset="82,-2" />
 				<script>
-					function onValueChanged()
-						if getValue() == 0 then return end
-						if not CharManager.takeEdgeAdvancement(window.getDatabaseNode()) then
-							setValue(0)
-						end
+					function onButtonPress()
+						super.processAdvancement(CharManager.takeEdgeAdvancement)
 					end
 				</script>
-			</button_checkbox>
+			</button_checkbox_advancement>
 			<stringcontrol>
 				<anchored to="adv_edge" position="lefthigh" offset="2,0" />
 				<font>sheetlabelmini</font>
 				<static textres="char_label_adv_edge" />
 			</stringcontrol>
-			<button_checkbox name="adv_effort" source="advancement.effort">
-				<anchored to="xp" position="righthigh" offset="35,10" width="12" height="12" />
+			<button_checkbox_advancement name="adv_effort" source="advancement.effort">
+				<anchored offset="35,10"/>
 				<script>
-					function onValueChanged()
-						if getValue() == 0 then return end
-						if not CharManager.takeEffortAdvancement(window.getDatabaseNode()) then
-							setValue(0)
-						end
+					function onButtonPress()
+						super.processAdvancement(CharManager.takeEffortAdvancement)
 					end
 				</script>
-			</button_checkbox>
+			</button_checkbox_advancement>
 			<stringcontrol>
 				<anchored to="adv_effort" position="lefthigh" offset="2,0" />
 				<font>sheetlabelmini</font>
 				<static textres="char_label_adv_effort" />
 			</stringcontrol>
-			<button_checkbox name="adv_skill" source="advancement.skill">
-				<anchored to="xp" position="righthigh" offset="82,10" width="12" height="12" />
+			<button_checkbox_advancement name="adv_skill" source="advancement.skill">
+				<anchored offset="82,10"/>
 				<script>
-					function onValueChanged()
-						if getValue() == 0 then return end
-						if not CharManager.takeSkillAdvancement(window.getDatabaseNode()) then
-							setValue(0)
-						end
+					function onButtonPress()
+						super.processAdvancement(CharManager.takeSkillAdvancement)
 					end
 				</script>
-			</button_checkbox>
+			</button_checkbox_advancement>
 			<stringcontrol>
 				<anchored to="adv_skill" position="lefthigh" offset="2,0" />
 				<font>sheetlabelmini</font>
@@ -304,7 +292,7 @@
 					end
 					
 					function onValueChanged()
-						window.speedarmor_notice.setVisible(getValue() > 0);
+						window.speedarmor_notice.setVisible(getValue() &gt; 0);
 					end
 				</script>
 			</hn>

@@ -479,7 +479,7 @@ function getArmor(rActor, rTarget, sStat, sDamageType)
 	local _, node = ActorManager.getTypeAndNode(rActor);
 
 	if not node then
-		return 0, 0;
+		return 0;
 	end
 
 	-- Default to might, since that's the default for damage dealt
@@ -497,27 +497,84 @@ function getArmor(rActor, rTarget, sStat, sDamageType)
 	-- Do this before checking for damage type so that we can correctly apply this
 	-- if the damage type is untyped, and thus only applies if the stat is Might
 	local nArmorEffects = EffectManagerCypher.getArmorEffectBonus(rActor, sStat, sDamageType, rTarget)
+	local nArmor = 0;
 
 	-- Only apply the character's base armor to Might damage.
 	if sDamageType == "untyped" and sStat == "might" then
-		return nArmorEffects + DB.getValue(node, "Armor.total", 0);
+		if ActorManager.isPC(rActor) then
+			nArmor = DB.getValue(node, "Armor.total", 0);
+		else
+			nArmor = DB.getValue(node, "armor", 0);
+		end
 	end
-
-	local nArmor = 0;
 
 	-- Start by getting special armor values from the creature node
 	-- This list does NOT include untyped armor, 
 	-- that's handled above with the base armor
 	for _, resist in ipairs(DB.getChildList(node, "resistances")) do
-		local sType = DB.getValue(resist, "damagetype", ""):lower();
-		local nAmount = DB.getValue(resist, "armor", 0);
+		local sBehavior = DB.getValue(resist, "behavior", ""):lower();
 
-		if sType ~= "untyped" and sDamageType == sType and nAmount > 0 then
-			nArmor = nArmor + nAmount;
+		-- The other option is "threhsold", which we do NOT want to get
+		if sBehavior == "" then
+			local sType = DB.getValue(resist, "damagetype", ""):lower();
+			local nAmount = DB.getValue(resist, "armor", 0);
+
+			-- This ensures that untyped damage works even if its in the 'special defenses' list
+			if sType == "" then 
+				sType = "untyped";
+			end
+
+			if sDamageType == sType and nAmount ~= 0 then
+				nArmor = nArmor + nAmount;
+			end
 		end
 	end
 
 	return nArmor + nArmorEffects;
+end
+
+function getArmorThreshold(rActor, rTarget, sStat, sDamageType)
+	local _, node = ActorManager.getTypeAndNode(rActor);
+
+	if not node then
+		return 0;
+	end
+
+	-- Default to might, since that's the default for damage dealt
+	if not sStat then
+		sStat = "might";
+	end
+
+	-- if for some reason damage type isn't specified, default to untyped
+	if (sDamageType or "") == "" then
+		sDamageType = "untyped";
+	end
+
+	local nThresholdEffects = EffectManagerCypher.getArmorThresholdEffectBonus(rActor, sStat, sDamageType, rTarget)
+	local nThreshold = 0;
+
+	-- Start by getting special armor values from the creature node
+	-- This list does NOT include untyped armor, 
+	-- that's handled above with the base armor
+	for _, resist in ipairs(DB.getChildList(node, "resistances")) do
+		local sBehavior = DB.getValue(resist, "behavior", ""):lower();
+		if sBehavior == "threshold" then
+			local sType = DB.getValue(resist, "damagetype", ""):lower();
+			local nAmount = DB.getValue(resist, "armor", 0);
+
+			-- This ensures that untyped damage works even if its in the 'special defenses' list
+			if sType == "" then 
+				sType = "untyped";
+			end
+
+			if sDamageType == sType and nAmount > nThreshold then
+				-- Only take the highest threshold amount, they are not added together
+				nThreshold = nAmount; 
+			end
+		end
+	end
+
+	return math.max(nThreshold, nThresholdEffects);
 end
 
 function getSuperArmor(rActor, rTarget, sStat, sDamageType)
@@ -568,6 +625,10 @@ function getImmunities(rActor, rTarget)
 	for _, node in ipairs(DB.getChildList(charNode, "resistances")) do
 		local sDamageType = DB.getValue(node, "damagetype", ""):lower();
 		local nAmount = DB.getValue(node, "armor", 0);
+
+		if sDamageType == "" then
+			sDamageType = "untyped";
+		end
 
 		-- Only add to the list if the filter is nil OR if the filter matches the 
 		-- damage mod amount

@@ -418,6 +418,10 @@ function getArmorEffectBonus(rActor, sStat, sDamageType, rTarget)
 	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, "ARMOR", sStat, sDamageType, rTarget);
 end
 
+function getArmorThresholdEffectBonus(rActor, sStat, sDamageType, rTarget)
+	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, { "DT", "THRESHOLD", }, sStat, sDamageType, rTarget);
+end
+
 function getSuperArmorEffectBonus(rActor, sStat, sDamageType, rTarget)
 	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, "SUPERARMOR", sStat, sDamageType, rTarget);
 end

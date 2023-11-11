@@ -555,9 +555,14 @@
 	<string name="special_armor_header_properties">Properties</string>
 	<string name="special_armor_label_damagetype">Damage Type</string>
 	<string name="special_armor_label_armor">Armor</string>
+	<string name="special_armor_label_behavior">Behavior</string>
+	<string name="special_armor_behavior_value_reduction">Damage Reduction</string>
+	<string name="special_armor_behavior_value_threshold">Damage Threshold</string>
+	<string name="special_armor_tooltip_behavior">How does this special armor interact with damage?\nReduction = reduce incoming damage by the amount.\nThreshold = ignore all damage less than the amount.</string>
 	<string name="special_armor_summary_immune">Immune to %s damage</string>
 	<string name="special_armor_summary_resist">Reduce %s damage taken by %s</string>
 	<string name="special_armor_summary_vuln">Increase %s damage taken by %s</string>
+	<string name="special_armor_summary_threshold">Ignore %s damage unless it deals at least %s damage</string>
 
 	<!-- Defense Prompt -->
 	<string name="defense_prompt_window_title">Defend Thyself</string>

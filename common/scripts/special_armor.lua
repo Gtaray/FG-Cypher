@@ -12,12 +12,6 @@ function onClose()
 	DB.removeHandler(DB.getPath(node), "onChildUpdate", onDataChanged);
 end
 
--- This doesn't actually do anything, since we're removing the editable fields
-function update(bReadOnly)
-    -- damagetype.setReadOnly(bReadOnly);
-    -- armor.setReadOnly(bReadOnly);
-end
-
 function onDataChanged(nodeParent, bListChanged)
 	self.generateDescription();
 end
@@ -33,13 +27,16 @@ function generateDescription()
 	local sDesc = "";
 	local sDamageType = self.getDamageType();
 	local nArmor = self.getArmor();
+	local sBehavior = self.getBehavior();
 
 	-- TODO: Maybe this changes
 	if (sDamageType or "") == "" then
 		sDamageType = "mundane"
 	end
 
-	if nArmor == 0 then
+	if sBehavior == "threshold" then
+		sDesc = string.format(Interface.getString("special_armor_summary_threshold"), sDamageType, nArmor);
+	elseif nArmor == 0 then
 		sDesc = string.format(Interface.getString("special_armor_summary_immune"), sDamageType);
 	elseif nArmor > 0 then
 		sDesc = string.format(Interface.getString("special_armor_summary_resist"), sDamageType, nArmor);
@@ -60,6 +57,10 @@ end
 
 function getArmor()
 	return DB.getValue(getDatabaseNode(), "armor");
+end
+
+function getBehavior()
+	return DB.getValue(getDatabaseNode(), "behavior", ""):lower();
 end
 
 -------------------------------------------------------------------------------
