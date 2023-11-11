@@ -30,11 +30,12 @@
 				</script>
 			</button_details>
 			<stringcu name="desc">
-				<anchored to="rightanchor" height="20">
+				<anchored to="rightanchor">
 					<top />
 					<left parent="" offset="5" />
 					<right anchor="left" relation="relative" offset="-5" />
 				</anchored>
+				<multilinespacing>20</multilinespacing>
 				<readonly />
 			</stringcu>
 		</sheetdata>
