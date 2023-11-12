@@ -10,6 +10,11 @@ function onDrop(x, y, draginfo)
 			abilities.addEntry(sClass, sRecord)
 			return true;
 		end
+
+		if sClass == "item" then
+			features.addEntry(sClass, sRecord)
+			return true;
+		end
 	end
 end
 
