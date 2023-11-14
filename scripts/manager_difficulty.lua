@@ -70,7 +70,7 @@ end
 -------------------------------------------------------------------------------
 GMI_DEFAULT = 1
 GMI_MINIMUM = 1
-GMI_MAXIMUM = 5
+GMI_MAXIMUM = 20
 GMI_PATH = "global.gmi_threshold";
 
 function initializeGmiThreshold()

@@ -172,6 +172,7 @@ function modRoll(rSource, rTarget, rRoll)
 	rRoll.nMaxEffort = ActorManagerCypher.getMaxEffort(rSource, rRoll.sCostStat, aFilter);
 	rRoll.nEffort = math.min(rRoll.nEffort or 0, rRoll.nMaxEffort or 0);
 	if rRoll.nEffort > 0 then
+		table.insert(aFilter, "effort")
 		rRoll.nMod = rRoll.nMod + 3 + ((rRoll.nEffort - 1) * 2);
 	end
 
