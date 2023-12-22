@@ -72,9 +72,6 @@
 	<!-- EDITOR -->
 	<windowclass name="special_armor_editor">
 		<frame>charsheethelper</frame>
-		<placement>
-			<size width="400" height="350" />
-		</placement>
 		<sizelimits>
 			<minimum width="400" height="350" />
 			<dynamic />

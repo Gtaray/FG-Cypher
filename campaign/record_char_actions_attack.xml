@@ -114,11 +114,8 @@
 
 	<windowclass name="attack_editor">
 		<frame>charsheethelper</frame>
-		<placement>
-			<size width="500" height="550" />
-		</placement>
 		<sizelimits>
-			<minimum width="500" height="350" />
+			<minimum width="500" height="450" />
 			<dynamic />
 		</sizelimits>
 		<sheetdata>

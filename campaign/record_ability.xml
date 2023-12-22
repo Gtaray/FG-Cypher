@@ -8,9 +8,6 @@
 <root>
 	<windowclass name="ability">
 		<frame>recordsheet</frame>
-		<placement>
-			<size width="375" height="400" />
-		</placement>
 		<sizelimits>
 			<minimum width="375" height="350" />
 			<dynamic />

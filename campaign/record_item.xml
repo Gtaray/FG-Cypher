@@ -19,9 +19,6 @@
 
 	<windowclass name="item">
 		<frame>recordsheet</frame>
-		<placement>
-			<size width="350" height="400" />
-		</placement>
 		<sizelimits>
 			<minimum width="350" height="350" />
 			<dynamic />

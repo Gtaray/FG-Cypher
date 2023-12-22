@@ -7,9 +7,6 @@
 
 <root>
 	<windowclass name="npc" merge="join">
-		<placement>
-			<size width="500" height="500" />
-		</placement>
 		<sizelimits>
 			<minimum width="500" height="500" />
 			<dynamic />

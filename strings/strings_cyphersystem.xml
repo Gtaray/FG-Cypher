@@ -7,11 +7,9 @@
 
 <root>
 	<!-- Common -->
-	<string name="dash">-</string>
 	<string name="yes">Yes</string>
 	<string name="no">No</string>
 	
-	<string name="xp">XP</string>
 	<string name="init">Init</string>
 	<string name="initiative">Initiative</string>
 	<string name="armor">Armor</string>
@@ -249,7 +247,7 @@
 	<string name="char_label_background">Background</string>
 	
     <!-- Character - Dialog Boxes -->
-    <string name="dialog_recovery_title">Recovery</string>
+    <string name="recovery_window_title">Recovery</string>
     <string name="label_recovery_remaining">Recovery Remaining</string>
 
 	<!-- Character Tracker -->
@@ -632,7 +630,7 @@
 	<string name="label_condition_name">Name</string>
 	<string name="label_condition_effect">Effect</string>
 	
-	<string name="title_condition_icon_selector">Select Icon</string>
+	<string name="condition_icon_selector_window_title">Select Icon</string>
 
 	<!-- Desktop -->
 	<string name="diffadj_label_effort">Effort</string>

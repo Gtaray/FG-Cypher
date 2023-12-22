@@ -159,9 +159,6 @@
 	</windowclass>
 	
 	<windowclass name="record_arc" copy="record_window">
-		<placement>
-			<size width="350" height="400" />
-		</placement>
 		<sizelimits>
 			<minimum width="350" height="400" />
 			<dynamic />

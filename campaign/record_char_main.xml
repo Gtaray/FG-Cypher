@@ -535,9 +535,6 @@
 
 	<windowclass name="charsheet_armorcalc">
 		<frame>charsheethelper</frame>
-		<placement>
-			<size width="350" height="150" />
-		</placement>
 		<sizelimits>
 			<minimum width="350" height="150" />
 			<dynamic />
@@ -654,9 +651,8 @@
 			end
 		</script>
 		<sheetdata>
-			<windowtitlebar name="title">
-				<resource>dialog_recovery_title</resource>
-			</windowtitlebar>
+			<windowtitlebar_utilitybox name="title" />
+			<windowmenubar_utilitybox name="menubar" />
 
 			<anchor_content_utilitybox_top />
 			
@@ -669,8 +665,6 @@
 				<class>recovery_content</class>
 			</sub_content_framed_groupbox>
 			<scrollbar_content />
-
-			<close_utilitybox />
 		</sheetdata>
 	</windowclass>
 	<windowclass name="recovery_content">
