@@ -230,7 +230,11 @@ function getBaseRollDifficulty(rSource, rTarget, aFilter)
 
 	-- if the target is an NPC, return that creature's level
 	if not ActorManager.isPC(rTarget) then
-		return ActorManagerCypher.getCreatureLevel(rTarget, rSource, aFilter);
+		local nLevel = ActorManagerCypher.getCreatureLevel(rTarget, rSource, aFilter);
+		nLevel = nLevel - EffectManagerCypher.getHinderEffectBonus(rTarget, aFilter, rSource)
+		nLevel = nLevel + EffectManagerCypher.getEaseEffectBonus(rTarget, aFilter, rSource)
+		nLevel = nLevel + EffectManagerCypher.getAssetEffectBonus(rTarget, aFilter, rSource)
+		return nLevel
 	end
 
 	-- target is a PC, so set difficulty to 0.
@@ -297,15 +301,16 @@ function processTrainingEffects(rSource, rTarget, rRoll, aFilter)
 end
 
 function processStandardConditionsForActor(rActor)
+	local nMod = 0
 	-- Dazed and Stunned don't stack with the other conditions
 	if EffectManagerCypher.hasEffect(rActor, "Dazed") or 
 	EffectManagerCypher.hasEffect(rActor, "Stunned") or
 	   (sStat == "might" and EffectManagerCypher.hasEffect(rActor, "Staggered")) or
 	   (sStat == "speed" and (EffectManagerCypher.hasEffect(rActor, "Frostbitten") or EffectManagerCypher.hasEffect(rActor, "Slowed"))) or
 	   (sStat == "intellect" and EffectManagerCypher.hasEffect(rActor, "Confused")) then
-		return 1;
+		nMod = nMod + 1; -- Positive modifier reduces difficulty
 	end
-	return 0;
+	return nMod;
 end
 
 function processPiercing(rSource, rTarget, bPiercing, nPierceAmount, sDamageType, sStat)
@@ -992,7 +997,11 @@ function decodeTarget(rRoll, rTarget, bPersist)
 	);
 	rRoll.sDesc = sText;
 
-	rTarget = ActorManager.resolveActor(sTarget);
+	local newTarget = ActorManager.resolveActor(sTarget);
+	if newTarget then
+		rTarget = newTarget
+	end
+
 	return rTarget;
 end
 
