@@ -14,9 +14,11 @@
 		<nodelete />
 		<script file="utility/scripts/defense_prompt.lua"/>
 		<sheetdata>
-			<windowtitlebar name="reftitle">
+			<windowtitlebar_referencelist name="title">
 				<resource>defense_prompt_window_title</resource>
-			</windowtitlebar>
+			</windowtitlebar_referencelist>
+			<windowmenubar_referencelist name="menubar" />
+
 			<frame_char name="frame">
 				<anchored>
 					<top offset="40"/>

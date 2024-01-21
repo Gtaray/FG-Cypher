@@ -7,9 +7,6 @@
 
 <root>
 	<windowclass name="combattracker_host" merge="join">
-		<placement>
-			<size width="550" />
-		</placement>
 		<sizelimits>
 			<minimum width="550" />
 		</sizelimits>

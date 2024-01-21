@@ -19,9 +19,6 @@
 
 	<windowclass name="item">
 		<frame>recordsheet</frame>
-		<placement>
-			<size width="350" height="400" />
-		</placement>
 		<sizelimits>
 			<minimum width="350" height="350" />
 			<dynamic />
@@ -29,10 +26,15 @@
 		<minimize>minimized_item</minimize>
 		<sharable />
 		<tooltip field="name" />
-		<script file="common/scripts/record_window.lua" />
 		<script>
 			function onLockChanged()
-				super.onLockChanged();
+				if header and header.subwindow then
+					header.subwindow.update();
+				end
+				
+				if content and content.subwindow then
+					content.subwindow.update();
+				end
 
 				if actions.subwindow then
 					actions.subwindow.update();
@@ -73,6 +75,7 @@
 				</tab>
 			</tabs_recordsheet>
 			
+			<help_item />
 			<resize_recordsheet />
 			<close_recordsheet />
 		</sheetdata>
@@ -228,7 +231,7 @@
 			<label_column name="armor_label">
 				<static textres="item_label_armor" />
 			</label_column>
-			<number_column_armor name="armor" />
+			<number_column name="armor" />
 			<label_column name="shieldbonus_label">
 				<static textres="item_label_shieldbonus" />
 			</label_column>

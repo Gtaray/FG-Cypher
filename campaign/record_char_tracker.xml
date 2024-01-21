@@ -8,9 +8,6 @@
 <root>
 	<windowclass name="charsheet_tracker">
 		<frame>charsheethelper</frame>
-		<placement>
-			<size width="500" height="350" />
-		</placement>
 		<sizelimits>
 			<minimum width="500" height="350" />
 			<dynamic />

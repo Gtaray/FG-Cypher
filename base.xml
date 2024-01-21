@@ -6,7 +6,7 @@
 -->
 
 <root version="3.0" release="4.1" logo="logo.png">
-	<announcement text="Cypher System ruleset (2023-08-29) for Fantasy Grounds\rCopyright 2023 Smiteworks USA, LLC" font="emotefont" icon="rulesetlogo_CoreRPG" />
+	<announcement text="Cypher System ruleset (2023-12-12) for Fantasy Grounds\rCopyright 2023 Smiteworks USA, LLC" font="emotefont" icon="rulesetlogo_CoreRPG" />
 	
 	<!-- Attributes -->
 	<description>
@@ -47,6 +47,7 @@
 	<includefile source="campaign/record_char_actions_power.xml" />
 	<includefile source="campaign/record_char_modification.xml" />
 	<includefile source="campaign/record_char_tracker.xml" />
+	<includefile source="campaign/record_power_editor.xml" />
 	<includefile source="campaign/record_power_roll_stat.xml" />
 	<includefile source="campaign/record_power_roll_attack.xml" />
 	<includefile source="campaign/record_power_roll_damage.xml" />
@@ -68,6 +69,7 @@
 	<includefile source="common/template_common.xml" />
 	<includefile source="common/damagetype_templates.xml" />
 	<includefile source="common/template_actions_tab.xml" />
+	<includefile source="common/template_help.xml" />
 
 	<!-- Party sheet -->
 	<includefile source="ps/ps_inventory.xml" />
@@ -81,6 +83,7 @@
 	<includefile source="utility/utility_effects.xml" />
 	<includefile source="utility/prompt_defense.xml" />
 	<includefile source="utility/options_damagetypes.xml" />
+	<includefile source="utility/utility_image_deathmarkers.xml" />
 	<includefile source="utility/prompt_gm_intrusion.xml" />
 	<includefile source="utility/prompt_pc_intrusion.xml" />
 	<includefile source="utility/prompt_cost_conversion.xml" />

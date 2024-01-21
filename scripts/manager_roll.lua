@@ -298,11 +298,11 @@ end
 
 function processStandardConditionsForActor(rActor)
 	-- Dazed and Stunned don't stack with the other conditions
-	if EffectManagerCypher.hasEffect(rSource, "Dazed") or 
-	EffectManagerCypher.hasEffect(rSource, "Stunned") or
-	   (sStat == "might" and EffectManagerCypher.hasEffect(rSource, "Staggered")) or
-	   (sStat == "speed" and (EffectManagerCypher.hasEffect(rSource, "Frostbitten") or EffectManagerCypher.hasEffect(rSource, "Slowed"))) or
-	   (sStat == "intellect" and EffectManagerCypher.hasEffect(rSource, "Confused")) then
+	if EffectManagerCypher.hasEffect(rActor, "Dazed") or 
+	EffectManagerCypher.hasEffect(rActor, "Stunned") or
+	   (sStat == "might" and EffectManagerCypher.hasEffect(rActor, "Staggered")) or
+	   (sStat == "speed" and (EffectManagerCypher.hasEffect(rActor, "Frostbitten") or EffectManagerCypher.hasEffect(rActor, "Slowed"))) or
+	   (sStat == "intellect" and EffectManagerCypher.hasEffect(rActor, "Confused")) then
 		return 1;
 	end
 	return 0;
@@ -354,6 +354,10 @@ function processAdvantage(rSource, rTarget, rRoll, aFilter)
 end
 
 function calculateDifficultyForRoll(rSource, rTarget, rRoll)
+	if rRoll.nDifficulty == nil then
+		return;
+	end
+	
 	local nMod = 0;
 
 	-- Start by modifying the difficulty based on the PC's properties
@@ -376,7 +380,9 @@ function calculateDifficultyForRoll(rSource, rTarget, rRoll)
 	end
 
 	-- Modify based on target's conditions
-	nMod = nMod - RollManager.processStandardConditionsForActor(rTarget)
+	if rTarget then
+		nMod = nMod - RollManager.processStandardConditionsForActor(rTarget)
+	end
 
 	rRoll.nDifficulty = rRoll.nDifficulty + nMod;
 end
@@ -434,7 +440,7 @@ function updateRollMessageIcons(rMessage, aAddIcons, sFirstIcon)
 end
 
 function processRollSpecialEffects(rRoll, bAttack)
-	local bAutomaticSuccess = rRoll.nDifficulty <= 0;
+	local bAutomaticSuccess = rRoll.nDifficulty and rRoll.nDifficulty <= 0;
 	if #(rRoll.aDice) >= 1 then
 		local nFirstDie = rRoll.aDice[1].result or 0;
 		
@@ -443,6 +449,35 @@ function processRollSpecialEffects(rRoll, bAttack)
 		rRoll.bRolled18 = not bAutomaticSuccess and bAttack and nFirstDie == 18;
 		rRoll.bRolled17 = not bAutomaticSuccess and bAttack and nFirstDie == 17;
 		rRoll.bGmIntrusion = not bAutomaticSuccess and nFirstDie <= DifficultyManager.getGmiThreshold();
+	end
+end
+
+function updateChatMessageWithSpecialEffects(rRoll, rMessage, aAddIcons)
+	if rRoll.bMajorEffect then
+		if not rRoll.bRebuilt then
+			rMessage.text = rMessage.text .. " [MAJOR EFFECT]";
+		end
+		table.insert(aAddIcons, "roll20");
+	elseif rRoll.bMinorEffect then
+		if not rRoll.bRebuilt then
+			rMessage.text = rMessage.text .. " [MINOR EFFECT]";
+		end
+		table.insert(aAddIcons, "roll19");
+	elseif rRoll.bRolled18 then
+		if not rRoll.bRebuilt then
+			rMessage.text = rMessage.text .. " [DAMAGE +2]";
+		end
+		table.insert(aAddIcons, "roll18");
+	elseif rRoll.bRolled17 then
+		if not rRoll.bRebuilt then
+			rMessage.text = rMessage.text .. " [DAMAGE +1]";
+		end
+		table.insert(aAddIcons, "roll17");
+	elseif rRoll.bGmIntrusion then
+		if not rRoll.bRebuilt then
+			rMessage.text = rMessage.text .. " [GM INTRUSION]";
+		end
+		table.insert(aAddIcons, "roll1");
 	end
 end
 
@@ -957,11 +992,7 @@ function decodeTarget(rRoll, rTarget, bPersist)
 	);
 	rRoll.sDesc = sText;
 
-	-- Don't overwrite rTarget unless rTarget is null
-	if not rTarget or not ActorManager.getCTNode(rTarget) then
-		rTarget = ActorManager.resolveActor(sTarget);
-	end
-
+	rTarget = ActorManager.resolveActor(sTarget);
 	return rTarget;
 end
 

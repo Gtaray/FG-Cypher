@@ -16,7 +16,7 @@
 			<!-- INITIATIVE -->
 			<frame_char name="initframe">
 				<anchored height="60" width="135">
-					<left offset="15" />
+					<left />
 					<top />
 				</anchored>
 			</frame_char>
@@ -64,9 +64,9 @@
 
 			<frame_char name="armorframe">
 				<anchored height="60">
-					<left offset="150" />
+					<left offset="135" />
 					<top />
-					<right offset="-25" />
+					<right offset="-1" />
 				</anchored>
 			</frame_char>
 
@@ -146,9 +146,9 @@
 			<!-- ATTACKS -->
 			<frame_char name="attackframe">
 				<anchored>
-					<left offset="15" />
-					<top offset="60" />
-					<right offset="-25" />
+					<left offset="0" />
+					<top offset="55" />
+					<right offset="-1" />
 					<bottom anchor="center" />
 				</anchored>
 			</frame_char>
@@ -215,9 +215,9 @@
 			<!-- POWERS -->
 			<frame_char name="abilityframe">
 				<anchored>
-					<left offset="15" />
+					<left offset="0" />
 					<top anchor="center" />
-					<right offset="-25" />
+					<right offset="-1" />
 					<bottom offset="-5" />
 				</anchored>
 			</frame_char>

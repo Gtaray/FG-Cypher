@@ -7,7 +7,7 @@ function update()
 	local bReadOnly = WindowManager.getReadOnlyState(node);
 	local bAction = usetype.getValue() == "Action";
 	local bHasCost = cost.getValue() ~= 0 and coststat.getValue() ~= "-";
-	local bShowCost = bAction and (bHasCost or not bReadOnly);
+	local bShowCost = bHasCost or not bReadOnly;
 	local bHasType = type.getValue() ~= "";
 	local bHasRecharge = period.getValue() ~= "-";
 	local bHasUseType = usetype.getValue() ~= "-";
@@ -19,21 +19,17 @@ function update()
 	-- that function doesn't work on string cyclers
 	usetype.setReadOnly(bReadOnly);
 	usetype.setVisible(bHasUseType or not bReadOnly);
-	usetype_label.setReadOnly(bReadOnly);
 	usetype_label.setVisible(bHasUseType or not bReadOnly);
 	selectlimit.setReadOnly(bReadOnly);
 	selectlimit.setVisible(bRef)
-	selectlimit_label.setReadOnly(bReadOnly);
 	selectlimit_label.setVisible(bRef)
 
 	useequipped.setReadOnly(bReadOnly);
 	useequipped.setVisible(bAction and (bHasType or not bReadonly));
-	useequipped_label.setReadOnly(bReadOnly);
 	useequipped_label.setVisible(bAction and (bHasType or not bReadonly));
 
 	period.setReadOnly(bReadOnly);
 	period.setVisible(bAction and (bHasRecharge or not bReadOnly));
-	period_label.setReadOnly(bReadOnly);
 	period_label.setVisible(bAction and (bHasRecharge or not bReadOnly));
 	WindowManager.callSafeControlUpdate(self, "uses", bReadOnly);
 	WindowManager.setControlVisibleWithLabel(self, "uses", bHasRecharge);

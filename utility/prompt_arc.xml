@@ -13,9 +13,11 @@
 		</placement>
 		<nodelete />
 		<sheetdata>
-			<windowtitlebar name="reftitle">
+			<windowtitlebar_referencelist name="title">
 				<resource>arc_complete_prompt_window_title</resource>
-			</windowtitlebar>
+			</windowtitlebar_referencelist>
+			<windowmenubar_referencelist name="menubar" />
+
 			<frame_char name="frame">
 				<anchored>
 					<top offset="40"/>
@@ -81,9 +83,11 @@
 		</placement>
 		<nodelete />
 		<sheetdata>
-			<windowtitlebar name="reftitle">
+			<windowtitlebar_referencelist name="title">
 				<resource>arc_complete_prompt_window_title</resource>
-			</windowtitlebar>
+			</windowtitlebar_referencelist>
+			<windowmenubar_referencelist name="menubar" />
+
 			<frame_char name="frame">
 				<anchored>
 					<top offset="40"/>

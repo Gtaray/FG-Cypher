@@ -38,6 +38,21 @@
 	<icon name="gmi3" file="graphics/icons/gmi3.png" />
 	<icon name="gmi4" file="graphics/icons/gmi4.png" />
 	<icon name="gmi5" file="graphics/icons/gmi5.png" />
+	<icon name="gmi6" file="graphics/icons/gmi6.png" />
+	<icon name="gmi7" file="graphics/icons/gmi7.png" />
+	<icon name="gmi8" file="graphics/icons/gmi8.png" />
+	<icon name="gmi9" file="graphics/icons/gmi9.png" />
+	<icon name="gmi10" file="graphics/icons/gmi10.png" />
+	<icon name="gmi11" file="graphics/icons/gmi11.png" />
+	<icon name="gmi12" file="graphics/icons/gmi12.png" />
+	<icon name="gmi13" file="graphics/icons/gmi13.png" />
+	<icon name="gmi14" file="graphics/icons/gmi14.png" />
+	<icon name="gmi15" file="graphics/icons/gmi15.png" />
+	<icon name="gmi16" file="graphics/icons/gmi16.png" />
+	<icon name="gmi17" file="graphics/icons/gmi17.png" />
+	<icon name="gmi18" file="graphics/icons/gmi18.png" />
+	<icon name="gmi19" file="graphics/icons/gmi19.png" />
+	<icon name="gmi20" file="graphics/icons/gmi20.png" />
 
 	<icon name="playerintrusion" file="graphics/icons/player_intrusion.png" />
 

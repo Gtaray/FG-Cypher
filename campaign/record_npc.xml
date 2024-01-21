@@ -7,13 +7,13 @@
 
 <root>
 	<windowclass name="npc" merge="join">
-		<placement>
-			<size width="500" height="500" />
-		</placement>
 		<sizelimits>
 			<minimum width="500" height="500" />
 			<dynamic />
 		</sizelimits>
+		<sheetdata>
+			<help_npc />
+		</sheetdata>
 	</windowclass>
 	
 	<windowclass name="npc_main">
@@ -84,12 +84,14 @@
 			<label_column name="damagestr_label">
 				<static textres="npc_label_damage" />
 			</label_column>
-			<string_column name="damagestr" />
+			<string_column name="damagestr">
+				<script file="campaign/scripts/npc_damage.lua" />
+			</string_column>
 
 			<label_column name="armor_label">
 				<static textres="npc_label_armor" />
 			</label_column>
-			<number_column_armor name="armor" />
+			<number_column name="armor" />
 
 			<label_column name="type_label">
 				<static textres="npc_label_type" />
@@ -119,7 +121,7 @@
 			<string_columnh name="intrusion" />
 
 			<header_column name="resistances_header">
-				<static textres="header_damage_modifications"/>
+				<static textres="header_special_armor"/>
 			</header_column>
 			<button_iedit name="resistances_iedit">
 				<anchored to="resistances_header" position="righthigh" offset="-20,0" />

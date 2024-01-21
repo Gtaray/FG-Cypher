@@ -172,6 +172,7 @@ function modRoll(rSource, rTarget, rRoll)
 	rRoll.nMaxEffort = ActorManagerCypher.getMaxEffort(rSource, rRoll.sCostStat, aFilter);
 	rRoll.nEffort = math.min(rRoll.nEffort or 0, rRoll.nMaxEffort or 0);
 	if rRoll.nEffort > 0 then
+		table.insert(aFilter, "effort")
 		rRoll.nMod = rRoll.nMod + 3 + ((rRoll.nEffort - 1) * 2);
 	end
 
@@ -284,9 +285,9 @@ function onRoll(rSource, rTarget, rRoll)
 
 	-- if edge is enabled, and the roll included edge
 	-- we disable edge for the remainder of the turn
-	if not rRoll.bDisableEdge and rRoll.nEdge > 0 then
-		RollManager.disableEdge();
-	end
+	-- if not rRoll.bDisableEdge and rRoll.nEdge > 0 then
+	-- 	RollManager.disableEdge();
+	-- end
 
 	local rAction = ActionCost.getLastAction();
 	if rAction then

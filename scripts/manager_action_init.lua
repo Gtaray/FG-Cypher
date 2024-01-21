@@ -110,17 +110,7 @@ function onRoll(rSource, rTarget, rRoll)
 
 	rMessage.icon = "action_roll";
 	RollManager.processRollSpecialEffects(rRoll);
-
-	if rRoll.bMajorEffect then
-		rMessage.text = rMessage.text .. " [MAJOR EFFECT]";
-		table.insert(aAddIcons, "roll20");
-	elseif rRoll.bMinorEffect then
-		rMessage.text = rMessage.text .. " [MINOR EFFECT]";
-		table.insert(aAddIcons, "roll19");
-	elseif rRoll.bGmIntrusion then
-		rMessage.text = rMessage.text .. " [GM INTRUSION]";
-		table.insert(aAddIcons, "roll1");
-	end
+	RollManager.updateChatMessageWithSpecialEffects(rRoll, rMessage, aAddIcons);
 
 	-- Convert difficulty adjustments to their equivalent flat bonus
 	RollManager.updateMessageWithConvertedTotal(rRoll, rMessage);

@@ -71,9 +71,6 @@
 		<placement>
 			<size width="350" height="350" />
 		</placement>
-		<sizelimits>
-			<minimum width="350" height="350" />
-		</sizelimits>
 		<minimize>minimized_reference</minimize>
 		<sheetdata>
 			<anchor_title_charsheethelper name="contentanchor">
@@ -101,6 +98,7 @@
 				<target>content</target>
 			</scrollbar_record>
 
+			<help_modification />
 			<close_charsheethelper />
 		</sheetdata>
 	</windowclass>

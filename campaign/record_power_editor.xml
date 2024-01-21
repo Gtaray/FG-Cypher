@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="power_action_editor" merge="join">
+		<script>
+			local fOnTypeChanged;
+			function onInit()
+				fOnTypeChanged = super.onTypeChanged;
+				super.onTypeChanged = onTypeChanged;
+
+				if super and super.onInit then
+					super.onInit()
+				end
+			end
+			function onTypeChanged()
+				fOnTypeChanged();
+
+				local sType = type.getValue();
+				help_stat.setVisible(sType == "stat");
+				help_attack.setVisible(sType == "attack");
+				help_damage.setVisible(sType == "damage");
+				help_heal.setVisible(sType == "heal");
+				help_effect.setVisible(sType == "effect");
+			end
+		</script>
+		<sheetdata>
+			<!-- Dynamically show one of these based on type -->
+			<help_charsheet_action_stat name="help_stat" />
+			<help_charsheet_action_attack name="help_attack" />
+			<help_charsheet_action_damage name="help_damage" />
+			<help_charsheet_action_heal name="help_heal" />
+			<help_charsheet_action_effect name="help_effect" />
+		</sheetdata>
+	</windowclass>
+</root>

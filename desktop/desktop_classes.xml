@@ -122,8 +122,8 @@
 					fSetMenuItems = super.setMenuItems;
 					super.setMenuItems = setMenuItems;
 				end
-				function setMenuItems(sIdentity)
-					fSetMenuItems(sIdentity);	
+				function setMenuItems()
+					fSetMenuItems();	
 
 					if Session.IsHost then
 						IntrusionManager.registerIntrusionMenu(self);

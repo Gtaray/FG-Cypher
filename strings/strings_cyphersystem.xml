@@ -7,11 +7,9 @@
 
 <root>
 	<!-- Common -->
-	<string name="dash">-</string>
 	<string name="yes">Yes</string>
 	<string name="no">No</string>
 	
-	<string name="xp">XP</string>
 	<string name="init">Init</string>
 	<string name="initiative">Initiative</string>
 	<string name="armor">Armor</string>
@@ -42,6 +40,7 @@
 	<string name="library_recordtype_label_damagetypes">Damage Types</string>
 
 	<!-- Options -->
+	<string name="option_label_GDIFF">Enable global difficulty</string>
 	<string name="option_label_INITPC">Init: PC</string>
 	<string name="option_label_INITNPC">Init: NPC</string>
 	<string name="option_label_MAXTARGET">Maximum Difficulty Level for Rolls</string>
@@ -248,7 +247,7 @@
 	<string name="char_label_background">Background</string>
 	
     <!-- Character - Dialog Boxes -->
-    <string name="dialog_recovery_title">Recovery</string>
+    <string name="recovery_window_title">Recovery</string>
     <string name="label_recovery_remaining">Recovery Remaining</string>
 
 	<!-- Character Tracker -->
@@ -545,10 +544,23 @@
 	
 	<string name="depletion_tag">DEPLETION</string>
 
-	<!-- Damage Modifications -->
-	<string name="header_damage_modifications">Special Defenses &amp; Armor</string>
-	<string name="damage_modification_tooltip_name">Damage Type (fire, cold, lightning, etc.)</string>
-	<string name="damage_modification_tooltip_armor">Armor value applied against the specified damage type. Positive armor reduces damage taken. Negative armor increases damage taken. A value of 0 indicates immunity to the damage type.</string>
+	<!-- Special Armor -->
+	<string name="header_special_armor">Special Defenses &amp; Armor</string>
+	<string name="special_armor_tooltip_name">Damage Type (fire, cold, lightning, etc.)</string>
+	<string name="special_armor_tooltip_armor">Armor value applied against the specified damage type. Positive armor reduces damage taken. Negative armor increases damage taken. A value of 0 indicates immunity to the damage type.</string>
+
+	<string name="special_armor_title_editor">Special Armor</string>
+	<string name="special_armor_header_properties">Properties</string>
+	<string name="special_armor_label_damagetype">Damage Type</string>
+	<string name="special_armor_label_armor">Armor</string>
+	<string name="special_armor_label_behavior">Behavior</string>
+	<string name="special_armor_behavior_value_reduction">Damage Reduction</string>
+	<string name="special_armor_behavior_value_threshold">Damage Threshold</string>
+	<string name="special_armor_tooltip_behavior">How does this special armor interact with damage?\nReduction = reduce incoming damage by the amount.\nThreshold = ignore all damage less than the amount.</string>
+	<string name="special_armor_summary_immune">Immune to %s damage</string>
+	<string name="special_armor_summary_resist">Reduce %s damage taken by %s</string>
+	<string name="special_armor_summary_vuln">Increase %s damage taken by %s</string>
+	<string name="special_armor_summary_threshold">Ignore %s damage unless it deals at least %s damage</string>
 
 	<!-- Defense Prompt -->
 	<string name="defense_prompt_window_title">Defend Thyself</string>
@@ -618,7 +630,7 @@
 	<string name="label_condition_name">Name</string>
 	<string name="label_condition_effect">Effect</string>
 	
-	<string name="title_condition_icon_selector">Select Icon</string>
+	<string name="condition_icon_selector_window_title">Select Icon</string>
 
 	<!-- Desktop -->
 	<string name="diffadj_label_effort">Effort</string>
@@ -668,4 +680,6 @@
 	<string name="pci_message_shortterm">%s has invoked a player intrusion to adjust the scenario! (1 XP)</string>
 	<string name="pci_message_mediumterm">%s has invoked a player intrusion to gain training a skill! (2 XP)</string>
 	<string name="pci_message_longterm">%s has invoked a player intrusion to gain a long-term benefit! (3 XP)</string>
+
+	<string name="help_tool_effects">https://publish.obsidian.md/fantasygrounds-cypher-wiki/Effects/Effects</string>
 </root>

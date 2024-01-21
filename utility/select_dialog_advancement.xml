@@ -14,9 +14,10 @@
 		</placement>
 		<script file="utility/scripts/dialog_advancement.lua" />
 		<sheetdata>
-			<windowtitlebar name="title">
+			<windowtitlebar_utilitybox name="title">
 				<resource>dialog_select_char_title</resource>
-			</windowtitlebar>
+			</windowtitlebar_utilitybox>
+			<windowmenubar_utilitybox name="menubar" />
 
 			<anchor_content_utilitybox_top />
 
@@ -161,8 +162,6 @@
 			<sub_content_bottom name="sub_buttons">
 				<class>dialog_buttons_okcancel</class>
 			</sub_content_bottom>
-			
-			<close_utilitybox />
 		</sheetdata>
 	</windowclass>
 

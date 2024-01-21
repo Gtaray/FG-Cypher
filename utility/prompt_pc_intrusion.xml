@@ -8,9 +8,6 @@
 <root>
 	<windowclass name="prompt_pc_intrusion">
 		<frame>referencelist</frame>
-		<placement>
-			<size width="400" height="500" />
-		</placement>
 		<sizelimits>
 			<minimum width="400" height="500" />
 			<dynamic />
@@ -18,9 +15,11 @@
 		<nodelete />
 		<script file="utility/scripts/pci_prompt.lua" />
 		<sheetdata>
-			<windowtitlebar name="reftitle">
+			<windowtitlebar_referencelist name="title">
 				<resource>pci_prompt_window_title</resource>
-			</windowtitlebar>
+			</windowtitlebar_referencelist>
+			<windowmenubar_referencelist name="menubar" />
+
 			<frame_char name="frame">
 				<anchored>
 					<top offset="40"/>

@@ -32,16 +32,16 @@ function addAbilityDrop(nodeChar, sClass, sRecord)
 		rPromptData.sSourceType = rAdd.sSourceType;
 		rPromptData.sSourceClass = rAdd.sSourceClass;
 		rPromptData.nodeChar = rAdd.nodeChar;
-		rPrmoptData.sCharName = rAdd.sCharName;
-		rPrmoptData.nMight = ActorManagerCypher.getStatPool(rAdd.nodeChar, "might");
-		rPrmoptData.nSpeed = ActorManagerCypher.getStatPool(rAdd.nodeChar, "speed");
-		rPrmoptData.nIntellect = ActorManagerCypher.getStatPool(rAdd.nodeChar, "intellect");
+		rPromptData.sCharName = rAdd.sCharName;
+		rPromptData.nMight = ActorManagerCypher.getStatPool(rAdd.nodeChar, "might");
+		rPromptData.nSpeed = ActorManagerCypher.getStatPool(rAdd.nodeChar, "speed");
+		rPromptData.nIntellect = ActorManagerCypher.getStatPool(rAdd.nodeChar, "intellect");
 		rPromptData.sSource = string.format("%s (%s)", 
 			StringManager.capitalize(rPromptData.sSourceName), 
 			StringManager.capitalize(rPromptData.sSourceType))
 
 		local w = Interface.openWindow("select_dialog_char", "");
-		w.setData(rAdd, CharModManager.applyFloatingStatsAndEdge);
+		w.setData(rPromptData, CharModManager.applyFloatingStatsAndEdge);
 	end
 end
 

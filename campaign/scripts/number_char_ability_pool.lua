@@ -97,12 +97,12 @@ function handleRecoveryDrop(draginfo)
 		if nRemainder > 0 then
 			local rRoll = { sType = "recovery", aDice = {}, nMod = nRemainder };
 			rRoll.sDesc = string.format("[RECOVERY] [APPLIED %d TO %s] Remainder", nApplied, sName);
-			local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
+			local rMessage = ActionsManager.createActionMessage(rActor, rRoll);
 			Comm.deliverChatMessage(rMessage);
 		else
 			local rRoll = {};
 			rRoll.sDesc = string.format("[RECOVERY] [APPLIED %d TO %s]", nApplied, sName);
-			local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
+			local rMessage = ActionsManager.createActionMessage(rActor, rRoll);
 			Comm.deliverChatMessage(rMessage);
 		end
 	end

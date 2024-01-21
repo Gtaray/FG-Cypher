@@ -9,7 +9,7 @@
 	<windowclass name="charsheet_notes">
 		<sheetdata>
 			<frame_char name="backgroundframe">
-				<anchored position="insidetopleft" offset="15,0">
+				<anchored position="insidetopleft" >
 					<bottom anchor="center" offset="50" />
 					<right offset="-190" />
 				</anchored>
@@ -37,7 +37,7 @@
 					<top />
 					<left anchor="right" offset="-190" />
 					<bottom anchor="center" offset="50" />
-					<right offset="-29" />
+					<right offset="-1" />
 				</anchored>
 			</frame_char>
 			<label_frametop>
@@ -68,9 +68,9 @@
 			<frame_char name="notesframe">
 				<anchored>
 					<top anchor="center" offset="50" />
-					<left offset="15" />
+					<left offset="0" />
 					<bottom offset="-5" />
-					<right offset="-29" />
+					<right offset="-1" />
 				</anchored>
 			</frame_char>
 			<label_frametop>

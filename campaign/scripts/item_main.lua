@@ -27,7 +27,6 @@ function updateControl(sControlName, bReadOnly, bHide)
 		self[sControlName].setVisible(not bHide);
 	end
 	if self[sControlName .. "_label"] then
-		self[sControlName .. "_label"].setReadOnly(bReadOnly);
 		self[sControlName .. "_label"].setVisible(not bHide);
 	end
 end
@@ -83,7 +82,7 @@ function update()
 	local bShield = ItemManagerCypher.getArmorType(nodeRecord) == "shield";
 	updateControl("armortype", bReadOnly, not bArmor);
 	updateControl("shieldbonus", bReadOnly, not (bID and bArmor and bShield));
-	WindowManager.callSafeControlUpdate(self, "armor", bReadOnly, bDmgTypes or not (bID and bArmor and not bShield));
+	updateControl("armor", bReadOnly, not (bID and bArmor and not bShield));
 
 	-- CYPHER PROPERTIES
 	WindowManager.callSafeControlUpdate(self, "levelroll", bReadOnly, not bCypher or not Session.IsHost);

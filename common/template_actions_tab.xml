@@ -42,7 +42,7 @@
 
 			<button_iedit name="actions_iedit">
 				<anchored position="insidetopright" offset="10,5" />
-				<target>actions</target>
+				<edittarget>actions</edittarget>
 			</button_iedit>
 			<buttoncontrol name="effect_iadd">
 				<anchored to="actions_iedit" position="lefthigh" offset="5,0" width="20" height="20" />
@@ -92,47 +92,47 @@
 
 			<list_poweraction name="actions">
 				<script>
-				function update()
-					local bEditMode = (window.actions_iedit.getValue() == 1);
-					
-					for _,w in ipairs(getWindows()) do
-						w.idelete.setVisibility(bEditMode);
-					end
-				end
-
-				function addEntry(sType, bFocus)
-					local nodelist = getDatabaseNode();
-					if nodelist then
-						local nodeAction = DB.createChild(nodelist);
-						if nodeAction then
-							DB.setValue(nodeAction, "type", "string", sType);
-						end
-					end
-
-					update();
-				end
-
-				function reset()
-					for _,v in pairs(getWindows()) do
-						DB.deleteNode(v.getDatabaseNode());
-					end
-				end
-
-				function setOrder(node)
-					if DB.getValue(node, "order", 0) == 0 then
-						local aOrder = {};
-						for _,v in pairs(DB.getChildren(getDatabaseNode(), "")) do
-							aOrder[DB.getValue(v, "order", 0)] = true;
-						end
+					function onEditModeChanged()
+						local bEditMode = (window.actions_iedit.getValue() == 1);
 						
-						local i = 1;
-						while aOrder[i] do
-							i = i + 1;
+						for _,w in ipairs(getWindows()) do
+							w.idelete.setVisibility(bEditMode);
 						end
-						
-						DB.setValue(node, "order", "number", i);
 					end
-				end
+
+					function addEntry(sType, bFocus)
+						local nodelist = getDatabaseNode();
+						if nodelist then
+							local nodeAction = DB.createChild(nodelist);
+							if nodeAction then
+								DB.setValue(nodeAction, "type", "string", sType);
+							end
+						end
+
+						onEditModeChanged();
+					end
+
+					function reset()
+						for _,v in pairs(getWindows()) do
+							DB.deleteNode(v.getDatabaseNode());
+						end
+					end
+
+					function setOrder(node)
+						if DB.getValue(node, "order", 0) == 0 then
+							local aOrder = {};
+							for _,v in pairs(DB.getChildren(getDatabaseNode(), "")) do
+								aOrder[DB.getValue(v, "order", 0)] = true;
+							end
+							
+							local i = 1;
+							while aOrder[i] do
+								i = i + 1;
+							end
+							
+							DB.setValue(node, "order", "number", i);
+						end
+					end
 				</script>
 				<anchored>
 					<top parent="header_actions" anchor="bottom" relation="relative" offset="5" />

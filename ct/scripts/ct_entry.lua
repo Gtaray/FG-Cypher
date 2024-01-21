@@ -55,10 +55,10 @@ function onHealthChanged()
 end
 
 function linkPCFields()
+	super.linkPCFields();
+
 	local nodeChar = link.getTargetDatabaseNode();
 	if nodeChar then
-		name.setLink(DB.createChild(nodeChar, "name", "string"), true);
-
 		damagetrack.setLink(DB.createChild(nodeChar, "wounds", "number"));
 
 		mightmax.setLink(DB.createChild(nodeChar, "abilities.might.max", "number"));

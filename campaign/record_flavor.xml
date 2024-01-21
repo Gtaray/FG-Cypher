@@ -8,9 +8,6 @@
 <root>
 	<windowclass name="flavor">
 		<frame>recordsheet</frame>
-		<placement>
-			<size width="400" height="400" />
-		</placement>
 		<sizelimits>
 			<minimum width="350" height="350" />
 			<dynamic />
@@ -51,6 +48,7 @@
 				</tab>
 			</tabs_recordsheet>
 
+			<help_flavor />
 			<resize_recordsheet />
 			<close_recordsheet />
 		</sheetdata>

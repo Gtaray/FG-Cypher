@@ -75,8 +75,6 @@ function onInit()
 	TokenManager.addEffectTagIconSimple(TokenManagerCypher.othercomps);
 	TokenManager.addDefaultEffectFeatures(nil, EffectManagerCypher.parseEffectComp);
 
-	-- TokenManager.setDefaultEffectInfoFunction(getEffectInfoDefault);
-
 	-- This makes sure that when health fields update we update the IF effect icons
 	for _,sField in ipairs(healthfields) do
 		CombatManager.addCombatantFieldChangeHandler(sField, "onUpdate", TokenManagerCypher.updateActorHealthField);
@@ -85,9 +83,8 @@ function onInit()
 end
 
 function updateActorHealthField(nodeEffectField)
-	TokenManager.updateEffects(DB.getChild(nodeEffectField, ".."));
+	ActorDisplayManager.updateCTEffects(DB.getChild(nodeEffectField, ".."));
 end
-
 
 function getEffectConditionIcons()
 	return EffectManagerCypher.getConditionIcons();
@@ -99,6 +96,6 @@ end
 
 function updateConditionsOnTokens()
 	for _,v in pairs(CombatManager.getCombatantNodes()) do
-		TokenManager.updateEffects(v);
+		ActorDisplayManager.updateCTEffects(v);
 	end
 end

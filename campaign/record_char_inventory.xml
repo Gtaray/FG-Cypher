@@ -11,6 +11,7 @@
 			<genericcontrol name="carried_header" merge="delete" />
 			<label name="weight_label" merge="delete" />
 			<label name="location_label" merge="delete" />
+
 			<label name="level_label" insertbefore="name_label">
 				<anchored to="rightanchor" width="20">
 					<top />

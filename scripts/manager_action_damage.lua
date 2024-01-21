@@ -229,6 +229,16 @@ function applyDamage(rSource, rTarget, rRoll)
 	end
 
 	if not rRoll.bAmbient then
+		rRoll.nTotal = ActionDamage.applyThreshold(
+			rSource, 
+			rTarget, 
+			rRoll.nTotal, 
+			rRoll.sDamageStat, 
+			rRoll.sDamageType,
+			rRoll.bPiercing, 
+			rRoll.nPierceAmount,
+			aNotifications);
+
 		rRoll.nTotal = ActionDamage.applyArmor(
 			rSource, 
 			rTarget, 
@@ -333,10 +343,42 @@ function applyDamage(rSource, rTarget, rRoll)
 	ActionsManager.outputResult(rRoll.bSecret, rSource, rTarget, msgLong, msgShort);
 end
 
+function applyThreshold(rSource, rTarget, nTotal, sStat, sDamageType, bPiercing, nPierceAmount, aNotifications)
+	-- If for some reason the amount of damage is negative, then we don't need to do any processing
+	-- Because it's handled as healing
+	if nTotal <= 0 then
+		return nTotal;
+	end
+
+	-- Check if we have any thresholds we need to beat
+	local nThreshold = ActorManagerCypher.getArmorThreshold(rTarget, rSource, sStat, sDamageType);
+
+	if nThreshold > 0 and nTotal < nThreshold then
+		-- Threshold not reached, no damage is dealt
+		if bPiercing then
+			-- If this damage pierces all armor, then we ignore the threshold
+			-- and do damage anyway.
+			if nPierceAmount == 0 then
+				return nTotal;
+			
+			-- If we pierce SOME armor, then we deal damage equal to the pierce amount
+			elseif nPierceAmount > 0 then
+				table.insert(aNotifications, "[PARTIALLY IGNORED]");
+				return nPierceAmount;
+			end
+		end
+
+		table.insert(aNotifications, "[IGNORED]");
+		return 0;
+	end
+
+	return nTotal;
+end
+
 function applyArmor(rSource, rTarget, nTotal, sStat, sDamageType, bPiercing, nPierceAmount, aNotifications)
 	-- If for some reason the amount of damage is negative, then we don't need to do any processing
 	-- Because it's handled as healing
-	if nTotal < 0 then
+	if nTotal <= 0 then
 		return nTotal;
 	end
 	

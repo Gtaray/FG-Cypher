@@ -6,6 +6,10 @@
 -->
 
 <root>
+	<!-- <windowclass name="effectlist" merge="join">
+		<helplinkres mergerule="resetandadd">https://publish.obsidian.md/fantasygrounds-cypher-wiki/Effects/Effects</helplinkres>
+	</windowclass> -->
+
 	<windowclass name="effectlist_preset_content" merge="join">
 		<script file="utility/scripts/effectlist_presets.lua" />
 		<sheetdata>
@@ -97,12 +101,9 @@
 
 	<windowclass name="condition_icon_selector">
 		<frame>utilitybox</frame>
-		<placement>
-			<size width="400" height="400" />
-		</placement>
 		<sizelimits>
+			<minimum width="650" height="400" />
 			<dynamic />
-			<minimum width="650" height="300" />
 		</sizelimits>
 		<script>
 			function onInit()
@@ -118,9 +119,10 @@
 			end
 		</script>
 		<sheetdata>
-			<windowtitlebar name="title">
-				<resource>title_condition_icon_selector</resource>
-			</windowtitlebar>
+			<windowtitlebar_utilitybox name="title" />
+			<windowmenubar_utilitybox name="menubar" />
+			<resize_utilitybox />
+
 			<anchor_content_utilitybox_top />
 
 			<list_content_base name="icons">
@@ -142,9 +144,6 @@
 				<sourceless />
 				<columns width="55" fillwidth="true" />
 			</list_content_base>
-
-			<resize_utilitybox />
-			<close_utilitybox />
 		</sheetdata>
 	</windowclass>
 

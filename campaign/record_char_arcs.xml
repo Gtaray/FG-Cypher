@@ -9,7 +9,7 @@
 	<windowclass name="charsheet_arcs">
 		<sheetdata>
 			<frame_char name="arcframe">
-				<bounds>15,0,-29,-5</bounds>
+				<bounds>0,0,-1,-5</bounds>
 			</frame_char>
 			<label_frametop name="header_arcs">
 				<anchored to="arcframe" />
@@ -159,9 +159,6 @@
 	</windowclass>
 	
 	<windowclass name="record_arc" copy="record_window">
-		<placement>
-			<size width="350" height="400" />
-		</placement>
 		<sizelimits>
 			<minimum width="350" height="400" />
 			<dynamic />

@@ -45,8 +45,8 @@ end
 
 function replaceTokens(rActor, rAction)
 	local sNewText = rAction.sName;
-	for temp in string.gmatch(rAction.sName, "({{.-}})") do
-		local token = (temp:match("{{(.-)}}") or ""):lower();
+	for temp in string.gmatch(rAction.sName, "({.-})") do
+		local token = (temp:match("{(.-)}") or ""):lower();
 		local value = "EMPTY";
 
 		if token == "effort" then

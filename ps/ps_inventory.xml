@@ -6,25 +6,23 @@
 -->
 
 <root>
-	<windowclass name="ps_inventory" merge="join">
+	<!-- <windowclass name="ps_inventory_shared" merge="join">
 		<sheetdata>
-			<label_ps name="label_parcelitem_count" merge="delete" />
-			<label_ps name="label_parcelitem_name">
-				<anchored offset="10,7" />
-			</label_ps>
-			<label_ps name="label_parcelitem_type" insertbefore="label_parcelitem_name">
-				<anchored to="label_parcelitem_rightanchor" width="80">
-					<right anchor="left" relation="relative" offset="-5" />
-					<bottom />
-				</anchored>
+			<label_list_content_number_left name="label_items_count" merge="delete" />
+			<label_list_content_number_left name="label_coins_count">
+				<anchored to="labelleftanchor_coins" width="50" />
+				<static>#</static>
+			</label_list_content_number_left>
+			<label_list_content_string_left name="label_items_type" insertbefore="label_items_name">
+				<anchored to="labelleftanchor_items" width="80" />
 				<static textres="ps_label_invtype" />
 				<center />
-			</label_ps>
-			<label_ps name="label_parcelitem_assign">
+			</label_list_content_string_left>
+			<label_list_content_string_right name="label_items_assign">
 				<anchored width="80" />
-			</label_ps>
+			</label_list_content_string_right>
 		</sheetdata>
-	</windowclass>
+	</windowclass> -->
 	
 	<windowclass name="ps_parcelitem" merge="join">
 		<sheetdata>

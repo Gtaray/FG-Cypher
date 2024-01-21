@@ -14,7 +14,7 @@
 		</script>
 		<sheetdata>
 			<frame_char name="abilityframe">
-				<bounds>15,0,-29,-5</bounds>
+				<bounds>0,0,-1,-5</bounds>
 			</frame_char>
 			<label_frametop name="header_abilities">
 				<anchored to="abilityframe" />
