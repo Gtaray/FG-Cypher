@@ -67,6 +67,7 @@ function modRoll(rSource, rTarget, rRoll)
 		return;
 	end
 
+	-- If there's not already a target, then we try to decode one
 	rTarget = RollManager.decodeTarget(rRoll, rTarget, true);
 	local aFilter = { "attack", "atk", rRoll.sStat };
 	if (rRoll.sAttackRange or "") ~= "" then

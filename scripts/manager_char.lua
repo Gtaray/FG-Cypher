@@ -303,6 +303,17 @@ function applyFocusAbilities(rData)
 	CharFocusManager.addAbilities(rData);
 end
 
+function getExperience(nodeChar)
+	local nTier = DB.getValue(nodeChar, "tier", 1)
+	local nExp = DB.getValue(nodeChar, "xp", 0)
+	local nStats = DB.getValue(nodeChar, "adv_stats", 0)
+	local nEdge = DB.getValue(nodeChar, "adv_edge", 0)
+	local nEffort = DB.getValue(nodeChar, "adv_effort", 0)
+	local nSkill = DB.getValue(nodeChar, "adv_skill", 0)
+
+	return ((nTier - 1) * 16) + (nStats * 4) + (nEdge * 4) + (nEffort * 4) + (nSkill * 4) + nExp
+end
+
 -------------------------------------------------------------------------------
 -- ITEM MANAGEMENT
 -------------------------------------------------------------------------------

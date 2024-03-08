@@ -53,12 +53,12 @@
 			
 			<windowlist name="characters">
 				<script>
-					function addEntry(sNode, sToken, sName)
+					function addEntry(sNode, sToken, sName, nXp)
 						local w = createWindow();
 						if w then
 							w.node.setValue(sNode);
 							w.token.setPrototype(sToken);
-							w.name.setValue(sName);
+							w.name.setValue(sName .. " (" .. nXp .. ")");
 						end
 						return w;
 					end
