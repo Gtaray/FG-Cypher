@@ -7,10 +7,11 @@
 
 <root>
 	<windowclass name="damagetypes" copy="settings_list">
+		<helplinkres>https://publish.obsidian.md/fantasygrounds-cypher-wiki/System/Damage+Types</helplinkres>
 		<sheetdata>
-			<windowtitlebar name="title">
+			<windowtitlebar_utilitybox name="title">
 				<resource>library_recordtype_label_damagetypes</resource>
-			</windowtitlebar>
+			</windowtitlebar_utilitybox>
 
 			<list_utility_setting name="list">
 				<class>damagetype</class>

@@ -6,64 +6,23 @@
 -->
 
 <root>
-	<windowclass name="type">
-		<frame>recordsheet</frame>
-		<sizelimits>
-			<minimum width="370" height="350" />
-			<dynamic />
-		</sizelimits>
-		<minimize>minimized_reference</minimize>
-		<tooltip field="name" />
-		<sharable />
-		<script file="common/scripts/record_window.lua" />
-		<sheetdata>
-			<sub_record_header name="header">
-				<class>type_header</class>
-			</sub_record_header>
-
-			<frame_record_content_tabbed name="contentframe" />
-
-			<ft_record name="text">
-				<anchored to="contentframe" position="over" />
-			</ft_record>
-			<subwindow_record name="content">
-				<class>type_stats</class>
-			</subwindow_record>
-
-			<scrollbar_record>
-				<target>text</target>
-			</scrollbar_record>
-			<scrollbar_record>
-				<target>content</target>
-			</scrollbar_record>
-
-			<tabs_recordsheet name="tabs">
-				<tab>
-					<icon>tab_main</icon>
-					<subwindow>text</subwindow>
-				</tab>
-				<tab>
-					<icon>tab_other</icon>
-					<subwindow>content</subwindow>
-				</tab>
-			</tabs_recordsheet>
-
-			<help_type />
-			<resize_recordsheet />
-			<close_recordsheet />
-		</sheetdata>
+	<windowclass name="type" copy="record_window_tabbed">
+		<helplinkres>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Types</helplinkres>
+		<tab>
+			<name>notes</name>
+			<resource>tab_main</resource>
+			<class>record_content_text</class>
+			<embed />
+		</tab>
+		<tab merge="add">
+			<name>main</name>
+			<resource>tab_other</resource>
+			<class>type_main</class>
+			<embed />
+		</tab>
 	</windowclass>
-	<windowclass name="type_header" copy="record_header_simple">
-		<sheetdata>
-			<link_record_header name="link">
-				<class>type</class>
-			</link_record_header>
-			<label_recordtype name="recordtype_label">
-				<static textres="library_recordtype_ref_type" />
-			</label_recordtype>
-		</sheetdata>
-	</windowclass>
-	<windowclass name="type_stats">
+
+	<windowclass name="type_main">
 		<margins control="0,0,0,2" />
 		<script file="campaign/scripts/char_content_type_stats.lua" />
 		<sheetdata>
@@ -246,7 +205,6 @@
 			</list_ref_ability>
 		</sheetdata>
 	</windowclass>
-
 	<windowclass name="list_edge_item">
 		<margins control="0,0,0,2" />
 		<script>

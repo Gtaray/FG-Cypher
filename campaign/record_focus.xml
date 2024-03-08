@@ -6,64 +6,23 @@
 -->
 
 <root>
-	<windowclass name="focus">
-		<frame>recordsheet</frame>
-		<sizelimits>
-			<minimum width="350" height="350" />
-			<dynamic />
-		</sizelimits>
-		<minimize>minimized_reference</minimize>
-		<tooltip field="name" />
-		<sharable />
-		<script file="common/scripts/record_window.lua" />
-		<sheetdata>
-			<sub_record_header name="header">
-				<class>focus_header</class>
-			</sub_record_header>
-
-			<frame_record_content_tabbed name="contentframe" />
-
-			<ft_record name="text">
-				<anchored to="contentframe" position="over" />
-			</ft_record>
-			<subwindow_record name="content">
-				<class>focus_stats</class>
-			</subwindow_record>
-
-			<scrollbar_record>
-				<target>text</target>
-			</scrollbar_record>
-			<scrollbar_record>
-				<target>content</target>
-			</scrollbar_record>
-
-			<tabs_recordsheet name="tabs">
-				<tab>
-					<icon>tab_main</icon>
-					<subwindow>text</subwindow>
-				</tab>
-				<tab>
-					<icon>tab_other</icon>
-					<subwindow>content</subwindow>
-				</tab>
-			</tabs_recordsheet>
-
-			<help_focus />
-			<resize_recordsheet />
-			<close_recordsheet />
-		</sheetdata>
+	<windowclass name="focus" copy="record_window_tabbed">
+		<helplinkres>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Foci</helplinkres>
+		<tab>
+			<name>notes</name>
+			<resource>tab_main</resource>
+			<class>record_content_text</class>
+			<embed />
+		</tab>
+		<tab merge="add">
+			<name>main</name>
+			<resource>tab_other</resource>
+			<class>focus_main</class>
+			<embed />
+		</tab>
 	</windowclass>
-	<windowclass name="focus_header" copy="record_header_simple">
-		<sheetdata>
-			<link_record_header name="link">
-				<class>focus</class>
-			</link_record_header>
-			<label_recordtype name="recordtype_label">
-				<static textres="library_recordtype_ref_focus" />
-			</label_recordtype>
-		</sheetdata>
-	</windowclass>
-	<windowclass name="focus_stats">
+
+	<windowclass name="focus_main">
 		<margins control="0,0,0,2" />
 		<script file="campaign/scripts/char_content_focus_stats.lua" />
 		<sheetdata>

@@ -161,17 +161,4 @@
 			end
 		</script>
 	</windowclass>
-
-	<windowclass name="power" copy="record_window">
-		<sheetdata>
-			<sub_record_header name="header">
-				<class>ability_header</class>
-			</sub_record_header>
-			<subwindow_record name="content">
-				<class>ability_main</class>
-			</subwindow_record>
-
-			<help_ability />
-		</sheetdata>
-	</windowclass>
 </root>

@@ -6,64 +6,23 @@
 -->
 
 <root>
-	<windowclass name="flavor">
-		<frame>recordsheet</frame>
-		<sizelimits>
-			<minimum width="350" height="350" />
-			<dynamic />
-		</sizelimits>
-		<minimize>minimized_reference</minimize>
-		<tooltip field="name" />
-		<sharable />
-		<script file="common/scripts/record_window.lua" />
-		<sheetdata>
-			<sub_record_header name="header">
-				<class>flavor_header</class>
-			</sub_record_header>
-
-			<frame_record_content_tabbed name="contentframe" />
-
-			<ft_record name="text">
-				<anchored to="contentframe" position="over" />
-			</ft_record>
-			<subwindow_record name="content">
-				<class>flavor_stats</class>
-			</subwindow_record>
-
-			<scrollbar_record>
-				<target>text</target>
-			</scrollbar_record>
-			<scrollbar_record>
-				<target>content</target>
-			</scrollbar_record>
-
-			<tabs_recordsheet name="tabs">
-				<tab>
-					<icon>tab_main</icon>
-					<subwindow>text</subwindow>
-				</tab>
-				<tab>
-					<icon>tab_other</icon>
-					<subwindow>content</subwindow>
-				</tab>
-			</tabs_recordsheet>
-
-			<help_flavor />
-			<resize_recordsheet />
-			<close_recordsheet />
-		</sheetdata>
+	<windowclass name="flavor" copy="record_window_tabbed">
+		<helplinkres>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Flavors</helplinkres>
+		<tab>
+			<name>notes</name>
+			<resource>tab_main</resource>
+			<class>record_content_text</class>
+			<embed />
+		</tab>
+		<tab merge="add">
+			<name>main</name>
+			<resource>tab_other</resource>
+			<class>flavor_main</class>
+			<embed />
+		</tab>
 	</windowclass>
-	<windowclass name="flavor_header" copy="record_header_simple">
-		<sheetdata>
-			<link_record_header name="link">
-				<class>flavor</class>
-			</link_record_header>
-			<label_recordtype name="recordtype_label">
-				<static textres="library_recordtype_ref_flavor" />
-			</label_recordtype>
-		</sheetdata>
-	</windowclass>
-	<windowclass name="flavor_stats">
+
+	<windowclass name="flavor_main">
 		<margins control="0,0,0,2" />
 		<script file="campaign/scripts/char_content_flavor_stats.lua" />
 		<sheetdata>

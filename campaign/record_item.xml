@@ -17,68 +17,21 @@
 		</button_stringcycler>
 	</template>
 
-	<windowclass name="item">
-		<frame>recordsheet</frame>
-		<sizelimits>
-			<minimum width="350" height="350" />
-			<dynamic />
-		</sizelimits>
+	<windowclass name="item" copy="record_window_tabbed">
 		<minimize>minimized_item</minimize>
-		<sharable />
-		<tooltip field="name" />
-		<script>
-			function onLockChanged()
-				if header and header.subwindow then
-					header.subwindow.update();
-				end
-				
-				if content and content.subwindow then
-					content.subwindow.update();
-				end
-
-				if actions.subwindow then
-					actions.subwindow.update();
-				end
-			end
-		</script>
-		<sheetdata>
-			<sub_record_header name="header">
-				<class>item_header</class>
-			</sub_record_header>
-
-			<frame_record_content_tabbed name="contentframe" />
-
-			<subwindow_record name="content">
-				<class>item_main</class>
-				<activate />
-			</subwindow_record>
-			<subwindow_record name="actions">
-				<class>tab_actions</class>
-			</subwindow_record>
-
-			<scrollbar_record>
-				<target>content</target>
-			</scrollbar_record>
-			<scrollbar_record>
-				<target>actions</target>
-			</scrollbar_record>
-
-			<tabs_recordsheet name="tabs">
-				<gmvisibleonly />
-				<tab>
-					<icon>tab_main</icon>
-					<subwindow>content</subwindow>
-				</tab>
-				<tab>
-					<icon>tab_actions</icon>
-					<subwindow>actions</subwindow>
-				</tab>
-			</tabs_recordsheet>
-			
-			<help_item />
-			<resize_recordsheet />
-			<close_recordsheet />
-		</sheetdata>
+		<helplinkres>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Items</helplinkres>
+		<tab>
+			<name>main</name>
+			<resource>tab_main</resource>
+			<class>item_main</class>
+			<embed />
+		</tab>
+		<tab merge="add">
+			<name>actions</name>
+			<resource>tab_actions</resource>
+			<class>tab_actions</class>
+			<embed />
+		</tab>
 	</windowclass>
 
 	<windowclass name="item_main">

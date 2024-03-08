@@ -6,10 +6,6 @@
 -->
 
 <root>
-	<!-- <windowclass name="effectlist" merge="join">
-		<helplinkres mergerule="resetandadd">https://publish.obsidian.md/fantasygrounds-cypher-wiki/Effects/Effects</helplinkres>
-	</windowclass> -->
-
 	<windowclass name="effectlist_preset_content" merge="join">
 		<script file="utility/scripts/effectlist_presets.lua" />
 		<sheetdata>
@@ -121,7 +117,6 @@
 		<sheetdata>
 			<windowtitlebar_utilitybox name="title" />
 			<windowmenubar_utilitybox name="menubar" />
-			<resize_utilitybox />
 
 			<anchor_content_utilitybox_top />
 
@@ -144,6 +139,8 @@
 				<sourceless />
 				<columns width="55" fillwidth="true" />
 			</list_content_base>
+
+			<resize_utilitybox />
 		</sheetdata>
 	</windowclass>
 

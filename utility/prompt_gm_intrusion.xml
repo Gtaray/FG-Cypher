@@ -80,6 +80,9 @@
 			<button_text name="accept">
 				<script>
 					function onInit()
+						if super and super.onInit then
+							super.onInit();
+						end
 						updateTooltip();
 					end
 					function onSelectionChanged()

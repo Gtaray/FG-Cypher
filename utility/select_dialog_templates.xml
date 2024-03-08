@@ -17,6 +17,9 @@
 		<button_text>
 			<script>
 				function onInit()
+					if super and super.onInit then
+						super.onInit();
+					end
 					setText(Interface.getString("dialog_nav_" .. target[1]));
 				end
 				function onButtonPress()
