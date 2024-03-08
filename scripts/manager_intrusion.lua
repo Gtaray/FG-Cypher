@@ -67,6 +67,7 @@ function sendGmIntrusionPrompt(rActor)
 			msgOOB[sKey .. "_node"] = sNode;
 			msgOOB[sKey .. "_name"] = DB.getValue(charnode, "name", "");
 			msgOOB[sKey .. "_token"] = DB.getValue(charnode, "token", "");
+			msgOOB[sKey .. "_xp"] = CharManager.getExperience(charnode)
 
 			i = i + 1;
 		end
@@ -90,7 +91,8 @@ function handleGmIntrusionPrompt(msgOOB)
 		table.insert(rCharacters, {
 			sNode = msgOOB[sKey .. "_node"],
 			sName = msgOOB[sKey .. "_name"],
-			sToken = msgOOB[sKey .. "_token"]
+			sToken = msgOOB[sKey .. "_token"],
+			nXp = msgOOB[sKey .. "_xp"]
 		});
 
 		i = i + 1;

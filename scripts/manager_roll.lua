@@ -984,6 +984,11 @@ function encodeTarget(vTarget, rRoll)
 	end
 end
 function decodeTarget(rRoll, rTarget, bPersist)
+	-- If there's already a target, don't decode. Just return that one.
+	if rTarget then
+		return rTarget
+	end
+	
 	local sTarget, sText = RollManager.decodeText(
 		rRoll.sDesc,
 		"%[TARGET: [^]]+%]",

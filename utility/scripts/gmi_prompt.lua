@@ -26,7 +26,7 @@ end
 
 function setOptions(rCharacters)
 	for i, rChar in ipairs(rCharacters) do
-		characters.addEntry(rChar.sNode, rChar.sToken, rChar.sName);		
+		characters.addEntry(rChar.sNode, rChar.sToken, rChar.sName, rChar.nXp);		
 	end
 end
 
