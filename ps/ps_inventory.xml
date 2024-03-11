@@ -22,7 +22,7 @@
 				<anchored width="80" />
 			</label_list_content_string_right>
 		</sheetdata>
-	</windowclass> -->
+	</windowclass>
 	
 	<windowclass name="ps_parcelitem" merge="join">
 		<sheetdata>
@@ -43,5 +43,5 @@
 				<anchored offset="10,2" />
 			</basicstring>
 		</sheetdata>
-	</windowclass>
+	</windowclass> -->
 </root>

@@ -6,93 +6,30 @@
 -->
 
 <root>
-	<windowclass name="ability">
-		<frame>recordsheet</frame>
-		<sizelimits>
-			<minimum width="375" height="350" />
-			<dynamic />
-		</sizelimits>
-		<minimize>minimized_reference</minimize>
-		<tooltip field="name" />
-		<sharable />
-		<script>
-			function onLockChanged()
-				if header and header.subwindow then
-					header.subwindow.update();
-				end
-
-				if main.subwindow then
-					main.subwindow.update();
-				end
-
-				if actions.subwindow then
-					actions.subwindow.update();
-				end
-
-				if content and content.subwindow then
-					content.subwindow.update();
-				end
-			end
-		</script>
-		<sheetdata>
-			<sub_record_header name="header">
-				<class>ability_header</class>
-			</sub_record_header>
-
-			<frame_record_content_tabbed name="contentframe" />
-
-			<subwindow_record name="main">
-				<class>ability_main</class>
-				<activate />
-			</subwindow_record>
-			<subwindow_record name="actions">
-				<class>tab_actions</class>
-			</subwindow_record>
-			<subwindow_record name="content">
-				<class>ability_stats</class>
-			</subwindow_record>
-
-			<scrollbar_record>
-				<target>main</target>
-			</scrollbar_record>
-			<scrollbar_record>
-				<target>actions</target>
-			</scrollbar_record>
-			<scrollbar_record>
-				<target>content</target>
-			</scrollbar_record>
-
-			<tabs_recordsheet name="tabs">
-				<gmvisibleonly />
-				<tab>
-					<icon>tab_main</icon>
-					<subwindow>main</subwindow>
-				</tab>
-				<tab>
-					<icon>tab_actions</icon>
-					<subwindow>actions</subwindow>
-				</tab>
-				<tab>
-					<icon>tab_other</icon>
-					<subwindow>content</subwindow>
-				</tab>
-			</tabs_recordsheet>
-
-			<help_ability />
-			<resize_recordsheet />
-			<close_recordsheet />
-		</sheetdata>
+	<windowclass name="ability" copy="record_window_tabbed">
+		<helplinkres>help_abilities</helplinkres>
+		<tab>
+			<name>main</name>
+			<resource>tab_main</resource>
+			<class>ability_main</class>
+			<embed />
+		</tab>
+		<tab merge="add">
+			<name>actions</name>
+			<resource>tab_actions</resource>
+			<class>tab_actions</class>
+			<embed />
+		</tab>
+		<tab merge="add">
+			<name>stats</name>
+			<resource>tab_other</resource>
+			<class>ability_stats</class>
+			<embed />
+		</tab>
 	</windowclass>
-	<windowclass name="ability_header" copy="record_header_simple">
-		<sheetdata>
-			<link_record_header name="link">
-				<class>ability</class>
-			</link_record_header>
-			<label_recordtype name="recordtype_label">
-				<static textres="library_recordtype_ref_ability" />
-			</label_recordtype>
-		</sheetdata>
-	</windowclass>
+	<windowclass name="ability_header" copy="record_header" />
+	<windowclass name="power" copy="ability" />
+
 	<windowclass name="ability_main">
 		<margins control="0,0,0,2" />
 		<script file="campaign/scripts/ability_main.lua" />
@@ -294,14 +231,6 @@
 			<class>list_ref_ability_item</class>
 		</list_column>
 	</template>
-	<template name="list_ref_ability_flavor">
-		<list_column name="abilities">
-			<script file="campaign/scripts/list_ref_ability.lua" />
-			<class>list_ref_ability_item</class>
-			<hidegiven />
-		</list_column>
-	</template>
-
 	<windowclass name="list_ref_ability_item">
 		<margins control="0,0,0,2" />
 		<script file="campaign/scripts/list_ref_ability_item.lua" />
@@ -379,27 +308,6 @@
 			</string_textlistitem>
 		</sheetdata>
 	</windowclass>
-
-	<!-- <windowclass name="power_action_item" copy="power_action">
-		<sheetdata>
-			<button_poweractioneditor name="detail" merge="delete" />
-			<button_idelete name="idelete" merge="delete" />
-
-			<button_idelete name="idelete" insertbefore="ireorder">
-				<anchored to="rightanchor">
-					<top />
-					<right anchor="left" relation="relative" offset="-5" />
-				</anchored>
-				<editmode>actions_iedit</editmode>
-			</button_idelete>
-			<button_poweractioneditor name="detail" insertbefore="ireorder">
-				<anchored to="rightanchor">
-					<top />
-					<right anchor="left" relation="relative" offset="-5" />
-				</anchored>
-			</button_poweractioneditor>
-		</sheetdata>
-	</windowclass> -->
 
 	<windowclass name="power_action_item">
 		<margins control="0,0,0,5" />

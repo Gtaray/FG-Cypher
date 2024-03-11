@@ -159,88 +159,47 @@
 	</windowclass>
 	
 	<windowclass name="record_arc" copy="record_window">
-		<sizelimits>
-			<minimum width="350" height="400" />
-			<dynamic />
-		</sizelimits>
+		<tab>
+			<name>opening</name>
+			<resource>tab_opening</resource>
+			<class>record_arc_opening</class>
+			<embed />
+		</tab>
+		<tab merge="add">
+			<name>inprogress</name>
+			<resource>tab_inprogress</resource>
+			<class>record_content_notes</class>
+			<embed />
+		</tab>
+		<tab merge="add">
+			<name>climax</name>
+			<resource>tab_climax</resource>
+			<class>record_arc_climax</class>
+			<embed />
+		</tab>
+		<tab merge="add">
+			<name>resolution</name>
+			<resource>tab_resolution</resource>
+			<class>record_arc_resolution</class>
+			<embed />
+		</tab>
 		<script>
 			function focusName()
-				header.subwindow.focus();
+				if header and header.subwindow and header.subwindow.name then
+					header.subwindow.name.setFocus();
+				end
 			end
-
 			function setTab(nIndex)
 				tabs.activateTab(nIndex);
 				local sTab = tabs.getTab(nIndex)
-
 				if self[sTab] and self[sTab].subwindow and self[sTab].subwindow.focus then
 					self[sTab].subwindow.focus()
 				end
 			end
-
 			function addStep()
 				inprogress.subwindow.addStep();
 			end
 		</script>
-		<minimize>minimized_reference</minimize>
-		<sheetdata>
-			<sub_record_header name="header">
-				<class>arc_header</class>
-			</sub_record_header>
-
-			<subwindow_record name="opening">
-				<class>record_arc_opening</class>
-				<fastinit />
-				<activate />
-			</subwindow_record>
-			<subwindow_record name="inprogress">
-				<class>record_arc_inprogress</class>
-				<fastinit />
-				<noscroll />
-			</subwindow_record>
-			<subwindow_record name="climax">
-				<class>record_arc_climax</class>
-				<fastinit />
-			</subwindow_record>
-			<subwindow_record name="resolution">
-				<class>record_arc_resolution</class>
-				<fastinit />
-			</subwindow_record>
-
-			<tabs_recordsheet name="tabs">
-				<tab>
-					<icon>tab_opening</icon>
-					<subwindow>opening</subwindow>
-				</tab>
-				<tab>
-					<icon>tab_inprogress</icon>
-					<subwindow>inprogress</subwindow>
-				</tab>
-				<tab>
-					<icon>tab_climax</icon>
-					<subwindow>climax</subwindow>
-				</tab>
-				<tab>
-					<icon>tab_resolution</icon>
-					<subwindow>resolution</subwindow>
-				</tab>
-			</tabs_recordsheet>
-		</sheetdata>
-	</windowclass>
-
-	<windowclass name="arc_header">
-		<margins control="0,0,0,5" />
-		<script>
-			function focus()
-				name.setFocus();
-			end
-		</script>
-		<sheetdata>
-			<link_record_header name="link">
-				<class>record_arc</class>
-			</link_record_header>
-			<anchor_record_header_right name="rightanchor" />
-			<string_record_name name="name" />
-		</sheetdata>
 	</windowclass>
 
 	<windowclass name="record_arc_opening">

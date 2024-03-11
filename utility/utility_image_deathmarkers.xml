@@ -7,8 +7,6 @@
 
 <root>
 	<windowclass name="imagedeathmarkerlist" merge="join">
-		<sheetdata>
-			<help_deathmarkers />
-		</sheetdata>
+		<helplinkres>help_deathmarkers</helplinkres>
 	</windowclass>
 </root>

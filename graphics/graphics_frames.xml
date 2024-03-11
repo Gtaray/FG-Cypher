@@ -6,8 +6,6 @@
 -->
 
 <root>
-	<!-- Override CoreRPG ruleset graphics -->
-	
 	<!-- Desktop -->
 	<framedef name="desktop">
 		<bitmap file="graphics/frames/desktop.png" />

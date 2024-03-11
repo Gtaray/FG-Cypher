@@ -98,7 +98,7 @@
 				<target>content</target>
 			</scrollbar_record>
 
-			<help_modification />
+			<help_charsheet_modification />
 			<close_charsheethelper />
 		</sheetdata>
 	</windowclass>

@@ -6,14 +6,32 @@
 -->
 
 <root>
-	<windowclass name="npc" merge="join">
+	<template name="list_npcactions">
+		<list_column>
+			<child merge="delete" />
+			<sortby merge="delete" />
+		</list_column>
+	</template>
+
+	<windowclass name="npc" copy="record_window_tabbed">
 		<sizelimits>
 			<minimum width="500" height="500" />
-			<dynamic />
 		</sizelimits>
-		<sheetdata>
-			<help_npc />
-		</sheetdata>
+		<helplinkres>help_npc</helplinkres>
+		<minimize>minimized_npc</minimize>
+		<gmexport>npc</gmexport>
+		<tab>
+			<name>main</name>
+			<resource>tab_main</resource>
+			<class>npc_main</class>
+			<embed />
+		</tab>
+		<tab merge="add">
+			<name>notes</name>
+			<resource>tab_notes</resource>
+			<class>npc_notes</class>
+			<embed />
+		</tab>
 	</windowclass>
 	
 	<windowclass name="npc_main">
@@ -150,7 +168,6 @@
 			</list_npcactions>
 		</sheetdata>
 	</windowclass>
-
 	<windowclass name="npc_action">
 		<script file="campaign/scripts/power_item.lua" />
 		<margins control="0,0,0,2" />
@@ -230,8 +247,6 @@
 			</list_poweraction>
 		</sheetdata>
 	</windowclass>
-
-	<!-- Entry in a power_item's list_poweraction list -->
 	<windowclass name="npc_power_action" copy="power_action">
 		<sheetdata>
 			<button_poweractioneditor name="detail" merge="delete" />
@@ -287,11 +302,4 @@
 			<ft_columnh name="text" />
 		</sheetdata>
 	</windowclass>
-
-	<template name="list_npcactions">
-		<list_column>
-			<child merge="delete" />
-			<sortby merge="delete" />
-		</list_column>
-	</template>
 </root>

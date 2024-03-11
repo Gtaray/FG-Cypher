@@ -87,85 +87,9 @@
 		</help_record>
 	</template>
 
-	<!-- Library Types -->
-	<template name="help_modification">
+	<template name="help_charsheet_modification">
 		<help_record>
 			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Features</url>
 		</help_record>
-	</template>
-
-	<template name="help_ability">
-		<help_record_tabbed>
-			<default>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Abilities</default>
-			<tabs>
-				<tab>
-					<subwindow>main</subwindow>
-					<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Abilities</url>
-				</tab>
-				<tab>
-					<subwindow>actions</subwindow>
-					<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Abilities#Actions+Tab</url>
-				</tab>
-				<tab>
-					<subwindow>content</subwindow>
-					<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Abilities#Other+Tab</url>
-				</tab>
-			</tabs>
-		</help_record_tabbed>
-	</template>
-
-	<template name="help_item">
-		<help_record>
-			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Items</url>
-		</help_record>
-	</template>
-
-	<template name="help_type">
-		<help_record>
-			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Types</url>
-		</help_record>
-	</template>
-
-	<template name="help_focus">
-		<help_record>
-			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Foci</url>
-		</help_record>
-	</template>
-
-	<template name="help_descriptor">
-		<help_record>
-			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Descriptors</url>
-		</help_record>
-	</template>
-
-	<template name="help_ancestry">
-		<help_record>
-			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Ancestries</url>
-		</help_record>
-	</template>
-
-	<template name="help_flavor">
-		<help_record>
-			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Flavors</url>
-		</help_record>
-	</template>
-
-	<template name="help_npc">
-		<help_record>
-			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/NPCs</url>
-		</help_record>
-	</template>
-
-	<!-- Utility Windows -->
-	<template name="help_damagetypes">
-		<help_utilitybox>
-			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/System/Damage+Types</url>
-		</help_utilitybox>
-	</template>
-
-	<template name="help_deathmarkers">
-		<help_utilitybox>
-			<url>https://publish.obsidian.md/fantasygrounds-cypher-wiki/System/Death+Markers</url>
-		</help_utilitybox>
 	</template>
 </root>

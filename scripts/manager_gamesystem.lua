@@ -3,14 +3,6 @@
 -- attribution and copyright information.
 --
 
--- Has to be defined before the table
-function getAbilityTypeValue(vNode)
-	if not vNode then
-		return {};
-	end
-	return StringManager.split(DB.getValue(vNode, "type", ""), ",", true);
-end
-
 -- Ruleset action types
 actions = {
 	["dice"] = { bUseModStack = "true" },
@@ -41,6 +33,17 @@ targetactions = {
 	"cost",
 };
 
+currencies = { };
+currencyDefault = nil;
+
+-- Has to be defined before the table
+function getAbilityTypeValue(vNode)
+	if not vNode then
+		return {};
+	end
+	return StringManager.split(DB.getValue(vNode, "type", ""), ",", true);
+end
+
 aRecordOverrides = {
 	["ability"] = {
 		bExport = true,
@@ -52,10 +55,10 @@ aRecordOverrides = {
 			["Use"] = { sField = "usetype" }
 		}
 	},
-	["type"] = {
+	["ancestry"] = {
 		bExport = true,
-		aDataMap = { "type", "reference.type" },
-		sRecordDisplayClass = "type",
+		aDataMap = { "ancestry", "reference.ancestry" },
+		sRecordDisplayClass = "ancestry",
 		sSidebarCategory = "create",
 	},
 	["descriptor"] = {
@@ -64,31 +67,29 @@ aRecordOverrides = {
 		sRecordDisplayClass = "descriptor",
 		sSidebarCategory = "create",
 	},
-	["focus"] = {
-		bExport = true,
-		aDataMap = { "focus", "reference.focus" },
-		sRecordDisplayClass = "focus",
-		sSidebarCategory = "create",
-	},
 	["flavor"] = {
 		bExport = true,
 		aDataMap = { "flavor", "reference.flavor" },
 		sRecordDisplayClass = "flavor",
 		sSidebarCategory = "create",
 	},
-	["ancestry"] = {
+	["focus"] = {
 		bExport = true,
-		aDataMap = { "ancestry", "reference.ancestry" },
-		sRecordDisplayClass = "ancestry",
+		aDataMap = { "focus", "reference.focus" },
+		sRecordDisplayClass = "focus",
 		sSidebarCategory = "create",
-	}
+	},
+	["type"] = {
+		bExport = true,
+		aDataMap = { "type", "reference.type" },
+		sRecordDisplayClass = "type",
+		sSidebarCategory = "create",
+	},
 }
-
-currencies = { };
-currencyDefault = nil;
 
 function onInit()
 	LibraryData.overrideRecordTypes(aRecordOverrides);
+	CombatListManager.registerStandardInitSupport();
 end
 
 function getCharSelectDetailHost(nodeChar)
@@ -103,16 +104,6 @@ end
 
 function receiveCharSelectDetailClient(vDetails)
 	return vDetails[1], vDetails[2] .. " " .. vDetails[3] .. " who " .. vDetails[4] .. " (Tier " .. vDetails[5] .. ")";
-end
-
-function getCharSelectDetailLocal(nodeLocal)
-	local vDetails = {};
-	table.insert(vDetails, DB.getValue(nodeLocal, "name", ""));
-	table.insert(vDetails, DB.getValue(nodeLocal, "class.descriptor", ""));
-	table.insert(vDetails, DB.getValue(nodeLocal, "class.type", ""));
-	table.insert(vDetails, DB.getValue(nodeLocal, "class.focus", ""));
-	table.insert(vDetails, DB.getValue(nodeLocal, "tier", 0));
-	return receiveCharSelectDetailClient(vDetails);
 end
 
 function getDistanceUnitsPerGrid()

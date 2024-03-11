@@ -1,6 +1,6 @@
 function generateCypherLevel(itemNode, bOverrideLevel)
 	-- No matter what, we don't do this for non-cyphers
-	if not ItemManagerCypher.isItemCypher(itemNode) then
+	if not (ItemManagerCypher.isItemCypher(itemNode) or ItemManagerCypher.isItemArtifact(itemNode)) then
 		return 0;
 	end
 

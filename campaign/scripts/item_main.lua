@@ -85,7 +85,7 @@ function update()
 	updateControl("armor", bReadOnly, not (bID and bArmor and not bShield));
 
 	-- CYPHER PROPERTIES
-	WindowManager.callSafeControlUpdate(self, "levelroll", bReadOnly, not bCypher or not Session.IsHost);
+	WindowManager.callSafeControlUpdate(self, "levelroll", bReadOnly, not (bCypher or bArtifact) or not Session.IsHost);
 	WindowManager.callSafeControlUpdate(self, "level", bReadOnly, not (bID and (bCypher or bArtifact)));
 
 	-- ARTIFACT PROPERTIES

@@ -7,10 +7,11 @@
 
 <root>
 	<windowclass name="damagetypes" copy="settings_list">
+		<helplinkres>help_damagetypes</helplinkres>
 		<sheetdata>
-			<windowtitlebar name="title">
+			<windowtitlebar_utilitybox name="title">
 				<resource>library_recordtype_label_damagetypes</resource>
-			</windowtitlebar>
+			</windowtitlebar_utilitybox>
 
 			<list_utility_setting name="list">
 				<class>damagetype</class>
