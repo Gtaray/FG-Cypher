@@ -21,6 +21,10 @@ function isItemCypher(itemNode)
 	return ItemManagerCypher.getItemType(itemNode) == "cypher";
 end
 
+function isItemArtifact(itemNode)
+	return ItemManagerCypher.getItemType(itemNode) == "artifact";
+end
+
 function getItemName(itemNode)
 	return DB.getValue(itemNode, "name", "");
 end

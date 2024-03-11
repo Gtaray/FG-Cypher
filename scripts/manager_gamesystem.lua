@@ -89,6 +89,7 @@ aRecordOverrides = {
 
 function onInit()
 	LibraryData.overrideRecordTypes(aRecordOverrides);
+	CombatListManager.registerStandardInitSupport();
 end
 
 function getCharSelectDetailHost(nodeChar)

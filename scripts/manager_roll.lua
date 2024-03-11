@@ -983,12 +983,7 @@ function encodeTarget(vTarget, rRoll)
 		)
 	end
 end
-function decodeTarget(rRoll, rTarget, bPersist)
-	-- If there's already a target, don't decode. Just return that one.
-	if rTarget then
-		return rTarget
-	end
-	
+function decodeTarget(rRoll, rTarget, bPersist)	
 	local sTarget, sText = RollManager.decodeText(
 		rRoll.sDesc,
 		"%[TARGET: [^]]+%]",
@@ -996,6 +991,11 @@ function decodeTarget(rRoll, rTarget, bPersist)
 		bPersist
 	);
 	rRoll.sDesc = sText;
+
+	-- If there's already a target, don't decode. Just return that one.
+	if rTarget then
+		return rTarget
+	end
 
 	rTarget = ActorManager.resolveActor(sTarget);
 	return rTarget;

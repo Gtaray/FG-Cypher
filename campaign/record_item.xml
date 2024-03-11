@@ -19,7 +19,7 @@
 
 	<windowclass name="item" copy="record_window_tabbed">
 		<minimize>minimized_item</minimize>
-		<helplinkres>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Items</helplinkres>
+		<helplinkres>help_items</helplinkres>
 		<tab>
 			<name>main</name>
 			<resource>tab_main</resource>

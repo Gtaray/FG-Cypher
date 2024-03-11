@@ -7,7 +7,7 @@
 
 <root>
 	<windowclass name="flavor" copy="record_window_tabbed">
-		<helplinkres>https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Flavors</helplinkres>
+		<helplinkres>help_flavor</helplinkres>
 		<tab>
 			<name>notes</name>
 			<resource>tab_main</resource>

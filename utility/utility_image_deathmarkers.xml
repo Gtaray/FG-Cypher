@@ -7,6 +7,6 @@
 
 <root>
 	<windowclass name="imagedeathmarkerlist" merge="join">
-		<helplinkres>https://publish.obsidian.md/fantasygrounds-cypher-wiki/System/Death+Markers</helplinkres>
+		<helplinkres>help_deathmarkers</helplinkres>
 	</windowclass>
 </root>
