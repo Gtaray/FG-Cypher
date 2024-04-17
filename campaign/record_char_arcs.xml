@@ -158,7 +158,7 @@
 		</sheetdata>
 	</windowclass>
 	
-	<windowclass name="record_arc" copy="record_window">
+	<windowclass name="record_arc" copy="record_window_tabbed">
 		<tab>
 			<name>opening</name>
 			<resource>tab_opening</resource>
@@ -168,7 +168,7 @@
 		<tab merge="add">
 			<name>inprogress</name>
 			<resource>tab_inprogress</resource>
-			<class>record_content_notes</class>
+			<class>record_arc_inprogress</class>
 			<embed />
 		</tab>
 		<tab merge="add">

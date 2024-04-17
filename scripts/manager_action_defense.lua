@@ -182,7 +182,7 @@ function applyRoll(rSource, rTarget, rRoll)
 			if bAutomaticSuccess then
 				msgLong.text = string.format("%s [AUTOMATIC]", msgLong.text);
 			else
-				msgLong.text = string.format("%s [MISS]", msgLong.text);
+				msgLong.text = string.format("%s %s", msgLong.text, getMissResultText());
 			end
 
 			if rRoll.bMajorEffect or rRoll.bMinorEffect then
@@ -193,7 +193,7 @@ function applyRoll(rSource, rTarget, rRoll)
 				msgLong.icon[1] = "roll_attack_miss";
 			end
 		else
-			msgLong.text = string.format("%s [HIT]", msgLong.text);
+			msgLong.text = string.format("%s %s", msgLong.text, getHitResultText());
 
 			if rRoll.bGmIntrusion then
 				msgShort.icon[1] = "roll_attack_crit";
@@ -249,4 +249,18 @@ function rebuildRoll(rSource, rTarget, rRoll)
 
 	rRoll.bRebuilt = bRebuilt;
 	return bRebuilt;
+end
+
+function getHitResultText()
+	if OptionsManagerCypher.useHitMissInChat() then
+		return "[HIT]"
+	end
+	return "[FAILED]"
+end
+
+function getMissResultText()
+	if OptionsManagerCypher.useHitMissInChat() then
+		return "[MISS]"
+	end
+	return "[SUCCESS]"
 end

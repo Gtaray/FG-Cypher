@@ -22,6 +22,8 @@ end
 function registerOptions()
 	OptionsManager.registerOption2("GDIFF", false, "option_header_game", "option_label_GDIFF", "option_entry_cycler", 
 		{ labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "on" });
+	OptionsManager.registerOption2("HITMISS", false, "option_header_game", "option_lable_HITMISS", "option_entry_cycler",
+		{ labels = "option_val_yes", values = "yes", baselabel = "option_val_no", baseval = "no", default = "yes" });
 	OptionsManager.registerOption2("INITNPC", false, "option_header_combat", "option_label_INITNPC", "option_entry_cycler", 
 		{ labels = "option_val_group", values = "group", baselabel = "option_val_standard", baseval = "off", default = "off" });
 	OptionsManager.registerOption2("INITPC", false, "option_header_combat", "option_label_INITPC", "option_entry_cycler", 
@@ -103,4 +105,8 @@ end
 
 function getArcResolutionXpReward()
 	return tonumber(OptionsManager.getOption("ARCXPRESOLVE"));
+end
+
+function useHitMissInChat()
+	return OptionsManager.getOption("HITMISS") == "yes"
 end
