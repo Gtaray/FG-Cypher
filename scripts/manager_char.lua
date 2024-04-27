@@ -315,6 +315,17 @@ function getExperience(nodeChar)
 end
 
 -------------------------------------------------------------------------------
+-- HERO POINTS
+-------------------------------------------------------------------------------
+function getHeroPoints(nodeChar)
+	return DB.getValue(nodeChar, "hero", 0)
+end
+
+function setHeroPoints(nodeChar, nVal)
+	DB.setValue(nodeChar, "hero", "number", nVal)
+end
+
+-------------------------------------------------------------------------------
 -- ITEM MANAGEMENT
 -------------------------------------------------------------------------------
 function onCharItemAdd(nodeItem)

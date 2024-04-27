@@ -216,8 +216,9 @@ function getPowerHealActionText(nodeAction)
 	local sHeal = "";
 	
 	local rAction, rActor = PowerManager.getPowerAction(nodeAction);
-	if rAction then		
-		sHeal = string.format("%s %s", rAction.nHeal, StringManager.capitalize(rAction.sHealStat));
+	if rAction then
+		local sDice = StringManager.convertDiceToString(rAction.aDice or {}, rAction.nHeal);
+		sHeal = string.format("%s %s", sDice, StringManager.capitalize(rAction.sHealStat));
 
 		if rAction.bNoOverflow then
 			sHeal = sHeal .. " [SINGLE STAT]"
@@ -374,6 +375,7 @@ function getPowerAction(nodeAction)
 	elseif rAction.type == "heal" then
 		rAction.sStat = DB.getValue(nodeAction, "stat", "");
 		rAction.sTargeting = DB.getValue(nodeAction, "healtargeting", "");
+		rAction.aDice = DB.getValue(nodeAction, "dice");
 		rAction.nHeal = DB.getValue(nodeAction, "heal", 0);
 		rAction.sHealStat = RollManager.resolveStat(DB.getValue(nodeAction, "healstat", ""));
 		rAction.bNoOverflow = DB.getValue(nodeAction, "overflow", "") ~= "yes";

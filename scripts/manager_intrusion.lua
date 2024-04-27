@@ -120,17 +120,30 @@ function handleGmIntrusionResponse(msgOOB)
 	local rSource = ActorManager.resolveActor(msgOOB.sSourceNode)
 	local rTarget = ActorManager.resolveActor(msgOOB.sTargetNode)
 
-	IntrusionManager.addOneXp(rSource);
-	IntrusionManager.addOneXp(rTarget);	
+	if OptionsManagerCypher.areHeroPointsEnabled() then
+		IntrusionManager.addOneHeroPoint(rSource);
+		IntrusionManager.addOneHeroPoint(rTarget);	
+	else
+		IntrusionManager.addOneXp(rSource);
+		IntrusionManager.addOneXp(rTarget);	
+	end
+
 	IntrusionManager.sendGmIntrusionAcceptedResponse(rSource, rTarget);
 end
 
 -------------------------------------------------------------------------------
 -- PC INTRUSION
 -------------------------------------------------------------------------------
-function handlePlayerIntrusionRespnose(nodeChar, sType, nCost)
+function handlePlayerIntrusionResponse(nodeChar, sType, nCost)
 	local rActor = ActorManager.resolveActor(nodeChar);
-	IntrusionManager.modifyXp(rActor, -nCost);
+
+	-- Only deduct hero points if that option is enabled, and if the intrusion
+	-- costs a single point
+	if OptionsManagerCypher.areHeroPointsEnabled() and (sType == "reroll" or sType == "shortterm" or stype =="herocard") then
+		IntrusionManager.modifyHeroPoints(rActor, -nCost);
+	else
+		IntrusionManager.modifyXp(rActor, -nCost);
+	end
 
 	local sMessage = Interface.getString(string.format("pci_message_%s", sType));
 	sMessage = string.format(sMessage, ActorManager.getDisplayName(rActor));
@@ -158,6 +171,40 @@ function modifyXp(rActor, nXp)
 	local nCur = DB.getValue(node, "xp", 0);
 	DB.setValue(node, "xp", "number", nCur + nXp);
 	return nCur + nXp;
+end
+
+-------------------------------------------------------------------------------
+-- HERO POINT MODIFICATION
+-------------------------------------------------------------------------------
+function addOneHeroPoint(rActor)
+	if not OptionsManagerCypher.areHeroPointsEnabled() then
+		return
+	end
+	return IntrusionManager.modifyHeroPoints(rActor, 1);
+end
+
+function subtractOneHeroPoint(rActor)
+	if not OptionsManagerCypher.areHeroPointsEnabled() then
+		return
+	end
+	return IntrusionManager.modifyHeroPoints(rActor, -1);
+end
+
+function modifyHeroPoints(rActor, nPoints)
+	if not OptionsManagerCypher.areHeroPointsEnabled() then
+		return
+	end
+
+	local node = ActorManager.getCreatureNode(rActor)
+	if not node then
+		return 0;
+	end
+
+	local nCur = CharManager.getHeroPoints(node)
+	local nNew = nCur + nPoints
+	CharManager.setHeroPoints(node, nNew)
+
+	return nNew;
 end
 
 -------------------------------------------------------------------------------

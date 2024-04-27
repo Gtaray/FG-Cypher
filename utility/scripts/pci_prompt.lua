@@ -48,7 +48,7 @@ function uncheckCheckbox(sType)
 end
 
 function invokeIntrusion()
-	IntrusionManager.handlePlayerIntrusionRespnose(nodeChar, sSelectedType, nSelectedCost);
+	IntrusionManager.handlePlayerIntrusionResponse(nodeChar, sSelectedType, nSelectedCost);
 	close();
 end
 

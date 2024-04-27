@@ -119,17 +119,36 @@
 				<static textres="power_label_targeting" />
 				<anchored to="healtargeting" />
 			</label_fieldtop>
-			<label name="healtext3">
-				<anchored to="stat" width="18">
-					<top />
-					<left anchor="right" relation="relative" offset="10" />
+
+			<label_column name="healtext3">
+				<anchored width="18">
+					<left offset="30" />
+					<top relation="relative" offset="20" />
 				</anchored>
 				<static textres="power_label_heal_text_3" />
+			</label_column>
+			<basicdice name="dice">
+				<anchored to="healtext3" width="60" height="20">
+					<top />
+					<left relation="relative" anchor="right" offset="8" />
+				</anchored>
+			</basicdice>
+			<label_fieldtop>
+				<anchored to="dice" />
+				<static textres="power_label_healdice" />
+			</label_fieldtop>
+			<label name="healtext4">
+				<anchored to="healtext3" width="18">
+					<top />
+					<left anchor="right" relation="relative" offset="6" />
+				</anchored>
+				<static>+</static>
+				<center />
 			</label>
 			<basicnumber name="heal">
-				<anchored to="stat" width="30" height="20">
+				<anchored to="healtext3" width="30" height="20">
 					<top  />
-					<left anchor="right" relation="relative" offset="10" />
+					<left anchor="right" relation="relative" offset="5" />
 				</anchored>
 				<min>0</min>
 			</basicnumber>
@@ -138,7 +157,7 @@
 				<static textres="power_label_healamount" />
 			</label_fieldtop>
 			<button_stat name="healstat">
-				<anchored to="stat" width="70" height="20">
+				<anchored to="healtext3" width="70" height="20">
 					<top  />
 					<left anchor="right" relation="relative" offset="10" />
 				</anchored>

@@ -67,6 +67,10 @@ end
 -------------------------------------------------------------------------------
 -- ACCESSORS
 -------------------------------------------------------------------------------
+function areHeroPointsEnabled()
+	return OptionsManager.getOption("HRXP") == "on"
+end
+
 function isGlobalDifficultyEnabled()
 	return OptionsManager.getOption("GDIFF") == "on";
 end

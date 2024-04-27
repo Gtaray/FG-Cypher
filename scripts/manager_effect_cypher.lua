@@ -578,8 +578,9 @@ function hasEffect(rActor, sEffect, rTarget, bTargetedOnly, bCheckEffectTargets,
 			-- If matched, then remove one-off effects
 			if nMatch > 0 then
 				EffectManagerCypher.addMatchedEffect(v, aMatch);
-				EffectManagerCypher.clearTemporaryEffect(v, nMatch);
-				EffectManagerCypher.activateSkippedEffect(v);
+				if not EffectManagerCypher.clearTemporaryEffect(v, nMatch) then
+					EffectManagerCypher.activateSkippedEffect(v);
+				end
 			end
 		end
 	end
@@ -717,8 +718,9 @@ function getEffectsByType(rActor, sEffectType, aFilter, bExclusiveFilters, aCont
 
 			-- Remove one shot effects
 			if nMatch > 0 then
-				EffectManagerCypher.clearTemporaryEffect(v, nMatch);
-				EffectManagerCypher.activateSkippedEffect(v);
+				if not EffectManagerCypher.clearTemporaryEffect(v, nMatch) then
+					EffectManagerCypher.activateSkippedEffect(v);
+				end
 			end
 		end -- END ACTIVE AND TARGETING CHECK
 	end  -- END EFFECT LOOP
@@ -945,7 +947,7 @@ end
 function clearTemporaryEffect(effectNode, nEffectComp)
 	--  Effect component is 0 if there's no effect found matching criteria, so we don't do anything
 	if nEffectComp == 0 then
-		return;
+		return false;
 	end
 
 	-- 0 = inactive
@@ -954,20 +956,29 @@ function clearTemporaryEffect(effectNode, nEffectComp)
 	-- We only want to process active effects, so we bail if its anything else
 	local nActive = DB.getValue(effectNode, "isactive", 0);
 	if nActive ~= 1 then
-		return;
+		return false;
 	end
 
 	local sApply = DB.getValue(effectNode, "apply", "");
 	if sApply == "action" then
 		EffectManager.notifyExpire(effectNode, 0);
+		return true
 	elseif sApply == "roll" then
 		EffectManager.notifyExpire(effectNode, 0, true);
+		return true
 	elseif sApply == "single" then
 		EffectManager.notifyExpire(effectNode, nEffectComp, true);
+		return true
 	end
+
+	return false
 end
 
 function activateSkippedEffect(effectNode)
+	if not effectNode or type(effectNode) == "error" then
+		return
+	end
+
 	local nActive = DB.getValue(effectNode, "isactive", 0);
 	if nActive == 2 then
 		DB.setValue(effectNode, "isactive", "number", 1);

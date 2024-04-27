@@ -337,7 +337,8 @@
 	<string name="power_label_heal_text_1">Use</string>
 	<string name="power_label_heal_text_2">To heal</string>
 	<string name="power_label_heal_text_3">for</string>
-	<string name="power_label_healamount">Amt</string>
+	<string name="power_label_healdice">Dice</string>
+	<string name="power_label_healamount">Mod</string>
 	<string name="power_label_healstat">Stat Pool</string>
 	<string name="power_tooltip_healstat">Heal which stat pool?</string>
 	<string name="power_label_heal_overflow">Overflow</string>
@@ -677,10 +678,10 @@
 	<string name="pci_summary_mediumterm">These are usually story-based, and allow a character to get immediate training in a skill for half the normal cost, even if the training is limited to a specific location or situation.</string>
 	<string name="pci_label_longterm">Spend 3 XP to gain a long-term benefit (contact, home, title, wealth, etc)</string>
 	<string name="pci_summary_longterm">These benefits are a means of integrating game mechanics with story, are usually permanent, and not easily taken away. You have agency over what you've gained.</string>
-	<string name="pci_message_reroll">%s has invoked a player intrusion to reroll a die! (1 XP)</string>
-	<string name="pci_message_shortterm">%s has invoked a player intrusion to adjust the scenario! (1 XP)</string>
-	<string name="pci_message_mediumterm">%s has invoked a player intrusion to gain training a skill! (2 XP)</string>
-	<string name="pci_message_longterm">%s has invoked a player intrusion to gain a long-term benefit! (3 XP)</string>
+	<string name="pci_message_reroll">%s has invoked a player intrusion to reroll a die!</string>
+	<string name="pci_message_shortterm">%s has invoked a player intrusion to adjust the scenario!</string>
+	<string name="pci_message_mediumterm">%s has invoked a player intrusion to gain training a skill!</string>
+	<string name="pci_message_longterm">%s has invoked a player intrusion to gain a long-term benefit!</string>
 
 	<string name="help_tool_effects">https://publish.obsidian.md/fantasygrounds-cypher-wiki/Effects/Effects</string>
 	<string name="help_abilities">https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Abilities</string>

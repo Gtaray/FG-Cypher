@@ -43,6 +43,7 @@
 
 			<label_pci_type name="reroll_label">
 				<static textres="pci_label_reroll" />
+				<target>reroll</target>
 			</label_pci_type>
 			<checkbox_pci_type name="reroll_checkbox">
 				<target>reroll</target>
@@ -54,6 +55,7 @@
 			</label_pci_summary>
 
 			<label_pci_type name="shortterm_label">
+				<target>shortterm</target>
 				<static textres="pci_label_shortterm" />
 			</label_pci_type>
 			<checkbox_pci_type name="shortterm_checkbox">
@@ -66,6 +68,7 @@
 			</label_pci_summary>
 
 			<label_pci_type name="mediumterm_label">
+				<target>mediumterm</target>
 				<static textres="pci_label_mediumterm" />
 			</label_pci_type>
 			<checkbox_pci_type name="mediumterm_checkbox">
@@ -78,6 +81,7 @@
 			</label_pci_summary>
 
 			<label_pci_type name="longterm_label">
+				<target>longterm</target>
 				<static textres="pci_label_longterm" />
 			</label_pci_type>
 			<checkbox_pci_type name="longterm_checkbox">
@@ -121,6 +125,18 @@
 
 	<template name="label_pci_type">
 		<stringcontrol>
+			<script>
+				function onClickDown(button, x, y)
+					return true;
+				end
+				function onClickRelease(button, x, y)
+					local sControlName = target[1] .. "_checkbox"
+					local control = window[sControlName]
+					control.toggle()
+					control.onButtonPress()
+					return true;
+				end
+			</script>
 			<anchored to="description">
 				<left offset="25" />
 				<top anchor="bottom" relation="relative" offset="8" />
@@ -133,6 +149,16 @@
 	<template name="checkbox_pci_type">
 		<button_checkbox>
 			<script>
+				function toggle()
+					nCur = getValue()
+					if nCur == 1 then
+						setValue(0)
+					else
+						setValue(1)
+					end
+
+					onButtonPress()
+				end
 				function onButtonPress()
 					window.onOptionSelected(target[1], tonumber(cost[1]), getValue() == 1);
 				end
