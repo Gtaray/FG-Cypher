@@ -417,6 +417,11 @@ function addItemAsAbility(itemnode)
 		DB.copyNode(actions, DB.createChild(abilitynode, "actions"));
 	end
 
+	local sDesc = DB.getValue(itemnode, "notes", "")
+	if sDesc ~= "" then
+		DB.setValue(abilitynode, "ftdesc", "formattedtext", sDesc)
+	end
+
 	-- Save links between the item and ability
 	-- These are used so that if one is deleted, so is the other.
 	DB.setValue(abilitynode, "itemlink", "windowreference", "item", DB.getPath(itemnode));

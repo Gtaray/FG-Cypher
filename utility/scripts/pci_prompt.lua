@@ -2,6 +2,10 @@ local nodeChar;
 local sSelectedType = nil;
 local nSelectedCost = 0;
 
+function getNode()
+	return nodeChar
+end
+
 function setData(node)
 	if not node then
 		return;
@@ -15,9 +19,13 @@ function setData(node)
 	))
 end
 
+function setSelection(sSelected, nCost)
+	sSelectedType = sSelected
+	nSelectedCost = nCost
+end
+
 function onOptionSelected(sType, nCost, bSelected)
-	sSelectedType = sType;
-	nSelectedCost = nCost;
+	setSelection(sType, nCost)
 
 	-- Clear out all of the other
 	if sType ~= "reroll" then
@@ -38,9 +46,14 @@ function onOptionSelected(sType, nCost, bSelected)
 	mediumterm_summary.setVisible(sType == "mediumterm" and bSelected);
 	longterm_summary.setVisible(sType == "longterm" and bSelected);
 
-	local nXp = DB.getValue(nodeChar, "xp", 0);
+	local nResource = 0;
+	if (sType == "reroll" or sType == "shortterm") and OptionsManagerCypher.areHeroPointsEnabled() then
+		nResource = CharManager.getHeroPoints(nodeChar)
+	else
+		nResource = DB.getValue(nodeChar, "xp", 0);
+	end
 
-	accept.setVisible(bSelected and nXp >= nSelectedCost);
+	accept.setVisible(bSelected and nResource >= nSelectedCost);
 end
 
 function uncheckCheckbox(sType)

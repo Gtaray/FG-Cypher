@@ -126,12 +126,30 @@
 	<template name="label_pci_type">
 		<stringcontrol>
 			<script>
+				function onInit()
+					if not OptionsManagerCypher.areHeroPointsEnabled() then
+						return
+					end
+					if not StringManager.contains(IntrusionManager.hero_point_intrusions, target[1]) then
+						return
+					end
+
+					local control = getCheckboxControl()
+					if tonumber(control.cost[1]) ~= 1 then
+						setValue(string.gsub(getValue(), "XP", "Hero Points"))
+					else
+						setValue(string.gsub(getValue(), "XP", "Hero Point"))	
+					end
+				end
+				function getCheckboxControl()
+					local sControlName = target[1] .. "_checkbox"
+					return window[sControlName]
+				end
 				function onClickDown(button, x, y)
 					return true;
 				end
 				function onClickRelease(button, x, y)
-					local sControlName = target[1] .. "_checkbox"
-					local control = window[sControlName]
+					local control = getCheckboxControl()
 					control.toggle()
 					control.onButtonPress()
 					return true;

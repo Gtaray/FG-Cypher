@@ -1,6 +1,11 @@
 OOB_MSG_TYPE_GMI_PROMPT = "gmiprompt";
 OOB_MSG_TYPE_GMI_RESPONSE = "gmiresponse";
 
+hero_point_intrusions = {
+	"reroll",
+	"shortterm"
+}
+
 function onInit()
 	OOBManager.registerOOBMsgHandler(OOB_MSG_TYPE_GMI_PROMPT, handleGmIntrusionPrompt);
 	OOBManager.registerOOBMsgHandler(OOB_MSG_TYPE_GMI_RESPONSE, handleGmIntrusionResponse);
@@ -139,7 +144,7 @@ function handlePlayerIntrusionResponse(nodeChar, sType, nCost)
 
 	-- Only deduct hero points if that option is enabled, and if the intrusion
 	-- costs a single point
-	if OptionsManagerCypher.areHeroPointsEnabled() and (sType == "reroll" or sType == "shortterm" or stype =="herocard") then
+	if OptionsManagerCypher.areHeroPointsEnabled() and (StringManager.contains(hero_point_intrusions, sType)) then
 		IntrusionManager.modifyHeroPoints(rActor, -nCost);
 	else
 		IntrusionManager.modifyXp(rActor, -nCost);

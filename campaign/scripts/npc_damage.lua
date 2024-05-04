@@ -184,19 +184,19 @@ function parseDamageClause(aWords, i)
 	end
 
 	while aWords[nIndex - 1] do
+		-- Test to see if the word is a number
+		local nDmgTest = tonumber(aWords[nIndex - 1]);
+
 		-- Test the word to see if it's a stat
 		if not sDmgStat and StringManager.isWord(aWords[nIndex - 1], { "might", "speed", "intellect"}) then
 			sDmgStat = aWords[nIndex - 1]
-		end
 
-		-- Test to see if the word is a number
-		local nDmgTest = tonumber(aWords[nIndex - 1]);
-		if not nDmg and nDmgTest then
+		-- If it's a number, then its the damage amount
+		elseif not nDmg and nDmgTest then
 			nDmg = nDmgTest
-		end
-
+		
 		-- if the word was not a number, and we don't already have a number, then it's a damage type
-		if not sDmgType and not nDmgTest and not nDmg then
+		elseif not sDmgType then
 			sDmgType = aWords[nIndex - 1];
 		end
 
