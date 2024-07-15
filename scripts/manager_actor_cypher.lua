@@ -205,7 +205,7 @@ function setStatMax(rActor, sStat, nValue)
 	local sPath = string.format("abilities.%s.max", sStat:lower());
 	DB.setValue(nodeActor, sPath, "number", nValue);
 
-	ActorManagerCypher.setStatPool(rActor, sStat, nValue);
+	--ActorManagerCypher.setStatPool(rActor, sStat, nValue);
 end
 
 function addToStatMax(rActor, sStat, nValue)
@@ -267,6 +267,7 @@ function addToStatPool(rActor, sStat, nValue)
 	ActorManagerCypher.setStatPool(rActor, sStat, nNewValue);
 	return nOverflow;
 end
+
 function setStatPool(rActor, sStat, nValue)
 	local nodeActor;
 	if type(rActor) == "databasenode" then
@@ -297,6 +298,7 @@ function setStatPool(rActor, sStat, nValue)
 		ActorManagerCypher.moveDamageTrack(rActor, -1);
 	end
 end
+
 function getStatPool(rActor, sStat)
 	local nodeActor;
 	if type(rActor) == "databasenode" then
@@ -530,7 +532,9 @@ function getArmor(rActor, rTarget, sStat, sDamageType)
 		end
 	end
 
-	return nArmor + nArmorEffects;
+	-- ARMOR: -X cannot make an actor go below 0 armor, as that means its a vulnerability
+	-- Which the armor effect should not do.
+	return math.max(nArmor + nArmorEffects, 0);
 end
 
 function getArmorThreshold(rActor, rTarget, sStat, sDamageType)

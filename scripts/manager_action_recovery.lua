@@ -41,6 +41,7 @@ end
 function onRoll(rSource, rTarget, rRoll)
 	RollManager.convertNumbersToBooleans(rRoll);
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
+	rMessage.icon = "roll_heal";
 	
 	local sNodeType, nodeActor = ActorManager.getTypeAndNode(rSource);
 	local nTotal = ActionsManager.total(rRoll);

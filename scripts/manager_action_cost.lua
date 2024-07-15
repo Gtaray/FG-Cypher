@@ -115,6 +115,7 @@ function getRoll(rActor, rAction)
 	rRoll.aDice = { };
 	rRoll.nMod = rAction.nCost or 0;
 	rRoll.nEffort = 0;
+	rRoll.nAttackEffort = rAction.nAttackEffort or 0
 
 	RollManager.resolveStatUsedForCost(rAction); -- resolve the cost stat first
 	rRoll.sCostStat = rAction.sCostStat;
@@ -147,6 +148,9 @@ function getRoll(rActor, rAction)
 		rRoll.nEffort = (rAction.nEffort or 0) + RollManager.getEffortFromDifficultyPanel();
 	end
 
+	rRoll.bDisableEdge = false
+	rRoll.bIgnoreCost = rAction.bIgnoreCost or RollManager.isCostIgnored(false)
+
 	return rRoll;
 end
 
@@ -170,10 +174,24 @@ function modRoll(rSource, rTarget, rRoll)
 	-- So we save it here and re-use it there.
 
 	rRoll.nMaxEffort = ActorManagerCypher.getMaxEffort(rSource, rRoll.sCostStat, aFilter);
-	rRoll.nEffort = math.min(rRoll.nEffort or 0, rRoll.nMaxEffort or 0);
+
+	-- Some wierd bug where this gets turned into a string when the roll is dragged
+	rRoll.nAttackEffort = tonumber(rRoll.nAttackEffort)
+
+	-- For damage rolls we need to account for the fact that the attack and damage have a combined maximum
+	local nActualMax = (rRoll.nMaxEffort or 0) - (rRoll.nAttackEffort or 0)
+
+	rRoll.nEffort = math.min((rRoll.nEffort or 0), nActualMax);
 	if rRoll.nEffort > 0 then
 		table.insert(aFilter, "effort")
-		rRoll.nMod = rRoll.nMod + 3 + ((rRoll.nEffort - 1) * 2);
+
+		-- If we're using attack effort, then we know that we don't need to add the 3 for the first effort cost and 
+		-- only have to multiply by 2
+		if (rRoll.nAttackEffort or 0) > 0 then
+			rRoll.nMod = rRoll.nMod + (rRoll.nEffort * 2);
+		else
+			rRoll.nMod = rRoll.nMod + 3 + ((rRoll.nEffort - 1) * 2);
+		end
 	end
 
 	-- Handle cost increase for being wounded
@@ -190,7 +208,6 @@ function modRoll(rSource, rTarget, rRoll)
 	end
 
 	-- Reduce cost by Edge (if it's enabled)
-	rRoll.bDisableEdge = RollManager.isEdgeDisabled();
 	if not rRoll.bDisableEdge then
 		rRoll.nEdge = ActorManagerCypher.getEdge(rSource, rRoll.sCostStat, aFilter);
 		rRoll.nMod = rRoll.nMod - (rRoll.nEdge or 0);
@@ -251,44 +268,54 @@ function onRoll(rSource, rTarget, rRoll)
 		rSource = rTarget;
 	end
 
-	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
-	rMessage.icon = "roll_damage";
+	if not rRoll.bIgnoreCost then
+		local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
+		rMessage.icon = "roll_damage";
 
-	local nTotal = ActionsManager.total(rRoll);
-	local bNotEnoughStats = false;
-	local sNotEnoughStatsMsg = "";
+		local nTotal = ActionsManager.total(rRoll);
+		local bNotEnoughStats = false;
+		local sNotEnoughStatsMsg = "";
 
-	if rRoll.sCostStat == "xp" then
-		bNotEnoughStats = ActorManagerCypher.getXP(rSource) < nTotal
-		sNotEnoughStatsMsg = "[INSUFFICIENT XP]";
-	else
-		local nCurStat = ActorManagerCypher.getStatPool(rSource, rRoll.sCostStat);
-		bNotEnoughStats = nCurStat < nTotal;
-		sNotEnoughStatsMsg = "[INSUFFICIENT STATS]";
+		if rRoll.sCostStat == "xp" then
+			bNotEnoughStats = ActorManagerCypher.getXP(rSource) < nTotal
+			sNotEnoughStatsMsg = "[INSUFFICIENT XP]";
+		else
+			local nCurStat = ActorManagerCypher.getStatPool(rSource, rRoll.sCostStat);
+			bNotEnoughStats = nCurStat < nTotal;
+			sNotEnoughStatsMsg = "[INSUFFICIENT STATS]";
+		end
+
+		if bNotEnoughStats and sNotEnoughStatsMsg ~= "" then
+			rMessage.text = string.format("%s %s", rMessage.text, sNotEnoughStatsMsg);
+		end
+
+		Comm.deliverChatMessage(rMessage);
+
+		if bNotEnoughStats then
+			return;
+		end
+
+		if rRoll.sCostStat == "xp" then
+			ActorManagerCypher.deductXP(rSource, nTotal);
+		else
+			ActorManagerCypher.addToStatPool(rSource, rRoll.sCostStat, -nTotal)
+		end
 	end
 
-	if bNotEnoughStats and sNotEnoughStatsMsg ~= "" then
-		rMessage.text = string.format("%s %s", rMessage.text, sNotEnoughStatsMsg);
+	-- If this is an attack, and we don't want to pay attack and damage effort separately
+	-- Then we show a prompt asking for the player to split effort between attack and damage
+	if rRoll.sSourceRollType == "attack" and rRoll.nEffort > 0 and not OptionsManagerCypher.splitAttackAndDamageEffort() then
+		local w = Interface.openWindow("prompt_attack_effort_split", "")
+		w.setRoll(rSource, rTarget, rRoll)
+		w.setEffort(rRoll.nEffort)
+	
+		return
 	end
 
-	Comm.deliverChatMessage(rMessage);
+	ActionCost.performLastAction(rSource, rTarget, rRoll)
+end
 
-	if bNotEnoughStats then
-		return;
-	end
-
-	if rRoll.sCostStat == "xp" then
-		ActorManagerCypher.deductXP(rSource, nTotal);
-	else
-		ActorManagerCypher.addToStatPool(rSource, rRoll.sCostStat, -nTotal)
-	end
-
-	-- if edge is enabled, and the roll included edge
-	-- we disable edge for the remainder of the turn
-	-- if not rRoll.bDisableEdge and rRoll.nEdge > 0 then
-	-- 	RollManager.disableEdge();
-	-- end
-
+function performLastAction(rSource, rTarget, rRoll)
 	local rAction = ActionCost.getLastAction();
 	if rAction then
 		-- Make sure to update the relevant properties
@@ -296,6 +323,10 @@ function onRoll(rSource, rTarget, rRoll)
 		rAction.nMaxEffort = rRoll.nMaxEffort;
 		if rTarget then
 			rAction.rTarget = rTarget;
+		end
+
+		if rRoll.sSourceRollType == "attack" and (rRoll.nDamageEffort or 0) > 0 then
+			rAction.nDamageEffort = rRoll.nDamageEffort
 		end
 
 		PromptManager.closeDefensePromptWindow(rSource);

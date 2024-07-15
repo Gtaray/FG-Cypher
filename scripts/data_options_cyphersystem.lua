@@ -44,6 +44,9 @@ function registerOptions()
 	OptionsManager.registerOption2("HRXP", false, "option_header_houserule", "option_label_HRXP", "option_entry_cycler", 
 		{ labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "off" });
 
+	OptionsManager.registerOption2("SPLITATKEFFORT", false, "option_header_houserule", "option_label_SPLITATKEFFORT", "option_entry_cycler", 
+		{ labels = "option_val_yes", values = "yes", baselabel = "option_val_no", baseval = "no", default = "yes" });
+
 	OptionsManager.registerOption2("ARCCOST", false, "option_header_houserule", "option_label_ARCCOST", "option_entry_cycler", 
 		{ labels = "option_val_1|option_val_2|option_val_3|option_val_4|option_val_5", values = "1|2|3|4|5", baselabel = "option_val_0", baseval = "0", default = "1" });
 	OptionsManager.registerOption2("ARCXPSTEP", false, "option_header_houserule", "option_label_ARCXPSTEP", "option_entry_cycler", 
@@ -113,4 +116,8 @@ end
 
 function useHitMissInChat()
 	return OptionsManager.getOption("HITMISS") == "yes"
+end
+
+function splitAttackAndDamageEffort()
+	return OptionsManager.getOption("SPLITATKEFFORT") == "yes"
 end

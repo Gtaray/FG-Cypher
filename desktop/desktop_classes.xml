@@ -33,7 +33,7 @@
 	<windowclass name="difficultyadjust">
 		<frame>imagepanel</frame>
 		<sizelimits>
-			<minimum width="210" height="52" />
+			<minimum width="170" height="52" />
 		</sizelimits>
 		<noclose />
 		<script>
@@ -51,7 +51,7 @@
 				<bounds>10,7,30,22</bounds>
 				<script>
 					function onWheel(notches)
-						setValue(math.max(math.min(getValue() + notches, 6), 0))
+						setValue((getValue() + notches) % 7)
 					end
 				</script>
 				<font>modcollector</font>
@@ -72,7 +72,7 @@
 				<bounds>50,7,30,22</bounds>
 				<script>
 					function onWheel(notches)
-						setValue(math.max(math.min(getValue() + notches, 2), 0))
+						setValue((getValue() + notches) % 3)
 					end
 				</script>
 				<font>modcollector</font>
@@ -85,32 +85,43 @@
 				<anchored to="assets" position="below" />
 				<static textres="diffadj_label_assets" />
 			</label_fieldtop>
-			<buttoncontrol name="disableedge">
-				<bounds>95,9,40,20</bounds>
-				<state icon="button_checkon" />
-				<state icon="button_checkoff" />
-			</buttoncontrol>
-			<label_fieldtop name="label_assets">
-				<anchored to="disableedge" position="below" offset="7,1" />
-				<static textres="diffadj_label_edge" />
-			</label_fieldtop>
-			<button_modifierkey name="EASE">
-				<bounds>150,8,50,14</bounds>
-			</button_modifierkey>
-			<button_modifierkey name="HINDER">
-				<bounds>150,30,50,14</bounds>
-			</button_modifierkey>
-		</sheetdata>
-	</windowclass>
+			<buttoncontrol name="misc">
+				<bounds>90,7,30,22</bounds>
+				<script>
+					function onWheel(notches)
+						
+						setValue((getValue() + notches) % 13)
+					end
+				</script>
+				<font>modcollector</font>
 
-	<windowclass name="difficultyadjust" merge="join">
-		<sheetdata>
-			<button_modifierkey name="EASE">
-				<bounds>150,8,50,14</bounds>
-			</button_modifierkey>
-			<button_modifierkey name="HINDER">
-				<bounds>150,30,50,14</bounds>
-			</button_modifierkey>
+				<state textres="diffadj_label_0" />
+				<state textres="diffadj_label_1" />
+				<state textres="diffadj_label_2" />
+				<state textres="diffadj_label_3" />
+				<state textres="diffadj_label_4" />
+				<state textres="diffadj_label_5" />
+				<state textres="diffadj_label_6" />
+				<state textres="diffadj_label_-6" />
+				<state textres="diffadj_label_-5" />
+				<state textres="diffadj_label_-4" />
+				<state textres="diffadj_label_-3" />
+				<state textres="diffadj_label_-2" />
+				<state textres="diffadj_label_-1" />
+			</buttoncontrol>
+			<label_fieldtop name="label_misc">
+				<anchored to="misc" position="below" />
+				<static textres="diffadj_label_misc" />
+			</label_fieldtop>
+			<buttoncontrol name="ignorecost">
+				<bounds>135,9,40,20</bounds>
+				<state icon="button_checkoff" />
+				<state icon="button_checkon" />
+			</buttoncontrol>
+			<label_fieldtop>
+				<anchored to="ignorecost" position="below" offset="7,1" />
+				<static textres="diffadj_label_ignore_cost" />
+			</label_fieldtop>
 		</sheetdata>
 	</windowclass>
 

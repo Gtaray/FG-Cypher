@@ -46,6 +46,8 @@ local _allconditionicons = {
 	"cond_vulnerable",
 }
 
+local _sMultiplierPattern = "(%d+)x"
+
 function onInit()
 	EffectManager.registerEffectVar("sUnits", { sDBType = "string", sDBField = "unit", bSkipAdd = true });
 	EffectManager.registerEffectVar("sApply", { sDBType = "string", sDBField = "apply", sDisplay = "[%s]" });
@@ -359,8 +361,8 @@ end
 -------------------------------------------------------------------------------
 -- EFFECT ACCESSORS
 -------------------------------------------------------------------------------
-function getPiercingEffectBonus(rActor, sDamageType, sStat, rTarget)
-	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, { "PIERCE", "PIERCING" }, sStat, sDamageType, rTarget);
+function getPiercingEffectBonus(rActor, sDamageType, aFilter, rTarget)
+	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, { "PIERCE", "PIERCING" }, aFilter, sDamageType, rTarget);
 end
 
 function getLevelEffectBonus(rActor, aFilter, rTarget, aIgnore)
@@ -395,39 +397,78 @@ function getHealEffectBonus(rActor, aFilter, rTarget)
 	return EffectManagerCypher.getEffectsBonusByType(rActor, "HEAL", aFilter, true, nil, true, rTarget)
 end
 
-function getDamageEffectBonus(rActor, sDamageType, sStat, rTarget)
+function getDamageEffectBonus(rActor, sDamageType, aFilter, rTarget)
 	if (sDamageType or "") == "" then
 		sDamageType = "untyped";
 	end
-	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, { "DAMAGE", "DMG" }, sStat, sDamageType, rTarget);
+	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, { "DAMAGE", "DMG" }, aFilter, sDamageType, rTarget);
+end
+
+function getDamageMultiplierEffectBonus(rActor, sDamageType, aFilter, rTarget)
+	if (sDamageType or "") == "" then
+		sDamageType = "untyped";
+	end
+	
+	local nTotal, nEffectCount = EffectManagerCypher.getEffectsBonusForDamageType(rActor, "DMGMULT", aFilter, rTarget)
+
+	-- If there's no effects, then we straight up return 1
+	if nEffectCount == 0 then
+		return 1
+	end
+
+	-- If there are effects, then we return the value of those effects, since 
+	-- we want to make sure we account for a mult of 0
+	return nTotal
 end
 
 function getCostEffectBonus(rActor, rFilter)
 	return EffectManagerCypher.getEffectsBonusByType(rActor, "COST", rFilter, true);
 end
 
-function getEaseEffectBonus(rActor, aFilter, rTarget)
-	return EffectManagerCypher.getEffectsBonusByType(rActor, "EASE", aFilter, true, nil, true, rTarget);
+function getEaseEffectBonus(rActor, aFilter, rTarget, aTargetFilter)
+	if not aTargetFilter then
+		aTargetFilter = aFilter
+	end
+	local nActorEase = EffectManagerCypher.getEffectsBonusByType(rActor, "EASE", aFilter, true, nil, true, rTarget);
+	local nTargetHinder = EffectManagerCypher.getEffectsBonusByType(rTarget, "HINDER", aTargetFilter, true, nil, true, rActor);
+	return nActorEase + nTargetHinder
 end
 
-function getHinderEffectBonus(rActor, aFilter, rTarget)
-	return EffectManagerCypher.getEffectsBonusByType(rActor, "HINDER", aFilter, true, nil, true, rTarget);
+function getHinderEffectBonus(rActor, aFilter, rTarget, aTargetFilter)
+	if not aTargetFilter then
+		aTargetFilter = aFilter
+	end
+	local nActorHinder = EffectManagerCypher.getEffectsBonusByType(rActor, "HINDER", aFilter, true, nil, true, rTarget);
+	local nTargetEase = EffectManagerCypher.getEffectsBonusByType(rTarget, "EASE", aTargetFilter, true, nil, true, rActor);
+	return nActorHinder + nTargetEase
 end
 
-function getArmorEffectBonus(rActor, sStat, sDamageType, rTarget)
-	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, "ARMOR", sStat, sDamageType, rTarget);
+function getArmorEffectBonus(rActor, aFilter, sDamageType, rTarget)
+	if type(aFilter) == "string" then
+		aFilter = { aFilter }
+	end
+	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, "ARMOR", aFilter, sDamageType, rTarget);
 end
 
-function getArmorThresholdEffectBonus(rActor, sStat, sDamageType, rTarget)
-	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, { "DT", "THRESHOLD", }, sStat, sDamageType, rTarget);
+function getArmorThresholdEffectBonus(rActor, aFilter, sDamageType, rTarget)
+	if type(aFilter) == "string" then
+		aFilter = { aFilter }
+	end
+	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, { "DT", "THRESHOLD", }, aFilter, sDamageType, rTarget);
 end
 
-function getSuperArmorEffectBonus(rActor, sStat, sDamageType, rTarget)
-	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, "SUPERARMOR", sStat, sDamageType, rTarget);
+function getSuperArmorEffectBonus(rActor, aFilter, sDamageType, rTarget)
+	if type(aFilter) == "string" then
+		aFilter = { aFilter }
+	end
+	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, "SUPERARMOR", aFilter, sDamageType, rTarget);
 end
 
-function getVulnerabilityEffectBonus(rActor, sDamageType, sStat, rTarget)
-	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, "VULN", sStat, sDamageType, rTarget);
+function getVulnerabilityEffectBonus(rActor, sDamageType, aFilter, rTarget)
+	if type(aFilter) == "string" then
+		aFilter = { aFilter }
+	end
+	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, "VULN", aFilter, sDamageType, rTarget);
 end
 
 function getAdvantageEffects(rActor, aFilter, rTarget)
@@ -480,6 +521,43 @@ function getConversionEffect(rActor, aFilter, aContent)
 	return aConversion;
 end
 
+function getDamageTypeConversionEffect(rActor, sDamageType, aFilter)
+	if not rActor then
+		return sDamageType;
+	end
+
+	-- We can do work on sSourceDamageType as it will be 'untyped' if necessary
+	local sSourceDamageType = sDamageType
+
+	if (sSourceDamageType or "") == "" then
+		sSourceDamageType = "untyped";
+	end
+
+	local sFinalDamageType = sSourceDamageType
+	local aEffects = EffectManagerCypher.getEffectsByType(rActor, "DMGCONVERT", aFilter, false, nil, false);
+	for _, rEffect in ipairs(aEffects) do
+		local nContentCount = #(rEffect.content)
+		local sDmgType = "untyped"
+
+		-- If two dmg types are provided, then the first is the starting type
+		if nContentCount > 1 then
+			sDmgType = rEffect.content[1]
+		end
+
+		if sDmgType == sSourceDamageType then
+			-- If the source dmg type and the damage type that's being dealt match
+			-- we set the final type to the last element in the content
+			sFinalDamageType = rEffect.content[nContentCount]
+		end
+	end
+
+	-- If we didn't convert to anything, then return exactly what we took in
+	if sFinalDamageType == sSourceDamageType then
+		return sDamageType
+	end
+	return sFinalDamageType
+end
+
 function getImmunityEffects(rActor, rTarget)
 	return EffectManagerCypher.getEffectsByType(rActor, "IMMUNE", {}, false, nil, false, rTarget, false);
 end
@@ -498,23 +576,62 @@ function ignoreRecovery(rActor, sFilter)
 	return #aEffects > 0
 end
 
+function getThornsEffectsBonus(rActor, aFilter, rTarget)
+	if not rActor then
+		return {}
+	end
+
+	-- A table indexed by damage type, whose value is the damage dealt.
+	local tThorns = {}
+
+	local aEffects = EffectManagerCypher.getEffectsByType(rActor, "THORNS", aFilter, true, nil, true, rTarget);
+	for _, rEffect in ipairs(aEffects) do
+		local sDmgType = "untyped"
+		if #(rEffect.content) == 1 then
+			sDmgType = rEffect.content[1]
+		end
+
+		if not tThorns[sDmgType] then
+			tThorns[sDmgType] = 0
+		end
+
+		tThorns[sDmgType] = tThorns[sDmgType] + rEffect.mod
+	end
+
+	return tThorns
+end
+
 -------------------------------------------------------------------------------
 -- EFFECT PROCESSORS
 -------------------------------------------------------------------------------
-function getEffectsBonusForDamageType(rActor, sEffectType, sStat, sDamageType, rFilterActor, aIgnore)
+function getEffectsBonusForDamageType(rActor, sEffectType, aFilter, sDamageType, rFilterActor, aIgnore)
 	if not rActor then
 		return 0, 0;
 	end
 
-	local aFilter = {};
-	if sStat then
-		table.insert(aFilter, sStat);
-	end
 	if sDamageType then
 		table.insert(aFilter, sDamageType);
 	end
 
 	return EffectManagerCypher.getEffectsBonusByType(rActor, sEffectType, aFilter, false, nil, false, rFilterActor, false, aIgnore);
+end
+
+function getMultiplierEffect(rActor, sEffectType, aFilter, rFilterActor)
+	if not rActor then
+		return 1
+	end
+
+	local nHighestMult = 1
+	local effects = EffectManagerCypher.getEffectsByType(rActor, sEffectType, aFilter, true, nil, false, rFilterActor, false)
+	for _, effect in ipairs(effects) do
+		for _, sFilter in ipairs(effect.filters) do
+			local nMult = tonumber(string.match(sFilter, _sMultiplierPattern) or "1")
+			if nMult and nMult > nHighestMult then
+				nHighestMult = nMult
+			end
+		end
+	end
+	return nHighestMult
 end
 
 function hasEffect(rActor, sEffect, rTarget, bTargetedOnly, bCheckEffectTargets, aIgnore)
@@ -550,7 +667,6 @@ function hasEffect(rActor, sEffect, rTarget, bTargetedOnly, bCheckEffectTargets,
 			local nMatch = 0;
 			for kEffectComp, sEffectComp in ipairs(aEffectComps) do
 				local rEffectComp = EffectManagerCypher.parseEffectComp(sEffectComp);
-
 				if rEffectComp.type == "if" then
 					if not EffectManagerCypher.checkConditional(rActor, {}, v, rEffectComp, aIgnore) then
 						break;
@@ -683,7 +799,7 @@ function getEffectsByType(rActor, sEffectType, aFilter, bExclusiveFilters, aCont
 			-- Look for type/subtype match
 			local nMatch = 0;
 			for kEffectComp, sEffectComp in ipairs(aEffectComps) do
-				local rEffectComp = EffectManagerCypher.parseEffectComp(sEffectComp); 
+				local rEffectComp = EffectManagerCypher.parseEffectComp(sEffectComp);
 
 				if rEffectComp.type == "if" then
 					if not EffectManagerCypher.checkConditional(rActor, aFilter, v, rEffectComp, aIgnore) then
@@ -698,11 +814,13 @@ function getEffectsByType(rActor, sEffectType, aFilter, bExclusiveFilters, aCont
 						break;
 					end
 			
-				elseif EffectManagerCypher.checkEffectCompType(rEffectComp, sEffectType) and
-					EffectManagerCypher.checkFilters(rEffectComp, aFilter, bExclusiveFilters) and 
-					EffectManagerCypher.checkContent(rEffectComp, aContent, bExclusiveContent) and 
-					EffectManagerCypher.checkDamageType(rEffectComp, sEffectType, aFilter) then
-
+				else
+					local bCheckCompType = EffectManagerCypher.checkEffectCompType(rEffectComp, sEffectType)
+					local bCheckFilters = EffectManagerCypher.checkFilters(rEffectComp, aFilter, bExclusiveFilters)
+					local bCheckContent = EffectManagerCypher.checkContent(rEffectComp, aContent, bExclusiveContent)
+					local bCheckDamageType = EffectManagerCypher.checkDamageType(rEffectComp, sEffectType, aFilter)
+					
+					if bCheckCompType and bCheckFilters and bCheckContent and bCheckDamageType then
 						-- At this point we're guaranteed to have an active effect that matches targeting, type, and filters/content
 						nMatch = kEffectComp;
 
@@ -713,6 +831,7 @@ function getEffectsByType(rActor, sEffectType, aFilter, bExclusiveFilters, aCont
 							table.insert(results, rEffectComp);
 							table.insert(resultdata, { node = v, index = kEffectComp });
 						end
+					end
 				end
 			end -- END EFFECT COMPONENT LOOP
 
@@ -922,11 +1041,14 @@ function checkEffectFilterOrContent(rEffectCompList, aFilters, bExclusive)
 			return true;
 		end
 		
-		local bContains = StringManager.contains(aFilters, tag)
-		if bContains then
-			bMatchedAny = true;
-		else
-			bMatchedAll = false;
+		-- Ingore multiplier tags (2x, 3x, etc)
+		if not string.find(tag, _sMultiplierPattern) then
+			local bContains = StringManager.contains(aFilters, tag)
+			if bContains then
+				bMatchedAny = true;
+			else
+				bMatchedAll = false;
+			end
 		end
 	end
 
@@ -986,7 +1108,7 @@ function activateSkippedEffect(effectNode)
 end
 
 function addMatchedEffect(effectNode, aEffects)
-	local nActive = DB.getValue(v, "isactive", 0);
+	local nActive = DB.getValue(effectNode, "isactive", 0);
 	if nActive == 1 then
 		table.insert(aEffects, effectNode);
 	end

@@ -26,10 +26,7 @@ function getRoll(rActor, rAction)
 	rRoll.sLabel = rAction.label;
 	rRoll.sStat = rAction.sStat;
 	rRoll.sSkill = rAction.sSkill;
-	rRoll.sDesc = string.format(
-		"[SKILL (%s)] %s", 
-		StringManager.capitalize(rAction.sStat or ""), 
-		rAction.label or "");
+	rRoll.sDesc = ActionSkill.getRollLabel(rActor, rAction, rRoll)
 
 	rRoll.nDifficulty = rAction.nDifficulty or 0;
 	rRoll.sTraining = rAction.sTraining;
@@ -43,6 +40,17 @@ function getRoll(rActor, rAction)
 	return rRoll;
 end
 
+function getRollLabel(rActor, rAction, rRoll)
+	return string.format(
+		"[SKILL (%s)] %s", 
+		StringManager.capitalize(rRoll.sStat or ""),
+		rRoll.sLabel or "");
+end
+
+function getEffectFilter(rRoll)
+	return { "skill", "skills", rRoll.sStat, rRoll.sSkill }
+end
+
 function modRoll(rSource, rTarget, rRoll)
 	RollManager.convertNumbersToBooleans(rRoll);
 	if ActionSkill.rebuildRoll(rSource, rTarget, rRoll) then
@@ -50,7 +58,7 @@ function modRoll(rSource, rTarget, rRoll)
 	end
 
 	rTarget = RollManager.decodeTarget(rRoll, rTarget, true);
-	aFilter = { "skill", "skills", rRoll.sStat, rRoll.sSkill }
+	aFilter = ActionSkill.getEffectFilter(rRoll)
 
 	-- Process training effects
 	RollManager.processTrainingEffects(rSource, rTarget, rRoll, aFilter);
@@ -65,13 +73,12 @@ function modRoll(rSource, rTarget, rRoll)
 
 	-- Get ease/hinder effects
 	rRoll.nEase = rRoll.nEase + EffectManagerCypher.getEaseEffectBonus(rSource, aFilter, rTarget);
-	if ModifierManager.getKey("EASE") then
-		rRoll.nEase = rRoll.nEase + 1;
-	end
-
 	rRoll.nHinder = rRoll.nHinder + EffectManagerCypher.getHinderEffectBonus(rSource, aFilter, rTarget);
-	if ModifierManager.getKey("HINDER") then
-		rRoll.nHinder = rRoll.nHinder + 1;
+	local nMiscAdjust = RollManager.getEaseHinderFromDifficultyPanel()
+	if nMiscAdjust > 0 then
+		rRoll.nEase = rRoll.nEase + nMiscAdjust
+	elseif nMiscAdjust < 0 then
+		rRoll.nHinder = rRoll.nHinder + math.abs(nMiscAdjust)
 	end
 
 	-- Process conditions
@@ -104,7 +111,9 @@ function onRoll(rSource, rTarget, rRoll)
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 	rMessage.icon = "action_roll";
 
-	rRoll.nDifficulty = RollManager.getBaseRollDifficulty(rSource, rTarget, { "skill", "skills", rRoll.sStat });
+	if tonumber(rRoll.nDifficulty or "0") == 0 then
+		rRoll.nDifficulty = RollManager.getBaseRollDifficulty(rSource, rTarget, { "skill", "skills", rRoll.sStat });
+	end
 	RollManager.calculateDifficultyForRoll(rSource, rTarget, rRoll);
 
 	local aAddIcons = {};
@@ -116,6 +125,8 @@ function onRoll(rSource, rTarget, rRoll)
 	if rTarget or OptionsManagerCypher.isGlobalDifficultyEnabled() then
 		ActionSkill.applyRoll(rSource, rTarget, rRoll)
 	end
+
+	RollHistoryManager.setLastRoll(rSource, rTarget, rRoll)
 end
 
 function applyRoll(rSource, rTarget, rRoll)

@@ -82,6 +82,15 @@
 					function onValueChanged()
 						window.updateDifficulty();
 					end
+					function onClickDown(button, x, y)
+						return true
+					end
+					function onClickRelease(button, x, y)
+						if button ~= 1 then
+							return
+						end
+						setValue((getValue() + 1) % 7)
+					end
 				</script>
 			</basicnumber>
 
@@ -102,6 +111,15 @@
 				<script>
 					function onValueChanged()
 						window.updateDifficulty();
+					end
+					function onClickDown(button, x, y)
+						return true
+					end
+					function onClickRelease(button, x, y)
+						if button ~= 1 then
+							return
+						end
+						setValue((getValue() + 1) % 3)
 					end
 				</script>
 			</basicnumber>

@@ -84,12 +84,12 @@ end
 
 function applyFloatingStatsAndEdge(rData)
 	local rActor = ActorManager.resolveActor(rData.nodeChar);
-	local nCurMight = ActorManagerCypher.getStatPool(rActor, "might");
-	local nCurSpeed = ActorManagerCypher.getStatPool(rActor, "speed");
-	local nCurIntellect = ActorManagerCypher.getStatPool(rActor, "intellect");
+	local nCurMight, nMaxMight = ActorManagerCypher.getStatPool(rActor, "might");
+	local nCurSpeed, nMaxSpeed = ActorManagerCypher.getStatPool(rActor, "speed");
+	local nCurIntellect, nMaxIntellect = ActorManagerCypher.getStatPool(rActor, "intellect");
 
-	if nCurMight ~= rData.nMight then
-		local nMod = rData.nMight - nCurMight;
+	if nMaxMight ~= rData.nMight then
+		local nMod = rData.nMight - nMaxMight;
 		CharModManager.applyStatModification(rActor, {
 			sProperty = "stat",
 			sStat = "might",
@@ -98,8 +98,8 @@ function applyFloatingStatsAndEdge(rData)
 			sSource = rData.sSource
 		});
 	end
-	if nCurSpeed ~= rData.nSpeed then
-		local nMod = rData.nSpeed - nCurSpeed;
+	if nMaxSpeed ~= rData.nSpeed then
+		local nMod = rData.nSpeed - nMaxSpeed;
 		CharModManager.applyStatModification(rActor, {
 			sProperty = "stat",
 			sStat = "speed",
@@ -108,8 +108,8 @@ function applyFloatingStatsAndEdge(rData)
 			sSource = rData.sSource
 		});
 	end
-	if nCurIntellect ~= rData.nIntellect then
-		local nMod = rData.nIntellect - nCurIntellect;
+	if nMaxIntellect ~= rData.nIntellect then
+		local nMod = rData.nIntellect - nMaxIntellect;
 		CharModManager.applyStatModification(rActor, {
 			sProperty = "stat",
 			sStat = "intellect",

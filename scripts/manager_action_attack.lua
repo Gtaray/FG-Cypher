@@ -36,16 +36,7 @@ function getRoll(rActor, rAction)
 	rRoll.sDefenseStat = rAction.sDefenseStat:lower();
 	rRoll.sAttackRange = rAction.sAttackRange;
 
-	rRoll.sDesc = string.format("[ATTACK (%s", StringManager.capitalize(rRoll.sStat));
-	if (rAction.sAttackRange or "") ~= "" then
-		rRoll.sDesc = string.format("%s, %s", rRoll.sDesc, rAction.sAttackRange)
-	end
-	rRoll.sDesc = string.format(
-		"%s)] %s vs %s", 
-		rRoll.sDesc, 
-		rRoll.sLabel,
-		StringManager.capitalize(rRoll.sDefenseStat)
-	);
+	rRoll.sDesc = ActionAttack.getRollLabel(rActor, rAction, rRoll)
 
 	rRoll.nDifficulty = rAction.nDifficulty or 0;
 	rRoll.sTraining = rAction.sTraining;
@@ -54,11 +45,32 @@ function getRoll(rActor, rAction)
 	rRoll.nEase = rAction.nEase or 0;
 	rRoll.nHinder = rAction.nHinder or 0;
 	rRoll.sWeaponType = rAction.sWeaponType;
-	-- rRoll.bLightWeapon = rAction.sWeaponType == "light";
+
+	rRoll.nDamageEffort = rAction.nDamageEffort or 0
 	
 	RollManager.encodeTarget(rAction.rTarget, rRoll);
 
 	return rRoll;
+end
+
+function getRollLabel(rActor, rAction, rRoll)
+	local sLabel = string.format("[ATTACK (%s", StringManager.capitalize(rRoll.sStat));
+
+	if (rAction.sAttackRange or "") ~= "" then
+		sLabel = string.format("%s, %s", sLabel, rRoll.sAttackRange)
+	end
+	sLabel = string.format(
+		"%s)] %s vs %s", 
+		sLabel, 
+		rRoll.sLabel,
+		StringManager.capitalize(rRoll.sDefenseStat)
+	);
+
+	return sLabel
+end
+
+function getEffectFilter(rRoll)
+	return { "attack", "atk", rRoll.sStat }
 end
 
 function modRoll(rSource, rTarget, rRoll)
@@ -69,7 +81,7 @@ function modRoll(rSource, rTarget, rRoll)
 
 	-- If there's not already a target, then we try to decode one
 	rTarget = RollManager.decodeTarget(rRoll, rTarget, true);
-	local aFilter = { "attack", "atk", rRoll.sStat };
+	local aFilter = ActionAttack.getEffectFilter(rRoll)
 	if (rRoll.sAttackRange or "") ~= "" then
 		table.insert(aFilter, rRoll.sAttackRange:lower());
 	end
@@ -89,16 +101,15 @@ function modRoll(rSource, rTarget, rRoll)
 	rRoll.nEffort = rRoll.nEffort + RollManager.processEffort(rSource, rTarget, aFilter, rRoll.nEffort, rRoll.nMaxEffort);
 
 	-- Get ease/hinder effects
-	rRoll.nEase = rRoll.nEase + EffectManagerCypher.getEaseEffectBonus(rSource, aFilter, rTarget);
-	if ModifierManager.getKey("EASE") then
-		rRoll.nEase = rRoll.nEase + 1;
+	rRoll.nEase = rRoll.nEase + EffectManagerCypher.getEaseEffectBonus(rSource, aFilter, rTarget, { "defense", "def", rRoll.sDefenseStat });
+	rRoll.nHinder = rRoll.nHinder + EffectManagerCypher.getHinderEffectBonus(rSource, aFilter, rTarget, { "defense", "def", rRoll.sDefenseStat });
+	local nMiscAdjust = RollManager.getEaseHinderFromDifficultyPanel()
+	if nMiscAdjust > 0 then
+		rRoll.nEase = Roll.nEase + nMiscAdjust
+	elseif nMiscAdjust < 0 then
+		rRoll.nHinder = Roll.nHinder + nMiscAdjust
 	end
-
-	rRoll.nHinder = rRoll.nHinder + EffectManagerCypher.getHinderEffectBonus(rSource, aFilter, rTarget);
-	if ModifierManager.getKey("HINDER") then
-		rRoll.nHinder = rRoll.nHinder + 1;
-	end
-
+	
 	-- Process conditions
 	rRoll.nConditionMod = RollManager.processStandardConditionsForActor(rSource);
 
@@ -144,6 +155,28 @@ function onRoll(rSource, rTarget, rRoll)
 
 	if rTarget or OptionsManagerCypher.isGlobalDifficultyEnabled() then
 		ActionAttack.applyRoll(rSource, rTarget, rRoll);
+	end
+
+	RollHistoryManager.setLastRoll(rSource, rTarget, rRoll)
+
+	-- Only save the attack effort if the option to split attack and damage
+	-- effort costs is enabled. Otherwise costs are handled up front.
+	if OptionsManagerCypher.splitAttackAndDamageEffort() then
+		RollHistoryManager.setAttackEffort(rSource, rTarget, rRoll)
+	end
+
+	if rRoll.bRolled17 then
+		ModifierStack.addSlot("", 1)
+	end
+	if rRoll.bRolled18 then
+		ModifierStack.addSlot("", 2)
+	end
+
+	-- If this attack had damage effort set for it, then update the desktop panel
+	rRoll.nDamageEffort = tonumber(rRoll.nDamageEffort) or 0
+	if rRoll.nDamageEffort > 0 then
+		RollManager.disableCost()
+		RollManager.setDifficultyPanelEffort(rRoll.nDamageEffort)
 	end
 end
 
@@ -207,6 +240,7 @@ function applyRoll(rSource, rTarget, rRoll)
 
 			if rRoll.bMajorEffect or rRoll.bMinorEffect or
 			   rRoll.bRolled18 or rRoll.bRolled17 then
+				
 				msgShort.icon[1] = "roll_attack_crit";
 				msgLong.icon[1] = "roll_attack_crit";
 			else
@@ -217,6 +251,7 @@ function applyRoll(rSource, rTarget, rRoll)
 			msgLong.text = string.format("%s %s", msgLong.text, getMissResultText());
 
 			if rRoll.bGmIntrusion then
+				
 				msgShort.icon[1] = "roll_attack_crit_miss";
 				msgLong.icon[1] = "roll_attack_crit_miss";
 			else

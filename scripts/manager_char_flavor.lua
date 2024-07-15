@@ -24,7 +24,9 @@ end
 
 function getFlavorNode(nodeChar)
 	local _, sRecord = DB.getValue(nodeChar, "class.flavorlink");
-	return DB.findNode(sRecord);
+	if sRecord then
+		return DB.findNode(sRecord);
+	end
 end
 
 function characterHasFlavor(nodeChar)

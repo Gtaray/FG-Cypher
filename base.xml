@@ -87,6 +87,7 @@
 	<includefile source="utility/prompt_gm_intrusion.xml" />
 	<includefile source="utility/prompt_pc_intrusion.xml" />
 	<includefile source="utility/prompt_cost_conversion.xml" />
+	<includefile source="utility/prompt_attack_effort_split.xml" />
 	<includefile source="utility/select_dialog_char.xml" />
 	<includefile source="utility/select_dialog_stats.xml" />
 	<includefile source="utility/select_dialog_edge.xml" />
@@ -115,6 +116,7 @@
 	<script name="ItemManagerCypher" file="scripts/manager_item_cypher.lua" />
 	<script name="CypherManager" file="scripts/manager_cypher.lua" />
 	<script name="RollManager" file="scripts/manager_roll.lua"/>
+	<script name="RollHistoryManager" file="scripts/manager_roll_history.lua"/>
 	<script name="PowerManager" file="scripts/manager_power.lua" />
 	<script name="PromptManager" file="scripts/manager_prompt.lua" />
 	<script name="DamageTypeManager" file="scripts/manager_damage_types.lua" />

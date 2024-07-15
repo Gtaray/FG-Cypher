@@ -41,6 +41,10 @@ function invokeGmIntrusion(rActor)
 	IntrusionManager.sendGmIntrusionPrompt(rActor);
 end
 
+function canHeroPointsBeSpentOnPcIntrusion(sIntrusionType)
+	return StringManager.contains(hero_point_intrusions, sIntrusionType)
+end
+
 -------------------------------------------------------------------------------
 -- GM INTRUSION PROMPT & RESPONSE
 -------------------------------------------------------------------------------
@@ -72,7 +76,12 @@ function sendGmIntrusionPrompt(rActor)
 			msgOOB[sKey .. "_node"] = sNode;
 			msgOOB[sKey .. "_name"] = DB.getValue(charnode, "name", "");
 			msgOOB[sKey .. "_token"] = DB.getValue(charnode, "token", "");
-			msgOOB[sKey .. "_xp"] = CharManager.getExperience(charnode)
+
+			if OptionsManagerCypher.areHeroPointsEnabled() then
+				msgOOB[sKey .. "_xp"] = CharManager.getHeroPoints(charnode)
+			else
+				msgOOB[sKey .. "_xp"] = CharManager.getExperience(charnode);
+			end
 
 			i = i + 1;
 		end
@@ -97,7 +106,7 @@ function handleGmIntrusionPrompt(msgOOB)
 			sNode = msgOOB[sKey .. "_node"],
 			sName = msgOOB[sKey .. "_name"],
 			sToken = msgOOB[sKey .. "_token"],
-			nXp = msgOOB[sKey .. "_xp"]
+			nXpOrHeroPoints = msgOOB[sKey .. "_xp"]
 		});
 
 		i = i + 1;
@@ -144,7 +153,7 @@ function handlePlayerIntrusionResponse(nodeChar, sType, nCost)
 
 	-- Only deduct hero points if that option is enabled, and if the intrusion
 	-- costs a single point
-	if OptionsManagerCypher.areHeroPointsEnabled() and (StringManager.contains(hero_point_intrusions, sType)) then
+	if OptionsManagerCypher.areHeroPointsEnabled() and (IntrusionManager.canHeroPointsBeSpentOnPcIntrusion(sType)) then
 		IntrusionManager.modifyHeroPoints(rActor, -nCost);
 	else
 		IntrusionManager.modifyXp(rActor, -nCost);
@@ -215,6 +224,18 @@ end
 -------------------------------------------------------------------------------
 -- MESSAGING
 -------------------------------------------------------------------------------
+function getIntrusionResourceText(bPlural)
+	local sText = "XP"
+	if OptionsManagerCypher.areHeroPointsEnabled() then
+		sText = "Hero Point"
+		if bPlural then
+			sText = sText .. "s"
+		end
+	end
+
+	return sText
+end
+
 function sendGmIntrusionNotification(rActor)
 	if not rActor then
 		return;
@@ -235,10 +256,13 @@ function sendGmIntrusionAcceptedResponse(rActor, rTarget)
 		return;
 	end
 
+	local sResource = IntrusionManager.getIntrusionResourceText(false)
 	local rMessage = {
 		text = string.format(
 			Interface.getString("gmi_message_gm_intrusion_accept"), 
 			ActorManager.getDisplayName(rActor),
+			sResource,
+			sResource,
 			ActorManager.getDisplayName(rTarget)),
 		font = "msgfont"
 	}
@@ -253,7 +277,8 @@ function sendGmIntrusionRefusedResponse(rActor)
 	local rMessage = {
 		text = string.format(
 			Interface.getString("gmi_message_gm_intrusion_refuse"), 
-			ActorManager.getDisplayName(rActor)),
+			ActorManager.getDisplayName(rActor),
+			IntrusionManager.getIntrusionResourceText(false)),
 		font = "msgfont"
 	}
 	Comm.deliverChatMessage(rMessage);

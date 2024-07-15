@@ -22,6 +22,10 @@ function getPowerActorNode(node)
 	return DB.getChild(node, "...");
 end
 
+function getPowerNodeFromActionNode(nodeAction)
+	return DB.getChild(nodeAction, "...");
+end
+
 -- Gets the source of an action node, which can exist on a PC, NPC, item, or ability
 function getActionNodeSource(actionNode)
 	if type(actionNode) == "string" then
@@ -313,7 +317,7 @@ function getPowerAction(nodeAction)
 		return;
 	end
 
-	local nodePower = DB.getChild(nodeAction, "...");
+	local nodePower = PowerManager.getPowerNodeFromActionNode(nodeAction)
 	local nodeActor = PowerManagerCore.getPowerActorNode(nodePower);
 	local rActor = ActorManager.resolveActor(nodeActor);
 

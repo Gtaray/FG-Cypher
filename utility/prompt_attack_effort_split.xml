@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!--
+	Please see the license.html file included with this distribution for
+	attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="prompt_attack_effort_split">
+		<frame>referencelist</frame>
+		<placement>
+			<size width="260" height="200" />
+		</placement>
+		<nodelete />
+		<script file="utility/scripts/prompt_attack_effort_split.lua" />
+		<sheetdata>
+			<windowtitlebar_referencelist name="title">
+				<resource>attack_effort_split_prompt_window_title</resource>
+			</windowtitlebar_referencelist>
+
+			<frame_char name="frame">
+				<anchored>
+					<top offset="40"/>
+					<left offset="15" />
+					<right offset="-15" />
+					<bottom offset="-15" />
+				</anchored>
+			</frame_char>
+
+			<label name="label_attack">
+				<anchored height="40">
+					<bottom anchor="center" offset="-10" />
+					<left />
+					<right anchor="center" />
+				</anchored>
+				<static textres="effort_prompt_attack" />
+				<center />
+				<multilinespacing>20</multilinespacing>
+			</label>
+			<label name="label_damage">
+				<anchored height="40">
+					<bottom anchor="center" offset="-10" />
+					<left anchor="center" />
+					<right />
+				</anchored>
+				<static textres="effort_prompt_damage" />
+				<center />
+				<multilinespacing>20</multilinespacing>
+			</label>
+
+			<button_text name="button_inc_damage">
+				<anchored height="25" width="25">
+					<top anchor="center" offset="0"/>
+					<left anchor="center" offset="5" />
+				</anchored>
+				<text>&gt;</text>
+				<script>
+					function onButtonPress()
+						window.increment_damage()
+					end
+				</script>
+			</button_text>
+			<button_text name="button_inc_attack">
+				<anchored height="25" width="25">
+					<top anchor="center" offset="0"/>
+					<right anchor="center" offset="-5" />
+				</anchored>
+				<text>&lt;</text>
+				<script>
+					function onButtonPress()
+						window.increment_attack()
+					end
+				</script>
+			</button_text>
+
+			<basicnumberc name="attack_effort">
+				<anchored to="button_inc_attack" height="26" width="26">
+					<top />
+					<right parent="label_attack" anchor="center" offset="13" />
+				</anchored>
+				<font>reference-b-large</font>
+				<default>0</default>
+				<readonly />
+				<script>
+					function onInit()
+						onValueChanged()
+					end
+					function onValueChanged()
+						local bEnabled = getValue() &gt; 0
+						window.button_inc_damage.setEnabled(bEnabled)
+						window.button_inc_damage.setVisible(bEnabled)
+					end
+				</script>
+			</basicnumberc>
+			<basicnumber name="damage_effort">
+				<anchored to="button_inc_damage" height="26" width="26">
+					<top />
+					<left parent="label_damage" anchor="center" offset="-13" />
+				</anchored>
+				<font>reference-b-large</font>
+				<default>0</default>
+				<readonly />
+				<script>
+					function onInit()
+						onValueChanged()
+					end
+					function onValueChanged()
+						local bEnabled = getValue() &gt; 0
+						window.button_inc_attack.setEnabled(bEnabled)
+						window.button_inc_attack.setVisible(bEnabled)
+					end
+				</script>
+			</basicnumber>
+
+			<button_text name="accept">
+				<script>
+					function onButtonPress()
+						window.roll();
+					end
+				</script>
+				<anchored height="22" width="100">
+					<bottom parent="frame" anchor="bottom" offset="-20" />
+					<right parent="frame" anchor="right" offset="-20" />
+				</anchored>
+				<textres>effort_prompt_button_roll</textres>
+			</button_text>
+
+			<button_text name="close">
+				<script>
+					function onButtonPress()
+						window.close();
+					end
+				</script>
+				<anchored height="22">
+					<bottom parent="frame" anchor="bottom" offset="-20" />
+					<left parent="frame" anchor="left" offset="20" />
+					<right parent="accept" anchor="left" offset="-10" />
+				</anchored>
+				<textres>effort_prompt_button_close</textres>
+			</button_text>
+		</sheetdata>
+	</windowclass>
+</root>

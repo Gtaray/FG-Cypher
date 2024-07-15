@@ -15,9 +15,12 @@ function setActor(actor)
 
 	rActor = actor
 
+	local sResource = IntrusionManager.getIntrusionResourceText(false)
 	description.setValue(string.format(
 		Interface.getString("gmi_prompt_description"), 
-		getSourceName()));
+		getSourceName(),
+		sResource
+	));
 
 	-- Now that we have set the actor, we can update the refuse button's tooltip
 	-- since it needs to check the xp value of the actor
@@ -26,7 +29,7 @@ end
 
 function setOptions(rCharacters)
 	for i, rChar in ipairs(rCharacters) do
-		characters.addEntry(rChar.sNode, rChar.sToken, rChar.sName, rChar.nXp);		
+		characters.addEntry(rChar.sNode, rChar.sToken, rChar.sName, rChar.nXpOrHeroPoints);		
 	end
 end
 
@@ -41,7 +44,11 @@ function acceptIntrusion()
 end
 
 function refuseIntrusion()
-	IntrusionManager.subtractOneXp(rActor);
+	if OptionsManagerCypher.areHeroPointsEnabled() then
+		IntrusionManager.subtractOneHeroPoint(rActor);
+	else
+		IntrusionManager.subtractOneXp(rActor);
+	end
 	IntrusionManager.sendGmIntrusionRefusedResponse(rActor);
 	close();
 end

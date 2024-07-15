@@ -46,6 +46,7 @@
 	<string name="option_label_INITNPC">Init: NPC</string>
 	<string name="option_label_MAXTARGET">Maximum Difficulty Level for Rolls</string>
 	<string name="option_label_HRXP">Hero Points (Intrusion XP)</string>
+	<string name="option_label_SPLITATKEFFORT">Pay Attack and Damage Effort separately</string>
 	<string name="option_label_ARCCOST">Character Arcs: XP Cost to gain new character arcs</string>
 	<string name="option_label_ARCXPSTEP">Character Arcs: How much XP is gained for each step of a character arc</string>
 	<string name="option_label_ARCXPCLIMAX_SUCCESS">Charater Arcs: How much XP is gained when successfully completing a character arc's climax</string>
@@ -578,6 +579,13 @@
 	<string name="cost_conversion_prompt_window_title">Select Stat</string>
 	<string name="cost_conversion_prompt_description">Select which stat you would like to pay the cost with</string>
 
+	<!--Attack/Damage effort split prompt-->
+	<string name="attack_effort_split_prompt_window_title">Split Effort</string>
+	<string name="effort_prompt_attack">Attack\neffort</string>
+	<string name="effort_prompt_damage">Damage\neffort</string>
+	<string name="effort_prompt_button_roll">Roll</string>
+	<string name="effort_prompt_button_close">Close</string>
+
 	<!-- Character Builder Dialog Boxes -->
 	<string name="dialog_nav_stats">Stat Pools</string>
 	<string name="dialog_nav_edge">Edge</string>
@@ -643,8 +651,15 @@
 	<string name="diffadj_label_4">4</string>
 	<string name="diffadj_label_5">5</string>
 	<string name="diffadj_label_6">6</string>
+	<string name="diffadj_label_-1">-1</string>
+	<string name="diffadj_label_-2">-2</string>
+	<string name="diffadj_label_-3">-3</string>
+	<string name="diffadj_label_-4">-4</string>
+	<string name="diffadj_label_-5">-5</string>
+	<string name="diffadj_label_-6">-6</string>
 	<string name="diffadj_label_assets">Assets</string>
-	<string name="diffadj_label_edge">Use Edge?</string>
+	<string name="diffadj_label_ignore_cost">Skip Cost</string>
+	<string name="diffadj_label_misc">Misc</string>
 	<string name="modifier_label_EASE">Ease</string>
 	<string name="modifier_label_HINDER">Hinder</string>
 	<string name="desktop_tooltip_difficulty">Difficulty that all non-targeted rolls are made against. Use the scroll wheel to increase or decrease this value.</string>
@@ -654,25 +669,26 @@
 	<string name="menu_gm_intrusion">Invoke a GM Intrusion on this PC (and grant them 1 XP)</string>
 	<string name="gmi_message_user_not_found">The selected PC has no active user.</string>
 	<string name="gmi_message_gm_intrusion">The GM has invoked an intrusion on %s!</string>
-	<string name="gmi_message_gm_intrusion_accept">%s has accepted the intrusion. They gain 1 XP and give 1 XP to %s.</string>
-	<string name="gmi_message_gm_intrusion_refuse">%s has spent 1 XP to refuse the intrusion.</string>
+	<string name="gmi_message_gm_intrusion_accept">%s has accepted the intrusion. They gain 1 %s and give 1 %s to %s.</string>
+	<string name="gmi_message_gm_intrusion_refuse">%s has spent 1 %s to refuse the intrusion.</string>
 
 	<string name="gmi_prompt_window_title">GM INTRUSION</string>
-	<string name="gmi_prompt_description">The GM has invoked an intrusion on %s!\n\nSelect another character to grant an XP to.</string>
+	<string name="gmi_prompt_description">The GM has invoked an intrusion on %s!\n\nSelect another character to grant 1 %s to.</string>
 	<string name="gmi_prompt_button_accept">Accept</string>
-	<string name="gmi_prompt_tooltip_accept">Accept this intrusion. You and %s both gain 1 XP.</string>
-	<string name="gmi_prompt_tooltip_select_char">You must select another character to give an XP to in order to accept the intrusion.</string>
+	<string name="gmi_prompt_tooltip_accept">Accept this intrusion. You and %s both gain 1 %s.</string>
+	<string name="gmi_prompt_tooltip_select_char">You must select another character to give an %s to in order to accept the intrusion.</string>
 	<string name="gmi_prompt_button_refuse">Refuse</string>
-	<string name="gmi_prompt_tooltip_refuse">Spend 1 XP to refuse this intrusion.</string>
-	<string name="gmi_prompt_tooltip_refuse_missing_xp">You don't have enough XP to refuse this intrusion.</string>
+	<string name="gmi_prompt_tooltip_refuse">Spend 1 %s to refuse this intrusion.</string>
+	<string name="gmi_prompt_tooltip_refuse_missing_xp">You don't have enough %s to refuse this intrusion.</string>
 
 	<string name="pci_prompt_window_title">PC INTRUSION</string>
 	<string name="pci_prompt_description">You are invoking a player intrusion! Select from the options below (you have %s XP).</string>
+	<string name="pci_prompt_description_heropoint">You are invoking a player intrusion! Select from the options below (you have %s XP and %s hero points).</string>
 	<string name="pmi_prompt_button_accept">Accept</string>
 	<string name="pmi_prompt_button_cancel">Cancel</string>
-	<string name="pci_label_reroll">Spend 1 XP to reroll any roll</string>
+	<string name="pci_label_reroll">Spend 1 %s to reroll any roll</string>
 	<string name="pci_summary_reroll">Reroll any roll, even if you didn't roll it, and the dice roller chooses the best result.</string>
-	<string name="pci_label_shortterm">Spend 1 XP to introduce a solution to a problem</string>
+	<string name="pci_label_shortterm">Spend 1 %s to introduce a solution to a problem</string>
 	<string name="pci_summary_shortterm">This can affect a single object, feature, or NPC, and should be about adjusting the scenario you find yourself in.</string>
 	<string name="pci_label_mediumterm">Spend 2 XP to gain training in a skill that is useful only for your current surroundings</string>
 	<string name="pci_summary_mediumterm">These are usually story-based, and allow a character to get immediate training in a skill for half the normal cost, even if the training is limited to a specific location or situation.</string>

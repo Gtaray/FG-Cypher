@@ -25,18 +25,7 @@ function getRoll(rActor, rAction)
 
 	rRoll.sLabel = rAction.label;
 	rRoll.sStat = rAction.sStat;
-	rRoll.sDesc = "[STAT"
-
-	if (rRoll.sStat or "") ~= "" then
-		local sStat = StringManager.capitalize(rRoll.sStat);
-
-		-- This prevents double-writing the stat used to chat
-		if rAction.label ~= sStat then
-			rRoll.sDesc = string.format("%s (%s)", rRoll.sDesc, sStat);
-		end
-	end
-
-	rRoll.sDesc = string.format("%s] %s", rRoll.sDesc, rRoll.sLabel or "");
+	rRoll.sDesc = ActionStat.getRollLabel(rActor, rAction, rRoll)
 	rRoll.nDifficulty = rAction.nDifficulty or 0;
 	rRoll.sTraining = rAction.sTraining;
 	rRoll.nAssets = rAction.nAssets or 0;
@@ -51,6 +40,25 @@ function getRoll(rActor, rAction)
 	return rRoll;
 end
 
+function getRollLabel(rActor, rAction, rRoll)
+	local sLabel = "[STAT"
+
+	if (rRoll.sStat or "") ~= "" then
+		local sStat = StringManager.capitalize(rRoll.sStat);
+
+		-- This prevents double-writing the stat used to chat
+		if rRoll.sLabel ~= sStat then
+			sLabel = string.format("%s (%s)", sLabel, sStat);
+		end
+	end
+
+	return string.format("%s] %s", sLabel, rRoll.sLabel or "");
+end
+
+function getEffectFilter(rRoll)
+	return { "stat", "stats", rRoll.sStat }
+end
+
 function modRoll(rSource, rTarget, rRoll)
 	RollManager.convertNumbersToBooleans(rRoll);
 	-- Rebuild roll data from a chat message in the case of drag/drop
@@ -61,7 +69,7 @@ function modRoll(rSource, rTarget, rRoll)
 	end
 
 	rTarget = RollManager.decodeTarget(rRoll, rTarget, true);
-	local aFilter = { "stat", "stats", rRoll.sStat }
+	local aFilter = ActionStat.getEffectFilter(rRoll)
 
 	-- Process training effects
 	RollManager.processTrainingEffects(rSource, rTarget, rRoll, aFilter);
@@ -76,13 +84,12 @@ function modRoll(rSource, rTarget, rRoll)
 
 	-- Get ease/hinder effects
 	rRoll.nEase = rRoll.nEase + EffectManagerCypher.getEaseEffectBonus(rSource, aFilter, rTarget);
-	if ModifierManager.getKey("EASE") then
-		rRoll.nEase = rRoll.nEase + 1;
-	end
-
 	rRoll.nHinder = rRoll.nHinder + EffectManagerCypher.getHinderEffectBonus(rSource, aFilter, rTarget);
-	if ModifierManager.getKey("HINDER") then
-		rRoll.nHinder = rRoll.nHinder + 1;
+	local nMiscAdjust = RollManager.getEaseHinderFromDifficultyPanel()
+	if nMiscAdjust > 0 then
+		rRoll.nEase = rRoll.nEase + nMiscAdjust
+	elseif nMiscAdjust < 0 then
+		rRoll.nHinder = rRoll.nHinder + math.abs(nMiscAdjust)
 	end
 
 	-- Process conditions
@@ -133,6 +140,8 @@ function onRoll(rSource, rTarget, rRoll)
 	if rTarget or OptionsManagerCypher.isGlobalDifficultyEnabled() then
 		ActionStat.applyRoll(rSource, rTarget, rRoll)
 	end
+
+	RollHistoryManager.setLastRoll(rSource, rTarget, rRoll)
 end
 
 function applyRoll(rSource, rTarget, rRoll)

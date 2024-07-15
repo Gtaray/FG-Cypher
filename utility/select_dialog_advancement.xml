@@ -208,6 +208,9 @@
 			end
 
 			function getData()
+				if not wSelectedItem then
+					return
+				end
 				local rData = {
 					sName = wSelectedItem.text.getValue()
 				}
