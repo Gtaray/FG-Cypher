@@ -43,31 +43,31 @@
 
 			<tabs_charsheet name="tabs">
 				<tab>
-					<icon>tab_main</icon>
+					<tabres>tab_main</tabres>
 					<subwindow>main</subwindow>
 				</tab>
 				<tab>
-					<icon>tab_skills</icon>
+					<tabres>tab_skills</tabres>
 					<subwindow>skills</subwindow>
 				</tab>
 				<tab>
-					<icon>tab_inventory</icon>
+					<tabres>tab_inventory</tabres>
 					<subwindow>inventory</subwindow>
 				</tab>
 				<tab>
-					<icon>tab_abilities</icon>
+					<tabres>tab_abilities</tabres>
 					<subwindow>abilities</subwindow>
 				</tab>
 				<tab>
-					<icon>tab_arcs</icon>
+					<tabres>tab_arcs</tabres>
 					<subwindow>arcs</subwindow>
 				</tab>
 				<tab>
-					<icon>tab_notes</icon>
+					<tabres>tab_notes</tabres>
 					<subwindow>notes</subwindow>
 				</tab>
 				<tab>
-					<icon>tab_actions</icon>
+					<tabres>tab_actions</tabres>
 					<subwindow>actions</subwindow>
 				</tab>
 				<activate>1</activate>

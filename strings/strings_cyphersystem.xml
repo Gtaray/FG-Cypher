@@ -6,6 +6,12 @@
 -->
 
 <root>
+	<string name="tab_arcs">Arcs</string>
+	<string name="tab_opening">Opening</string>
+	<string name="tab_inprogress">InProgress</string>
+	<string name="tab_climax">Climax</string>
+	<string name="tab_resolution">Resolution</string>
+
 	<!-- Common -->
 	<string name="yes">Yes</string>
 	<string name="no">No</string>

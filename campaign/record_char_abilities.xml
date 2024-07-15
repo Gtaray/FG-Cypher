@@ -27,7 +27,7 @@
 					<right offset="-20" />
 					<bottom offset="-20" />
 				</anchored>
-				<newfocus>name</newfocus>
+				<childfocus>name</childfocus>
 				<datasource>.abilitylist</datasource>
 				<class>char_ability</class>
 				<script>

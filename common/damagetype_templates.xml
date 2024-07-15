@@ -5,9 +5,8 @@
 		<margins control="0,0,0,2" />
 		<script file="common/scripts/special_armor.lua" />
 		<sheetdata>
-			<hn name="armor">
-				<default>0</default>
-			</hn>
+			<hn name="armor" />
+
 			<genericcontrol name="rightanchor">
 				<anchored position="insidetopright" offset="0,2" height="0" width="0" />
 				<invisible />
