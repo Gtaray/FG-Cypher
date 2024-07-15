@@ -70,6 +70,8 @@ end
 -------------------------------------------------------------------------------
 -- ADVANCEMENTS
 -------------------------------------------------------------------------------
+ADVANCEMENT_COST = 4
+
 function takeAbilityAdvancement(nodeChar)
 	if not nodeChar then
 		return false;
@@ -118,6 +120,7 @@ function takeSkillAdvancement(nodeChar)
 	local rData = {
 		nodeChar = nodeChar,
 		sType = "skill",
+		bPlaceEmptySkill = true
 	};
 
 	return CharManager.takeAdvancement(nodeChar, "gain training in a skill", rData);
@@ -131,7 +134,7 @@ function takeAdvancement(nodeChar, sMessage, rData)
 		return false;
 	end
 
-	if not CharManager.deductXpForAdvancement(nodeChar, 4) then
+	if not CharManager.deductXpForAdvancement(nodeChar, ADVANCEMENT_COST) then
 		return false;
 	end
 

@@ -30,17 +30,31 @@ function getRoll(rActor, rAction)
 	rRoll.nEffort = rAction.nEffort or 0;
 	rRoll.bNoOverflow = rAction.bNoOverflow or false;
 	
-	rRoll.sDesc = string.format(
-		"[HEAL (%s)] %s", 
-		StringManager.capitalize(rRoll.sHealStat), 
-		rRoll.sLabel);
+	rRoll.sDesc = ActionHeal.getRollLabel(rActor, rAction, rRoll)
 
 	-- Handle self-targeting
 	if rAction.sTargeting == "self" then
 		rRoll.bSelfTarget = true;
 	end
+
+	RollManager.encodeTarget(rAction.rTarget, rRoll);
 	
 	return rRoll;
+end
+
+function getRollLabel(rActor, rAction, rRoll)
+	return string.format(
+		"[HEAL (%s)] %s", 
+		StringManager.capitalize(rRoll.sHealStat),
+		rRoll.sLabel);
+end
+
+function getEffectFilter(rRoll)
+	local aFilter = { "heal", "healing" };
+	if rRoll.sStat then
+		table.insert(aFilter, rRoll.sStat);
+	end
+	return aFilter
 end
 
 function modRoll(rSource, rTarget, rRoll)
@@ -49,10 +63,9 @@ function modRoll(rSource, rTarget, rRoll)
 		return;
 	end
 
-	local aFilter = { "heal", "healing" };
-	if rRoll.sStat then
-		table.insert(aFilter, rRoll.sStat);
-	end
+	rTarget = RollManager.decodeTarget(rRoll, rTarget, true);
+
+	local aFilter = ActionHeal.getEffectFilter(rRoll)
 
 	-- Adjust mod based on effort
 	rRoll.nEffort = (rRoll.nEffort or 0) + RollManager.processEffort(rSource, rTarget, aFilter, rRoll.nEffort);
@@ -101,6 +114,8 @@ end
 
 function onRoll(rSource, rTarget, rRoll)
 	RollManager.convertNumbersToBooleans(rRoll);
+	rTarget = RollManager.decodeTarget(rRoll, rTarget);
+	
 	-- For some reason the boolean bNoOverflow is entirely stripped out here
 	-- so we need to re-build it from the description
 	rRoll.bNoOverflow = rRoll.sDesc:match("%[SINGLE STAT%]") ~= nil;
@@ -109,7 +124,7 @@ function onRoll(rSource, rTarget, rRoll)
 	rRoll.nTotal = rRoll.nTotal * -1; --Invert the roll total because negative damage is healing
 
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
-	rMessage.icon = "action_heal";
+	rMessage.icon = "roll_heal";
 	Comm.deliverChatMessage(rMessage);
 
 	-- Apply damage to the PC or CT entry referenced

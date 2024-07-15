@@ -29,7 +29,7 @@ function sendTurnEndMessage()
 end
 
 function handleTurnEndMessage()
-	RollManager.enableEdge();
+	RollManager.resetDifficultyPanel();
 end
 
 --

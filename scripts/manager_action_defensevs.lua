@@ -28,18 +28,24 @@ function getRoll(rActor, rAction)
 	rRoll.sDefenseStat = rAction.sDefenseStat;
 	rRoll.sAttackRange = rAction.sAttackRange;
 
-	rRoll.sDesc = string.format("[ATTACK (%s", StringManager.capitalize(rRoll.sStat));
+	rRoll.sDesc = ActionDefenseVs.getRollLabel(rActor, rAction, rRoll)
 
-	if (rAction.sAttackRange or "") ~= "" then
-		rRoll.sDesc = string.format("%s, %s", rRoll.sDesc, rAction.sAttackRange)
+	return rRoll;
+end
+
+function getRollLabel(rActor, rAction, rRoll)
+	local sLabel = string.format("[ATTACK (%s", StringManager.capitalize(rRoll.sStat));
+
+	if (rRoll.sAttackRange or "") ~= "" then
+		sLabel = string.format("%s, %s", sLabel, rAction.sAttackRange)
 	end
-	rRoll.sDesc = string.format(
+	sLabel = string.format(
 		"%s)] %s vs %s", 
-		rRoll.sDesc, 
+		sLabel, 
 		rRoll.sLabel,
 		StringManager.capitalize(rRoll.sDefenseStat));
 
-	return rRoll;
+	return sLabel
 end
 
 function modRoll(rSource, rTarget, rRoll)
@@ -83,6 +89,7 @@ function applyRoll(rSource, rTarget, rRoll)
 	rAction.rTarget = rSource;
 	rAction.sTraining, rAction.nAssets, rAction.nModifier = ActorManagerCypher.getDefense(rTarget, rRoll.sDefenseStat);
 	rAction.sAttackRange = rRoll.sAttackRange;
+	rAction.sAttackStat = rRoll.sStat
 
 	-- Attempt to prompt the target to defend
 	-- if there's no one controlling the defending PC, then automatically roll defense

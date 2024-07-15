@@ -13,6 +13,14 @@ function registerDifficultyPanel(w)
 	self.resetDifficultyPanel();
 end
 
+function setDifficultyPanelEffort(nValue)
+	if not _panelWindow then
+		return
+	end
+
+	_panelWindow.effort.setValue(nValue)
+end
+
 function getEffortFromDifficultyPanel(bRetain)
 	if not _panelWindow then
 		return 0;
@@ -41,34 +49,52 @@ function getAssetsFromDifficultyPanel(bRetain)
 	return nAssets;
 end
 
-function isEdgeDisabled(bRetain)
+function getEaseHinderFromDifficultyPanel(bRetain)
+	if not _panelWindow then
+		return 0
+	end
+
+	local nMisc = _panelWindow.misc.getValue();
+	
+	if not bRetain then
+		_panelWindow.misc.setValue(0)
+	end
+
+	if nMisc >= 7 then
+		nMisc = nMisc - 13
+	end
+
+	return nMisc
+end
+
+function isCostIgnored(bRetain)
 	if not _panelWindow then
 		return false;
 	end
 
-	local bDisableEdge = (_panelWindow.disableedge.getValue() == 1);
+	local bDisableEdge = (_panelWindow.ignorecost.getValue() == 1);
 
 	if not bRetain then
-		_panelWindow.disableedge.setValue(0);
+		RollManager.enableCost()
 	end
 
 	return bDisableEdge;
 end
 
-function disableEdge()
+function disableCost()
 	if not _panelWindow then
 		return;
 	end
 
-	_panelWindow.disableedge.setValue(1);
+	_panelWindow.ignorecost.setValue(1);
 end
 
-function enableEdge()
+function enableCost()
 	if not _panelWindow then
 		return;
 	end
 
-	_panelWindow.disableedge.setValue(0);
+	_panelWindow.ignorecost.setValue(0);
 end
 
 function resetDifficultyPanel()
@@ -77,7 +103,8 @@ function resetDifficultyPanel()
 	end
 	_panelWindow.effort.setValue(0);
 	_panelWindow.assets.setValue(0);
-	RollManager.enableEdge()
+	_panelWindow.misc.setValue(0)
+	RollManager.enableCost()
 end
 
 -----------------------------------------------------------------------
@@ -308,7 +335,7 @@ function processStandardConditionsForActor(rActor)
 	return 0;
 end
 
-function processPiercing(rSource, rTarget, bPiercing, nPierceAmount, sDamageType, sStat)
+function processPiercing(rSource, rTarget, bPiercing, nPierceAmount, sDamageType, aFilter)
 	if not nPierceAmount then
 		nPierceAmount = -1;
 	end
@@ -319,7 +346,7 @@ function processPiercing(rSource, rTarget, bPiercing, nPierceAmount, sDamageType
 		nPierceAmount = tonumber(nPierceAmount);
 	end
 
-	local nPierceEffectAmount, nPierceEffectCount = EffectManagerCypher.getPiercingEffectBonus(rSource, sDamageType, sStat, rTarget);
+	local nPierceEffectAmount, nPierceEffectCount = EffectManagerCypher.getPiercingEffectBonus(rSource, sDamageType, aFilter, rTarget);
 	if nPierceEffectCount > 0 then
 		-- if we have pierce effects, then bPiercing is locked to true.
 		bPiercing = true;
@@ -385,6 +412,7 @@ function calculateDifficultyForRoll(rSource, rTarget, rRoll)
 	end
 
 	rRoll.nDifficulty = rRoll.nDifficulty + nMod;
+	rRoll.nDifficultyModifier = nMod
 end
 
 function processRollResult(rSource, rTarget, rRoll)
@@ -418,6 +446,8 @@ function processRollResult(rSource, rTarget, rRoll)
 		end
 	end
 
+	rRoll.bSuccess = bSuccess
+	rRoll.bAutomaticSuccess = bAutomaticSuccess
 	return nTotal, bSuccess, bAutomaticSuccess;
 end
 
@@ -532,11 +562,15 @@ function decodeText(sText, sMatch, sValue, bPersist)
 
 	return sResult, sText;
 end
-function decodeTextAsNumber(sText, sMatch, sValue, bPersist)
+function decodeTextAsNumber(sText, sMatch, sValue, bPersist, nDefault)
+	if not nDefault then
+		nDefault = 0
+	end
+
 	local sResult;
 	sResult, sText = RollManager.decodeText(sText, sMatch, sValue, bPersist)
 
-	return tonumber(sResult) or 0, sText;
+	return tonumber(sResult) or nDefault, sText;
 end
 function decodeTextAsBoolean(sText, sMatch, sValue, bPersist)
 	local sResult;
@@ -852,6 +886,41 @@ function decodeWeaponType(rRoll, bPersist)
 	return sWeaponType;
 end
 
+function encodeMultiplier(nMult, rRoll)
+	if nMult and nMult ~= 1 then
+		rRoll.sDesc = RollManager.addOrOverwriteText(
+			rRoll.sDesc,
+			"%[MULT: %d+x%]",
+			string.format("[MULT: %sx]", nMult)
+		)
+	end
+end
+function decodeMultiplier(rRoll, bPersist)
+	local nMult, sText = decodeTextAsNumber(
+		rRoll.sDesc,
+		"%[MULT: %d+x%]",
+		"%[MULT: (%d+)x%]",
+		bPersist,
+		1
+	)
+	rRoll.sDesc = sText
+
+	return nMult
+end
+
+function encodeDamageType(rRoll)
+	if rRoll.sDamageType then
+		rRoll.sDesc = RollManager.addOrOverwriteText(
+			rRoll.sDesc,
+			"^%[DAMAGE [^]]-%]",
+			string.format(
+				"[DAMAGE (%s, %s)]", 
+				StringManager.capitalize(rRoll.sDamageStat),
+				StringManager.capitalize(rRoll.sDamageType)
+			)
+		)
+	end
+end
 function decodeDamageType(rRoll)
 	local sDamageType, sText = RollManager.decodeText(
 		rRoll.sDesc,

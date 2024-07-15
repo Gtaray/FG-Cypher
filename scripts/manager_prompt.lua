@@ -15,6 +15,10 @@ function getUser(rPlayer)
 	end
 end
 
+function doesUserOwnIdentity(rPlayer)
+	return Session.UserName == getUser(rPlayer)
+end
+
 -------------------------------------------------------------------------------
 -- DEFENSE PROMPT
 -------------------------------------------------------------------------------

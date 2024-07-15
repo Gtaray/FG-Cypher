@@ -11,11 +11,10 @@ function setData(data, callback)
 	updateCheckbox("skill", rData.sType == "skill");
 
 	if rData.sType == "stats" then
-		stats.subwindow.setData(
-			ActorManagerCypher.getStatPool(rData.nodeChar, "might"),
-			ActorManagerCypher.getStatPool(rData.nodeChar, "speed"),
-			ActorManagerCypher.getStatPool(rData.nodeChar, "intellect"),
-			rData.nFloatingStats);
+		local _, nMight = ActorManagerCypher.getStatPool(rData.nodeChar, "might")
+		local _, nSpeed = ActorManagerCypher.getStatPool(rData.nodeChar, "speed")
+		local _, nInt = ActorManagerCypher.getStatPool(rData.nodeChar, "intellect")
+		stats.subwindow.setData(nMight, nSpeed, nInt, rData.nFloatingStats);
 		stats_checkbox.setValue(1);
 
 	elseif rData.sType == "edge" then
@@ -34,7 +33,9 @@ function setData(data, callback)
 	elseif rData.sType == "skill" then
 		local aSkills, aAbilities = buildSkillAdvancementList();
 		skill.subwindow.setSkills(aSkills);
-		skill.subwindow.addEmptySkill();
+		if rData.bPlaceEmptySkill then
+			skill.subwindow.addEmptySkill();
+		end
 		skill.subwindow.setAbilities(aAbilities);
 		skill_checkbox.setValue(1);
 	end
@@ -290,6 +291,10 @@ function processOK()
 		rData.nMod = 1;
 	elseif rData.sType == "skill" then
 		local rSkillData = skill.subwindow.getData();
+		if not rSkillData then
+			return
+		end
+		
 		if rSkillData.abilitynode then
 			rData.sAbility = rSkillData.sName;
 			rData.abilitynode = rSkillData.abilitynode;

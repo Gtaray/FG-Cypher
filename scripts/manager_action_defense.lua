@@ -26,8 +26,9 @@ function getRoll(rActor, rAction)
 
 	rRoll.sLabel = rAction.label;
 	rRoll.sStat = rAction.sStat:lower();
-	rRoll.sDesc = string.format("[DEFENSE] %s", rRoll.sLabel);
+	rRoll.sDesc = ActionDefense.getRollLabel(rActor, rAction, rRoll)
 	rRoll.sAttackRange = rAction.sAttackRange;
+	rRoll.sAttackStat = rAction.sAttackStat
 
 	if rAction.bConverted then
 		rRoll.sDesc = string.format("%s [CONVERTED]", rRoll.sDesc);
@@ -45,6 +46,14 @@ function getRoll(rActor, rAction)
 	return rRoll;
 end
 
+function getRollLabel(rActor, rAction, rRoll)
+	return string.format("[DEFENSE] %s", rRoll.sLabel);
+end
+
+function getEffectFilter(rRoll)
+	return { "defense", "def", rRoll.sStat }
+end
+
 function modRoll(rSource, rTarget, rRoll)
 	RollManager.convertNumbersToBooleans(rRoll);
 	if ActionDefense.rebuildRoll(rSource, rTarget, rRoll) then
@@ -52,7 +61,7 @@ function modRoll(rSource, rTarget, rRoll)
 	end
 
 	rTarget = RollManager.decodeTarget(rRoll, rTarget, true);
-	local aFilter = { "defense", "def", rRoll.sStat };
+	local aFilter = ActionDefense.getEffectFilter(rRoll);
 	if (rRoll.sAttackRange or "") ~= "" then
 		table.insert(aFilter, rRoll.sAttackRange:lower());
 	end
@@ -77,14 +86,13 @@ function modRoll(rSource, rTarget, rRoll)
 	rRoll.nEffort = rRoll.nEffort + RollManager.processEffort(rSource, rTarget, aFilter, rRoll.nEffort, rRoll.nMaxEffort);
 
 	-- Get ease/hinder effects
-	rRoll.nEase = rRoll.nEase + EffectManagerCypher.getEaseEffectBonus(rSource, aFilter, rTarget);
-	if ModifierManager.getKey("EASE") then
-		rRoll.nEase = rRoll.nEase + 1;
-	end
-
-	rRoll.nHinder = rRoll.nHinder + EffectManagerCypher.getHinderEffectBonus(rSource, aFilter, rTarget);
-	if ModifierManager.getKey("HINDER") then
-		rRoll.nHinder = rRoll.nHinder + 1;
+	rRoll.nEase = rRoll.nEase + EffectManagerCypher.getEaseEffectBonus(rSource, aFilter, rTarget, { "attack", "atk", rRoll.sAttackStat });
+	rRoll.nHinder = rRoll.nHinder + EffectManagerCypher.getHinderEffectBonus(rSource, aFilter, rTarget, { "attack", "atk", rRoll.sAttackStat });
+	local nMiscAdjust = RollManager.getEaseHinderFromDifficultyPanel()
+	if nMiscAdjust > 0 then
+		rRoll.nEase = rRoll.nEase + nMiscAdjust
+	elseif nMiscAdjust < 0 then
+		rRoll.nHinder = rRoll.nHinder + math.abs(nMiscAdjust)
 	end
 
 	-- Process conditions
@@ -133,6 +141,8 @@ function onRoll(rSource, rTarget, rRoll)
 	if rTarget or OptionsManagerCypher.isGlobalDifficultyEnabled() then
 		ActionDefense.applyRoll(rSource, rTarget, rRoll)
 	end
+
+	RollHistoryManager.setLastRoll(rSource, rTarget, rRoll)
 end
 
 function applyRoll(rSource, rTarget, rRoll)

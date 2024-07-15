@@ -49,9 +49,13 @@ function getRoll(rActor, rAction)
 	return rRoll;
 end
 
+function getEffectFilter(rRoll)
+	return { "initiative", "init", rRoll.sStat }
+end
+
 function modRoll(rSource, rTarget, rRoll)
 	RollManager.convertNumbersToBooleans(rRoll);
-	local aFilter = { "initiative", "init", rRoll.sStat }
+	local aFilter = ActionInit.getEffectFilter(rRoll)
 
 	-- Process training effects
 	RollManager.processTrainingEffects(rSource, rTarget, rRoll, aFilter);
@@ -66,13 +70,12 @@ function modRoll(rSource, rTarget, rRoll)
 
 	-- Get ease/hinder effects
 	rRoll.nEase = rRoll.nEase + EffectManagerCypher.getEaseEffectBonus(rSource, aFilter, rTarget);
-	if ModifierManager.getKey("EASE") then
-		rRoll.nEase = rRoll.nEase + 1;
-	end
-
 	rRoll.nHinder = rRoll.nHinder + EffectManagerCypher.getHinderEffectBonus(rSource, aFilter, rTarget);
-	if ModifierManager.getKey("HINDER") then
-		rRoll.nHinder = rRoll.nHinder + 1;
+	local nMiscAdjust = RollManager.getEaseHinderFromDifficultyPanel()
+	if nMiscAdjust > 0 then
+		rRoll.nEase = rRoll.nEase + nMiscAdjust
+	elseif nMiscAdjust < 0 then
+		rRoll.nHinder = rRoll.nHinder + math.abs(nMiscAdjust)
 	end
 
 	-- Process conditions
@@ -118,6 +121,8 @@ function onRoll(rSource, rTarget, rRoll)
 
 	Comm.deliverChatMessage(rMessage);
 	notifyApplyInit(rSource, ActionsManager.total(rRoll));
+
+	RollHistoryManager.setLastRoll(rSource, rTarget, rRoll)
 end
 
 function notifyApplyInit(rSource, nTotal)

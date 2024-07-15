@@ -53,12 +53,12 @@
 			
 			<windowlist name="characters">
 				<script>
-					function addEntry(sNode, sToken, sName, nXp)
+					function addEntry(sNode, sToken, sName, nXpOrHeroPoints)
 						local w = createWindow();
 						if w then
 							w.node.setValue(sNode);
 							w.token.setPrototype(sToken);
-							w.name.setValue(sName .. " (" .. nXp .. ")");
+							w.name.setValue(sName .. " (" .. nXpOrHeroPoints .. ")");
 						end
 						return w;
 					end
@@ -93,12 +93,18 @@
 						end
 					end
 					function updateTooltip()
+						local sResource = IntrusionManager.getIntrusionResourceText(false)
+
 						if (window.selected.getValue() or "") == "" then
-							setTooltipText(Interface.getString("gmi_prompt_tooltip_select_char"))
+							setTooltipText(string.format(
+								Interface.getString("gmi_prompt_tooltip_select_char"), 
+								sResource
+							))
 						else
 							setTooltipText(string.format(
 								Interface.getString("gmi_prompt_tooltip_accept"),
-								window.selectedname.getValue()))
+								window.selectedname.getValue(),
+								sResource))
 						end
 					end
 					function onButtonPress()
@@ -121,11 +127,18 @@
 							return;
 						end
 
-						if DB.getValue(node, "xp", 0) &gt; 0 then
+						if getResource(node) &gt; 0 then
 							setVisible(true);
 						end
 						
 						updateTooltip()
+					end
+					function getResource(charnode)
+						if OptionsManagerCypher.areHeroPointsEnabled() then
+							return CharManager.getHeroPoints(charnode)
+						else
+							return ActorManagerCypher.getXP(nodeChar)
+						end
 					end
 					function updateTooltip()
 						local node = window.getSourceNode()
@@ -133,10 +146,17 @@
 							return;
 						end
 
-						if DB.getValue(node, "xp", 0) &gt; 0 then
-							setTooltipText(Interface.getString("gmi_prompt_tooltip_refuse"))
+						local sResource = IntrusionManager.getIntrusionResourceText(false)
+						if getResource(node) &gt; 0 then
+							setTooltipText(string.format(
+								Interface.getString("gmi_prompt_tooltip_refuse"),
+								sResource
+							))
 						else
-							setTooltipText(Interface.getString("gmi_prompt_tooltip_refuse_missing_xp"))
+							setTooltipText(string.format(
+								Interface.getString("gmi_prompt_tooltip_refuse_missing_xp", sResource),
+								sResource
+							))
 						end
 					end
 					function onButtonPress()

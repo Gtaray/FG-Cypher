@@ -107,5 +107,5 @@ function receiveCharSelectDetailClient(vDetails)
 end
 
 function getDistanceUnitsPerGrid()
-	return 1;
+	return 5;
 end

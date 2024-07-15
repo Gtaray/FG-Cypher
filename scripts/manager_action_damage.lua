@@ -15,6 +15,11 @@ end
 function payCostAndRoll(draginfo, rActor, rAction)
 	rAction.sSourceRollType = "damage";
 
+	-- Only get the attack effort if the setting to pay for them separately is enabled
+	if OptionsManagerCypher.splitAttackAndDamageEffort() then
+		rAction.nAttackEffort = RollHistoryManager.getAttackEffort(rActor)
+	end
+
 	if not ActionCost.performRoll(draginfo, rActor, rAction) then
 		ActionDamage.performRoll(draginfo, rActor, rAction);
 	end
@@ -38,15 +43,7 @@ function getRoll(rActor, rAction)
 	rRoll.sDamageType = rAction.sDamageType;
 	rRoll.nEffort = rAction.nEffort or 0;
 
-	rRoll.sDesc = string.format("[DAMAGE (%s", StringManager.capitalize(rRoll.sDamageStat));
-
-	if (rAction.sDamageType or "") ~= "" then
-		rRoll.sDesc = string.format("%s, %s", rRoll.sDesc, rAction.sDamageType)
-	end
-	rRoll.sDesc = string.format(
-		"%s)] %s", 
-		rRoll.sDesc, 
-		rRoll.sLabel);
+	rRoll.sDesc = ActionDamage.getRollLabel(rActor, rAction, rRoll)
 
 	rRoll.bOngoing = rAction.bOngoing;
 	rRoll.bAmbient = rAction.bAmbient or false;
@@ -58,8 +55,28 @@ function getRoll(rActor, rAction)
 	if rAction.bSecret then
 		rRoll.bSecret = true;
 	end
+
+	RollManager.encodeTarget(rAction.rTarget, rRoll);
 	
 	return rRoll;
+end
+
+function getRollLabel(rActor, rAction, rRoll)
+	local sLabel = string.format("[DAMAGE (%s", StringManager.capitalize(rRoll.sDamageStat));
+
+	if (rAction.sDamageType or "") ~= "" then
+		sLabel = string.format("%s, %s", sLabel, rAction.sDamageType)
+	end
+	sLabel = string.format(
+		"%s)] %s", 
+		sLabel, 
+		rRoll.sLabel);
+
+	return sLabel
+end
+
+function getEffectFilter(rRoll)
+	return { "damage", "dmg", rRoll.sStat };
 end
 
 function modRoll(rSource, rTarget, rRoll)
@@ -68,7 +85,15 @@ function modRoll(rSource, rTarget, rRoll)
 		return;
 	end
 
-	local aFilter = { "damage", "dmg" };
+	local aFilter = ActionDamage.getEffectFilter(rRoll)
+
+	rTarget = RollManager.decodeTarget(rRoll, rTarget, true);
+
+	local sConvertedDmgType = EffectManagerCypher.getDamageTypeConversionEffect(rSource, rRoll.sDamageType, aFilter)
+	if (sConvertedDmgType or "") ~= "" then
+		rRoll.sDamageType = sConvertedDmgType
+		RollManager.encodeDamageType(rRoll)
+	end
 
 	-- Adjust mod based on effort
 	rRoll.nEffort = (rRoll.nEffort or 0) + RollManager.processEffort(rSource, rTarget, aFilter, rRoll.nEffort);
@@ -76,12 +101,14 @@ function modRoll(rSource, rTarget, rRoll)
 		rRoll.nMod = rRoll.nMod + (rRoll.nEffort * 3);
 	end
 
-	rRoll.bPiercing, rRoll.nPierceAmount = RollManager.processPiercing(rSource, rTarget, rRoll.bPiercing, rRoll.nPierceAmount, rRoll.sDamageType, rRoll.sStat);
+	rRoll.bPiercing, rRoll.nPierceAmount = RollManager.processPiercing(rSource, rTarget, rRoll.bPiercing, rRoll.nPierceAmount, rRoll.sDamageType, aFilter);
 
-	local nDmgBonus = EffectManagerCypher.getDamageEffectBonus(rSource, rRoll.sDamageType, rRoll.sStat, rTarget)
+	local nDmgBonus = EffectManagerCypher.getDamageEffectBonus(rSource, rRoll.sDamageType, aFilter, rTarget)
 	if nDmgBonus ~= 0 then
 		rRoll.nMod = rRoll.nMod + nDmgBonus;
 	end
+
+	rRoll.nMult = EffectManagerCypher.getDamageMultiplierEffectBonus(rSource, rRoll.sDamageType, aFilter, rTarget)
 
 	-- We fake the action object here when encoding piercing
 	-- Because it requires two variables as an input
@@ -89,7 +116,8 @@ function modRoll(rSource, rTarget, rRoll)
 	RollManager.encodeOngoingDamage({ bOngoing = rRoll.bOngoing }, rRoll)
 	RollManager.encodeAmbientDamage({ bAmbient = rRoll.bAmbient }, rRoll);
 	RollManager.encodePiercing({ bPierce = rRoll.bPiercing, nPierceAmount = rRoll.nPierceAmount }, rRoll);
-	RollManager.encodeEffort(nEffort, rRoll)
+	RollManager.encodeMultiplier(rRoll.nMult, rRoll)
+	RollManager.encodeEffort(rRoll.nEffort, rRoll)
 	RollManager.encodeEffects(rRoll, nDmgBonus);
 	RollManager.convertBooleansToNumbers(rRoll);
 end
@@ -122,6 +150,9 @@ function rebuildRoll(rSource, rTarget, rRoll)
 	if rRoll.bOngoing == nil then
 		rRoll.bOngoing = RollManager.decodeOngoingDamage(rRoll, true);
 	end
+	if rRoll.nMult == nil then
+		rRoll.nMult = RollManager.decodeMultiplier(rRoll, true)
+	end
 
 	rRoll.bRebuilt = bRebuilt;
 	return bRebuilt;
@@ -129,6 +160,9 @@ end
 
 function onRoll(rSource, rTarget, rRoll)
 	RollManager.convertNumbersToBooleans(rRoll);
+
+	rTarget = RollManager.decodeTarget(rRoll, rTarget, false);
+
 	ActionDamage.buildRollResult(rSource, rTarget, rRoll);
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 
@@ -139,8 +173,11 @@ function onRoll(rSource, rTarget, rRoll)
 	Comm.deliverChatMessage(rMessage);
 
 	if rTarget then
-		ActionDamage.notifyApplyDamage(rSource, rTarget, rRoll);	
+		ActionDamage.notifyApplyDamage(rSource, rTarget, rRoll);
 	end	
+
+	RollHistoryManager.setLastRoll(rSource, rTarget, rRoll)
+	RollHistoryManager.clearAttackEffort(rSource)
 end
 
 function buildRollResult(rSource, rTarget, rRoll)
@@ -176,6 +213,8 @@ function notifyApplyDamage(rSource, rTarget, rRoll)
 	msgOOB.bPiercing = rRoll.bPiercing;
 	msgOOB.nPierceAmount = rRoll.nPierceAmount
 
+	msgOOB.nMult = rRoll.nMult
+
 	msgOOB.bAmbient = rRoll.bAmbient;
 	msgOOB.bOngoing = rRoll.bOngoing;
 	msgOOB.bNoOverflow = rRoll.bNoOverflow;
@@ -200,6 +239,7 @@ function handleApplyDamage(msgOOB)
 		sHealStat = msgOOB.sHealStat,
 		bPiercing = msgOOB.bPiercing,
 		nPierceAmount = tonumber(msgOOB.nPierceAmount),
+		nMult = msgOOB.nMult,
 		bAmbient = msgOOB.bAmbient,
 		bOngoing = msgOOB.bOngoing,
 		bNoOverflow = msgOOB.bNoOverflow,
@@ -227,6 +267,8 @@ function applyDamage(rSource, rTarget, rRoll)
 	if (rRoll.sDamageType or "") == "" then
 		rRoll.sDamageType = "untyped";
 	end
+
+	rRoll.nTotal = rRoll.nTotal * (rRoll.nMult or 1)
 
 	if not rRoll.bAmbient then
 		rRoll.nTotal = ActionDamage.applyThreshold(
@@ -296,6 +338,10 @@ function applyDamage(rSource, rTarget, rRoll)
 		end
 	end
 
+	ActionDamage.outputResult(rSource, rTarget, rRoll, aNotifications)
+end
+
+function outputResult(rSource, rTarget, rRoll, aNotifications)
 	-- Output	
 	local msgShort = {font = "msgfont"};
 	local msgLong = {font = "msgfont"};
@@ -328,9 +374,10 @@ function applyDamage(rSource, rTarget, rRoll)
 		msgLong.text = string.format("%s -> [to %s", msgLong.text, ActorManager.getDisplayName(rTarget));
 	end
 
-	if ActorManager.isPC(rTarget) and (rRoll.sDamageStat or "") ~= "" then
-		msgShort.text = string.format("%s's %s", msgShort.text, rRoll.sDamageStat);
-		msgLong.text = string.format("%s's %s", msgLong.text, rRoll.sDamageStat);
+	local sAffectedStat = rRoll.sDamageStat or rRoll.sHealStat
+	if ActorManager.isPC(rTarget) and (sAffectedStat or "") ~= "" then
+		msgShort.text = string.format("%s's %s", msgShort.text, sAffectedStat);
+		msgLong.text = string.format("%s's %s", msgLong.text, sAffectedStat);
 	end
 
 	msgShort.text = msgShort.text .. "]";
