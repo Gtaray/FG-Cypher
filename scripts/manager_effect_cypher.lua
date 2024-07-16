@@ -409,7 +409,7 @@ function getDamageMultiplierEffectBonus(rActor, sDamageType, aFilter, rTarget)
 		sDamageType = "untyped";
 	end
 	
-	local nTotal, nEffectCount = EffectManagerCypher.getEffectsBonusForDamageType(rActor, "DMGMULT", aFilter, rTarget)
+	local nTotal, nEffectCount = EffectManagerCypher.getEffectsBonusForDamageType(rActor, "DMGMULT", aFilter, sDamageType, rTarget)
 
 	-- If there's no effects, then we straight up return 1
 	if nEffectCount == 0 then
