@@ -36,14 +36,6 @@ function update()
 	local bReadOnly = WindowManager.getReadOnlyState(nodeRecord);
 	local bID = LibraryData.getIDState("npc", nodeRecord);
 	
-	local bSection1 = false;
-	if Session.IsHost then
-		if WindowManager.callSafeControlUpdate(self, "nonid_name", bReadOnly) then bSection1 = true; end;
-	else
-		WindowManager.callSafeControlUpdate(self, "nonid_name", bReadOnly, true);
-	end
-	divider.setVisible(bSection1);
-	
 	level.setReadOnly(bReadOnly);
 	
 	hp.setReadOnly(bReadOnly);

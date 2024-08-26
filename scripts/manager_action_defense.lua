@@ -21,7 +21,7 @@ end
 function getRoll(rActor, rAction)
 	local rRoll = {};
 	rRoll.sType = "defense";
-	rRoll.aDice = { "d20" };
+	rRoll.aDice = DiceRollManager.getActorDice({ "d20" }, rActor);
 	rRoll.nMod = rAction.nModifier or 0;
 
 	rRoll.sLabel = rAction.label;

@@ -65,9 +65,6 @@
 
 	<!-- Override CoreRPG ruleset graphics -->
 
-	<!-- Common -->
-	<icon name="window_resize_filled" file="graphics/icons/window_resize_filled.png" />
-	
 	<!-- Chat window -->
 	<icon name="chat_wait" file="graphics/icons/chat_wait.png" />
 
@@ -95,13 +92,6 @@
 	<icon name="sidebar_icon_recordtype_focus" file="graphics/sidebar/sidebar_icon_feat.png" />
 	<icon name="sidebar_icon_recordtype_flavor" file="graphics/sidebar/sidebar_icon_potion.png" />
 
-	<!-- Character Arcs -->
-	<icon name="tab_arcs" file="graphics/tabs/tab_arcs.png" />
-	<icon name="tab_opening" file="graphics/tabs/tab_opening.png" />
-	<icon name="tab_inprogress" file="graphics/tabs/tab_inprogress.png" />
-	<icon name="tab_climax" file="graphics/tabs/tab_climax.png" />
-	<icon name="tab_resolution" file="graphics/tabs/tab_resolution.png" />
-	
 	<icon name="arc_opening" file="graphics/arcs/opening.png" />
 	<icon name="arc_opening_highlight" file="graphics/arcs/opening_highlight.png" />
 	<icon name="arc_opening_next" file="graphics/arcs/opening_advance.png" />

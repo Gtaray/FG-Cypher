@@ -9,12 +9,6 @@ function onInit()
 	-- ItemManager.setCustomCharRemove(onCharItemRemoved);
 end
 
-function outputUserMessage(sResource, ...)
-	local sFormat = Interface.getString(sResource);
-	local sMsg = string.format(sFormat, ...);
-	ChatManager.SystemMessage(sMsg);
-end
-
 -------------------------------------------------------------------------------
 -- Character sheet drops
 -------------------------------------------------------------------------------

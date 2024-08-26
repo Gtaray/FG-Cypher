@@ -37,11 +37,6 @@ function update()
 	local bID = LibraryData.getIDState("item", nodeRecord);
 	local bHost = Session.IsHost;
 	
-	if bHost then
-		WindowManager.callSafeControlUpdate(self, "nonid_name", bReadOnly);
-	else
-		WindowManager.callSafeControlUpdate(self, "nonid_name", bReadOnly, true);
-	end
 	if (bHost or not bID) then
 		WindowManager.callSafeControlUpdate(self, "nonid_notes", bReadOnly);
 	else

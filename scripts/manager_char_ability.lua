@@ -15,7 +15,7 @@ function addAbilityDrop(nodeChar, sClass, sRecord)
     end
 
 	-- Notification
-	CharManager.outputUserMessage("char_message_add_ability", rAdd.sSourceName, rAdd.sCharName);
+	ChatManager.SystemMessageResource("char_message_add_ability", rAdd.sSourceName, rAdd.sCharName);
 
     -- Add ability (via the character modification system)	
 	local rPromptData = CharModManager.addModificationToChar(nodeChar, {

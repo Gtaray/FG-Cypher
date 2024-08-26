@@ -142,7 +142,7 @@
 				end
 				function onMenuSelection(selection, subselection)
 					if Session.IsHost and selection == 7 then
-						local rActor = ActorManager.resolveActor(self.getIdentityPath());
+						local rActor = ActorManager.resolveActor(self.getRecordPath());
 						IntrusionManager.handleMenuSelection(selection, rActor);
 						return;
 					end
