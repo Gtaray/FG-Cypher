@@ -56,34 +56,8 @@
 
 	<icon name="playerintrusion" file="graphics/icons/player_intrusion.png" />
 
-
-	<!-- Global target -->
-	<icon name="global_target" file="graphics/icons/global_target.png" />
-
 	<!-- Radial -->
 	<icon name="radial_power_action_stat" file="graphics/radial/icon_dice_custom.png" />
-
-	<!-- Override CoreRPG ruleset graphics -->
-
-	<!-- Chat window -->
-	<icon name="chat_wait" file="graphics/icons/chat_wait.png" />
-
-	<!-- Character list -->
-	<icon name="charlist_typing" file="graphics/icons/charlist_typing.png" />
-
-	<!-- Minimized icons -->	
-	<icon name="minimized_image" file="graphics/icons/minimized_image.png" />
-	<icon name="minimized_encounter" file="graphics/icons/minimized_encounter.png" />
-	<icon name="minimized_item" file="graphics/icons/minimized_item.png" />
-	<icon name="minimized_npc" file="graphics/icons/minimized_npc.png" />
-	<icon name="minimized_utility" file="graphics/icons/minimized_utility.png" />
-	<icon name="minimized_reference" file="graphics/icons/minimized_reference.png" />
-	<icon name="minimized_note" file="graphics/icons/minimized_note.png" />
-	<icon name="minimized_combat" file="graphics/icons/minimized_combat.png" />
-
-	<!-- Modifier stack -->
-	<icon name="modcollector" file="graphics/icons/modcollector.png" />
-	<icon name="modcollector_counter" file="graphics/icons/modcollector_counter.png" />
 
 	<!-- Sidebar -->
 	<icon name="sidebar_icon_recordtype_ability" file="graphics/sidebar/sidebar_icon_spell.png" />

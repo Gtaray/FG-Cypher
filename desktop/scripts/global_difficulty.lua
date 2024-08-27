@@ -4,20 +4,16 @@
 --
 
 function onInit()
-	OptionsManager.registerCallback("GDIFF", onEnabledChanged)
-	onEnabledChanged();
+	OptionsManager.registerCallback("MAXTARGET", onMaxDifficultyChanged);
+	onMaxDifficultyChanged();
 
-	DifficultyManager.addDifficultyUpdateHandler(onDifficultyChanged)
-	onDifficultyChanged()
+	DifficultyManager.addDifficultyUpdateHandler(onDifficultyChanged);
+	onDifficultyChanged();
 end
 
-function onEnabledChanged()
-	local bEnabled = OptionsManagerCypher.isGlobalDifficultyEnabled();
-	setVisible(bEnabled);
-
-	if bEnabled then
-		onDifficultyChanged();
-	end
+function onMaxDifficultyChanged()
+	local nMax = OptionsManagerCypher.getMaxTarget();
+	setMaxValue(nMax);
 end
 
 function onWheel(notches)
@@ -25,15 +21,13 @@ function onWheel(notches)
         return;
 	end
 
-	DifficultyManager.adjustGlobalDifficulty(notches);
-end
-
-function onDifficultyChanged()
 	if not OptionsManagerCypher.isGlobalDifficultyEnabled() then
 		return;
 	end
 
-	local nDiff = DifficultyManager.getGlobalDifficulty();
-	local iconName = string.format("task%s", nDiff);
-	setIcon(iconName)
+	DifficultyManager.adjustGlobalDifficulty(notches)
+end
+
+function onDifficultyChanged()
+	setValue(DifficultyManager.getGlobalDifficulty())
 end

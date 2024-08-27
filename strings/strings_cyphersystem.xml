@@ -45,8 +45,12 @@
 
 	<string name="library_recordtype_label_damagetypes">Damage Types</string>
 
+	<string name="global_difficulty_label">Difficulty</string>
+	<string name="gmi_threshold_label">Intrusion</string>
+
 	<!-- Options -->
 	<string name="option_label_GDIFF">Enable global difficulty</string>
+	<string name="option_label_GMIT">Enable GM intrusion threshold</string>
 	<string name="option_lable_HITMISS">Use Hit/Miss when displaying attack and defense rolls in chat.</string>
 	<string name="option_label_INITPC">Init: PC</string>
 	<string name="option_label_INITNPC">Init: NPC</string>
@@ -153,6 +157,12 @@
 	<string name="char_message_add_flavor">Flavor '%s' added to '%s'</string>
 
 	<string name="char_menu_clear">Clear</string>
+
+	<string name="tab_arcs">Arcs</string>
+	<string name="tab_opening">Opening</string>
+	<string name="tab_inprogress">In Progress</string>
+	<string name="tab_climax">Climax</string>
+	<string name="tab_resolution">Resolution</string>
 
 	<!-- Character - Skills -->
 	<string name="char_label_skills">Skills</string>
