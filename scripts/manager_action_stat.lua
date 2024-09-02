@@ -92,9 +92,6 @@ function modRoll(rSource, rTarget, rRoll)
 		rRoll.nHinder = rRoll.nHinder + math.abs(nMiscAdjust)
 	end
 
-	-- Process conditions
-	rRoll.nConditionMod = RollManager.processStandardConditionsForActor(rSource);
-
 	-- Process Lucky (advantage / disadvantage)
 	local bAdv, bDis = RollManager.processAdvantage(rSource, rTarget, rRoll, aFilter)
 
@@ -104,6 +101,12 @@ function modRoll(rSource, rTarget, rRoll)
 	RollManager.encodeEaseHindrance(rRoll, rRoll.nEase, rRoll.nHinder);
 	RollManager.encodeAdvantage(rRoll, bAdv, bDis);
 
+	-- We need to process the roll result (success/failure) before printing
+	-- anything to chat, because our messages require us to know if 
+	-- the roll was an automatic success or not.
+	rRoll.nDifficulty = RollManager.getBaseRollDifficulty(rSource, rTarget, { "stat", "stats", rRoll.sStat });
+	RollManager.calculateDifficultyForRoll(rSource, rTarget, rRoll);
+
 	-- We only need to encode the condition mods because all other effect handling
 	-- is stored in the asset, ease, hinder, and effort tags
 	-- Might want to consider adding a basic "EFFECTS" tag if there were effects that 
@@ -112,6 +115,10 @@ function modRoll(rSource, rTarget, rRoll)
 		rRoll.sDesc = string.format("%s [EFFECTS %s]", rRoll.sDesc, rRoll.nConditionMod)
 	end
 	RollManager.convertBooleansToNumbers(rRoll);
+
+	if rRoll.nDifficulty <= 0 then
+		rRoll.aDice = {}
+	end
 end
 
 function onRoll(rSource, rTarget, rRoll)
@@ -124,12 +131,6 @@ function onRoll(rSource, rTarget, rRoll)
 	
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 	rMessage.icon = "action_roll";
-
-	-- We need to process the roll result (success/failure) before printing
-	-- anything to chat, because our messages require us to know if 
-	-- the roll was an automatic success or not.
-	rRoll.nDifficulty = RollManager.getBaseRollDifficulty(rSource, rTarget, { "stat", "stats", rRoll.sStat });
-	RollManager.calculateDifficultyForRoll(rSource, rTarget, rRoll);
 
 	local aAddIcons = {};
 	RollManager.processRollSpecialEffects(rRoll);
