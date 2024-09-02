@@ -4,6 +4,7 @@
 --
 
 function onInit()
+	setColor(ColorManager.getButtonTextColor());
 	if Session.IsHost then
 		registerMenuItem(Interface.getString("menu_init"), "turn", 7);
 		registerMenuItem(Interface.getString("menu_initpc"), "portrait", 7, 6);

@@ -7,29 +7,71 @@
 
 <root>
 	<windowclass name="global_difficulty">
+		<sizelimits>
+			<minimum width="74" height="62" />
+		</sizelimits>
 		<sheetdata>
-			<genericcontrol name="difficulty">
-				<anchored height="32" width="40">
-					<top offset="0" />
-					<left offset="0" />
-				</anchored>
+			<genericcontrol name="base">
+				<bounds>5,5,64,52</bounds>
+				<icon>modcollector</icon>
+			</genericcontrol>
+
+			<numbercontrol name="difficulty">
 				<script file="desktop/scripts/global_difficulty.lua" />
-				<tooltip textres="desktop_tooltip_difficulty" />
-			</genericcontrol>
+				<font>modcollector</font>
+				<nodrag />
+				<readonly />
+				<stateframe>
+					<hover name="modstackfocus" />
+				</stateframe>
+				<min>1</min>
+				<default>3</default>
+				<max>10</max>
+				<bounds>15,12,44,22</bounds>
+			</numbercontrol>
+
+			<stringcontrol name="label">
+				<font>modcollectorlabel</font>
+				<static textres="global_difficulty_label" />
+				<bounds>9,34,54,12</bounds>
+				<center />
+			</stringcontrol>
 		</sheetdata>
 	</windowclass>
-	<windowclass name="global_gmi_threshold">
+
+	<windowclass name="gmi_threshold">
+		<sizelimits>
+			<minimum width="74" height="62" />
+		</sizelimits>
 		<sheetdata>
-			<genericcontrol name="gmi_threshold">
-				<anchored height="25" width="25">
-					<top offset="0" />
-					<left offset="0" />
-				</anchored>
-				<script file="desktop/scripts/global_gmi_threshold.lua" />
-				<tooltip textres="desktop_tooltip_gmi_threshold" />
+			<genericcontrol name="base">
+				<bounds>5,5,64,52</bounds>
+				<icon>modcollector</icon>
 			</genericcontrol>
+
+			<numbercontrol name="difficulty">
+				<script file="desktop/scripts/global_gmi_threshold.lua" />
+				<font>modcollector</font>
+				<nodrag />
+				<readonly />
+				<stateframe>
+					<hover name="modstackfocus" />
+				</stateframe>
+				<min>1</min>
+				<default>3</default>
+				<max>20</max>
+				<bounds>15,12,44,22</bounds>
+			</numbercontrol>
+
+			<stringcontrol name="label">
+				<font>modcollectorlabel</font>
+				<static textres="gmi_threshold_label" />
+				<bounds>9,34,54,12</bounds>
+				<center />
+			</stringcontrol>
 		</sheetdata>
 	</windowclass>
+
 	<windowclass name="difficultyadjust">
 		<frame>imagepanel</frame>
 		<sizelimits>
@@ -125,6 +167,69 @@
 		</sheetdata>
 	</windowclass>
 
+	<windowclass name="desktop_control_panel">
+		<script>
+			function onInit()
+				OptionsManager.registerCallback("GDIFF", onDifficultyEnabled);
+				OptionsManager.registerCallback("GMIT", onGmiThresholdEnabled);
+
+				onDifficultyEnabled()
+				onGmiThresholdEnabled()
+			end
+			function onDifficultyEnabled()
+				local bEnabled = OptionsManagerCypher.isGlobalDifficultyEnabled()
+				difficulty.setVisible(bEnabled)
+			end
+			function onGmiThresholdEnabled()
+				local bEnabled = OptionsManagerCypher.isGmIntrusionTHresholdEnabled()
+				gmi_threshold.setVisible(bEnabled)
+			end
+		</script>
+		<sheetdata>
+			<genericcontrol name="leftanchor">
+				<anchored position="insidetopleft" offset="0,0" />
+				<disabled />
+				<invisible />
+			</genericcontrol>
+
+			<subwindow name="difficulty">
+				<class>global_difficulty</class>
+				<anchored to="leftanchor" width="74" height="62">
+					<left anchor="right" relation="relative" offset="-3" />
+					<top />
+				</anchored>
+				<activate />
+			</subwindow>
+
+			<subwindow name="gmi_threshold">
+				<class>gmi_threshold</class>
+				<anchored to="leftanchor" width="74" height="62">
+					<left anchor="right" relation="relative" offset="-3" />
+					<top />
+				</anchored>
+				<activate />
+			</subwindow>
+
+			<subwindow name="modifier">
+				<class>modifierstack</class>
+				<anchored to="leftanchor" width="74" height="62">
+					<left anchor="right" relation="relative" offset="-3" />
+					<top />
+				</anchored>
+				<activate />
+			</subwindow>
+
+			<subwindow name="adjustments">
+				<class>difficultyadjust</class>
+				<anchored to="leftanchor" width="190" height="52">
+					<left anchor="right" relation="relative" offset="3" />
+					<top offset="5" />
+				</anchored>
+				<activate />
+			</subwindow>
+		</sheetdata>
+	</windowclass>
+
 	<template name="characterlist_entry" merge="join">
 		<genericcontrol>
 			<script>
@@ -142,7 +247,7 @@
 				end
 				function onMenuSelection(selection, subselection)
 					if Session.IsHost and selection == 7 then
-						local rActor = ActorManager.resolveActor(self.getIdentityPath());
+						local rActor = ActorManager.resolveActor(self.getRecordPath());
 						IntrusionManager.handleMenuSelection(selection, rActor);
 						return;
 					end

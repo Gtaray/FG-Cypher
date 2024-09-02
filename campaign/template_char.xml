@@ -303,6 +303,7 @@
 				<on>button_checkon</on>
 				<off>button_checkoff</off>
 			</stateicons>
+			<spacing>12</spacing>
 			<script file="campaign/scripts/buttongroup_counter_power.lua" />
 		</genericcontrol>
 	</template>

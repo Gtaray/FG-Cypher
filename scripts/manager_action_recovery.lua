@@ -16,11 +16,7 @@ end
 function getRoll(rActor, rAction)
 	local rRoll = {};
 	rRoll.sType = "recovery";
-	if rAction.aDice then
-		rRoll.aDice = rAction.aDice;
-	else
-		rRoll.aDice = { "d6" };
-	end
+	rRoll.aDice = DiceRollManager.getActorDice(rAction.aDice or { "d6" }, rActor);
 	rRoll.nMod = ActorManagerCypher.getTier(rActor) + ActorManagerCypher.getRecoveryRollMod(rActor) + (rAction.nModifer or 0);
 	rRoll.sDesc = "[RECOVERY]";
 	return rRoll;

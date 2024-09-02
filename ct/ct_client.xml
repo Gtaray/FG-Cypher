@@ -27,11 +27,13 @@
 				end
 			end
 		</script>
+	</windowclass>
+	<windowclass name="sub_ct_header_client" merge="join">
 		<sheetdata>
-			<label_ct_right name="label_status" insertbefore="label_init">
-				<anchored width="118" />
+			<label_ct_header_right name="label_status" insertbefore="label_init">
+				<anchored width="120" />
 				<static textres="ct_label_status" />
-			</label_ct_right>
+			</label_ct_header_right>
 		</sheetdata>
 	</windowclass>
 

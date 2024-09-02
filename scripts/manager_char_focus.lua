@@ -42,7 +42,7 @@ end
 
 function applyTier1(rData)
 	-- Notification
-	CharManager.outputUserMessage("char_message_add_focus", rData.sSourceName, rData.sCharName);
+	ChatManager.SystemMessageResource("char_message_add_focus", rData.sSourceName, rData.sCharName);
 
 	CharTrackerManager.addToTracker(
 		rData.nodeChar, 

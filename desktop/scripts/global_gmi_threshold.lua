@@ -17,7 +17,5 @@ function onWheel(notches)
 end
 
 function onGmiThresholdChanged()
-	local nGmi = DifficultyManager.getGmiThreshold();
-	local iconName = string.format("gmi%s", nGmi);
-	setIcon(iconName)
+	setValue(DifficultyManager.getGmiThreshold())
 end

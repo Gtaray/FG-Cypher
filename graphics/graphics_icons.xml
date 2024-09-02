@@ -56,37 +56,8 @@
 
 	<icon name="playerintrusion" file="graphics/icons/player_intrusion.png" />
 
-
-	<!-- Global target -->
-	<icon name="global_target" file="graphics/icons/global_target.png" />
-
 	<!-- Radial -->
 	<icon name="radial_power_action_stat" file="graphics/radial/icon_dice_custom.png" />
-
-	<!-- Override CoreRPG ruleset graphics -->
-
-	<!-- Common -->
-	<icon name="window_resize_filled" file="graphics/icons/window_resize_filled.png" />
-	
-	<!-- Chat window -->
-	<icon name="chat_wait" file="graphics/icons/chat_wait.png" />
-
-	<!-- Character list -->
-	<icon name="charlist_typing" file="graphics/icons/charlist_typing.png" />
-
-	<!-- Minimized icons -->	
-	<icon name="minimized_image" file="graphics/icons/minimized_image.png" />
-	<icon name="minimized_encounter" file="graphics/icons/minimized_encounter.png" />
-	<icon name="minimized_item" file="graphics/icons/minimized_item.png" />
-	<icon name="minimized_npc" file="graphics/icons/minimized_npc.png" />
-	<icon name="minimized_utility" file="graphics/icons/minimized_utility.png" />
-	<icon name="minimized_reference" file="graphics/icons/minimized_reference.png" />
-	<icon name="minimized_note" file="graphics/icons/minimized_note.png" />
-	<icon name="minimized_combat" file="graphics/icons/minimized_combat.png" />
-
-	<!-- Modifier stack -->
-	<icon name="modcollector" file="graphics/icons/modcollector.png" />
-	<icon name="modcollector_counter" file="graphics/icons/modcollector_counter.png" />
 
 	<!-- Sidebar -->
 	<icon name="sidebar_icon_recordtype_ability" file="graphics/sidebar/sidebar_icon_spell.png" />
@@ -95,13 +66,6 @@
 	<icon name="sidebar_icon_recordtype_focus" file="graphics/sidebar/sidebar_icon_feat.png" />
 	<icon name="sidebar_icon_recordtype_flavor" file="graphics/sidebar/sidebar_icon_potion.png" />
 
-	<!-- Character Arcs -->
-	<icon name="tab_arcs" file="graphics/tabs/tab_arcs.png" />
-	<icon name="tab_opening" file="graphics/tabs/tab_opening.png" />
-	<icon name="tab_inprogress" file="graphics/tabs/tab_inprogress.png" />
-	<icon name="tab_climax" file="graphics/tabs/tab_climax.png" />
-	<icon name="tab_resolution" file="graphics/tabs/tab_resolution.png" />
-	
 	<icon name="arc_opening" file="graphics/arcs/opening.png" />
 	<icon name="arc_opening_highlight" file="graphics/arcs/opening_highlight.png" />
 	<icon name="arc_opening_next" file="graphics/arcs/opening_advance.png" />

@@ -17,15 +17,8 @@
 		</button_stringcycler>
 	</template>
 
-	<windowclass name="item" copy="record_window_tabbed">
-		<minimize>minimized_item</minimize>
+	<windowclass name="item" merge="join">
 		<helplinkres>help_items</helplinkres>
-		<tab>
-			<name>main</name>
-			<resource>tab_main</resource>
-			<class>item_main</class>
-			<embed />
-		</tab>
 		<tab merge="add">
 			<name>actions</name>
 			<resource>tab_actions</resource>
@@ -38,11 +31,6 @@
 		<script file="campaign/scripts/item_main.lua" />
 		<sheetdata>
 			<anchor_column name="columnanchor" />
-			
-			<label_column name="nonid_name_label">
-				<static textres="item_label_unidentified" />
-			</label_column>
-			<string_columnh name="nonid_name" />
 			
 			<label_column name="nonid_notes_label">
 				<static textres="item_label_unidentifiednotes" />

@@ -10,7 +10,7 @@ function addAncestryDrop(nodeChar, sClass, sRecord)
 	end
 
 	-- Notification
-	CharManager.outputUserMessage("char_message_add_ancestry", rAdd.sSourceName, rAdd.sCharName);
+	ChatManager.SystemMessageResource("char_message_add_ancestry", rAdd.sSourceName, rAdd.sCharName);
 
 	CharTrackerManager.addToTracker(
 		rAdd.nodeChar, 

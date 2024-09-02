@@ -6,35 +6,22 @@
 -->
 
 <root>
-	<panel name="global_difficulty">
-		<class>global_difficulty</class>
-		<bounds>15,-90,32,32</bounds>
-		<locked />
-	</panel>
+	<panel name="modifierstack" merge="delete" />
 
-	<panel name="global_gmi_threshold">
-		<class>global_gmi_threshold</class>
-		<bounds>50,-70,25,25</bounds>
-		<locked />
-	</panel>
-
-	<panel name="modifierstack">
-		<class>modifierstack</class>
-		<bounds>75,-100,64,57</bounds>
-		<dynamic />
-		<locked />
-	</panel>
-
-	<panel name="difficultyadjustpanel">
-		<class>difficultyadjust</class>
-		<bounds>150,-95,190,52</bounds>
+	<panel name="control_panel">
+		<class>desktop_control_panel</class>
+		<anchored height="62" width="300">
+			<left offset="8" />
+			<top anchor="bottom" offset="-100" />
+		</anchored>
 		<dynamic />
 		<locked />
 	</panel>
 
 	<panel name="dicepanel" merge="join">
-		<anchored>
-			<left offset="320" />
+		<anchored width="50" height="50">
+			<top anchor="bottom" offset="-105" />
+			<left offset="400" />
 		</anchored>
 	</panel>
 </root>
