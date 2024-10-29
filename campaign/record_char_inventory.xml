@@ -10,20 +10,11 @@
 		<sheetdata>
 			<genericcontrol name="carried_header" merge="delete" />
 			<label name="weight_label" merge="delete" />
-			<label name="location_label" merge="delete" />
 
-			<label name="level_label" insertbefore="name_label">
-				<anchored to="rightanchor" width="20">
+			<label name="type_label" insertbefore="location_label">
+				<anchored to="rightanchor" width="40">
 					<top />
-					<right anchor="left" relation="relative" offset="-10" />
-				</anchored>
-				<center />
-				<static textres="char_label_invlevel" />
-			</label>
-			<label name="type_label" insertbefore="name_label">
-				<anchored to="rightanchor" width="80">
-					<top />
-					<right anchor="left" relation="relative" offset="-10" />
+					<right anchor="left" relation="relative" offset="-20" />
 				</anchored>
 				<center />
 				<static textres="char_label_invtype" />
@@ -34,9 +25,7 @@
 				</anchored>
 			</label>
 			
-			<list_charinv name="inventorylist">
-				<script file="campaign/scripts/char_invlist.lua" />
-			</list_charinv>
+			<list_charinv_cypher name="inventorylist" />
 			<button_iedit name="inventorylist_iedit">
 				<anchored offset="-13,10" />
 			</button_iedit>
@@ -102,6 +91,8 @@
 	<windowclass name="char_invitem" merge="join">
 		<script>
 			function onInit()
+				ItemManagerCypher.migrateArmorAndWeaponItemTypes(getDatabaseNode());
+
 				addHandler(getDatabaseNode());
 			end
 			function onClose()
@@ -127,23 +118,24 @@
 			end
 		</script>
 		<sheetdata>
-			<button_char_inv_carried name="carried" merge="delete" />
 			<number_charinv name="weight" merge="delete" />
-			<string_charinvloc name="location" merge="delete" />
-			<basicnumber name="level" insertbefore="name">
+			<!-- <button_char_inv_carried name="carried" merge="delete" /> -->
+			<!-- <string_charinvloc name="location" merge="delete" /> -->
+
+			<!-- <basicnumber name="level" insertbefore="location">
 				<anchored width="20" height="20">
 					<top offset="2" />
 					<right parent="rightanchor" anchor="left" relation="relative" offset="-7" />
 				</anchored>
 				<tabtarget prev="type" />
-			</basicnumber>
-			<button_itemtype name="type" insertbefore="name">
+			</basicnumber> -->
+			<button_itemtype_short name="type" insertbefore="location">
 				<anchored height="20">
 					<top offset="2" />
 					<right parent="rightanchor" anchor="left" relation="relative" offset="-7" />
 				</anchored>
 				<tabtarget prev="nonid_name" next="level" />
-			</button_itemtype>
+			</button_itemtype_short>
 			
 			<string_charinvname name="name">
 				<script>

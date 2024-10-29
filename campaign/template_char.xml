@@ -501,4 +501,10 @@
 			</script>
 		</button_checkbox>
 	</template>
+
+	<list_charinv_cypher name="inventorylist">
+		<list_charinv>
+			<script file="campaign/scripts/char_invlist.lua" />
+		</list_charinv>
+	</list_charinv_cypher>
 </root>

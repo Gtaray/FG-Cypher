@@ -128,7 +128,7 @@ function takeAdvancement(nodeChar, sMessage, rData)
 		return false;
 	end
 
-	if not CharManager.deductXpForAdvancement(nodeChar, ADVANCEMENT_COST) then
+	if not CharManager.hasEnoughXpForAdvancement(nodeChar, ADVANCEMENT_COST) then
 		return false;
 	end
 
@@ -142,7 +142,7 @@ function takeAdvancement(nodeChar, sMessage, rData)
 	return true;
 end
 
-function deductXpForAdvancement(nodeChar, nCost)
+function hasEnoughXpForAdvancement(nodeChar, nCost)
 	local nXP = DB.getValue(nodeChar, "xp", 0);
 
 	if nXP < nCost then
@@ -153,12 +153,26 @@ function deductXpForAdvancement(nodeChar, nCost)
 		Comm.addChatMessage(rMessage);
 		return false;
 	end
+	return true;
+end
+
+function deductXpForAdvancement(nodeChar, nCost)
+	local nXP = DB.getValue(nodeChar, "xp", 0);
+
+	if nXP < nCost then
+		return false;
+	end
 
 	DB.setValue(nodeChar, "xp", "number", math.max(nXP - nCost, 0));
 	return true;
 end
 
 function completeAdvancement(rData)
+	-- This should not be possible, but if for some reason we get here and the char doesn't have the XP for the advancement, bail
+	if not CharManager.deductXpForAdvancement(rData.nodeChar, ADVANCEMENT_COST) then
+		return
+	end
+	
 	local rActor = ActorManager.resolveActor(rData.nodeChar);
 	rData.sSource = "Advancement"
 

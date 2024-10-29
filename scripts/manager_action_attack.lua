@@ -105,9 +105,9 @@ function modRoll(rSource, rTarget, rRoll)
 	rRoll.nHinder = rRoll.nHinder + EffectManagerCypher.getHinderEffectBonus(rSource, aFilter, rTarget, { "defense", "def", rRoll.sDefenseStat });
 	local nMiscAdjust = RollManager.getEaseHinderFromDifficultyPanel()
 	if nMiscAdjust > 0 then
-		rRoll.nEase = Roll.nEase + nMiscAdjust
+		rRoll.nEase = rRoll.nEase + nMiscAdjust
 	elseif nMiscAdjust < 0 then
-		rRoll.nHinder = Roll.nHinder + nMiscAdjust
+		rRoll.nHinder = rRoll.nHinder + nMiscAdjust
 	end
 	
 	-- Process conditions
