@@ -429,7 +429,7 @@
 							window.idelete_header.setVisible(bEditMode);
 						end
 						for _,w in ipairs(getWindows()) do
-							w.idelete.setVisibility(bEditMode);
+							w.idelete.setVisible(bEditMode);
 						end
 					end
 				</script>

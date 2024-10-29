@@ -96,7 +96,7 @@
 						local bEditMode = (window.actions_iedit.getValue() == 1);
 						
 						for _,w in ipairs(getWindows()) do
-							w.idelete.setVisibility(bEditMode);
+							w.idelete.setVisible(bEditMode);
 						end
 					end
 
