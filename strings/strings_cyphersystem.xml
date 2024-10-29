@@ -31,11 +31,6 @@
 	<string name="status_debilitated">Debilitated</string>
 	<string name="status_dead">Dead</string>
 	
-	<string name="menu_rest">Rest</string>
-	<string name="menu_restovernight">Overnight Rest</string>
-	<string name="message_restovernight">Taking overnight rest.</string>
-	<string name="ct_message_restovernight">Party taking overnight rest.</string>
-
 	<string name="default_move">Short</string>
 
 	<string name="label_training_inability">Inability</string>

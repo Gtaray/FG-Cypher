@@ -50,7 +50,7 @@ function onHealthChanged()
 	status.setValue(sStatus);
 	
 	if not self.isPC() then
-		idelete.setVisibility(ActorHealthManager.isDyingOrDeadStatus(sStatus));
+		idelete.setVisible(ActorHealthManager.isDyingOrDeadStatus(sStatus));
 	end
 end
 

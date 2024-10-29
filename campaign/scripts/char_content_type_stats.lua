@@ -34,11 +34,11 @@ function update()
 	WindowManager.callSafeControlUpdate(self, "t6_abilities", bReadOnly);
 	abilities.update(bReadOnly);
 
-	features_iedit.setVisibility(not bReadOnly);
+	features_iedit.setVisible(not bReadOnly);
 	features_iadd.setVisible(not bReadOnly);
 	features.update(bReadOnly);
 
-	edge_iedit.setVisibility(not bReadOnly);
+	edge_iedit.setVisible(not bReadOnly);
 	edge_iadd.setVisible(not bReadOnly);
 	edge.update(bReadOnly);
 end
