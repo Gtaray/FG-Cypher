@@ -93,28 +93,7 @@
 			function onInit()
 				ItemManagerCypher.migrateArmorAndWeaponItemTypes(getDatabaseNode());
 
-				addHandler(getDatabaseNode());
-			end
-			function onClose()
-				removeHandler();
-			end
-
-			local _node;
-			function addHandler(node)
-				if node then
-					_node = node;
-					DB.addHandler(_node, "onDelete", onDelete);
-				end
-			end
-			function removeHandler()
-				if _node then
-					DB.removeHandler(_node, "onDelete", onDelete);
-					_node = nil;
-				end
-			end
-			function onDelete(node)
-				CharManager.onCharItemRemoved(node);
-				super.onDelete(node);
+				super.onInit()
 			end
 		</script>
 		<sheetdata>
@@ -136,31 +115,6 @@
 				</anchored>
 				<tabtarget prev="nonid_name" next="level" />
 			</button_itemtype_short>
-			
-			<string_charinvname name="name">
-				<script>
-					function onGainFocus()
-						window.windowlist.setSortLock(true);
-						super.onGainFocus();
-					end
-					
-					function onLoseFocus()
-						window.windowlist.setSortLock(false);
-					end
-				</script>
-			</string_charinvname>
-			<string_charinvname name="nonid_name">
-				<script>
-					function onGainFocus()
-						window.windowlist.setSortLock(true);
-						super.onGainFocus();
-					end
-					
-					function onLoseFocus()
-						window.windowlist.setSortLock(false);
-					end
-				</script>
-			</string_charinvname>
 		</sheetdata>
 	</windowclass>
 </root>

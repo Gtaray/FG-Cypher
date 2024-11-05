@@ -6,7 +6,7 @@
 function onInit()
 	ItemManager.setCustomCharAdd(onCharItemAdd);
 	-- Overriding char_invitem.onDelete instead of this, because this throws errors
-	-- ItemManager.setCustomCharRemove(onCharItemRemoved);
+	 ItemManager.setCustomCharRemove(onCharItemRemoved);
 end
 
 -------------------------------------------------------------------------------

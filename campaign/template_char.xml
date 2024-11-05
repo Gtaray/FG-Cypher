@@ -502,9 +502,9 @@
 		</button_checkbox>
 	</template>
 
-	<list_charinv_cypher name="inventorylist">
-		<list_charinv>
+	<template name="list_charinv_cypher">
+		<list_charinv name="inventorylist">
 			<script file="campaign/scripts/char_invlist.lua" />
 		</list_charinv>
-	</list_charinv_cypher>
+	</template>
 </root>
