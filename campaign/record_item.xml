@@ -11,8 +11,30 @@
 			<anchored width="80" />
 			<parameters>
 				<defaultlabel>-</defaultlabel>
-				<labelsres>char_label_invtypecypher|char_label_invtypeartifact|char_label_invtypeoddity|char_label_invtypeweapon|char_label_invtypearmor</labelsres>
-				<values>cypher|artifact|oddity|weapon|armor</values>
+				<labelsres>char_label_invtypecypher|char_label_invtypeartifact|char_label_invtypeoddity</labelsres>
+				<values>cypher|artifact|oddity</values>
+			</parameters>
+		</button_stringcycler>
+	</template>
+
+	<template name="button_itemtype_short">
+		<button_stringcycler name="type">
+			<anchored width="20" />
+			<parameters>
+				<defaultlabel>-</defaultlabel>
+				<labelsres>char_label_invtypecypher_short|char_label_invtypeartifact_short|char_label_invtypeoddity_oddity</labelsres>
+				<values>cypher|artifact|oddity</values>
+			</parameters>
+		</button_stringcycler>
+	</template>
+
+	<template name="button_itemsubtype">
+		<button_stringcycler name="type">
+			<anchored width="80" />
+			<parameters>
+				<defaultlabel>-</defaultlabel>
+				<labelsres>char_label_invtypeweapon|char_label_invtypearmor</labelsres>
+				<values>weapon|armor</values>
 			</parameters>
 		</button_stringcycler>
 	</template>
@@ -39,6 +61,7 @@
 			
 			<line_column name="divider" />
 
+			<!-- TYPE -->
 			<label_column name="type_label">
 				<static textres="item_label_type" />
 			</label_column>
@@ -54,10 +77,78 @@
 				</script>
 			</button_itemtype>
 
+			<!-- CYPHER -->
+			<label_column name="levelroll_label">
+				<static textres="item_label_levelroll" />
+			</label_column>
+			<string_columnh name="levelroll">
+				<default>1d6</default>
+			</string_columnh>
+			
+			<label_column name="level_label">
+				<static textres="item_label_level" />
+			</label_column>
+			<number_columnh name="level" />
+			
+			<!-- ARTIFACT -->
+			<label_column name="depletion_label">
+				<static textres="item_label_depletion" />
+			</label_column>
+			<number_columnh name="depletion">
+				<rollable />
+				<script>
+					function update(bReadOnly, bForceHide)
+						super.update(bReadOnly, bForceHide);
+						window.depletiondie.setVisible(isVisible());
+					end
+
+					function onDoubleClick(x, y)
+						window.actionDepletion();
+						return true;
+					end
+
+					function onDragStart(button, x, y, draginfo)
+						window.actionDepletion(draginfo);
+						return true;
+					end
+				</script>
+			</number_columnh>
+			<label name="depletiondie_label">
+				<anchored to="depletion" position="righthigh" offset="10,0" />
+				<static textres="item_label_depletionin" />
+			</label>
+			<button_stringcycler name="depletiondie">
+				<anchored to="depletiondie_label" position="righthigh" offset="10,0" height="20" width="40" />
+				<parameters>
+					<labels>1d6|1d10|1d20|1d100</labels>
+					<values>d6|d10|d20|d100</values>
+					<defaultlabel>-</defaultlabel>
+				</parameters>
+			</button_stringcycler>
+
+			<!-- COST -->
 			<label_column name="cost_label">
 				<static textres="item_label_cost" />
 			</label_column>
 			<string_columnh name="cost" />
+
+			<line_column name="divider2" />
+
+			<!-- SUBTYPE -->
+			<label_column name="subtype_label">
+				<static textres="item_label_subtype" />
+			</label_column>
+			<button_itemsubtype name="subtype">
+				<anchored>
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+					<left offset="97" />
+				</anchored>
+				<script>
+					function onValueChanged()
+						window.update();
+					end
+				</script>
+			</button_itemsubtype>
 			
 			<!-- WEAPONS -->
 			<label_column name="weapontype_label">
@@ -185,54 +276,8 @@
 				</parameters>
 			</cycler_column>
 
-			<label_column name="levelroll_label">
-				<static textres="item_label_levelroll" />
-			</label_column>
-			<string_columnh name="levelroll">
-				<default>1d6</default>
-			</string_columnh>
-			
-			<label_column name="level_label">
-				<static textres="item_label_level" />
-			</label_column>
-			<number_columnh name="level" />
-			
-			<label_column name="depletion_label">
-				<static textres="item_label_depletion" />
-			</label_column>
-			<number_columnh name="depletion">
-				<rollable />
-				<script>
-					function update(bReadOnly, bForceHide)
-						super.update(bReadOnly, bForceHide);
-						window.depletiondie.setVisible(isVisible());
-					end
-
-					function onDoubleClick(x, y)
-						window.actionDepletion();
-						return true;
-					end
-
-					function onDragStart(button, x, y, draginfo)
-						window.actionDepletion(draginfo);
-						return true;
-					end
-				</script>
-			</number_columnh>
-			<label name="depletiondie_label">
-				<anchored to="depletion" position="righthigh" offset="10,0" />
-				<static textres="item_label_depletionin" />
-			</label>
-			<button_stringcycler name="depletiondie">
-				<anchored to="depletiondie_label" position="righthigh" offset="10,0" height="20" width="40" />
-				<parameters>
-					<labels>1d6|1d10|1d20|1d100</labels>
-					<values>d6|d10|d20|d100</values>
-					<defaultlabel>-</defaultlabel>
-				</parameters>
-			</button_stringcycler>
-			
-			<line_column name="divider2" />
+			<!-- DESCRIPTION -->
+			<line_column name="divider3" />
 
 			<ft_columnh name="notes" />
 		</sheetdata>

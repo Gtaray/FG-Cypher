@@ -95,9 +95,6 @@ function modRoll(rSource, rTarget, rRoll)
 		rRoll.nHinder = rRoll.nHinder + math.abs(nMiscAdjust)
 	end
 
-	-- Process conditions
-	rRoll.nConditionMod = RollManager.processStandardConditionsForActor(rSource);
-
 	-- Process Lucky (advantage / disadvantage)
 	local bAdv, bDis = RollManager.processAdvantage(rSource, rTarget, rRoll, aFilter)
 
@@ -107,10 +104,19 @@ function modRoll(rSource, rTarget, rRoll)
 	RollManager.encodeEaseHindrance(rRoll, rRoll.nEase, rRoll.nHinder);
 	RollManager.encodeAdvantage(rRoll, bAdv, bDis);
 
+	if tonumber(rRoll.nDifficulty or "0") == 0 then
+		rRoll.nDifficulty = RollManager.getBaseRollDifficulty(rSource, rTarget, { "attack", "atk", rRoll.sStat });
+	end
+	RollManager.calculateDifficultyForRoll(rSource, rTarget, rRoll);
+
 	if rRoll.nConditionMod > 0 then
 		rRoll.sDesc = string.format("%s [EFFECTS %s]", rRoll.sDesc, rRoll.nConditionMod)
 	end
 	RollManager.convertBooleansToNumbers(rRoll);
+
+	if rRoll.nDifficulty <= 0 then
+		rRoll.aDice = {}
+	end
 end
 
 function onRoll(rSource, rTarget, rRoll)
@@ -123,14 +129,6 @@ function onRoll(rSource, rTarget, rRoll)
 
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 	rMessage.icon = "action_roll";
-
-	-- Only set the difficulty if the difficulty hasn't already been set 
-	-- Difficulty is set when a defense roll is invoked from a defensevs roll
-	if tonumber(rRoll.nDifficulty or "0") == 0 then
-		rRoll.nDifficulty = RollManager.getBaseRollDifficulty(rSource, rTarget, { "attack", "atk", rRoll.sStat });
-	end
-
-	RollManager.calculateDifficultyForRoll(rSource, rTarget, rRoll);
 
 	local aAddIcons = {};
 	RollManager.processRollSpecialEffects(rRoll);

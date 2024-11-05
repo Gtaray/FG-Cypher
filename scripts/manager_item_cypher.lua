@@ -2,6 +2,27 @@ function onInit()
 	ItemManager.registerCleanupTransferHandler(onItemTransfer);
 end
 
+----------------------------------------------------------------------
+-- DATA MIGRATION
+----------------------------------------------------------------------
+function migrateArmorAndWeaponItemTypes(nodeItem)
+	local sType = ItemManagerCypher.getItemType(nodeItem);
+
+	if sType == "weapon" then
+		DB.setValue(nodeItem, "type", "string", "")
+		DB.setValue(nodeItem, "subtype", "string", "weapon")
+	end
+
+	if sType == "armor" then
+		DB.setValue(nodeItem, "type", "string", "")
+		DB.setValue(nodeItem, "subtype", "string", "armor")
+	end
+end
+
+-------------------------------------------------------------------------
+-- ACCESSORS
+----------------------------------------------------------------------
+
 function onItemTransfer(rSource, rTemp, rTarget)
 	-- Handle automatically rolling levels for cyphers
 	if rSource.sType == "item" and (rTarget.sType == "treasureparcel" or rTarget.sType == "charsheet" or rTarget.sType == "partysheet") then
@@ -15,6 +36,10 @@ end
 
 function getItemType(itemNode)
 	return DB.getValue(itemNode, "type", "");
+end
+
+function getItemSubtype(itemNode)
+	return DB.getValue(itemNode, "subtype", "");
 end
 
 function isItemCypher(itemNode)
@@ -34,7 +59,7 @@ end
 ----------------------------------------------------------------------
 
 function isItemArmor(itemNode)
-	return ItemManagerCypher.getItemType(itemNode) == "armor";
+	return ItemManagerCypher.getItemSubtype(itemNode) == "armor";
 end
 
 function getArmorType(itemNode)
@@ -74,7 +99,7 @@ end
 ----------------------------------------------------------------------
 
 function isItemWeapon(itemNode)
-	return ItemManagerCypher.getItemType(itemNode) == "weapon";
+	return ItemManagerCypher.getItemSubtype(itemNode) == "weapon";
 end
 
 function getWeaponType(itemNode)

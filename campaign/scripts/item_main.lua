@@ -4,6 +4,7 @@
 --
 
 function onInit()
+	ItemManagerCypher.migrateArmorAndWeaponItemTypes(getDatabaseNode());
 	update();
 end
 
@@ -48,14 +49,10 @@ function update()
 	type_label.setVisible(bID);
 	local sType = ItemManagerCypher.getItemType(nodeRecord);
 	
-	local bArmor = (sType == "armor");
-	local bWeapon = (sType == "weapon");
-	local bCypher = (sType == "cypher");
-	local bArtifact = (sType == "artifact");
-	local bEquipment = (sType == "");
-	
-	-- COMMON PROPERTIES
-	WindowManager.callSafeControlUpdate(self, "cost", bReadOnly, not (bID and (bArmor or bWeapon or bEquipment)));
+	local bArmor = ItemManagerCypher.isItemArmor(nodeRecord)
+	local bWeapon = ItemManagerCypher.isItemWeapon(nodeRecord);
+	local bCypher = ItemManagerCypher.isItemCypher(nodeRecord)
+	local bArtifact = ItemManagerCypher.isItemArtifact(nodeRecord)
 
 	-- WEAPON PROPERTIES
 	local bPierce = ItemManagerCypher.getWeaponPiercing(getDatabaseNode()) >= 0;

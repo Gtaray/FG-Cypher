@@ -31,11 +31,6 @@
 	<string name="status_debilitated">Debilitated</string>
 	<string name="status_dead">Dead</string>
 	
-	<string name="menu_rest">Rest</string>
-	<string name="menu_restovernight">Overnight Rest</string>
-	<string name="message_restovernight">Taking overnight rest.</string>
-	<string name="ct_message_restovernight">Party taking overnight rest.</string>
-
 	<string name="default_move">Short</string>
 
 	<string name="label_training_inability">Inability</string>
@@ -209,11 +204,19 @@
 
 	<!-- Character - Inventory -->
 	<string name="char_label_invtype">Type</string>
-	<string name="char_label_invtypearmor">Armor</string>
-	<string name="char_label_invtypeweapon">Weapon</string>
-	<string name="char_label_invtypecypher">Cypher</string>
+	<string name="char_label_invtypecypher">Cyper</string>
 	<string name="char_label_invtypeartifact">Artifact</string>
 	<string name="char_label_invtypeoddity">Oddity</string>
+	<string name="char_label_invtypeweapon">Weapon</string>
+	<string name="char_label_invtypearmor">Armor</string>
+
+	<string name="char_label_invtypecypher_short">C</string>
+	<string name="char_label_invtypeartifact_short">A</string>
+	<string name="char_label_invtypeoddity_short">O</string>
+
+	<string name="char_tooltip_invtypecypher">Cypher</string>
+	<string name="char_tooltip_invtypeartifact">Artifact</string>
+	<string name="char_tooltip_invtypeoddity">Oddity</string>
 	
 	<string name="char_label_invlevel">Lvl</string>
 	<string name="char_label_invslots">Slots</string>
@@ -521,6 +524,7 @@
 
 	<!-- Items -->
 	<string name="item_label_type">Type</string>
+	<string name="item_label_subtype">Subtype</string>
 
 	<string name="item_label_weapontype">Weapon Type</string>
 	<string name="item_weapontypelight">Light</string>

@@ -105,9 +105,9 @@ function modRoll(rSource, rTarget, rRoll)
 	rRoll.nHinder = rRoll.nHinder + EffectManagerCypher.getHinderEffectBonus(rSource, aFilter, rTarget, { "defense", "def", rRoll.sDefenseStat });
 	local nMiscAdjust = RollManager.getEaseHinderFromDifficultyPanel()
 	if nMiscAdjust > 0 then
-		rRoll.nEase = Roll.nEase + nMiscAdjust
+		rRoll.nEase = rRoll.nEase + nMiscAdjust
 	elseif nMiscAdjust < 0 then
-		rRoll.nHinder = Roll.nHinder + nMiscAdjust
+		rRoll.nHinder = rRoll.nHinder + nMiscAdjust
 	end
 	
 	-- Process conditions
@@ -122,6 +122,9 @@ function modRoll(rSource, rTarget, rRoll)
 	RollManager.encodeEaseHindrance(rRoll, rRoll.nEase, rRoll.nHinder);
 	RollManager.encodeAdvantage(rRoll, bAdv, bDis);
 
+	rRoll.nDifficulty = RollManager.getBaseRollDifficulty(rSource, rTarget, { "defense", "def", rRoll.sDefenseStat });
+	RollManager.calculateDifficultyForRoll(rSource, rTarget, rRoll);
+
 	if rRoll.sWeaponType == "light" then
 		rRoll.sDesc = string.format("%s [LIGHT]", rRoll.sDesc)
 	end
@@ -129,6 +132,10 @@ function modRoll(rSource, rTarget, rRoll)
 		rRoll.sDesc = string.format("%s [EFFECTS %s]", rRoll.sDesc, rRoll.nConditionMod)
 	end
 	RollManager.convertBooleansToNumbers(rRoll);
+
+	if rRoll.nDifficulty <= 0 then
+		rRoll.aDice = {}
+	end
 end
 
 function onRoll(rSource, rTarget, rRoll)
@@ -143,9 +150,6 @@ function onRoll(rSource, rTarget, rRoll)
 
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 	rMessage.icon = "action_attack";
-
-	rRoll.nDifficulty = RollManager.getBaseRollDifficulty(rSource, rTarget, { "defense", "def", rRoll.sDefenseStat });
-	RollManager.calculateDifficultyForRoll(rSource, rTarget, rRoll);
 
 	local aAddIcons = {};
 	RollManager.processRollSpecialEffects(rRoll, true);

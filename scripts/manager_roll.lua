@@ -406,11 +406,6 @@ function calculateDifficultyForRoll(rSource, rTarget, rRoll)
 		nMod = nMod - 1;
 	end
 
-	-- Modify based on target's conditions
-	if rTarget then
-		nMod = nMod - RollManager.processStandardConditionsForActor(rTarget)
-	end
-
 	rRoll.nDifficulty = rRoll.nDifficulty + nMod;
 	rRoll.nDifficultyModifier = nMod
 end
@@ -470,6 +465,12 @@ function updateRollMessageIcons(rMessage, aAddIcons, sFirstIcon)
 end
 
 function processRollSpecialEffects(rRoll, bAttack)
+	-- Sometimes nDifficulty is encoded as a string and not a number, not sure why.
+	-- This solves that though
+	if type(rRoll.nDifficulty) == "string" then
+		rRoll.nDifficulty = tonumber(rRoll.nDifficulty)
+	end
+
 	local bAutomaticSuccess = rRoll.nDifficulty and rRoll.nDifficulty <= 0;
 	if #(rRoll.aDice) >= 1 then
 		local nFirstDie = rRoll.aDice[1].result or 0;

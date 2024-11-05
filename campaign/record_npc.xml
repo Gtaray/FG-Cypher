@@ -109,7 +109,7 @@
 				<static textres="npc_label_size" />
 			</label_column>
 			<number_column name="space">
-				<default>1</default>
+				<default>5</default>
 			</number_column>
 			
 			<label_column_right name="reach_label">
@@ -118,7 +118,7 @@
 			</label_column_right>
 			<number_column_right name="reach">
 				<anchored to="space" />
-				<default>1</default>
+				<default>5</default>
 			</number_column_right>
 
 			<label_column name="armor_label">
