@@ -114,6 +114,7 @@
 					<right parent="rightanchor" anchor="left" relation="relative" offset="-7" />
 				</anchored>
 				<tabtarget prev="nonid_name" next="level" />
+				<readonly />
 			</button_itemtype_short>
 		</sheetdata>
 	</windowclass>

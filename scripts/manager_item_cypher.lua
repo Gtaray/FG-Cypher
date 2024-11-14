@@ -25,7 +25,7 @@ end
 
 function onItemTransfer(rSource, rTemp, rTarget)
 	-- Handle automatically rolling levels for cyphers
-	if rSource.sType == "item" and (rTarget.sType == "treasureparcel" or rTarget.sType == "charsheet" or rTarget.sType == "partysheet") then
+	if rSource.sClass == "item" and (rTarget.sType == "treasureparcel" or rTarget.sType == "charsheet" or rTarget.sType == "partysheet") then
 		CypherManager.generateCypherLevel(rTemp.node, false);
 	end
 end

@@ -22,7 +22,7 @@
 			<anchored width="20" />
 			<parameters>
 				<defaultlabel>-</defaultlabel>
-				<labelsres>char_label_invtypecypher_short|char_label_invtypeartifact_short|char_label_invtypeoddity_oddity</labelsres>
+				<labelsres>char_label_invtypecypher_short|char_label_invtypeartifact_short|char_label_invtypeoddity_short</labelsres>
 				<values>cypher|artifact|oddity</values>
 			</parameters>
 		</button_stringcycler>
