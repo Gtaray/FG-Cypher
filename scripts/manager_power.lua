@@ -81,21 +81,33 @@ function getActionText(node, tData)
 	return "";
 end
 function getActionTooltip(node, tData)
-	if tData.sType == "stat" then
-		return string.format("%s: %s", Interface.getString("power_tooltip_stat"), PowerActionManagerCore.getActionText(node, tData));
-	elseif tData.sType == "attack" then
-		return string.format("%s: %s", Interface.getString("power_tooltip_attack"), PowerActionManagerCore.getActionText(node, tData));
-	elseif tData.sType == "damage" then
-		return string.format("%s: %s", Interface.getString("power_tooltip_damage"), PowerActionManagerCore.getActionText(node, tData));
-	elseif tData.sType == "heal" then
-		return string.format("%s: %s", Interface.getString("power_tooltip_heal"), PowerActionManagerCore.getActionText(node, tData));
-	elseif tData.sType == "effect" then
+	-- We have to get this so we can get the Notes for each action
+	local rAction = PowerManager.getPowerAction(node)
+	local sNotes = rAction.sNotes or "";
+	local sLabel = "";
+
+	if rAction.type == "stat" then
+		sLabel = Interface.getString("power_tooltip_stat");
+	elseif rAction.type == "skill" then
+		sLabel = Interface.getString("power_tooltip_skill");
+	elseif rAction.type == "attack" then
+		sLabel = Interface.getString("power_tooltip_attack");
+	elseif rAction.type == "damage" then
+		sLabel = Interface.getString("power_tooltip_damage");
+	elseif rAction.type == "heal" then
+		sLabel = Interface.getString("power_tooltip_heal");
+	elseif rAction.type == "effect" then
 		if tData and tData.sSubRoll == "duration" then
-			return string.format("%s: %s", Interface.getString("power_tooltip_duration"), PowerActionManagerCore.getActionText(node, tData));
+			sLabel = Interface.getString("power_tooltip_duration");
+		else
+			sLabel = Interface.getString("power_tooltip_effect");
 		end
-		return string.format("%s: %s", Interface.getString("power_tooltip_effect"), PowerActionManagerCore.getActionText(node, tData));
 	end
-	return "";
+
+	if sNotes ~= "" then
+		sLabel = string.format("%s\n%s", sNotes, sLabel);
+	end
+	return string.format("%s: %s", sLabel, PowerActionManagerCore.getActionText(node, tData));
 end
 
 function getPowerStatActionText(nodeAction)
@@ -106,7 +118,11 @@ function getPowerStatActionText(nodeAction)
 		local nDiff, nMod = RollManager.resolveDifficultyModifier(rAction.sTraining, rAction.nAssets, rAction.nLevel, rAction.nModifier);
 		local sDice = StringManager.convertDiceToString({ "d20" }, nMod);
 
-		sText = string.format("%s: %s", StringManager.capitalize(rAction.sStat), sDice)
+		if rAction.type == "skill" and (rAction.sSkill or "") ~= "" then
+			sText = string.format("%s (%s): %s", StringManager.capitalize(rAction.sSkill), StringManager.capitalize(rAction.sStat), sDice)
+		else
+			sText = string.format("%s: %s", StringManager.capitalize(rAction.sStat), sDice)
+		end
 
 		if nDiff < 0 then
 			sText = string.format("%s [Diff: %s]", sText, nDiff);
@@ -329,12 +345,20 @@ function getPowerAction(nodeAction)
 	rAction.type = DB.getValue(nodeAction, "type", "");
 	rAction.label = DB.getValue(nodeAction, "...name", "");
 	rAction.order = PowerManager.getPowerActionOutputOrder(nodeAction);
+	rAction.sNotes = DB.getValue(nodeAction, "notes", "");
 
 	if rAction.type == "stat" then
 		rAction.sStat = RollManager.resolveStat(DB.getValue(nodeAction, "stat", ""));
+		rAction.sSkill = DB.getValue(nodeAction, "skill", "");
 		rAction.sTraining = DB.getValue(nodeAction, "training", "");
 		rAction.nAssets = DB.getValue(nodeAction, "asset", 0);
 		rAction.nModifier = DB.getValue(nodeAction, "modifier", 0);
+
+		-- If a skill value is present, then treat this action as a skill roll
+		-- from here on out		
+		if rAction.sSkill ~= "" then
+			rAction.type = "skill"
+		end
 		
 	elseif rAction.type == "attack" then
 		rAction.sStat = RollManager.resolveStat(DB.getValue(nodeAction, "stat", ""));
@@ -504,6 +528,13 @@ function performAction(node, tData)
 	if rAction.type == "stat" then
 		if bPC then
 			ActionStat.payCostAndRoll(draginfo, rActor, rAction);
+		else
+			Comm.addChatMessage({ text = "This action is not available for NPCs.", font = "systemfont" });
+		end
+
+	elseif rAction.type == "skill" then
+		if bPC then
+			ActionSkill.payCostAndRoll(draginfo, rActor, rAction);
 		else
 			Comm.addChatMessage({ text = "This action is not available for NPCs.", font = "systemfont" });
 		end

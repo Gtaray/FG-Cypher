@@ -186,6 +186,8 @@
 	<string name="char_title_attack_editor">Attack Editor</string>
 	<string name="char_label_weaponammo">Uses</string>
 	
+	<string name="char_label_itemlink">Item Link</string>
+	<string name="char_itemlink_empty">Drop an item link in this window to link</string>
 	<string name="char_label_attacktype">Attack Type</string>
 	<string name="char_label_attacktype_weapon">Weapon</string>
 	<string name="char_label_attacktype_magic">Magic</string>
@@ -282,6 +284,7 @@
 	<string name="power_menu_action_add_attack">Add Attack</string>
 
 	<string name="power_tooltip_stat">ROLL</string>
+	<string name="power_tooltip_skill">SKILL</string>
 	<string name="power_tooltip_attack">ATK</string>
 	<string name="power_tooltip_damage">DMG</string>
 	<string name="power_tooltip_heal">HEAL</string>
@@ -297,10 +300,14 @@
 	<string name="power_recharge_first">On the first recovery of the day</string>
 	<string name="power_recharge_last">On the last recovery of the day</string>
 	<string name="power_recharge_manual">Manually</string>
+	<string name="power_label_notes">Notes</string>
+	<string name="power_tooltip_notes">This text is only displayed in the tooltip for this action, and is meant to help context for individual actions.</string>
 
 	<string name="power_header_stat">STAT</string>
 	<string name="power_label_roll">Roll</string>
 	<string name="power_label_stat">Stat</string>
+	<string name="power_label_skill">Skill Name</string>
+	<string name="power_tooltip_skill_description">Entering a skill name will turn this into a skill roll.</string>
 
 	<string name="power_header_attack">ATTACK</string>
 	<string name="power_label_attack_text_1">Use my</string>

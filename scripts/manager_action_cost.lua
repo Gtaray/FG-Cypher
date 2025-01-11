@@ -272,7 +272,17 @@ function onRoll(rSource, rTarget, rRoll)
 		local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 		rMessage.icon = "roll_damage";
 
+		local aNotifications = {};
 		local nTotal = ActionsManager.total(rRoll);
+
+		local nShieldAdjust = ActionDamage.handleShield(
+			rSource, 
+			nTotal, 
+			{ rRoll.sCostStat }, 
+			aNotifications)
+
+		nTotal = nTotal - nShieldAdjust;
+
 		local bNotEnoughStats = false;
 		local sNotEnoughStatsMsg = "";
 
@@ -285,8 +295,12 @@ function onRoll(rSource, rTarget, rRoll)
 			sNotEnoughStatsMsg = "[INSUFFICIENT STATS]";
 		end
 
-		if bNotEnoughStats and sNotEnoughStatsMsg ~= "" then
-			rMessage.text = string.format("%s %s", rMessage.text, sNotEnoughStatsMsg);
+		if bNotEnoughStats then
+			table.insert(aNotifications, sNotEnoughStatsMsg);
+		end
+
+		if #aNotifications > 0 then
+			rMessage.text = string.format("%s %s", rMessage.text, table.concat(aNotifications, " "));
 		end
 
 		Comm.deliverChatMessage(rMessage);

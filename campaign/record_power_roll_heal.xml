@@ -76,6 +76,13 @@
 			</label_column>
 			<stringc_column name="name" />
 
+			<label_column name="notes_label">
+				<static textres="power_label_notes" />
+			</label_column>
+			<string_column name="notes">
+				<tooltip textres="power_tooltip_notes" />
+			</string_column>
+
 			<header_column name="header_heal">
 				<static textres="power_header_heal" />
 				<center />

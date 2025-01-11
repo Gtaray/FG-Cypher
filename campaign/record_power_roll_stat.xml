@@ -64,6 +64,13 @@
 			</label_column>
 			<stringc_column name="name" />
 
+			<label_column name="notes_label">
+				<static textres="power_label_notes" />
+			</label_column>
+			<string_column name="notes">
+				<tooltip textres="power_tooltip_notes" />
+			</string_column>
+
 			<header_column name="header_stat">
 				<static textres="power_header_stat" />
 				<center />
@@ -80,8 +87,17 @@
 				<static textres="power_label_stat" />
 			</label_fieldtop>
 
+			<basicstring name="skill">
+				<anchored to="stat" position="righthigh" offset="10,0" width="140" height="20" />
+			</basicstring>
+			<label_fieldtop>
+				<anchored to="skill" />
+				<static textres="power_label_skill" />
+				<tooltip textres="power_tooltip_skill_description" />
+			</label_fieldtop>
+
 			<cycler_training name="training">
-				<anchored to="stat" position="righthigh" offset="10,0" width="80" height="20" />
+				<anchored to="skill" position="righthigh" offset="10,0" width="80" height="20" />
 			</cycler_training>
 			<label_fieldtop>
 				<anchored to="training" />
