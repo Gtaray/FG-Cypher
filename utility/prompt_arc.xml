@@ -11,7 +11,6 @@
 		<placement>
 			<size width="300" height="150" />
 		</placement>
-		<nodelete />
 		<sheetdata>
 			<windowtitlebar_referencelist name="title">
 				<resource>arc_complete_prompt_window_title</resource>
@@ -81,7 +80,6 @@
 		<placement>
 			<size width="300" height="150" />
 		</placement>
-		<nodelete />
 		<sheetdata>
 			<windowtitlebar_referencelist name="title">
 				<resource>arc_complete_prompt_window_title</resource>

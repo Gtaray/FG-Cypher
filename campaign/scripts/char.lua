@@ -13,7 +13,9 @@ function onInit()
 	DB.addHandler(DB.getPath(getDatabaseNode(), "abilitylist.*"), "onDelete", onAbilityDeleted)
 	DB.addHandler(DB.getPath(getDatabaseNode(), "attacklist.*"), "onDelete", onAttackDeleted)
 
-	migrateAttackTraining();
+	self.migrateAttackTraining();
+
+	WindowTabManager.populate(self);
 end
 
 function onClose()

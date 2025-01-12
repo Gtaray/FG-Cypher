@@ -6,49 +6,25 @@
 -->
 
 <root>
-	<windowclass name="charsheet_tracker">
-		<frame>charsheethelper</frame>
+	<windowclass name="charsheet_tracker" copy="charsheethelper_base">
 		<sizelimits>
 			<minimum width="500" height="350" />
-			<dynamic />
 		</sizelimits>
 		<script file="campaign/scripts/char_tracker.lua" />
 		<sheetdata>
 			<windowtitlebar_charsheethelper name="title">
 				<static textres="char_header_tracker" />
 			</windowtitlebar_charsheethelper>
-			<anchor_title_charsheethelper name="contentanchor" />
 
-			<genericcontrol name="contentframe">
-				<anchored to="contentanchor">
-					<top anchor="bottom" offset="15" />
-					<left offset="20" />
-					<right offset="-25" />
-					<bottom parent="" offset="-40" />
-				</anchored>
-				<frame name="groupbox" offset="15,10,15,10" />
-			</genericcontrol>
-
-			<list_text name="tracker">
-				<anchored to="contentframe">
-					<top offset="5" />
-					<left offset="5" />
-					<right offset="5" />
-					<bottom offset="-5" />
-				</anchored>
+			<list_content_framed_groupbox name="tracker">
 				<datasource>.tracker</datasource>
 				<class>charsheet_tracker_item</class>
-				<allowcreate merge="delete" />
-				<!-- TODO: Make this sort descending -->
 				<sortby mergerule="replace"><control desc="true">order</control></sortby>
-			</list_text>
-			<scrollbar>
+			</list_content_framed_groupbox>
+			<scrollbar_content_base>
 				<anchored to="tracker" />
 				<target>tracker</target>
-			</scrollbar>
-
-			<close_charsheethelper />
-			<resize_charsheethelper />
+			</scrollbar_content_base>
 		</sheetdata>
 	</windowclass>
 

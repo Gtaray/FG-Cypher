@@ -26,12 +26,6 @@
 			</label>
 			
 			<list_charinv_cypher name="inventorylist" />
-			<button_iedit name="inventorylist_iedit">
-				<anchored offset="-13,10" />
-			</button_iedit>
-			<button_iadd name="inventorylist_iadd">
-				<anchored offset="10,10" />
-			</button_iadd>
 			
 			<simplenumber name="encumbranceload" merge="delete" />
 			<label name="encumbrance_label" merge="delete" />
@@ -46,11 +40,11 @@
 					
 					function onValueChanged()
 						if getValue() &gt; window.cypherlimit.getValue() then
-							setColor("FF0000");
-							window.cypherload_label.setColor("FF0000");
+							setColor(ColorManager.getUIColor("field_error"));
+							window.cypherload_label.setColor(ColorManager.getUIColor("field_error"));
 						else
-							setColor("000000");
-							window.cypherload_label.setColor("000000");
+							setColor(nil);
+							window.cypherload_label.setColor(nil);
 						end
 					end
 				</script>

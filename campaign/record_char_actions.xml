@@ -15,18 +15,14 @@
 		<sheetdata>
 			<!-- INITIATIVE -->
 			<frame_char name="initframe">
-				<anchored height="60" width="135">
-					<left />
-					<top />
-				</anchored>
+				<anchored position="insidetopleft" width="135" height="70" />
 			</frame_char>
-			<label name="initlabel">
-				<anchored to="initframe" position="insidetop" offset="0,5"/>
+			<label_frametop name="initlabel">
+				<anchored to="initframe" />
 				<static textres="initiative" />
-				<center/>
-			</label>
+			</label_frametop>
 			<button_roll name="initroll">
-				<anchored to="initlabel" position="belowleft" offset="22,3" width="20" height="20" />
+				<anchored to="initframe" position="insidetopleft" offset="25,35" width="20" height="20" />
 				<script>
 					function action(draginfo)
 						local rActor = ActorManager.resolveActor(window.getDatabaseNode());
@@ -62,20 +58,15 @@
 				<tooltip textres="modifier" />
 			</basicnumber>
 
-			<frame_char name="armorframe">
-				<anchored height="60">
+			<!-- STATS -->
+			<frame_char name="statsframe">
+				<anchored position="insidetopright" height="70">
 					<left offset="135" />
-					<top />
-					<right offset="-1" />
 				</anchored>
 			</frame_char>
 
-			<!-- STATS -->
 			<number_charabilitypool name="mightpool" source="abilities.might.current">
-				<anchored to="armorframe" width="50" height="30" merge="replace">
-					<left offset="25" />
-					<bottom offset="-10" />
-				</anchored>
+				<anchored to="statsframe" position="insidetopleft" offset="25,25" width="50" height="30" merge="replace" />
 				<stat>might</stat>
 			</number_charabilitypool>
 			<label_fieldtop>
@@ -145,10 +136,7 @@
 
 			<!-- ATTACKS -->
 			<frame_char name="attackframe">
-				<anchored>
-					<left offset="0" />
-					<top offset="55" />
-					<right offset="-1" />
+				<anchored position="insidetop" offset="0,60">
 					<bottom anchor="center" />
 				</anchored>
 			</frame_char>
@@ -214,11 +202,8 @@
 
 			<!-- POWERS -->
 			<frame_char name="abilityframe">
-				<anchored>
-					<left offset="0" />
+				<anchored position="insidebottom">
 					<top anchor="center" />
-					<right offset="-1" />
-					<bottom offset="-5" />
 				</anchored>
 			</frame_char>
 			<label name="ability_name_label">

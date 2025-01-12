@@ -69,39 +69,19 @@
 	</template>
 
 	<!-- EDITOR -->
-	<windowclass name="special_armor_editor">
-		<frame>charsheethelper</frame>
+	<windowclass name="special_armor_editor" copy="charsheethelper_base">
 		<sizelimits>
 			<minimum width="400" height="350" />
-			<dynamic />
 		</sizelimits>
 		<sheetdata>
 			<windowtitlebar name="title">
 				<resource>special_armor_title_editor</resource>
 			</windowtitlebar>
-			<anchor_title_charsheethelper name="contentanchor" />
-			
-			<genericcontrol name="contentframe">
-				<anchored to="contentanchor">
-					<top anchor="bottom" offset="15" />
-					<left offset="20" />
-					<right offset="-25" />
-					<bottom parent="" offset="-40" />
-				</anchored>
-				<frame name="groupbox" offset="15,10,15,10" />
-			</genericcontrol>
 
-			<subwindow_record name="main">
+			<sub_content_framed_groupbox name="main">
 				<class>special_armor_editor_main</class>
-				<activate />
-			</subwindow_record>
-			<scrollbar_record>
-				<target>main</target>
-			</scrollbar_record>
-
-			<!-- <help_charsheet_weapon /> -->
-			<resize_charsheethelper />
-			<close_charsheethelper />
+			</sub_content_framed_groupbox>
+			<scrollbar_content_main />
 		</sheetdata>
 	</windowclass>
 

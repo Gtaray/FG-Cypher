@@ -6,80 +6,48 @@
 -->
 
 <root>
-	<windowclass name="charsheet">
-		<frame>charsheet</frame>
+	<windowclass name="charsheet" copy="charsheet_base">
 		<sizelimits>
-			<dynamic />
-			<minimum width="525" height="611" />
+			<minimum width="530" height="630" />
 		</sizelimits>
-		<softclose />
-		<tooltip field="name" />
-		<export>character</export>
+		<tab>
+			<name>main</name>
+			<resource>tab_main</resource>
+			<class>charsheet_main</class>
+		</tab>
+		<tab merge="add">
+			<name>skills</name>
+			<resource>tab_skills</resource>
+			<class>charsheet_skills</class>
+		</tab>
+		<tab merge="add">
+			<name>inventory</name>
+			<resource>tab_inventory</resource>
+			<class>charsheet_inventory</class>
+		</tab>
+		<tab merge="add">
+			<name>abilities</name>
+			<resource>tab_abilities</resource>
+			<class>charsheet_abilities</class>
+		</tab>
+		<tab merge="add">
+			<name>arcs</name>
+			<resource>tab_arcs</resource>
+			<class>charsheet_arcs</class>
+		</tab>
+		<tab merge="add">
+			<name>notes</name>
+			<resource>tab_notes</resource>
+			<class>charsheet_notes</class>
+		</tab>
+		<tab merge="add">
+			<name>actions</name>
+			<resource>tab_actions</resource>
+			<class>charsheet_actions</class>
+		</tab>
 		<script file="campaign/scripts/char.lua" />
-		<sheetdata>
-			<sub_charsheet_overview name="overview" />
-
-			<sub_charsheet name="main">
-				<class>charsheet_main</class>
-			</sub_charsheet>
-			<sub_charsheet name="skills">
-				<class>charsheet_skills</class>
-			</sub_charsheet>
-			<sub_charsheet name="inventory">
-				<class>charsheet_inventory</class>
-			</sub_charsheet>
-			<sub_charsheet name="abilities">
-				<class>charsheet_abilities</class>
-			</sub_charsheet>
-			<sub_charsheet name="arcs">
-				<class>charsheet_arcs</class>
-			</sub_charsheet>
-			<sub_charsheet name="notes">
-				<class>charsheet_notes</class>
-			</sub_charsheet>
-			<sub_charsheet name="actions">
-				<class>charsheet_actions</class>
-			</sub_charsheet>
-
-			<tabs_charsheet name="tabs">
-				<tab>
-					<tabres>tab_main</tabres>
-					<subwindow>main</subwindow>
-				</tab>
-				<tab>
-					<tabres>tab_skills</tabres>
-					<subwindow>skills</subwindow>
-				</tab>
-				<tab>
-					<tabres>tab_inventory</tabres>
-					<subwindow>inventory</subwindow>
-				</tab>
-				<tab>
-					<tabres>tab_abilities</tabres>
-					<subwindow>abilities</subwindow>
-				</tab>
-				<tab>
-					<tabres>tab_arcs</tabres>
-					<subwindow>arcs</subwindow>
-				</tab>
-				<tab>
-					<tabres>tab_notes</tabres>
-					<subwindow>notes</subwindow>
-				</tab>
-				<tab>
-					<tabres>tab_actions</tabres>
-					<subwindow>actions</subwindow>
-				</tab>
-				<activate>1</activate>
-			</tabs_charsheet>
-		
-			<help_charsheet />
-			<close_charsheet />
-			<resize_charsheet />
-		</sheetdata>
 	</windowclass>
-
-	<windowclass name="charsheet_overview" merge="join">
+	<windowclass name="charsheet_overview" copy="charsheet_overview_base">
 		<script file="campaign/scripts/char_overview.lua" />
 		<sheetdata>
 			<frame_char name="overviewframe">

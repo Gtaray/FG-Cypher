@@ -8,6 +8,9 @@ local nMaxSlotRow = 10;
 local nDefaultSpacing = 10;
 local nSpacing = nDefaultSpacing;
 
+local _sDisabledColor = "B0FFFFFF";
+local _sFullColor = "FFFFFFFF";
+
 function onInit()
 	if maxslotperrow then
 		nMaxSlotRow = tonumber(maxslotperrow[1]) or 10;
@@ -98,9 +101,9 @@ function updateSlots()
 			end
 			
 			if i > nUses then
-				sColor = "4FFFFFFF";
+				sColor = _sDisabledColor;
 			else
-				sColor = "FFFFFFFF";
+				sColor = _sFullColor;
 			end
 
 			local nW = (i - 1) % nMaxSlotRow;
@@ -134,9 +137,9 @@ function updateSlots()
 			end
 			
 			if i > nUses then
-				slots[i].setColor("4FFFFFFF");
+				slots[i].setColor(_sDisabledColor);
 			else
-				slots[i].setColor("FFFFFFFF");
+				slots[i].setColor(_sFullColor);
 			end
 		end
 	end

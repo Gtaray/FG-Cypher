@@ -9,7 +9,7 @@
 	<windowclass name="charsheet_skills">
 		<sheetdata>
 			<frame_char name="skillframe">
-				<bounds>0,0,-1,-5</bounds>
+				<anchored position="over" />
 			</frame_char>
 
 			<label_frametop name="header_skills">

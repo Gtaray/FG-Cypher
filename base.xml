@@ -45,7 +45,6 @@
 	<includefile source="campaign/record_char_actions_power.xml" />
 	<includefile source="campaign/record_char_modification.xml" />
 	<includefile source="campaign/record_char_tracker.xml" />
-	<includefile source="campaign/record_power_editor.xml" />
 	<includefile source="campaign/record_power_roll_stat.xml" />
 	<includefile source="campaign/record_power_roll_attack.xml" />
 	<includefile source="campaign/record_power_roll_damage.xml" />
@@ -67,7 +66,6 @@
 	<includefile source="common/template_common.xml" />
 	<includefile source="common/damagetype_templates.xml" />
 	<includefile source="common/template_actions_tab.xml" />
-	<includefile source="common/template_help.xml" />
 
 	<!-- Party sheet -->
 	<!-- <includefile source="ps/ps_main.xml" />
@@ -98,6 +96,7 @@
 	<!-- High-level scripts -->
 	<script name="GameSystem" file="scripts/manager_gamesystem.lua" />
 	<script name="OptionsManagerCypher" file="scripts/data_options_cyphersystem.lua" />
+	<script name="HelpManager" file="scripts/manager_help.lua" />
 	
 	<script name="CharManager" file="scripts/manager_char.lua" />
 	<script name="CharAbilityManager" file="scripts/manager_char_ability.lua" />

@@ -10,8 +10,6 @@
 	<windowclass name="power_item">
 		<margins control="0,0,0,2" />
 		<script file="campaign/scripts/power_item.lua" />
-		<script>
-		</script>
 		<sheetdata>
 			<hs name="coststat">
 				<script>
@@ -161,4 +159,6 @@
 			end
 		</script>
 	</windowclass>
+
+	<windowclass name="power_action_editor" copy="power_action_editor_core" />
 </root>

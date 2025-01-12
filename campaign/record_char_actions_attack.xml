@@ -119,42 +119,22 @@
 		</sheetdata>
 	</windowclass>
 
-	<windowclass name="attack_editor">
-		<frame>charsheethelper</frame>
+	<windowclass name="attack_editor" copy="charsheethelper_base">
 		<sizelimits>
 			<minimum width="500" height="450" />
-			<dynamic />
 		</sizelimits>
+		<helplinkres>help_charsheet_weapon</helplinkres>
 		<sheetdata>
 			<windowtitlebar_charsheethelper name="title">
 				<prefix>char_title_attack_editor</prefix>
 			</windowtitlebar_charsheethelper>
-			<anchor_title_charsheethelper name="contentanchor" />
-			
-			<genericcontrol name="contentframe">
-				<anchored to="contentanchor">
-					<top anchor="bottom" offset="15" />
-					<left offset="20" />
-					<right offset="-25" />
-					<bottom parent="" offset="-40" />
-				</anchored>
-				<frame name="groupbox" offset="15,10,15,10" />
-			</genericcontrol>
 
-			<subwindow_record name="main">
+			<sub_content_framed_groupbox name="main">
 				<class>pc_weapon_editor_main</class>
-				<activate />
-			</subwindow_record>
-			<scrollbar_record>
-				<target>pc_weapon_editor_main</target>
-			</scrollbar_record>
-
-			<help_charsheet_weapon />
-			<resize_charsheethelper />
-			<close_charsheethelper />
+			</sub_content_framed_groupbox>
+			<scrollbar_content_main />
 		</sheetdata>
 	</windowclass>
-
 	<windowclass name="pc_weapon_editor_main">
 		<script file="campaign/scripts/pc_weapon_editor_main.lua" />
 		<sheetdata>
