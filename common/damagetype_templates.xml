@@ -119,9 +119,22 @@
 				<anchored width="120" />
 				<tooltip textres="special_armor_tooltip_behavior" />
 				<parameters>
-					<labelsres>special_armor_behavior_value_threshold</labelsres>
-					<values>threshold</values>
+					<labelsres>special_armor_behavior_value_threshold|special_armor_behavior_value_limit</labelsres>
+					<values>threshold|limit</values>
 					<defaultlabelres>special_armor_behavior_value_reduction</defaultlabelres>
+				</parameters>
+			</cycler_column>
+
+			<label_column name="label_invert">
+				<static textres="special_armor_label_invert" />
+			</label_column>
+			<cycler_column name="invert">
+				<anchored width="120" />
+				<tooltip textres="special_armor_tooltip_invert" />
+				<parameters>
+					<labelsres>yes</labelsres>
+					<values>yes</values>
+					<defaultlabelres>no</defaultlabelres>
 				</parameters>
 			</cycler_column>
 		</sheetdata>

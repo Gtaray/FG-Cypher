@@ -6,6 +6,17 @@
 -->
 
 <root>
+	<template name="sub_tab_maincharsheet">
+		<subwindow>
+			<anchored to="subwindowframe">
+				<left offset="0" />
+				<top offset="0" />
+				<right offset="0" />
+				<bottom offset="0" />
+			</anchored>
+		</subwindow>
+	</template>
+
 	<template name="number_charabilitymax">
 		<basicnumber>
 			<default>10</default>
@@ -506,5 +517,69 @@
 		<list_charinv name="inventorylist">
 			<script file="campaign/scripts/char_invlist.lua" />
 		</list_charinv>
+	</template>
+
+	<!-- Custom Stat Pools -->
+	<template name="list_customstatpools">
+		<list_column>
+			<script>
+				function update(bReadOnly, bForceHide)
+					local nodeRecord = window.getDatabaseNode();
+					local bReadOnly = WindowManager.getReadOnlyState(nodeRecord);
+					local bShow = getWindowCount() ~= 0;
+
+					bForceHide = bForceHide or (bReadOnly and not bShow)
+					bReadOnly = bForceHide or bReadOnly;
+
+					super.update(bReadOnly, bForceHide);
+				end
+			</script>
+			<datasource>.custom_pools</datasource>
+			<class>custom_stat_pool</class>
+			<child merge="delete" />
+			<sortby merge="delete" />
+		</list_column>
+	</template>
+
+	<template name="number_custom_stat_pool">
+		<basicnumber>
+			<anchored to="rightanchor" width="30" height="20">
+				<top />
+				<right anchor="left" relation="relative" offset="-5" />
+			</anchored>
+			<min>0</min>
+		</basicnumber>
+	</template>
+
+	<template name="button_custom_stat_pool_statroll">
+		<button_roll>
+			<anchored to="rightanchor">
+				<top />
+				<right anchor="left" relation="relative" offset="-5" />
+			</anchored>
+			<script>
+				function onDragStart(button, x, y, draginfo)
+					action(draginfo)
+					return true;
+				end
+				function onButtonPress()
+					action()
+				end
+				function action(draginfo)
+					local sStat = window.name.getValue()
+					if (sStat or "") == "" then
+						return;
+					end
+
+					local rAction = {
+						label = StringManager.capitalize(sStat),
+						sStat = sStat
+					}
+					
+					local rActor = ActorManager.resolveActor(window.getDatabaseNode())
+					ActionStat.payCostAndRoll(draginfo, rActor, rAction);
+				end
+			</script>
+		</button_roll>
 	</template>
 </root>

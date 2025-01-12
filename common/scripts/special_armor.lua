@@ -34,17 +34,31 @@ function generateDescription()
 		sDamageType = "mundane"
 	end
 
+	local sRes = "";
 	if sBehavior == "threshold" then
-		sDesc = string.format(Interface.getString("special_armor_summary_threshold"), sDamageType, nArmor);
+		sRes = "special_armor_summary_threshold";
+	elseif sBehavior == "limit" then
+		sRes = "special_armor_summary_limit";
 	elseif nArmor == 0 then
-		sDesc = string.format(Interface.getString("special_armor_summary_immune"), sDamageType);
+		sRes = "special_armor_summary_immune";
 	elseif nArmor > 0 then
-		sDesc = string.format(Interface.getString("special_armor_summary_resist"), sDamageType, nArmor);
+		sRes = "special_armor_summary_resist";
 	elseif nArmor < 0 then
+		sRes = "special_armor_summary_vuln";
 		-- invert negative armor to positive value
-		sDesc = string.format(Interface.getString("special_armor_summary_vuln"), sDamageType, nArmor * -1);
+		nArmor = nArmor * -1;
 	end
 
+	if self.isInverted() then
+		sRes = string.format("%s_inverted", sRes);
+	end
+
+	-- Only for damage reduction with an amror value of 0 do we not display a number
+	if nArmor == 0 and sBehavior == "" then
+		sDesc = string.format(Interface.getString(sRes), sDamageType);
+	else
+		sDesc = string.format(Interface.getString(sRes), sDamageType, nArmor);
+	end
 	desc.setValue(sDesc);
 end
 
@@ -61,6 +75,10 @@ end
 
 function getBehavior()
 	return DB.getValue(getDatabaseNode(), "behavior", ""):lower();
+end
+
+function isInverted()
+	return DB.getValue(getDatabaseNode(), "invert", "") == "yes";
 end
 
 -------------------------------------------------------------------------------

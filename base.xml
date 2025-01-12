@@ -6,7 +6,7 @@
 -->
 
 <root version="3.0" release="4.1" logo="logo.png">
-	<announcement text="Cypher System ruleset (2024-12-10) for Fantasy Grounds\rCopyright 2024 Smiteworks USA, LLC" font="emotefont" icon="rulesetlogo_CoreRPG" />	
+	<announcement text="Cypher System ruleset (2025-01-14) for Fantasy Grounds\rCopyright 2024 Smiteworks USA, LLC\rLink to Wiki: https://publish.obsidian.md/fantasygrounds-cypher-wiki/Home" font="emotefont" icon="rulesetlogo_CoreRPG" />	
 	<!-- Attributes -->
 	<description>
 		<displayname>Cypher System</displayname>
@@ -68,7 +68,8 @@
 	<includefile source="common/template_actions_tab.xml" />
 
 	<!-- Party sheet -->
-	<includefile source="ps/ps_inventory.xml" />
+	<!-- <includefile source="ps/ps_main.xml" />
+	<includefile source="ps/ps_inventory.xml" /> -->
 
 	<!-- Combat tracker -->
 	<includefile source="ct/template_ct.xml" />

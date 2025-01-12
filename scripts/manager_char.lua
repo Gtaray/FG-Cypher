@@ -392,8 +392,7 @@ function addItemAsWeapon(itemnode)
 		DB.setValue(attacknode, "pierceamount", "number", nPiercing);
 	end
 
-	DB.setValue(attacknode, "itemlink", "windowreference", "item", DB.getPath(itemnode));
-	DB.setValue(itemnode, "attacklink", "windowreference", "attack", DB.getPath(attacknode));
+	ItemManagerCypher.linkWeaponAndAttack(itemnode, attacknode);
 
 	return attacknode;
 end

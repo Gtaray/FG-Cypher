@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="ps_main_content" merge="join">
+		<sheetdata>
+			<string_ps name="label_partyxp">
+				<anchored width="120">
+					<top anchor="top" offset="20" />
+					<right anchor="center" offset="0" />
+				</anchored>
+				<static textres="ps_label_partyxp" />
+			</string_ps>
+		</sheetdata>
+	</windowclass>
+</root>

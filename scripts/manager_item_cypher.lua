@@ -188,3 +188,60 @@ function getWeaponPiercing(itemNode)
 	-- because a 0 means ignore all armor
 	return -1;
 end
+
+function getWeaponAttackNode(itemNode)
+	if not ItemManagerCypher.isItemWeapon(itemNode) then
+		return;
+	end
+
+	local sClass, sRecord = DB.getValue(itemNode, "attacklink", "", "");
+	return DB.findNode(sRecord);
+end
+
+function setWeaponAttackNode(itemNode, attackNode)
+	if not ItemNode then
+		return
+	end
+	if not attackNode then
+		return
+	end
+	if not ItemManagerCypher.isItemWeapon(itemNode) then
+		return;
+	end
+
+	DB.setValue(itemNode, "attacklink", "windowreference", "attack", DB.getPath(attackNode));
+end
+
+function clearWeaponAttackNode(itemNode)
+	if not ItemNode then
+		return
+	end
+	if not ItemManagerCypher.isItemWeapon(itemNode) then
+		return;
+	end
+	DB.setValue(itemNode, "attacklink", "windowreference", "", "");
+end
+
+function linkWeaponAndAttack(itemNode, attackNode)
+	if not itemNode then
+		return
+	end
+	if not attackNode then
+		return
+	end
+	if not ItemManagerCypher.isItemWeapon(itemNode) then
+		return;
+	end
+
+	-- Ensure that the attack and item are both on the same character sheet
+	-- Otherwise we could link to an item not owned by the player, which will break things
+	-- when we delete it
+	local s1 = DB.getName(DB.getChild(attackNode, "..."));
+	local s2 = DB.getName(DB.getChild(itemNode, "..."));
+	if s1 ~= s2 then
+		return
+	end
+
+	ItemManagerCypher.setWeaponAttackNode(itemNode, attackNode);
+	DB.setValue(attackNode, "itemlink", "windowreference", "item", DB.getPath(itemNode));
+end

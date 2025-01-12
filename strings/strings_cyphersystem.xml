@@ -109,6 +109,7 @@
 	
 	<!-- Party Sheet -->
 	<string name="ps_label_invtype">Type</string>
+	<string name="ps_label_partyxp">Party XP</string>
 	
 	<!-- Character - Main -->
 	<string name="char_tooltip_pc_intrusion">Click to invoke a Player Intrusion</string>
@@ -146,6 +147,7 @@
 	<string name="char_label_recovery10hr">10 Hours</string>
 	<string name="char_label_recoveryused">Used</string>
 
+	<string name="char_tab_armor">Armor</string>
 	<string name="char_tooltip_armor">Adjust armor and effort cost penalty</string>	
 	<string name="char_armorcalc_title">Armor Calc</string>
 	<string name="char_label_armorbase">Base</string>
@@ -160,6 +162,13 @@
 	<string name="char_tooltip_armorspeedcostmod">Modifier for the Speed Effort cost penalty (due to advancements or abilities).</string>
 	
 	<string name="char_header_special_defenses">Special Defenses</string>
+
+	<string name="char_tab_pools">Pools</string>
+	<string name="char_header_custom_pools">Custom Stat Pools</string>
+	<string name="char_label_custom_pool_name">Stat Pool Name</string>
+	<string name="char_label_custom_pool_current">Current</string>
+	<string name="char_label_custom_pool_max">Max</string>
+	<string name="char_label_custom_pool_edge">Edge</string>
 
 	<string name="char_message_add_ability">Ability '%s' added to '%s'</string>
 	<string name="char_message_add_type">Type '%s' added to '%s'</string>
@@ -203,6 +212,8 @@
 	<string name="char_title_attack_editor">Attack Editor</string>
 	<string name="char_label_weaponammo">Uses</string>
 	
+	<string name="char_label_itemlink">Item Link</string>
+	<string name="char_itemlink_empty">Drop an item link in this window to link</string>
 	<string name="char_label_attacktype">Attack Type</string>
 	<string name="char_label_attacktype_weapon">Weapon</string>
 	<string name="char_label_attacktype_magic">Magic</string>
@@ -299,6 +310,7 @@
 	<string name="power_menu_action_add_attack">Add Attack</string>
 
 	<string name="power_tooltip_stat">ROLL</string>
+	<string name="power_tooltip_skill">SKILL</string>
 	<string name="power_tooltip_attack">ATK</string>
 	<string name="power_tooltip_damage">DMG</string>
 	<string name="power_tooltip_heal">HEAL</string>
@@ -314,10 +326,14 @@
 	<string name="power_recharge_first">On the first recovery of the day</string>
 	<string name="power_recharge_last">On the last recovery of the day</string>
 	<string name="power_recharge_manual">Manually</string>
+	<string name="power_label_notes">Notes</string>
+	<string name="power_tooltip_notes">This text is only displayed in the tooltip for this action, and is meant to help context for individual actions.</string>
 
 	<string name="power_header_stat">STAT</string>
 	<string name="power_label_roll">Roll</string>
 	<string name="power_label_stat">Stat</string>
+	<string name="power_label_skill">Skill Name</string>
+	<string name="power_tooltip_skill_description">Entering a skill name will turn this into a skill roll.</string>
 
 	<string name="power_header_attack">ATTACK</string>
 	<string name="power_label_attack_text_1">Use my</string>
@@ -335,6 +351,9 @@
 	<string name="power_label_training">Training</string>
 	<string name="power_label_asset">Asset</string>
 	<string name="power_label_modifier">Mod</string>
+	<string name="power_tooltip_modifier">This is a flat modifier that's added to the roll. Every +3 is converted to an asset.</string>
+	<string name="power_label_leveladjust_text_1">%s this roll by</string>
+	<string name="power_label_leveladjust_text_2">steps.</string>
 
 	<string name="power_header_damage">DAMAGE</string>
 	<string name="power_label_damage_text_1">Use</string>
@@ -595,11 +614,20 @@
 	<string name="special_armor_label_behavior">Behavior</string>
 	<string name="special_armor_behavior_value_reduction">Damage Reduction</string>
 	<string name="special_armor_behavior_value_threshold">Damage Threshold</string>
+	<string name="special_armor_behavior_value_limit">Damage Limit</string>
 	<string name="special_armor_tooltip_behavior">How does this special armor interact with damage?\nReduction = reduce incoming damage by the amount.\nThreshold = ignore all damage less than the amount.</string>
+	<string name="special_armor_label_invert">Invert?</string>
+	<string name="special_armor_tooltip_invert">If "Yes", then this armor will apply to all damage types EXCEPT the one specified in this armor entry.</string>
 	<string name="special_armor_summary_immune">Immune to %s damage</string>
+	<string name="special_armor_summary_immune_inverted">Immune to all non-%s damage</string>
 	<string name="special_armor_summary_resist">Reduce %s damage taken by %s</string>
+	<string name="special_armor_summary_resist_inverted">Reduce all non-%s damage taken by %s</string>
 	<string name="special_armor_summary_vuln">Increase %s damage taken by %s</string>
+	<string name="special_armor_summary_vuln_inverted">Increase all non-%s damage taken by %s</string>
 	<string name="special_armor_summary_threshold">Ignore %s damage unless it deals at least %s damage</string>
+	<string name="special_armor_summary_threshold_inverted">Ignore all non-%s damage unless it deals at least %s damage</string>
+	<string name="special_armor_summary_limit">Limit %s damage to %s damage from a single hit</string>
+	<string name="special_armor_summary_limit_inverted">Limit non-%s damage to %s damage from a single hit</string>
 
 	<!-- Defense Prompt -->
 	<string name="defense_prompt_window_title">Defend Thyself</string>

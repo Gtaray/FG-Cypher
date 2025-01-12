@@ -457,6 +457,13 @@ function getArmorThresholdEffectBonus(rActor, aFilter, sDamageType, rTarget)
 	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, { "DT", "THRESHOLD", }, aFilter, sDamageType, rTarget);
 end
 
+function getDamageLimitEffectBonus(rActor, aFilter, sDamageType, rTarget)
+	if type(aFilter) == "string" then
+		aFilter = { aFilter }
+	end
+	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, { "DL", "LIMIT", }, aFilter, sDamageType, rTarget);
+end
+
 function getSuperArmorEffectBonus(rActor, aFilter, sDamageType, rTarget)
 	if type(aFilter) == "string" then
 		aFilter = { aFilter }
@@ -968,6 +975,13 @@ function checkDamageType(rEffectComp, sEffectType, aFilter)
 		return true;
 	end
 
+	-- If we're not specifying any filters to match against, then we can just return true
+	-- Which means that all effects of this type will be returned. 
+	-- Most specifically needed for checking damage type immunities
+	if #aFilter == 0 then
+		return true;
+	end
+
 	local bUntyped = StringManager.contains(aFilter, "untyped");
 	local aStatFilters = {};
 	local aDmgTypeFilters = {};
@@ -1139,7 +1153,7 @@ function parseEffectComp(s)
 			aConditionals = EffectManagerCypher.parseEffectConditional(sData)
 		else
 			local nFilterIndex = 1;
-			local aWords = StringManager.parseWords(sData, "/\\%.%[%]%(%):{}");
+			local aWords = StringManager.parseWords(sData, "/\\%.%[%]%(%):{}%!%~");
 
 			if #aWords > 0 then
 				-- Check the very first bit of text to see if it's a text string
