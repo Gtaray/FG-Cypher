@@ -353,6 +353,8 @@ function getPowerAction(nodeAction)
 		rAction.sTraining = DB.getValue(nodeAction, "training", "");
 		rAction.nAssets = DB.getValue(nodeAction, "asset", 0);
 		rAction.nModifier = DB.getValue(nodeAction, "modifier", 0);
+		rAction.nEase = DB.getValue(nodeAction, "ease", 0);
+		rAction.nHinder = DB.getValue(nodeAction, "hinder", 0);
 
 		-- If a skill value is present, then treat this action as a skill roll
 		-- from here on out		
@@ -369,6 +371,8 @@ function getPowerAction(nodeAction)
 		rAction.sTraining = DB.getValue(nodeAction, "training", "");
 		rAction.nAssets = DB.getValue(nodeAction, "asset", 0);
 		rAction.nModifier = DB.getValue(nodeAction, "modifier", 0);
+		rAction.nEase = DB.getValue(nodeAction, "ease", 0);
+		rAction.nHinder = DB.getValue(nodeAction, "hinder", 0);
 
 		-- Only for NPCs
 		rAction.nLevel = DB.getValue(nodeAction, "level", 0);

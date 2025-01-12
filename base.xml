@@ -70,7 +70,8 @@
 	<includefile source="common/template_help.xml" />
 
 	<!-- Party sheet -->
-	<includefile source="ps/ps_inventory.xml" />
+	<!-- <includefile source="ps/ps_main.xml" />
+	<includefile source="ps/ps_inventory.xml" /> -->
 
 	<!-- Combat tracker -->
 	<includefile source="ct/template_ct.xml" />

@@ -53,6 +53,13 @@
 				local sSource = PowerManager.getActionNodeSource(getDatabaseNode());
 				local bNPC = sSource == "npc";
 
+				easetext1.setVisible(not bNPC);
+				ease.setVisible(not bNPC);
+				easetext2.setVisible(not bNPC);
+				hindertext1.setVisible(not bNPC);
+				hinder.setVisible(not bNPC);
+				hindertext2.setVisible(not bNPC);
+
 				training.setVisible(not bNPC);
 				training_label.setVisible(not bNPC);
 				asset.setVisible(not bNPC);
@@ -147,6 +154,66 @@
 				<static textres="power_label_attack_text_3" />
 			</label>
 
+			<label_column name="easetext1">
+				<script>
+					function onInit()
+						setValue(string.format(Interface.getString("power_label_leveladjust_text_1"), "Ease"))
+					end
+				</script>
+				<anchored>
+					<top offset="20" relation="relative" />
+				</anchored>
+				<static textres="power_label_leveladjust_text_1" />
+			</label_column>
+			<number_column name="ease">
+				<anchored width="30" height="20">
+					<top offset="-20" />
+					<left parent="easetext1" anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<min>0</min>
+			</number_column>
+			<label_fieldtop>
+				<anchored to="ease" />
+				<static textres="modifier_label_EASE" />
+			</label_fieldtop>
+			<label name="easetext2">
+				<anchored to="ease" width="125">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_leveladjust_text_2" />
+			</label>
+
+			<label_column name="hindertext1">
+				<script>
+					function onInit()
+						setValue(string.format(Interface.getString("power_label_leveladjust_text_1"), "Hinder"))
+					end
+				</script>
+				<anchored>
+					<top offset="20" relation="relative" />
+				</anchored>
+				<static textres="power_label_leveladjust_text_1" />
+			</label_column>
+			<number_column name="hinder">
+				<anchored width="30" height="20">
+					<top offset="-20" />
+					<left parent="hindertext1" anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<min>0</min>
+			</number_column>
+			<label_fieldtop>
+				<anchored to="hinder" />
+				<static textres="modifier_label_HINDER" />
+			</label_fieldtop>
+			<label name="hindertext2">
+				<anchored to="hinder" width="125">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_leveladjust_text_2" />
+			</label>
+
 			<label_column name="atkrange_label">
 				<static textres="power_label_attackrange" />
 			</label_column>
@@ -173,6 +240,7 @@
 			</label_column>
 			<number_column name="modifier">
 				<hideonvalue value="0" />
+				<tooltip textres="power_tooltip_modifier" />
 			</number_column>
 
 			<label_column name="level_label">

@@ -520,13 +520,14 @@ function getArmor(rActor, rTarget, sStat, sDamageType)
 		if sBehavior == "" then
 			local sType = DB.getValue(resist, "damagetype", ""):lower();
 			local nAmount = DB.getValue(resist, "armor", 0);
+			local bInverted = DB.getValue(resist, "invert", "") == "yes";
 
 			-- This ensures that untyped damage works even if its in the 'special defenses' list
 			if sType == "" then 
 				sType = "untyped";
 			end
 
-			if sDamageType == sType and nAmount ~= 0 then
+			if ((bInverted and sDamageType ~= sType) or (not bInverted and sDamageType == sType)) and nAmount ~= 0 then
 				nArmor = nArmor + nAmount;
 			end
 		end
@@ -558,20 +559,19 @@ function getArmorThreshold(rActor, rTarget, sStat, sDamageType)
 	local nThreshold = 0;
 
 	-- Start by getting special armor values from the creature node
-	-- This list does NOT include untyped armor, 
-	-- that's handled above with the base armor
 	for _, resist in ipairs(DB.getChildList(node, "resistances")) do
 		local sBehavior = DB.getValue(resist, "behavior", ""):lower();
 		if sBehavior == "threshold" then
 			local sType = DB.getValue(resist, "damagetype", ""):lower();
 			local nAmount = DB.getValue(resist, "armor", 0);
+			local bInverted = DB.getValue(resist, "invert", "") == "yes";
 
 			-- This ensures that untyped damage works even if its in the 'special defenses' list
 			if sType == "" then 
 				sType = "untyped";
 			end
 
-			if sDamageType == sType and nAmount > nThreshold then
+			if ((bInverted and sDamageType ~= sType) or (not bInverted and sDamageType == sType)) and nAmount > nThreshold then
 				-- Only take the highest threshold amount, they are not added together
 				nThreshold = nAmount; 
 			end
@@ -579,6 +579,58 @@ function getArmorThreshold(rActor, rTarget, sStat, sDamageType)
 	end
 
 	return math.max(nThreshold, nThresholdEffects);
+end
+
+-- Armor Cap is a limit on how much damage can be taken from a single hit
+function getDamageLimit(rActor, rTarget, sStat, sDamageType)
+	local _, node = ActorManager.getTypeAndNode(rActor);
+
+	if not node then
+		return 0;
+	end
+
+	-- Default to might, since that's the default for damage dealt
+	if not sStat then
+		sStat = "might";
+	end
+
+	-- if for some reason damage type isn't specified, default to untyped
+	if (sDamageType or "") == "" then
+		sDamageType = "untyped";
+	end
+
+	local nLimitEffects = EffectManagerCypher.getDamageLimitEffectBonus(rActor, sStat, sDamageType, rTarget)
+	local nLimit = 0;
+
+	-- Start by getting special armor values from the creature node
+	for _, resist in ipairs(DB.getChildList(node, "resistances")) do
+		local sBehavior = DB.getValue(resist, "behavior", ""):lower();
+		if sBehavior == "limit" then
+			local sType = DB.getValue(resist, "damagetype", ""):lower();
+			local nAmount = DB.getValue(resist, "armor", 0);
+			local bInverted = DB.getValue(resist, "invert", "") == "yes";
+
+			-- This ensures that untyped damage works even if its in the 'special defenses' list
+			if sType == "" then 
+				sType = "untyped";
+			end
+
+			if ((bInverted and sDamageType ~= sType) or (not bInverted and sDamageType == sType)) and nAmount > nLimit then
+				-- Only take the lowest cap amount, they are not added together
+				nLimit = nAmount;
+			end
+		end
+	end
+
+	-- This is kind of messy, but we want to return the lowest non-zero value
+	if nLimit > 0 and nLimitEffects > 0 then
+		return math.min(nLimit, nLimitEffects);
+	elseif nLimit > 0 then
+		return nLimit
+	elseif nLimitEffects > 0 then
+		return nLimitEffects
+	end
+	return 0;
 end
 
 function getSuperArmor(rActor, rTarget, sStat, sDamageType)
@@ -610,74 +662,78 @@ function getSuperArmor(rActor, rTarget, sStat, sDamageType)
 	return nSuperArmor + nSuperArmorEffects;
 end
 
-function isImmune(rActor, rTarget, aDmgTypes)
-	local tImmune = ActorManagerCypher.getImmunities(rActor, rTarget);
-	local bImmune = ActorManagerCypher.resistanceCheckerHelper(tImmune, aDmgTypes);
-	return bImmune;
-end
+function isImmune(rActor, rTarget, aDamageTypes)
+	local _, node = ActorManager.getTypeAndNode(rActor);
 
-function getImmunities(rActor, rTarget)
-	-- Only do this for CT Nodes
-	local _, charNode = ActorManager.getTypeAndNode(rActor);
-	if not charNode then
-		return nil;
+	if not node then
+		return 0;
 	end
 
-	local tDmgMods = {};
+	-- First check effects
+	local tEffectImmunities = EffectManagerCypher.getImmunityEffects(rActor, rTarget)
+	for _,v in pairs(tEffectImmunities) do
+		-- If there's no damage type specified in the effect, then we match 
+		-- against untyped damage
+		if #(v.filters) == 0 and ActorManagerCypher.matchDamageTypes(aDamageTypes, "untyped") then
+			return true;
+		end		
 
-	-- Start by getting values from the creature node
-	for _, node in ipairs(DB.getChildList(charNode, "resistances")) do
-		local sDamageType = DB.getValue(node, "damagetype", ""):lower();
-		local nAmount = DB.getValue(node, "armor", 0);
-
-		if sDamageType == "" then
-			sDamageType = "untyped";
-		end
-
-		-- Only add to the list if the filter is nil OR if the filter matches the 
-		-- damage mod amount
-		if nAmount == 0 then
-			tDmgMods[sDamageType] = nAmount;
-		end
-	end
-
-	-- Then get values from effects
-	local aEffects = EffectManagerCypher.getImmunityEffects(rActor, rTarget);
-	for _,v in pairs(aEffects) do
-		if #(v.filters) == 0 then
-			tDmgMods["untyped"] = 0;
-		end
 		for _,vType in pairs(v.filters) do
-			if vType ~= "untyped" then
-				tDmgMods[vType] = 0;
+			local bInverted = StringManager.startsWith(vType, "!");
+			if bInverted then
+				vType = vType:sub(2);
+			end
+			if ActorManagerCypher.matchDamageTypes(aDamageTypes, vType) then
+				if not bInverted then
+					return true;
+				end
 			end
 		end
 	end
 
-	return tDmgMods;
-end
+	-- Then get special armor values from the creature node and check against them
+	for _, resist in ipairs(DB.getChildList(node, "resistances")) do
+		local sBehavior = DB.getValue(resist, "behavior", ""):lower();
 
+		-- Empty behavior is the default, which is "Armor"
+		if sBehavior == "" then
+			local sType = DB.getValue(resist, "damagetype", ""):lower();
+			local nAmount = DB.getValue(resist, "armor", 0);
+			local bInverted = DB.getValue(resist, "invert", "") == "yes";
 
-function resistanceCheckerHelper(tDmgMods, aDmgTypes)
-	if aDmgTypes == nil then
-		return false, 0;
-	end
-
-	if type(aDmgTypes) == "string" then
-		aDmgTypes = { aDmgTypes }
-	end
-
-	if tDmgMods["all"] then
-		return true, tDmgMods["all"];
-	end
-
-	for _, sType in ipairs(aDmgTypes) do
-		if tDmgMods[sType] then 
-			return true, tDmgMods[sType];
+			-- Immunity is denoted by an Armor value of 0
+			if nAmount == 0 and ActorManagerCypher.matchDamageTypes(aDamageTypes, sType, bInverted) then
+				-- If there's a match and we're not inverted, we'll return true
+				-- If there's a match and we're inverted, we'll return false
+				if not bInverted then
+					return true;
+				end
+			end
 		end
 	end
 
-	return false, 0;
+	return false;
+end
+
+function matchDamageTypes(aDamageTypes, sMatchedType)
+	if sMatchedType == "" then
+		sMatchedType = "untyped"
+	end
+
+	if sMatchedType == "any" or sMatchedType == "all" then
+		return true;
+	end
+
+	for _, sDamageType in ipairs(aDamageTypes) do
+		if sDamageType == "" then
+			sDamageType = "untyped"
+		end
+		
+		if sDamageType == sMatchedType then
+			return true;
+		end
+	end
+	return false;
 end
 
 ---------------------------------------------------------------

@@ -292,6 +292,14 @@ function applyDamage(rSource, rTarget, rRoll)
 			aNotifications);
 	end
 
+	rRoll.nTotal = ActionDamage.applyDamageLimit(
+		rSource, 
+			rTarget, 
+			rRoll.nTotal, 
+			rRoll.sDamageStat, 
+			rRoll.sDamageType,
+			aNotifications);
+
 	local nShieldAdjust = ActionDamage.handleShield(
 		rTarget, 
 		rRoll.nTotal, 
@@ -420,6 +428,25 @@ function applyThreshold(rSource, rTarget, nTotal, sStat, sDamageType, bPiercing,
 	end
 
 	return nTotal;
+end
+
+function applyDamageLimit(rSource, rTarget, nTotal, sStat, sDamageType, aNotifications)
+	-- If for some reason the amount of damage is negative, then we don't need to do any processing
+	-- Because it's handled as healing
+	if nTotal <= 0 then
+		return nTotal;
+	end
+
+	local nLimit = ActorManagerCypher.getDamageLimit(rTarget, rSource, sStat, sDamageType);
+
+	-- If there's no damage limit set, then return full damage
+	-- If the total damage is under the limit, return full damage
+	if nLimit <= 0 or nTotal <= nLimit then
+		return nTotal
+	end
+
+	table.insert(aNotifications, "[LIMITED]");
+	return math.min(nLimit, nTotal);
 end
 
 function applyArmor(rSource, rTarget, nTotal, sStat, sDamageType, bPiercing, nPierceAmount, aNotifications)
