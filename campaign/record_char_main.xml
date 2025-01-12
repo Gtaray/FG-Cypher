@@ -10,7 +10,7 @@
 		<sheetdata>
 			<!-- ADVANCEMENT -->
 			<frame_char name="overviewframe">
-				<bounds>0,0,-1,50</bounds>
+				<anchored position="insidetop" height="50" />
 			</frame_char>
 
 			<genericcontrol name="overviewanchor">
@@ -117,7 +117,7 @@
 
 			<!-- TYPE / FOCUS / DESCRIPTOR -->
 			<frame_char name="characterframe">
-				<bounds>150,50,329,190</bounds>
+				<anchored position="insidetopleft" offset="150,50" width="330" height="190" />
 			</frame_char>
 			<genericcontrol name="charanchor">
 				<anchored to="characterframe">
@@ -200,7 +200,7 @@
 			
 			<!-- STATS -->
 			<frame_char name="mightframe">
-				<bounds>0,50,150,130</bounds>
+				<anchored position="insidetopleft" offset="0,50" width="150" height="130" />
 			</frame_char>
 			<number_charabilitymax name="mightmax" source="abilities.might.max">
 				<anchored to="mightframe" />
@@ -249,7 +249,7 @@
 			</number_defensemod>
 			
 			<frame_char name="speedframe">
-				<bounds>0,180,150,130</bounds>
+				<anchored position="insidetopleft" offset="0,180" width="150" height="130" />
 			</frame_char>
 			<number_charabilitymax name="speedmax" source="abilities.speed.max">
 				<anchored to="speedframe" />
@@ -316,7 +316,7 @@
 			</number_defensemod>
 			
 			<frame_char name="intellectframe">
-				<bounds>0,310,150,130</bounds>
+				<anchored position="insidetopleft" offset="0,310" width="150" height="130" />
 			</frame_char>
 			<number_charabilitymax name="intellectmax" source="abilities.intellect.max">
 				<anchored to="intellectframe" />
@@ -366,7 +366,9 @@
 
 			<!-- ARMOR -->
 			<frame_char name="armorframe">
-				<bounds>150,240,329,-81</bounds>
+				<anchored position="insidetopleft" offset="150,240" width="330">
+					<bottom offset="-80" />
+				</anchored>
 			</frame_char>
 			<label name="armor_label">
 				<anchored to="armorframe" height="20" width="40">
@@ -461,7 +463,7 @@
 			
 			<!-- DAMAGE TRACK -->
 			<frame_char name="damageframe">
-				<bounds>0,-80,225,75</bounds>
+				<anchored position="insidebottomleft" width="225" height="80" />
 			</frame_char>
 			<label_frametop>
 				<anchored to="damageframe" />
@@ -484,7 +486,7 @@
 
 			<!-- RECOVERIES -->
 			<frame_char name="recoveryframe">
-				<bounds>225,-80,254,75</bounds>
+				<anchored position="insidebottomleft" offset="225,0" width="255" height="80" />
 			</frame_char>
 			<label_frametop>
 				<anchored to="recoveryframe" />
@@ -533,35 +535,27 @@
 		</sheetdata>
 	</windowclass>
 
-	<windowclass name="charsheet_armorcalc">
-		<frame>charsheethelper</frame>
+	<windowclass name="charsheet_armorcalc" copy="charsheethelper_base">
 		<sizelimits>
-			<minimum width="350" height="150" />
-			<dynamic />
+			<minimum width="350" height="140" />
 		</sizelimits>
 		<sheetdata>
 			<windowtitlebar_charsheethelper name="title">
 				<prefix>char_armorcalc_title</prefix>
 			</windowtitlebar_charsheethelper>
-			<anchor_title_charsheethelper name="contentanchor" />
 
-			<anchor_column name="columnanchor">
-				<anchored to="contentanchor" position="below" offset="0,-5" />
-			</anchor_column>
+			<area_content_framed_groupbox name="area_content" />
 			
 			<!-- Armor -->
 			<label name="label_armor">
-				<anchored width="100">
-					<top parent="columnanchor" anchor="bottom" relation="relative" offset="20" />
-					<left offset="30" />
-				</anchored>
+				<anchored to="area_content" position="insidetopleft" offset="0,10" width="100" />
 				<static textres="char_label_armor" />
 			</label>
 			<basicnumber name="armorbase" source="Armor.base">
-				<script file="common/scripts/number_migrate_value.lua" />
-				<migrate>armorbase</migrate>
 				<anchored to="label_armor" position="righthigh" offset="5,0" width="45" height="20" />
 				<tooltip textres="char_tooltip_armorbase"/>
+				<migrate>armorbase</migrate>
+				<script file="common/scripts/number_migrate_value.lua" />
 			</basicnumber>
 			<label_fieldtop name="label_armorbase">
 				<anchored to="armorbase" />
@@ -573,10 +567,10 @@
 				<center />
 			</label>
 			<basicnumber name="armor" source="Armor.mod">
-				<script file="common/scripts/number_migrate_value.lua" />
-				<migrate>armor</migrate>
 				<anchored to="label_armorplus" position="right" offset="5,0" width="45" />
 				<tooltip textres="char_tooltip_armormod"/>
+				<migrate>armor</migrate>
+				<script file="common/scripts/number_migrate_value.lua" />
 			</basicnumber>
 			<label_fieldtop name="label_armormod">
 				<anchored to="armor" />
@@ -596,17 +590,14 @@
 			
 			<!-- Speed Effort Penalty -->
 			<label name="label_armorspeedcost">
-				<anchored width="100">
-					<top parent="columnanchor" anchor="bottom" relation="relative" offset="20" />
-					<left offset="30" />
-				</anchored>
+				<anchored to="area_content" position="insidetopleft" offset="0,50" width="100" />
 				<static textres="char_label_armorspeedcost" />
 			</label>
 			<basicnumber name="armorspeedcostbase" source="ArmorSpeedPenalty.base">
-				<script file="common/scripts/number_migrate_value.lua" />
-				<migrate>armorspeedcostbase</migrate>
 				<anchored to="label_armorspeedcost" position="righthigh" offset="5,0" width="45" height="20" />
 				<tooltip textres="char_tooltip_armorspeedcostbase" />
+				<migrate>armorspeedcostbase</migrate>
+				<script file="common/scripts/number_migrate_value.lua" />
 			</basicnumber>
 			<label_fieldtop name="label_armorspeedcostbase">
 				<anchored to="armorspeedcostbase" />
@@ -618,18 +609,15 @@
 				<center />
 			</label>
 			<basicnumber name="armorspeedcost" source="ArmorSpeedPenalty.mod">
-				<script file="common/scripts/number_migrate_value.lua" />
-				<migrate>armorspeedcost</migrate>
 				<anchored to="label_armorspeedcostplus" position="righthigh" offset="5,0" width="45" height="20" />
 				<tooltip textres="char_tooltip_armorspeedcostmod" />
+				<migrate>armorspeedcost</migrate>
+				<script file="common/scripts/number_migrate_value.lua" />
 			</basicnumber>
 			<label_fieldtop name="label_armorspeedcostmod">
 				<anchored to="armorspeedcost" />
 				<static textres="char_label_armormod" />
 			</label_fieldtop>
-
-			<resize_charsheethelper />
-			<close_charsheethelper />
 		</sheetdata>
 	</windowclass>
 

@@ -9,7 +9,7 @@
 	<windowclass name="charsheet_arcs">
 		<sheetdata>
 			<frame_char name="arcframe">
-				<bounds>0,0,-1,-5</bounds>
+				<anchored position="over" />
 			</frame_char>
 			<label_frametop name="header_arcs">
 				<anchored to="arcframe" />
@@ -191,10 +191,6 @@
 			end
 			function setTab(nIndex)
 				tabs.activateTab(nIndex);
-				local sTab = tabs.getTab(nIndex)
-				if self[sTab] and self[sTab].subwindow and self[sTab].subwindow.focus then
-					self[sTab].subwindow.focus()
-				end
 			end
 			function addStep()
 				inprogress.subwindow.addStep();

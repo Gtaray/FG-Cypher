@@ -12,6 +12,23 @@
 	<string name="tab_climax">Climax</string>
 	<string name="tab_resolution">Resolution</string>
 
+	<string name="help_charsheet_main">https://publish.obsidian.md/fantasygrounds-cypher-wiki/Character+Sheet/Main+Tab</string>
+	<string name="help_charsheet_skills">https://publish.obsidian.md/fantasygrounds-cypher-wiki/Character+Sheet/Skills+Tab</string>
+	<string name="help_charsheet_inventory">https://publish.obsidian.md/fantasygrounds-cypher-wiki/Character+Sheet/Inventory+Tab</string>
+	<string name="help_charsheet_abilities">https://publish.obsidian.md/fantasygrounds-cypher-wiki/Character+Sheet/Abilities+Tab</string>
+	<string name="help_charsheet_arcs">https://publish.obsidian.md/fantasygrounds-cypher-wiki/Character+Sheet/Character+Arcs+Tab</string>
+	<string name="help_charsheet_notes">https://publish.obsidian.md/fantasygrounds-cypher-wiki/Character+Sheet/Notes+Tab</string>
+	<string name="help_charsheet_actions">https://publish.obsidian.md/fantasygrounds-cypher-wiki/Character+Sheet/Main+Tab</string>
+
+	<string name="help_charsheet_weapon">https://publish.obsidian.md/fantasygrounds-cypher-wiki/Character+Sheet/Actions+Tab#Weapons</string>
+	<string name="help_charsheet_modification">https://publish.obsidian.md/fantasygrounds-cypher-wiki/Library/Features</string>
+
+	<string name="help_action_stat">https://publish.obsidian.md/fantasygrounds-cypher-wiki/Character+Sheet/Actions+Tab#Stat+Action</string>
+	<string name="help_action_attack">https://publish.obsidian.md/fantasygrounds-cypher-wiki/Character+Sheet/Actions+Tab#Attack+Action</string>
+	<string name="help_action_damage">https://publish.obsidian.md/fantasygrounds-cypher-wiki/Character+Sheet/Actions+Tab#Damage+Action</string>
+	<string name="help_action_heal">https://publish.obsidian.md/fantasygrounds-cypher-wiki/Character+Sheet/Actions+Tab#Heal+Action</string>
+	<string name="help_action_effect">https://publish.obsidian.md/fantasygrounds-cypher-wiki/Character+Sheet/Actions+Tab#Effect+Action</string>
+
 	<!-- Common -->
 	<string name="yes">Yes</string>
 	<string name="no">No</string>
@@ -508,9 +525,8 @@
 	<string name="npc_label_hp">Health</string>
 	<string name="npc_label_damage">Damage</string>
 	<string name="npc_label_armor">Armor</string>
-	<string name="npc_label_type">Type</string>
-	<string name="npc_label_move">Movement</string>
 	<string name="npc_label_mod">Modifications</string>
+	<string name="npc_label_move">Movement</string>
 	<string name="npc_label_combat">Combat</string>
 	<string name="npc_label_intrusion">GM Intrusion</string>
 	

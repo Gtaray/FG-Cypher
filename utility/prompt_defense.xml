@@ -11,7 +11,6 @@
 		<placement>
 			<size width="300" height="350" />
 		</placement>
-		<nodelete />
 		<script file="utility/scripts/defense_prompt.lua"/>
 		<sheetdata>
 			<windowtitlebar_referencelist name="title">

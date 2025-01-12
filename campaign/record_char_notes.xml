@@ -33,11 +33,8 @@
 			</scrollbar>
 
 			<frame_char name="languageframe">
-				<anchored>
-					<top />
-					<left anchor="right" offset="-190" />
+				<anchored position="insidetopright" width="190">
 					<bottom anchor="center" offset="50" />
-					<right offset="-1" />
 				</anchored>
 			</frame_char>
 			<label_frametop>
@@ -68,9 +65,9 @@
 			<frame_char name="notesframe">
 				<anchored>
 					<top anchor="center" offset="50" />
-					<left offset="0" />
-					<bottom offset="-5" />
-					<right offset="-1" />
+					<left />
+					<right />
+					<bottom />
 				</anchored>
 			</frame_char>
 			<label_frametop>
