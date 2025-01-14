@@ -125,6 +125,32 @@
 				</parameters>
 			</cycler_column>
 
+			<label_column name="label_ambient">
+				<static textres="special_armor_label_ambient" />
+			</label_column>
+			<cycler_column name="ambient">
+				<anchored width="120" />
+				<tooltip textres="special_armor_tooltip_ambient" />
+				<parameters>
+					<labelsres>special_armor_ignore_pierce_inclusive|special_armor_ignore_pierce_exclusive</labelsres>
+					<values>inclusive|exclusive</values>
+					<defaultlabelres>no</defaultlabelres>
+				</parameters>
+			</cycler_column>
+
+			<label_column name="label_superarmor">
+				<static textres="special_armor_label_superarmor" />
+			</label_column>
+			<cycler_column name="superarmor">
+				<anchored width="120" />
+				<tooltip textres="special_armor_tooltip_superarmor" />
+				<parameters>
+					<labelsres>special_armor_ignore_pierce_inclusive|special_armor_ignore_pierce_exclusive</labelsres>
+					<values>inclusive|exclusive|no</values>
+					<defaultlabelres>no</defaultlabelres>
+				</parameters>
+			</cycler_column>
+
 			<label_column name="label_invert">
 				<static textres="special_armor_label_invert" />
 			</label_column>
@@ -137,6 +163,7 @@
 					<defaultlabelres>no</defaultlabelres>
 				</parameters>
 			</cycler_column>
+ q
 		</sheetdata>
 	</windowclass>
 </root>

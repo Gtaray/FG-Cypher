@@ -576,7 +576,8 @@
 						sStat = sStat
 					}
 					
-					local rActor = ActorManager.resolveActor(window.getDatabaseNode())
+					local w = UtilityManager.getTopWindow(window);
+					local rActor = ActorManager.resolveActor(w.getDatabaseNode())
 					ActionStat.payCostAndRoll(draginfo, rActor, rAction);
 				end
 			</script>

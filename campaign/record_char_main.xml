@@ -372,8 +372,9 @@
 			</frame_char>
 			<sub_tab_maincharsheet name="charsheet_armor">
 				<class>charsheet_armor</class>
+				<activate />
 			</sub_tab_maincharsheet>
-			<sub_tab_maincharsheet name="charsheet_pools">
+			<!-- <sub_tab_maincharsheet name="charsheet_pools">
 				<class>charsheet_pools</class>
 			</sub_tab_maincharsheet>
 			<buttongroup_tabs_h name="main_tabs">
@@ -390,7 +391,7 @@
 					<tabres>char_tab_pools</tabres>
 					<subwindow>charsheet_pools</subwindow>
 				</tab>
-			</buttongroup_tabs_h>
+			</buttongroup_tabs_h> -->
 			
 			<!-- DAMAGE TRACK -->
 			<frame_char name="damageframe">

@@ -118,7 +118,7 @@ function updateAction()
 	rAction.label = StringManager.capitalize(rAction.sStat)
 	rAction.sTraining, rAction.nAssets, rAction.nModifier = ActorManagerCypher.getDefense(rPc, rAction.sStat)
 	rAction.nEffort = effort.getValue();
-	rAction.nAssets = rAction.nAssets + assets.getValue();
+	rAction.nAssets = (rAction.nAssets or 0) + assets.getValue();
 
 	if ease.getValue() == 1 then
 		rAction.bEase = true;

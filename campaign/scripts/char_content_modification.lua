@@ -100,7 +100,13 @@ function updateSuperArmor()
 	local bEmpty = (sProp or "") == "";
 	local bArmor = not bEmpty and sProp == "Armor";
 	local bHasDmgType = dmgtype.getValue() ~= "";
+
+	-- "superarmor" should only be an option for untyped damage
 	updateCombobox("superarmor", not bArmor or bHasDmgType);
+	
+	-- "armor_peirceproof" and "armor_ambient" should only be an option for typed damage
+	updateCombobox("armor_pierceproof", not bArmor or not bHasDmgType);
+	updateCombobox("armor_ambient", not bArmor or not bHasDmgType);
 end
 
 function updateLinkName()

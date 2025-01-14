@@ -208,6 +208,17 @@
 				<static textres="char_mod_label_superarmor" />
 			</label_column>
 			<combobox_yesno name="superarmor" />
+
+			<!-- This is for special armor types only -->
+			<label_column name="armor_pierceproof_label">
+				<static textres="char_mod_label_superarmor" />
+			</label_column>
+			<combobox_inclusiveexclusive name="armor_pierceproof" />
+
+			<label_column name="armor_ambient_label">
+				<static textres="char_mod_label_armor_ambient" />
+			</label_column>
+			<combobox_inclusiveexclusive name="armor_ambient" />
 		</sheetdata>
 	</windowclass>
 
@@ -272,6 +283,25 @@
 				function onInit()
 					super.onInit();
 					addItems({ "No", "Yes" });
+					if getValue() == "" then
+						super.setListValue("No")
+					end
+				end
+				function onValueChanged()
+					window.update();
+				end
+			</script>
+		</combobox_column>
+	</template>
+
+	<template name="combobox_inclusiveexclusive">
+		<combobox_column>
+			<listdirection>down</listdirection>
+			<unsorted />
+			<script>
+				function onInit()
+					super.onInit();
+					addItems({ "No", "Inclusive", "Exclusive" });
 					if getValue() == "" then
 						super.setListValue("No")
 					end

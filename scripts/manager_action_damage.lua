@@ -270,35 +270,9 @@ function applyDamage(rSource, rTarget, rRoll)
 
 	rRoll.nTotal = rRoll.nTotal * (rRoll.nMult or 1)
 
-	if not rRoll.bAmbient then
-		rRoll.nTotal = ActionDamage.applyThreshold(
-			rSource, 
-			rTarget, 
-			rRoll.nTotal, 
-			rRoll.sDamageStat, 
-			rRoll.sDamageType,
-			rRoll.bPiercing, 
-			rRoll.nPierceAmount,
-			aNotifications);
-
-		rRoll.nTotal = ActionDamage.applyArmor(
-			rSource, 
-			rTarget, 
-			rRoll.nTotal, 
-			rRoll.sDamageStat, 
-			rRoll.sDamageType,
-			rRoll.bPiercing, 
-			rRoll.nPierceAmount,
-			aNotifications);
-	end
-
-	rRoll.nTotal = ActionDamage.applyDamageLimit(
-		rSource, 
-			rTarget, 
-			rRoll.nTotal, 
-			rRoll.sDamageStat, 
-			rRoll.sDamageType,
-			aNotifications);
+	ActionDamage.applyArmor(rSource, rTarget, rRoll, aNotifications);
+	ActionDamage.applyThreshold(rSource, rTarget, rRoll, aNotifications);
+	ActionDamage.applyDamageLimit(rSource, rTarget, rRoll,aNotifications);
 
 	local nShieldAdjust = ActionDamage.handleShield(
 		rTarget, 
@@ -398,111 +372,166 @@ function outputResult(rSource, rTarget, rRoll, aNotifications)
 	ActionsManager.outputResult(rRoll.bSecret, rSource, rTarget, msgLong, msgShort);
 end
 
-function applyThreshold(rSource, rTarget, nTotal, sStat, sDamageType, bPiercing, nPierceAmount, aNotifications)
+function applyThreshold(rSource, rTarget, rRoll, aNotifications)
 	-- If for some reason the amount of damage is negative, then we don't need to do any processing
 	-- Because it's handled as healing
-	if nTotal <= 0 then
-		return nTotal;
+	if rRoll.nTotal <= 0 then
+		return rRoll.nTotal;
 	end
 
 	-- Check if we have any thresholds we need to beat
-	local nThreshold = ActorManagerCypher.getArmorThreshold(rTarget, rSource, sStat, sDamageType);
+	local nThreshold, nSuperThreshold = ActorManagerCypher.getArmorThreshold(rTarget, rSource, rRoll.sDamageStat, rRoll.sDamageType, rRoll.bAmbient, rRoll.bPiercing);
 
-	if nThreshold > 0 and nTotal < nThreshold then
-		-- Threshold not reached, no damage is dealt
-		if bPiercing then
-			-- If this damage pierces all armor, then we ignore the threshold
-			-- and do damage anyway.
-			if nPierceAmount == 0 then
-				return nTotal;
-			
-			-- If we pierce SOME armor, then we deal damage equal to the pierce amount
-			elseif nPierceAmount > 0 then
-				table.insert(aNotifications, "[PARTIALLY IGNORED]");
-				return nPierceAmount;
-			end
-		end
+	if nThreshold <= 0 or rRoll.nTotal >= nThreshold then
+		return rRoll.nTotal
+	end
 
+	-- Down here we're guaranteed that Threshold is greater than 0 and 
+	-- the damage is less than the threshold
+	-- If the damage doesn't pierce armor, we can return early with 0 damage
+	if not rRoll.bPiercing then
 		table.insert(aNotifications, "[IGNORED]");
+		rRoll.nTotal = 0;
 		return 0;
 	end
 
-	return nTotal;
-end
-
-function applyDamageLimit(rSource, rTarget, nTotal, sStat, sDamageType, aNotifications)
-	-- If for some reason the amount of damage is negative, then we don't need to do any processing
-	-- Because it's handled as healing
-	if nTotal <= 0 then
-		return nTotal;
-	end
-
-	local nLimit = ActorManagerCypher.getDamageLimit(rTarget, rSource, sStat, sDamageType);
-
-	-- If there's no damage limit set, then return full damage
-	-- If the total damage is under the limit, return full damage
-	if nLimit <= 0 or nTotal <= nLimit then
-		return nTotal
-	end
-
-	table.insert(aNotifications, "[LIMITED]");
-	return math.min(nLimit, nTotal);
-end
-
-function applyArmor(rSource, rTarget, nTotal, sStat, sDamageType, bPiercing, nPierceAmount, aNotifications)
-	-- If for some reason the amount of damage is negative, then we don't need to do any processing
-	-- Because it's handled as healing
-	if nTotal <= 0 then
-		return nTotal;
+	-- Here we know the threshold hasn't been reached, but the damage does pierce armor
+	-- This means we should pierce all damage, but we have to do one more check against the super threshold
+	-- to see if we beat that as well.
+	if rRoll.nPierceAmount == 0 then
+		if rRoll.nTotal < nSuperThreshold then
+			table.insert(aNotifications, "[IGNORED]");
+			rRoll.nTotal = 0;
+		end
 	end
 	
-	if ActorManagerCypher.isImmune(rTarget, rSource, { sDamageType, sDamageStat }) then
-		table.insert(aNotifications, "[IMMUNE]");
-		return 0;
+	-- If we pierce SOME armor, then we deal damage equal to the pierce amount
+	-- We then check one more time to see if the pierce amount is above the super threshold
+	-- and if it is, deal that damgae
+	-- if it's not, deal no damage.
+	if rRoll.nPierceAmount > 0 then
+		if rRoll.nPierceAmount < nSuperThreshold then
+			table.insert(aNotifications, "[IGNORED]");
+			rRoll.nTotal = 0;
+		else
+			rRoll.nTotal = rRoll.nPierceAmount
+			table.insert(aNotifications, "[PARTIALLY IGNORED]");
+		end
 	end
 
-	local nArmorAdjust = ActorManagerCypher.getArmor(rTarget, rSource, sStat, sDamageType);
+	return rRoll.nTotal
+end
+
+function applyDamageLimit(rSource, rTarget, rRoll, aNotifications)
+	-- If for some reason the amount of damage is negative, then we don't need to do any processing
+	-- Because it's handled as healing
+	if rRoll.nTotal <= 0 then
+		return rRoll.nTotal;
+	end
+
+	local nLimit, nSuperLimit = ActorManagerCypher.getDamageLimit(rTarget, rSource, rRoll.sDamageStat, rRoll.sDamageType, rRoll.bAmbient, rRoll.bPiercing);
+
+	-- If the damage is beneath our damage limit, we don't need to do anything
+	if rRoll.nTotal <= nLimit then
+		return rRoll.nTotal;
+	end
+
+	if not rRoll.bPiercing then
+		table.insert(aNotifications, "[LIMITED]");
+		rRoll.nTotal = math.min(rRoll.nTotal, nLimit);
+		return rRoll.nTotal;
+	end
+
+	if rRoll.nPierceAmount == 0 then
+		if rRoll.nTotal > nSuperLimit then
+			table.insert(aNotifications, "[LIMITED]");
+			rRoll.nTotal = nSuperLimit;
+		end
+	end
+
+	if rRoll.nPierceAmount > 0 then
+		if rRoll.nPierceAmount > nSuperLimit then
+			table.insert(aNotifications, "[LIMITED]");
+			rRoll.nTotal = nSuperLimit;
+		else
+			rRoll.nTotal = rRoll.nPierceAmount
+			table.insert(aNotifications, "[PARTIALLY LIMITED]");
+		end
+	end
+
+	return rRoll.nTotal;
+end
+
+function applyArmor(rSource, rTarget, rRoll, aNotifications)
+	-- If for some reason the amount of damage is negative, then we don't need to do any processing
+	-- Because it's handled as healing
+	if rRoll.nTotal <= 0 then
+		return rRoll.nTotal;
+	end
+	
+	local bImmune, bSuperImmune = ActorManagerCypher.isImmune(rTarget, rSource, { rRoll.sDamageType, rRoll.sDamageStat }, rRoll.bAmbient, rRoll.bPiercing)
+	if bImmune or bSuperImmune then
+		table.insert(aNotifications, "[IMMUNE]");
+
+		-- Only apply piercing if the defender is not super immune (immune to damage and armor piercing effects)
+		if rRoll.bPiercing and not bSuperImmune then
+			-- if pierce amount is 0 (but bPierce is true), then pierce all armor
+			-- Otherwise it's a flat reduction
+			if rRoll.nPierceAmount > 0 then
+				rRoll.nTotal = rRoll.nPierceAmount;
+			end
+
+			-- If the pierce value is 0, you do full damage
+			-- but we don't need to change nTotal for that to happen.
+		else
+			-- Unless there's some amount of armor pierce, we set the total 0
+			rRoll.nTotal = 0;
+		end
+
+		return rRoll.nTotal;
+	end
+
+	local nArmor, nSuperArmor = ActorManagerCypher.getArmor(rTarget, rSource, rRoll.sDamageStat, rRoll.sDamageType, rRoll.bAmbient, rRoll.bPiercing);
 
 	-- only apply piercing if the armor adjustment is positive. 
 	-- negative armor adjust means there's a vulnerability to a dmg type
-	if bPiercing and nArmorAdjust > 0 then
+	if rRoll.bPiercing and nArmor > 0 then
 		-- if pierce amount is 0 (but bPierce is true), then pierce all armor
 		-- Otherwise it's a flat reduction
-		if nPierceAmount > 0 then
-			nArmorAdjust = nArmorAdjust - nPierceAmount;
-		elseif nPierceAmount == 0 then
-			nArmorAdjust = 0;
+		if rRoll.nPierceAmount > 0 then
+			nArmor = nArmor - rRoll.nPierceAmount;
+		elseif rRoll.nPierceAmount == 0 then
+			nArmor = 0;
 		end
 
 		-- If piercing reduces the amount of armor below super armor value
 		-- then the math.max() function will bring armor adjust back up to the 
 		-- super armor value
-		local nSuperArmor = ActorManagerCypher.getSuperArmor(rTarget, rSource, sStat, sDamageType);
-		nArmorAdjust = math.max(nArmorAdjust, nSuperArmor);
+		nArmor = math.max(nArmor, nSuperArmor);
 	end
 
 	-- Apply VULN effect
-	local nVuln = EffectManagerCypher.getVulnerabilityEffectBonus(rTarget, sDamageType, sStat, rSource)
+	local nVuln = EffectManagerCypher.getVulnerabilityEffectBonus(rTarget, rRoll.sDamageStat, rRoll.sDamageType, rRoll.bAmbient, rSource)
 	if nVuln > 0 then
-		nArmorAdjust = nArmorAdjust - nVuln;
+		nArmor = nArmor - nVuln;
 	end
 
 	-- If any amount of armor was applied, then we add a notification
-	if nVuln > 0 or nArmorAdjust < 0 then -- Less than 0
+	if nVuln > 0 or nArmor < 0 then -- Less than 0
 		table.insert(aNotifications, "[VULNERABLE]");
-	elseif nArmorAdjust == 0 then -- Equal to 0
+	elseif nArmor == 0 then -- Equal to 0
 		-- Do nothing
-	elseif nArmorAdjust < nTotal then -- Greater than 0 but less than damage
+	elseif nArmor < rRoll.nTotal then -- Greater than 0 but less than damage
 		table.insert(aNotifications, "[PARTIALLY RESISTED]");
-	elseif nArmorAdjust >= 0 then -- Equal or greater than damage
+	elseif nArmor >= 0 then -- Equal or greater than damage
 		table.insert(aNotifications, "[RESISTED]");
 	end
 
 	-- Apply the adjusted armor value to the total damage
 	-- Damage cannot fall below 0 though, otherwise that's healing
-	nTotal = math.max(nTotal - nArmorAdjust, 0);
+	rRoll.nTotal = math.max(rRoll.nTotal - nArmor, 0);
 
-	return nTotal 
+	return rRoll.nTotal
 end
 
 function applyDamageToPc(rSource, rTarget, nDamage, sStat, bNoOverflow, aNotifications)

@@ -281,9 +281,16 @@ function setStatPool(rActor, sStat, nValue)
 
 	sStat = sStat:lower();
 
-	local sPath = "abilities." .. sStat;
 	local nCur, nMax = ActorManagerCypher.getStatPool(rActor, sStat)
 
+	-- Look for a custom stat pool
+	if not StringManager.contains({ "might", "speed", "intellect" }, sStat) then
+		nValue = math.max(math.min(nValue, nMax), 0);
+		ActorManagerCypher.setCustomStatPool(rActor, sStat, nValue);
+		return
+	end
+
+	local sPath = "abilities." .. sStat;
 	nValue = math.max(math.min(nValue, nMax), 0);
 	DB.setValue(nodeActor, sPath .. ".current", "number", nValue);
 
@@ -311,11 +318,17 @@ function getStatPool(rActor, sStat)
 	end
 
 	sStat = sStat:lower();
+	local nCur = 0;
+	local nMax = 0;
 
-	local sPath = "abilities." .. sStat;
-
-	local nCur = DB.getValue(nodeActor, sPath .. ".current", 0);
-	local nMax = DB.getValue(nodeActor, sPath .. ".max", 10);
+	-- Look for a custom stat pool
+	if not StringManager.contains({ "might", "speed", "intellect" }, sStat) then
+		nCur, nMax = ActorManagerCypher.getCustomStatPool(rActor, sStat);
+	else 
+		local sPath = "abilities." .. sStat;
+		nCur = DB.getValue(nodeActor, sPath .. ".current", 0);
+		nMax = DB.getValue(nodeActor, sPath .. ".max", 10);
+	end
 
 	return nCur, nMax;	
 end
@@ -323,7 +336,7 @@ end
 function getMaxAssets(rActor, aFilter)
 	local nodeActor = ActorManager.getCreatureNode(rActor);
 	if not nodeActor or not ActorManager.isPC(rActor) then
-		return 0;
+		return 2;
 	end
 
 	return 2 + EffectManagerCypher.getMaxAssetsEffectBonus(rActor, aFilter);
@@ -349,8 +362,16 @@ function getEdge(rActor, sStat, aFilter)
 	end
 
 	sStat = sStat:lower();
+	local nBase = 0;
 
-	local nBase = DB.getValue(nodeActor, "abilities." .. sStat .. ".edge", 0);
+	-- Look for a custom stat pool
+	if not StringManager.contains({ "might", "speed", "intellect" }, sStat) then
+		local _, _, nCustomEdge = ActorManagerCypher.getCustomStatPool(rActor, sStat);
+		nBase = nCustomEdge;
+	else
+		nBase = DB.getValue(nodeActor, "abilities." .. sStat .. ".edge", 0);
+	end
+
 	local nBonus = EffectManagerCypher.getEdgeEffectBonus(rActor, aFilter);
 
 	return nBase + nBonus;
@@ -423,6 +444,88 @@ function getRecoveryRollMod(rActor)
 	return DB.getValue(nodeActor, "recoveryrollmod", 0);
 end
 
+---------------------------------------------------------------
+-- CUSTOM STAT POOLS
+---------------------------------------------------------------
+function getCustomStatPools(rActor)
+	local nodeActor;
+	if type(rActor) == "databasenode" then
+		nodeActor = rActor;
+	else
+		nodeActor = ActorManager.getCreatureNode(rActor);
+	end
+	
+	local tPools = {}
+	for _, node in ipairs(DB.getChildList(nodeActor, "custom_pools")) do
+		local tPool = {
+			sName = DB.getValue(node, "name", ""),
+			nCurrent = DB.getValue(node, "current", 0),
+			nMax = DB.getValue(node, "max", 0),
+			nEdge = DB.getValue(node, "edge", 0),
+		}
+		
+		table.insert(tPools, tPool)
+	end
+
+	return tPools
+end
+
+function hasCustomStatPool(rActor, sStat)
+	local nodeActor;
+	if type(rActor) == "databasenode" then
+		nodeActor = rActor;
+	else
+		nodeActor = ActorManager.getCreatureNode(rActor);
+	end
+	
+	for _, node in ipairs(DB.getChildList(nodeActor, "custom_pools")) do
+		local sName = DB.getValue(node, "name", "");
+		if sStat:lower() == sName:lower() then
+			return true;
+		end
+	end
+
+	return false;
+end
+
+function getCustomStatPool(rActor, sStat)
+	local nodeActor;
+	if type(rActor) == "databasenode" then
+		nodeActor = rActor;
+	else
+		nodeActor = ActorManager.getCreatureNode(rActor);
+	end
+	
+	for _, node in ipairs(DB.getChildList(nodeActor, "custom_pools")) do
+		local sName = DB.getValue(node, "name", "");
+		if sStat:lower() == sName:lower() then
+			local nCur = DB.getValue(node, "current", 0);
+			local nMax = DB.getValue(node, "max", 0);
+			local nEdge = DB.getValue(node, "edge", 0);
+			return nCur, nMax, nEdge
+		end
+	end
+
+	return 0, 0, 0
+end
+
+function setCustomStatPool(rActor, sStat, nValue)
+	local nodeActor;
+	if type(rActor) == "databasenode" then
+		nodeActor = rActor;
+	else
+		nodeActor = ActorManager.getCreatureNode(rActor);
+	end
+	
+	for _, node in ipairs(DB.getChildList(nodeActor, "custom_pools")) do
+		local sName = DB.getValue(node, "name", "");
+		if sStat:lower() == sName:lower() then
+			DB.setValue(node, "current", "number", nValue);
+			return;
+		end
+	end
+end
+
 -------------------------------------------------------------------------------
 -- XP
 -------------------------------------------------------------------------------
@@ -476,164 +579,97 @@ end
 ---------------------------------------------------------------
 -- ARMOR
 ---------------------------------------------------------------
+-- Returns data objects for every armor that matches stat and damage type
+function getArmorData(rActor, sStat, aDamageTypes)
+	local _, node = ActorManager.getTypeAndNode(rActor);
+
+	if not node then
+		return {};
+	end
+
+	if type(aDamageTypes) == "string" then
+		aDamageTypes = { aDamageTypes }
+	end
+
+	-- Default to might, since that's the default for damage dealt
+	if not sStat then
+		sStat = "might";
+	end
+
+	local aArmor = {};
+
+	for _, sDamageType in ipairs(aDamageTypes) do
+		-- if for some reason damage type isn't specified, default to untyped
+		if (sDamageType or "") == "" then
+			sDamageType = "untyped";
+		end	
+
+		-- Only apply the character's base armor to Might damage.
+		if sDamageType == "untyped" and sStat == "might" then
+			local tDefault = {
+				sArmorType = "armor",
+				sDamageType = "untyped",
+				nArmor = 0,
+				nSuperArmor = 0,
+				sSuperArmor = "inclusive",
+				sAmbient = ""
+			}
+
+			if ActorManager.isPC(rActor) then
+				tDefault.nArmor = DB.getValue(node, "Armor.total", 0);
+				tDefault.nSuperArmor = DB.getValue(node, "Armor.superarmor", 0);
+			else
+				tDefault.nArmor = DB.getValue(node, "armor", 0);
+			end
+
+			-- Only add this entry if it actually has a value.
+			if tDefault.nArmor > 0 then
+				table.insert(aArmor, tDefault)
+			end
+		end
+
+		-- Start by getting special armor values from the creature node
+		for _, resist in ipairs(DB.getChildList(node, "resistances")) do
+			local sBehavior = DB.getValue(resist, "behavior", ""):lower();
+			local sType = DB.getValue(resist, "damagetype", ""):lower();
+			local bInverted = DB.getValue(resist, "invert", "") == "yes";
+
+			-- The default value for special defenses is as Armor (as opposed to a damage threshold or damage limit)
+			if sBehavior == "" then
+				sBehavior = "armor"
+			end
+
+			-- This ensures that untyped damage works even if its in the 'special defenses' list
+			if sType == "" then 
+				sType = "untyped";
+			end
+
+			-- In order, checking these things:
+			-- Damage type is "any" or "all" with no inversion (which would make no sense)
+			-- Damage type does NOT match, but we're inverted
+			-- Damage type DOES match, and we're not inverted
+			if (((sType == "all" or sType == "any") and not bInverted) or 
+				(bInverted and sDamageType ~= sType) or 
+				(not bInverted and sDamageType == sType)) then
+
+				local tArmor = {
+					sArmorType = sBehavior,
+					sDamageType = sType,
+					nArmor = DB.getValue(resist, "armor", 0),
+					sSuperArmor = DB.getValue(resist, "superarmor", ""),
+					sAmbient = DB.getValue(resist, "ambient", "")
+				}
+
+				table.insert(aArmor, tArmor)
+			end
+		end
+	end
+	
+	return aArmor;
+end
+
 -- This only cares about creatures on the CT, since it's specifically for combat
-function getArmor(rActor, rTarget, sStat, sDamageType)
-	local _, node = ActorManager.getTypeAndNode(rActor);
-
-	if not node then
-		return 0;
-	end
-
-	-- Default to might, since that's the default for damage dealt
-	if not sStat then
-		sStat = "might";
-	end
-
-	-- if for some reason damage type isn't specified, default to untyped
-	if (sDamageType or "") == "" then
-		sDamageType = "untyped";
-	end
-
-	-- Get ARMOR effects
-	-- This can modify both untyped and typed damage
-	-- Do this before checking for damage type so that we can correctly apply this
-	-- if the damage type is untyped, and thus only applies if the stat is Might
-	local nArmorEffects = EffectManagerCypher.getArmorEffectBonus(rActor, sStat, sDamageType, rTarget)
-	local nArmor = 0;
-
-	-- Only apply the character's base armor to Might damage.
-	if sDamageType == "untyped" and sStat == "might" then
-		if ActorManager.isPC(rActor) then
-			nArmor = DB.getValue(node, "Armor.total", 0);
-		else
-			nArmor = DB.getValue(node, "armor", 0);
-		end
-	end
-
-	-- Start by getting special armor values from the creature node
-	-- This list does NOT include untyped armor, 
-	-- that's handled above with the base armor
-	for _, resist in ipairs(DB.getChildList(node, "resistances")) do
-		local sBehavior = DB.getValue(resist, "behavior", ""):lower();
-
-		-- The other option is "threhsold", which we do NOT want to get
-		if sBehavior == "" then
-			local sType = DB.getValue(resist, "damagetype", ""):lower();
-			local nAmount = DB.getValue(resist, "armor", 0);
-			local bInverted = DB.getValue(resist, "invert", "") == "yes";
-
-			-- This ensures that untyped damage works even if its in the 'special defenses' list
-			if sType == "" then 
-				sType = "untyped";
-			end
-
-			if ((bInverted and sDamageType ~= sType) or (not bInverted and sDamageType == sType)) and nAmount ~= 0 then
-				nArmor = nArmor + nAmount;
-			end
-		end
-	end
-
-	-- ARMOR: -X cannot make an actor go below 0 armor, as that means its a vulnerability
-	-- Which the armor effect should not do.
-	return math.max(nArmor + nArmorEffects, 0);
-end
-
-function getArmorThreshold(rActor, rTarget, sStat, sDamageType)
-	local _, node = ActorManager.getTypeAndNode(rActor);
-
-	if not node then
-		return 0;
-	end
-
-	-- Default to might, since that's the default for damage dealt
-	if not sStat then
-		sStat = "might";
-	end
-
-	-- if for some reason damage type isn't specified, default to untyped
-	if (sDamageType or "") == "" then
-		sDamageType = "untyped";
-	end
-
-	local nThresholdEffects = EffectManagerCypher.getArmorThresholdEffectBonus(rActor, sStat, sDamageType, rTarget)
-	local nThreshold = 0;
-
-	-- Start by getting special armor values from the creature node
-	for _, resist in ipairs(DB.getChildList(node, "resistances")) do
-		local sBehavior = DB.getValue(resist, "behavior", ""):lower();
-		if sBehavior == "threshold" then
-			local sType = DB.getValue(resist, "damagetype", ""):lower();
-			local nAmount = DB.getValue(resist, "armor", 0);
-			local bInverted = DB.getValue(resist, "invert", "") == "yes";
-
-			-- This ensures that untyped damage works even if its in the 'special defenses' list
-			if sType == "" then 
-				sType = "untyped";
-			end
-
-			if ((bInverted and sDamageType ~= sType) or (not bInverted and sDamageType == sType)) and nAmount > nThreshold then
-				-- Only take the highest threshold amount, they are not added together
-				nThreshold = nAmount; 
-			end
-		end
-	end
-
-	return math.max(nThreshold, nThresholdEffects);
-end
-
--- Armor Cap is a limit on how much damage can be taken from a single hit
-function getDamageLimit(rActor, rTarget, sStat, sDamageType)
-	local _, node = ActorManager.getTypeAndNode(rActor);
-
-	if not node then
-		return 0;
-	end
-
-	-- Default to might, since that's the default for damage dealt
-	if not sStat then
-		sStat = "might";
-	end
-
-	-- if for some reason damage type isn't specified, default to untyped
-	if (sDamageType or "") == "" then
-		sDamageType = "untyped";
-	end
-
-	local nLimitEffects = EffectManagerCypher.getDamageLimitEffectBonus(rActor, sStat, sDamageType, rTarget)
-	local nLimit = 0;
-
-	-- Start by getting special armor values from the creature node
-	for _, resist in ipairs(DB.getChildList(node, "resistances")) do
-		local sBehavior = DB.getValue(resist, "behavior", ""):lower();
-		if sBehavior == "limit" then
-			local sType = DB.getValue(resist, "damagetype", ""):lower();
-			local nAmount = DB.getValue(resist, "armor", 0);
-			local bInverted = DB.getValue(resist, "invert", "") == "yes";
-
-			-- This ensures that untyped damage works even if its in the 'special defenses' list
-			if sType == "" then 
-				sType = "untyped";
-			end
-
-			if ((bInverted and sDamageType ~= sType) or (not bInverted and sDamageType == sType)) and nAmount > nLimit then
-				-- Only take the lowest cap amount, they are not added together
-				nLimit = nAmount;
-			end
-		end
-	end
-
-	-- This is kind of messy, but we want to return the lowest non-zero value
-	if nLimit > 0 and nLimitEffects > 0 then
-		return math.min(nLimit, nLimitEffects);
-	elseif nLimit > 0 then
-		return nLimit
-	elseif nLimitEffects > 0 then
-		return nLimitEffects
-	end
-	return 0;
-end
-
-function getSuperArmor(rActor, rTarget, sStat, sDamageType)
+function getArmor(rActor, rTarget, sStat, sDamageType, bAmbientDamage, bPierceDamage)
 	local _, node = ActorManager.getTypeAndNode(rActor);
 
 	if not node then
@@ -650,24 +686,199 @@ function getSuperArmor(rActor, rTarget, sStat, sDamageType)
 		sDamageType = "untyped";
 	end
 
-	-- Base super armor only applies to untyped damage, which only applies
-	-- to Might damage
-	local nSuperArmor = 0
-	if sStat == "might" and sDamageType == "untyped" then
-		nSuperArmor = DB.getValue(node, "Armor.superarmor", 0);
+	-- Initialize these flags to false if they weren't passed in
+	if bAmbientDamage == nil then
+		bAmbientDamage = false;
 	end
-	
-	local nSuperArmorEffects = EffectManagerCypher.getSuperArmorEffectBonus(rActor, sStat, sDamageType, rTarget)
+	if bPierceDamage == nil then
+		bPierceDamage = false;
+	end
 
-	return nSuperArmor + nSuperArmorEffects;
+	local aArmor = ActorManagerCypher.getArmorData(rActor, sStat, sDamageType);
+	local nArmor = 0;
+	local nSuperArmor = 0;
+
+	-- Go through every armor object and add them up
+	for _, armor in ipairs(aArmor) do
+		-- Only care about special defense entries that are Armor
+		-- Not damage threshold or limit
+		if armor.sArmorType == "armor" then
+			local bPassesAmbientCheck = 
+				(armor.sAmbient == "" and not bAmbientDamage) or 
+				(armor.sAmbient == "exclusive" and bAmbientDamage) or 
+				(armor.sAmbient == "inclusive")
+			local bPassesSuperArmorCheck = 
+				(armor.sSuperArmor ~= "exclusive") or 
+				(armor.sSuperArmor == "exclusive" and bPierceDamage)
+			
+			-- If we pass both checks, then we add it to the armor total
+			if bPassesAmbientCheck and bPassesSuperArmorCheck then
+				nArmor = nArmor + armor.nArmor;
+			end
+
+			-- If this armor should be pierce-proof, and we passed the normal checks,
+			-- we can add it to the superarmor total
+			if bPassesSuperArmorCheck and armor.sSuperArmor ~= "" then
+				-- If there's a specific super armor value, use that
+				-- otherwise, use the raw armor value
+				if armor.nSuperArmor then
+					nSuperArmor = nSuperArmor + armor.nSuperArmor
+				else
+					nSuperArmor = nSuperArmor + armor.nArmor;
+				end
+			end
+		end
+	end
+
+	-- Get ARMOR effects
+	local nArmorEffects = EffectManagerCypher.getArmorEffectBonus(rActor, sStat, sDamageType, bAmbientDamage, rTarget)
+	nSuperArmor = nSuperArmor + EffectManagerCypher.getSuperArmorEffectBonus(rActor, sStat, sDamageType, bAmbientDamage, rTarget)
+
+	-- ARMOR: -X cannot make an actor go below 0 armor, as that means its a vulnerability which the armor effect should not do.
+	-- If armor is already below 0, then we simply do not want the Armor: -X effect to drop the armor from its already low value
+	nArmor = math.max(nArmor + nArmorEffects, math.min(0, nArmor));
+
+	return nArmor, nSuperArmor;
 end
 
-function isImmune(rActor, rTarget, aDamageTypes)
+function getArmorThreshold(rActor, rTarget, sStat, sDamageType, bAmbientDamage, bPierceDamage)
+	local _, node = ActorManager.getTypeAndNode(rActor);
+
+	if not node then
+		return 0, 0;
+	end
+
+	-- Default to might, since that's the default for damage dealt
+	if not sStat then
+		sStat = "might";
+	end
+
+	-- if for some reason damage type isn't specified, default to untyped
+	if (sDamageType or "") == "" then
+		sDamageType = "untyped";
+	end
+
+	-- Initialize these flags to false if they weren't passed in
+	if bAmbientDamage == nil then
+		bAmbientDamage = false;
+	end
+	if bPierceDamage == nil then
+		bPierceDamage = false;
+	end
+
+	local aArmor = ActorManagerCypher.getArmorData(rActor, sStat, sDamageType);
+	local nThreshold = 0;
+	local nSuperThreshold =  0; -- Threshold that ignores damage piercing effects.
+
+	-- Go through every armor object and add them up
+	for _, armor in ipairs(aArmor) do
+		if armor.sArmorType == "threshold" then
+			local bPassesAmbientCheck = 
+				(armor.sAmbient == "" and not bAmbientDamage) or 
+				(armor.sAmbient == "exclusive" and bAmbientDamage) or 
+				(armor.sAmbient == "inclusive")
+			local bPassesSuperArmorCheck = 
+				(armor.sSuperArmor ~= "exclusive") or 
+				(armor.sSuperArmor == "exclusive" and bPierceDamage)
+			
+			-- If we pass both checks, then we add it to the armor total
+			if bPassesAmbientCheck and bPassesSuperArmorCheck then
+				nThreshold = math.max(nThreshold, armor.nArmor);
+			end
+
+			-- If this armor should be pierce-proof, and we passed the normal checks,
+			-- we can add it to the superarmor total
+			if bPassesSuperArmorCheck and armor.sSuperArmor ~= "" then
+				nSuperThreshold = math.max(nSuperThreshold, armor.nArmor);
+			end
+		end
+	end
+
+	local nThresholdEffects = EffectManagerCypher.getArmorThresholdEffectBonus(rActor, sStat, sDamageType, bAmbientDamage, rTarget)
+
+	-- Damage threshold only ever returns the highest number, rather than adding them up.
+	return math.max(nThreshold, nThresholdEffects), nSuperThreshold;
+end
+
+-- Armor Cap is a limit on how much damage can be taken from a single hit
+function getDamageLimit(rActor, rTarget, sStat, sDamageType, bAmbientDamage, bPierceDamage)
+	local _, node = ActorManager.getTypeAndNode(rActor);
+
+	if not node then
+		return 9999, 9999;
+	end
+
+	-- Default to might, since that's the default for damage dealt
+	if not sStat then
+		sStat = "might";
+	end
+
+	-- if for some reason damage type isn't specified, default to untyped
+	if (sDamageType or "") == "" then
+		sDamageType = "untyped";
+	end
+
+	-- Initialize these flags to false if they weren't passed in
+	if bAmbientDamage == nil then
+		bAmbientDamage = false;
+	end
+	if bPierceDamage == nil then
+		bPierceDamage = false;
+	end
+
+	local aArmor = ActorManagerCypher.getArmorData(rActor, sStat, sDamageType);
+	local nLimit = 9999; -- This limit can be negated with damage piercing
+	local nSuperLimit = 9999; -- This is the hard limit that damage cannot go over no matter what
+
+	-- Go through every armor object and add them up
+	for _, armor in ipairs(aArmor) do
+		if armor.sArmorType == "limit" and armor.nArmor > 0 then
+			local bPassesAmbientCheck = 
+				(armor.sAmbient == "" and not bAmbientDamage) or 
+				(armor.sAmbient == "exclusive" and bAmbientDamage) or 
+				(armor.sAmbient == "inclusive")
+			local bPassesSuperArmorCheck = 
+				(armor.sSuperArmor ~= "exclusive") or 
+				(armor.sSuperArmor == "exclusive" and bPierceDamage)
+			
+			-- If we pass both checks, then we apply the amount
+			-- Limits always take the lowest possible number
+			if bPassesAmbientCheck and bPassesSuperArmorCheck then
+				nLimit = math.min(nLimit, armor.nArmor);
+			end
+
+			-- This limit is immune to all pierce effects
+			if bPassesSuperArmorCheck and armor.sSuperArmor ~= "" then
+				nSuperLimit = math.min(nSuperLimit, armor.nArmor);
+			end
+		end
+	end
+
+	local nLimitEffects = EffectManagerCypher.getDamageLimitEffectBonus(rActor, sStat, sDamageType, bAmbientDamage, rTarget)
+	if nLimitEffects > 0 then
+		nLimit = math.min(nLimit, nLimitEffects)
+	end
+
+	return nLimit, nSuperLimit;
+end
+
+function isImmune(rActor, rTarget, aDamageTypes, bAmbientDamage, bPierceDamage)
 	local _, node = ActorManager.getTypeAndNode(rActor);
 
 	if not node then
 		return 0;
 	end
+
+	-- Initialize these flags to false if they weren't passed in
+	if bAmbientDamage == nil then
+		bAmbientDamage = false;
+	end
+	if bPierceDamage == nil then
+		bPierceDamage = false;
+	end
+
+	local bImmune = false;
+	local bSuperImmune = false;
 
 	-- First check effects
 	local tEffectImmunities = EffectManagerCypher.getImmunityEffects(rActor, rTarget)
@@ -675,7 +886,7 @@ function isImmune(rActor, rTarget, aDamageTypes)
 		-- If there's no damage type specified in the effect, then we match 
 		-- against untyped damage
 		if #(v.filters) == 0 and ActorManagerCypher.matchDamageTypes(aDamageTypes, "untyped") then
-			return true;
+			bImmune = true
 		end		
 
 		for _,vType in pairs(v.filters) do
@@ -685,34 +896,39 @@ function isImmune(rActor, rTarget, aDamageTypes)
 			end
 			if ActorManagerCypher.matchDamageTypes(aDamageTypes, vType) then
 				if not bInverted then
-					return true;
+					bImmune = true
 				end
 			end
 		end
 	end
 
-	-- Then get special armor values from the creature node and check against them
-	for _, resist in ipairs(DB.getChildList(node, "resistances")) do
-		local sBehavior = DB.getValue(resist, "behavior", ""):lower();
+	local aArmor = ActorManagerCypher.getArmorData(rActor, sStat, aDamageTypes);
 
-		-- Empty behavior is the default, which is "Armor"
-		if sBehavior == "" then
-			local sType = DB.getValue(resist, "damagetype", ""):lower();
-			local nAmount = DB.getValue(resist, "armor", 0);
-			local bInverted = DB.getValue(resist, "invert", "") == "yes";
+	for _, armor in ipairs(aArmor) do
+		-- Immunity is denoted by a defense type of 'armor' with a value of 0
+		if armor.sArmorType == "armor" and armor.nArmor == 0 then
+			local bPassesAmbientCheck = 
+				(armor.sAmbient == "" and not bAmbientDamage) or 
+				(armor.sAmbient == "exclusive" and bAmbientDamage) or 
+				(armor.sAmbient == "inclusive")
+			local bPassesSuperArmorCheck = 
+				(armor.sSuperArmor ~= "exclusive") or 
+				(armor.sSuperArmor == "exclusive" and bPierceDamage)
+			
+			-- If we pass both checks, then we apply the amount
+			-- Limits always take the lowest possible number
+			if bPassesAmbientCheck and bPassesSuperArmorCheck then
+				bImmune = true;
+			end
 
-			-- Immunity is denoted by an Armor value of 0
-			if nAmount == 0 and ActorManagerCypher.matchDamageTypes(aDamageTypes, sType, bInverted) then
-				-- If there's a match and we're not inverted, we'll return true
-				-- If there's a match and we're inverted, we'll return false
-				if not bInverted then
-					return true;
-				end
+			-- This limit is immune to all pierce effects
+			if bPassesSuperArmorCheck and armor.sSuperArmor ~= "" then
+				bSuperImmune = true;
 			end
 		end
 	end
 
-	return false;
+	return bImmune, bSuperImmune;
 end
 
 function matchDamageTypes(aDamageTypes, sMatchedType)

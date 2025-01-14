@@ -55,9 +55,11 @@
 
 				easetext1.setVisible(not bNPC);
 				ease.setVisible(not bNPC);
+				label_ease.setVisible(not bNPC);
 				easetext2.setVisible(not bNPC);
 				hindertext1.setVisible(not bNPC);
 				hinder.setVisible(not bNPC);
+				label_hinder.setVisible(not bNPC);
 				hindertext2.setVisible(not bNPC);
 
 				training.setVisible(not bNPC);
@@ -172,7 +174,7 @@
 				</anchored>
 				<min>0</min>
 			</number_column>
-			<label_fieldtop>
+			<label_fieldtop name="label_ease">
 				<anchored to="ease" />
 				<static textres="modifier_label_EASE" />
 			</label_fieldtop>
@@ -202,7 +204,7 @@
 				</anchored>
 				<min>0</min>
 			</number_column>
-			<label_fieldtop>
+			<label_fieldtop name="label_hinder">
 				<anchored to="hinder" />
 				<static textres="modifier_label_HINDER" />
 			</label_fieldtop>

@@ -529,6 +529,8 @@
 	<string name="char_mod_label_link">Link</string>
 	<string name="char_mod_link_empty">Drop record here to assign</string>
 	<string name="char_mod_label_superarmor">Pierce-Proof</string>
+	<string name="char_mod_label_armor_ambient">Ambient</string>
+	<string name="char_mod_label_armor_pierceproof">Pierce-Proof</string>
 
 	<string name="char_mod_edge_label">Option</string>
 	<string name="char_mod_edge_might">Might</string>
@@ -618,6 +620,13 @@
 	<string name="special_armor_tooltip_behavior">How does this special armor interact with damage?\nReduction = reduce incoming damage by the amount.\nThreshold = ignore all damage less than the amount.</string>
 	<string name="special_armor_label_invert">Invert?</string>
 	<string name="special_armor_tooltip_invert">If "Yes", then this armor will apply to all damage types EXCEPT the one specified in this armor entry.</string>
+	<string name="special_armor_label_ambient">Ambient</string>
+	<string name="special_armor_tooltip_ambient">Does this armor apply to ambient damage?\nNo: This armor does not apply to ambient damage\nInclusive: This armor applies to normal damage of the given type AND ambient damage.\nExclusive:This armor applies ONLY to ambient damage of the given type</string>
+	<string name="special_armor_label_superarmor">Pierce Proof</string>
+	<string name="special_armor_tooltip_superarmor">Does this armor ignore effects that would pierce armor?\nNo: This armor is not pierce-proof\nInclusive: This armor is pierce-proof for the given type\nExclusive:This armor applies ONLY to damage that would pierce armor</string>
+	<string name="special_armor_ignore_pierce_inclusive">Inclusive</string>
+	<string name="special_armor_ignore_pierce_exclusive">Exclusive</string>
+
 	<string name="special_armor_summary_immune">Immune to %s damage</string>
 	<string name="special_armor_summary_immune_inverted">Immune to all non-%s damage</string>
 	<string name="special_armor_summary_resist">Reduce %s damage taken by %s</string>

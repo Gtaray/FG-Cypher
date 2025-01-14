@@ -144,7 +144,10 @@ function getRoll(rActor, rAction)
 	-- i.e. a skill roll normally never has a cost, but if effort is applied 
 	-- then it will. So we need to know if effort was applied here, and not
 	-- in modRoll()
-	if rRoll.sCostStat == "might" or rRoll.sCostStat == "speed" or rRoll.sCostStat == "intellect" then
+	if rRoll.sCostStat == "might" 
+		or rRoll.sCostStat == "speed" 
+		or rRoll.sCostStat == "intellect" 
+		or ActorManagerCypher.hasCustomStatPool(rActor, rRoll.sCostStat) then
 		rRoll.nEffort = (rAction.nEffort or 0) + RollManager.getEffortFromDifficultyPanel();
 	end
 

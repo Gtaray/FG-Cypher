@@ -1,4 +1,5 @@
 local _dmgTypeEffects = {};
+local _ambientDmgTypeEffects = {};
 local _conditions = {};
 local _condition_icons = {};
 
@@ -65,8 +66,23 @@ function onInit()
 		"dmg",
 		"pierce",
 		"armor",
+		"superarmor",
 		"immune",
-		"vuln"
+		"vuln",
+		"dt",
+		"threshold",
+		"dl",
+		"limit"
+	}
+	_ambientDmgTypeEffects = {
+		"armor",
+		"superarmor",
+		"immune",
+		"vuln",
+		"dt",
+		"threshold",
+		"dl",
+		"limit"
 	}
 
 	local node = DB.findNode("conditions");
@@ -443,37 +459,52 @@ function getHinderEffectBonus(rActor, aFilter, rTarget, aTargetFilter)
 	return nActorHinder + nTargetEase
 end
 
-function getArmorEffectBonus(rActor, aFilter, sDamageType, rTarget)
+function getArmorEffectBonus(rActor, aFilter, sDamageType, bAmbient, rTarget)
 	if type(aFilter) == "string" then
 		aFilter = { aFilter }
+	end
+	if bAmbient then
+		table.insert(aFilter, "ambient")
 	end
 	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, "ARMOR", aFilter, sDamageType, rTarget);
 end
 
-function getArmorThresholdEffectBonus(rActor, aFilter, sDamageType, rTarget)
+function getArmorThresholdEffectBonus(rActor, aFilter, sDamageType, bAmbient, rTarget)
 	if type(aFilter) == "string" then
 		aFilter = { aFilter }
+	end
+	if bAmbient then
+		table.insert(aFilter, "ambient")
 	end
 	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, { "DT", "THRESHOLD", }, aFilter, sDamageType, rTarget);
 end
 
-function getDamageLimitEffectBonus(rActor, aFilter, sDamageType, rTarget)
+function getDamageLimitEffectBonus(rActor, aFilter, sDamageType, bAmbient, rTarget)
 	if type(aFilter) == "string" then
 		aFilter = { aFilter }
+	end
+	if bAmbient then
+		table.insert(aFilter, "ambient")
 	end
 	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, { "DL", "LIMIT", }, aFilter, sDamageType, rTarget);
 end
 
-function getSuperArmorEffectBonus(rActor, aFilter, sDamageType, rTarget)
+function getSuperArmorEffectBonus(rActor, aFilter, sDamageType, bAmbient, rTarget)
 	if type(aFilter) == "string" then
 		aFilter = { aFilter }
+	end
+	if bAmbient then
+		table.insert(aFilter, "ambient")
 	end
 	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, "SUPERARMOR", aFilter, sDamageType, rTarget);
 end
 
-function getVulnerabilityEffectBonus(rActor, sDamageType, aFilter, rTarget)
+function getVulnerabilityEffectBonus(rActor, aFilter, sDamageType, bAmbient, rTarget)
 	if type(aFilter) == "string" then
 		aFilter = { aFilter }
+	end
+	if bAmbient then
+		table.insert(aFilter, "ambient")
 	end
 	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, "VULN", aFilter, sDamageType, rTarget);
 end
@@ -985,9 +1016,12 @@ function checkDamageType(rEffectComp, sEffectType, aFilter)
 	local bUntyped = StringManager.contains(aFilter, "untyped");
 	local aStatFilters = {};
 	local aDmgTypeFilters = {};
+	local bAppliesToAmbientDamage = false;
 	for _,tag in pairs(rEffectComp.filters) do
 		if tag == "might" or tag == "speed" or tag == "intellect" then
 			table.insert(aStatFilters, tag);
+		elseif tag == "ambient" then
+			bAppliesToAmbientDamage = true;
 		else
 			table.insert(aDmgTypeFilters, tag);
 		end
@@ -998,7 +1032,11 @@ function checkDamageType(rEffectComp, sEffectType, aFilter)
 
 	local bContainsStat = false;
 	local bContainsDmgType = false;
+	local bContainsAmbient = false;
 	for _, sFilter in ipairs(aFilter) do
+		if sFilter == "ambient" then
+			bContainsAmbient = true
+		end
 		if StringManager.contains(aStatFilters, sFilter) then
 			bContainsStat = true;
 		end
@@ -1007,13 +1045,22 @@ function checkDamageType(rEffectComp, sEffectType, aFilter)
 		end
 	end
 
+	
+	-- For effects that care about ambient damage, we check the following things:
+	-- The damage being dealt is ambient and the effect has the 'ambient' keyword
+	-- The damage being dealt is not ambient, and the effect does not have the 'ambient' keyword
+	-- In cases where one is true but not the other, we do not apply this effect.
+	local bPassesAmbientCheck = not StringManager.contains(_ambientDmgTypeEffects, sEffectType)
+		or bContainsAmbient == bAppliesToAmbientDamage
+
 	-- If stats are present in the effect filter, then we need to match at least one of those
 	-- if dmg types are present in the effect filter, then we need to match at least one of those
 	-- If there are 0 of either, then we ignore that requirement
 	-- This way we can have stat filters and dmg type filters act as an AND filter when mixed together
 	-- but treated as an OR filter when looked at separately
 	return 	(#aStatFilters == 0 or (#aStatFilters > 0 and bContainsStat)) and
-			(#aDmgTypeFilters > 0 and bContainsDmgType)
+			(#aDmgTypeFilters > 0 and bContainsDmgType) and
+			(bPassesAmbientCheck)
 end
 
 function checkEffectCompType(rEffectComp, sEffectType)

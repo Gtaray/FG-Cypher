@@ -28,6 +28,10 @@ function getRoll(rActor, rAction)
 	rRoll.sDefenseStat = rAction.sDefenseStat;
 	rRoll.sAttackRange = rAction.sAttackRange;
 
+	rRoll.nEase = rAction.nEase or 0;
+	rRoll.nHinder = rAction.nHinder or 0;
+	rRoll.nAssets = rAction.nAssets or 0;
+
 	rRoll.sDesc = ActionDefenseVs.getRollLabel(rActor, rAction, rRoll)
 
 	return rRoll;
@@ -48,13 +52,53 @@ function getRollLabel(rActor, rAction, rRoll)
 	return sLabel
 end
 
+function getEffectFilter(rRoll)
+	local aFilter = { "attack", "atk", rRoll.sStat }
+	if (rRoll.sAttackRange or "") ~= "" then
+		table.insert(aFilter, rRoll.sAttackRange:lower());
+	end
+	return aFilter
+end
+
 function modRoll(rSource, rTarget, rRoll)
 	if ActionDefenseVs.rebuildRoll(rSource, rTarget, rRoll) then
 		return;
 	end
 
+	-- If there's not a target, try to decode one.
+	rTarget = RollManager.decodeTarget(rRoll, rTarget, true);
+
+	-- Get the effects filter for this attack roll
+	local aFilter = ActionStat.getEffectFilter(rRoll)
+
+	-- Handle Assets
+	local nAssetMod, nEffectMod = RollManager.processFlatModifiers(rSource, rTarget, rRoll, aFilter, { rRoll.sStat })
+	rRoll.nAssets = rRoll.nAssets + nAssetMod + RollManager.getAssetsFromDifficultyPanel();
+	rRoll.nAssets = rRoll.nAssets + RollManager.processAssets(rSource, rTarget, aFilter, rRoll.nAssets);
+
+	-- Handle ease/hinder 
+	rRoll.nEase = rRoll.nEase + EffectManagerCypher.getEaseEffectBonus(rSource, aFilter, rTarget);
+	rRoll.nHinder = rRoll.nHinder + EffectManagerCypher.getHinderEffectBonus(rSource, aFilter, rTarget);
+	local nMiscAdjust = RollManager.getEaseHinderFromDifficultyPanel()
+	if nMiscAdjust > 0 then
+		rRoll.nEase = rRoll.nEase + nMiscAdjust
+	elseif nMiscAdjust < 0 then
+		rRoll.nHinder = rRoll.nHinder + math.abs(nMiscAdjust)
+	end
+
+	-- Process Lucky (advantage / disadvantage)
+	local bAdv, bDis = RollManager.processAdvantage(rSource, rTarget, rRoll, aFilter)
+
+	-- Encode all the modifiers
+	RollManager.encodeAssets(rRoll.nAssets, rRoll);
+	RollManager.encodeEaseHindrance(rRoll, rRoll.nEase, rRoll.nHinder);
+	RollManager.encodeAdvantage(rRoll, bAdv, bDis);
+
 	-- This has to go here because it requires a source and target
-	rRoll.nDifficulty = rRoll.nLevel + RollManager.getBaseRollDifficulty(rTarget, rSource, { "attack", "atk", rRoll.sStat });
+	-- Combine all the modifiers into a final difficulty
+	rRoll.nDifficulty = rRoll.nLevel + RollManager.getBaseRollDifficulty(rTarget, rSource, aFilter);
+	rRoll.nDifficulty = rRoll.nDifficulty + rRoll.nEase - rRoll.nHinder + rRoll.nAssets
+
 	RollManager.convertBooleansToNumbers(rRoll);
 end
 

@@ -28,10 +28,24 @@ function generateDescription()
 	local sDamageType = self.getDamageType();
 	local nArmor = self.getArmor();
 	local sBehavior = self.getBehavior();
+	local sAmbientSelection = getAmbient();
+	local sSuperArmorSelection = getSuperArmor();
+	local sSuperArmor = "";
 
 	-- TODO: Maybe this changes
 	if (sDamageType or "") == "" then
 		sDamageType = "mundane"
+	end
+
+	if sAmbientSelection == "inclusive" then
+		sDamageType = sDamageType .. " (Ambient)";
+	elseif sAmbientSelection == "exclusive" then
+		sDamageType = sDamageType .. " (Only Ambient)";
+	end
+	if sSuperArmorSelection == "inclusive" then
+		sSuperArmor = "(Pierce-Proof)"
+	elseif sSuperArmorSelection == "exclusive" then
+		sSuperArmor = "(Exclusive Pierce-Proof)"
 	end
 
 	local sRes = "";
@@ -59,6 +73,9 @@ function generateDescription()
 	else
 		sDesc = string.format(Interface.getString(sRes), sDamageType, nArmor);
 	end
+	if sSuperArmor ~= "" then
+		sDesc = string.format("%s %s", sDesc, sSuperArmor);
+	end
 	desc.setValue(sDesc);
 end
 
@@ -79,6 +96,14 @@ end
 
 function isInverted()
 	return DB.getValue(getDatabaseNode(), "invert", "") == "yes";
+end
+
+function getAmbient()
+	return DB.getValue(getDatabaseNode(), "ambient", "");
+end
+
+function getSuperArmor()
+	return DB.getValue(getDatabaseNode(), "superarmor", "");
 end
 
 -------------------------------------------------------------------------------

@@ -236,8 +236,12 @@ function applyArmorModification(rActor, rData)
 	local matchnode;
 	for _, resistnode in ipairs(DB.getChildList(resistances)) do
 		local sCurDmgType = StringManager.trim(DB.getValue(resistnode, "damagetype", "")):lower();
+		local sAmbientArmor = StringManager.trim(DB.getValue(resistnode, "ambient", "")):lower()
+		local sSuperArmor = StringManager.trim(DB.getValue(resistnode, "superarmor", "")):lower()
 
-		if sDmgType == sCurDmgType then
+		-- We need to match an existing node based on damage type
+		-- PLUS whether that armor applies to ambient and piercing damage
+		if sDmgType == sCurDmgType and sAmbientArmor == rData.sAmbient and sSuperArmor == rData.sSuperArmor then
 			matchnode = resistnode;
 			break;
 		end
@@ -247,6 +251,8 @@ function applyArmorModification(rActor, rData)
 	if not matchnode then
 		matchnode = DB.createChild(resistances);
 		DB.setValue(matchnode, "damagetype", "string", rData.sDamageType);
+		DB.setValue(matchnode, "ambient", "string", rData.sAmbient)
+		DB.setValue(matchnode, "superarmor", "string", rData.sSuperArmor)
 	end
 
 	-- if the given value is 0, then overwrite any other value 
@@ -460,7 +466,12 @@ function getModificationData(modNode)
 		rMod.sDamageType = DB.getValue(modNode, "dmgtype", "");
 		-- Only apply super armor to untyped damage
 		-- Capitalization on "Yes" is necessary
-		rMod.bSuperArmor = rMod.sDamageType == "" and DB.getValue(modNode, "superarmor", "") == "Yes";
+		if rMod.sDamageType == "" then
+			rMod.bSuperArmor = DB.getValue(modNode, "superarmor", "") == "Yes";
+		else
+			rMod.sSuperArmor = StringManager.trim(DB.getValue(modNode, "armor_pierceproof", "")):lower()
+			rMod.sAmbient = StringManager.trim(DB.getValue(modNode, "armor_ambient", "")):lower()
+		end
 		
 	elseif rMod.sProperty == "Initiative" then
 		rMod.sProperty = "initiative"
