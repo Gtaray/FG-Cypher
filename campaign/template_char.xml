@@ -136,16 +136,13 @@
 	</template>
 
 	<template name="button_skill">
-		<buttonfield>
-			<frame name="fielddark" offset="7,5,7,5" hidereadonly="true" />
-			<stateframe>
-				<hover name="fieldfocus" offset="7,5,7,5" />
-			</stateframe>
-			<state textres="char_label_skillinability" tooltipres="char_tooltip_skillinability" />
-			<state textres="char_label_skilluntrained" tooltipres="char_tooltip_skilluntrained" />
-			<state textres="char_label_skilltrained" tooltipres="char_tooltip_skilltrained" />
-			<state textres="char_label_skillspecialized" tooltipres="char_tooltip_skillspecialized" />
-		</buttonfield>
+		<button_listitem_left>
+			<state icon="button_prof" tooltipres="char_tooltip_skillinability" merge="add" />
+			<state icon="button_prof_half" tooltipres="char_tooltip_skilluntrained" merge="add" />
+			<state icon="button_prof_down" tooltipres="char_tooltip_skilltrained" merge="add" />
+			<state icon="button_prof_double" tooltipres="char_tooltip_skillspecialized" merge="add" />
+			<default>2</default>
+		</button_listitem_left>
 	</template>
 
 	<template name="cycler_training">

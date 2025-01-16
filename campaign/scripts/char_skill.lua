@@ -2,6 +2,10 @@
 -- Please see the license.html file included with this distribution for 
 -- attribution and copyright information.
 --
+function onEditModeChanged()
+	local bEditMode = WindowManager.getEditMode(windowlist, "sheet_iedit");
+	idelete.setVisible(bEditMode);
+end
 
 -- Check constraints and set up for an ability roll.
 function action(draginfo)

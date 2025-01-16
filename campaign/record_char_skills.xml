@@ -7,72 +7,66 @@
 
 <root>
 	<windowclass name="charsheet_skills">
+		<!-- Maybe one day I want to make reference skills a thing that can be drag/dropped, but for now, it's not needed -->
+		<!-- <script>
+			function onDrop(x, y, draginfo)
+				if draginfo.isType("shortcut") then
+					local sClass = draginfo.getShortcutData();
+					if sClass == "reference_skill" then
+						content.subwindow.list.addSkillReference(draginfo.getDatabaseNode());
+					end
+					return true;
+				end
+			end
+		</script> -->
 		<sheetdata>
-			<frame_char name="skillframe">
-				<anchored position="over" />
-			</frame_char>
+			<anchor_content_top />
+			<anchor_content_bottom />
 
-			<label_frametop name="header_skills">
-				<anchored to="skillframe" />
+			<area_content_framed_groupbox_bottom name="area_controls">
+				<anchored height="20" />
+			</area_content_framed_groupbox_bottom>
+			<button_iedit name="sheet_iedit">
+				<anchored to="area_controls" position="insidetopright" offset="0,0" />
+				<edittarget>content</edittarget>
+			</button_iedit>
+
+			<sub_content_scroll name="content">
+				<class>charsheet_skills_contents</class>
+			</sub_content_scroll>
+			<scrollbar_content />
+		</sheetdata>
+	</windowclass>
+	
+	<windowclass name="charsheet_skills_contents">
+		<margins control="0,0,0,2" />
+		<sheetdata>
+			<anchor_content_top />
+
+			<label_charframetop name="header">
+				<anchored to="contentanchor" height="20">
+					<top relation="relative" offset="8" postoffset="8" />
+					<left offset="15" />
+					<right offset="-10" />
+				</anchored>
+				<icons>char_abilities_purple</icons>
 				<static textres="char_label_skills" />
-			</label_frametop>
+			</label_charframetop>
 
-			<genericcontrol name="rightanchor">
-				<anchored height="0" width="0">
-					<top parent="header_skills" anchor="bottom" />
-					<right parent="header_skills" anchor="right" />
-				</anchored>
-			</genericcontrol>
-			<genericcontrol name="idelete_header">
-				<anchored to="rightanchor" width="20" height="20">
-					<top />
-					<right anchor="left" relation="relative" offset="-6" />
-				</anchored>
-				<disabled />
-			</genericcontrol>
-			<label name="modifier_label">
-				<anchored to="rightanchor" width="30">
-					<top />
-					<right anchor="left" relation="relative" offset="-24" />
-				</anchored>
-				<center />
-				<static textres="char_label_skillmodifier" />
-			</label>
-			<label name="assets_label">
-				<anchored to="rightanchor" width="38">
-					<top />
-					<right anchor="left" relation="relative" offset="-6" />
-				</anchored>
-				<center />
-				<static textres="char_label_skillassets" />
-			</label>
-			<label name="training_label">
-				<anchored to="rightanchor" width="60">
-					<top />
-					<right anchor="left" relation="relative" offset="-7" />
-				</anchored>
-				<center />
-				<static textres="char_label_skilltraining" />
-			</label>
-			<label name="stat_label">
-				<anchored to="rightanchor" width="40">
-					<top />
-					<right anchor="left" relation="relative" offset="-22" />
-				</anchored>
-				<center />
-				<static textres="char_label_skillstat" />
-			</label>
-			<label name="name_label">
-				<anchored to="rightanchor" width="40">
-					<top />
-					<right anchor="left" relation="relative" offset="-80" />
-				</anchored>
-				<center />
-				<static textres="char_label_skillname" />
-			</label>
+			<button_iadd name="list_iadd">
+				<anchored to="header" position="insidetopright" offset="5,0" />
+				<target>list</target>
+			</button_iadd>
 
-			<list_text name="skills">
-				<script>
+			<list_content_labeled_alternating_top name="list">
+				<anchored>
+					<left offset="10" />
+					<right offset="-10" />
+				</anchored>
+				<datasource>.skilllist</datasource>
+				<class>char_skill_item</class>
+				<sortby><control>name</control></sortby>
+				<!-- <script>
 					function update()
 						local bEditMode = (window.skills_iedit.getValue() == 1);
 						if window.idelete_header then
@@ -82,112 +76,118 @@
 							w.idelete.setVisible(bEditMode);
 						end
 					end
-				</script>
-				<anchored to="skillframe">
-					<left offset="10" />
-					<top offset="60" />
-					<right offset="-20" />
-					<bottom offset="-10" />
-				</anchored>
-				<datasource>.skilllist</datasource>
-				<class>char_skill</class>
-				<sortby><field>name</field></sortby>
-			</list_text>
+				</script> -->
+			</list_content_labeled_alternating_top>
 
-			<scrollbar>
-				<anchored to="skills" />
-				<target>skills</target>
-			</scrollbar>
-
-			<button_iedit name="skills_iedit">
-				<anchored to="skills" position="aboveright" offset="-13,30" />
-				<target>skills</target>
-			</button_iedit>
-			<button_iadd name="skills_iadd">
-				<anchored to="skills_iedit" position="lefthigh" offset="3,0" />
-				<target>skills</target>
-			</button_iadd>
+			<anchor_list_content_label_left />
+			<anchor_list_content_label_right />
+			<spacer_list_content_idelete_label_right name="idelete_header">
+				<editmode>sheet_iedit</editmode>
+			</spacer_list_content_idelete_label_right>
+			<!-- If skill references get added, this can get re-enabled -->
+			<!-- <spacer_list_content_link_label_right name="spacer_link" /> -->
+			<spacer_list_content_label_right name="spacer">
+				<anchored width="30" />
+			</spacer_list_content_label_right>
+			<label_list_content_number_right name="label_mod">
+				<anchored width="40" />
+				<static textres="char_label_skillmodifier" />
+			</label_list_content_number_right>
+			<label_list_content_number_right name="label_mod">
+				<anchored width="40" />
+				<static textres="char_label_skillassets" />
+			</label_list_content_number_right>
+			<label_list_content_string_right name="label_stat">
+				<anchored width="42" />
+				<static textres="char_label_skillstat" />
+			</label_list_content_string_right>
+			<label_list_content_noframe name="label_name">
+				<static textres="char_label_skillname" />
+			</label_list_content_noframe>
 		</sheetdata>
 	</windowclass>
 
-	<windowclass name="char_skill">
+	<windowclass name="char_skill_item">
 		<margins control="0,0,0,2" />
 		<script file="campaign/scripts/char_skill.lua" />
 		<sheetdata>
-			<button_roll>
-				<anchored>
-					<top offset="2" />
-					<left offset="5" />
-				</anchored>
+			<anchor_listitem_left_sm />
+			<anchor_listitem_right_sm />
+
+			<button_skill name="training">
+				<tabtarget next="name" />
+			</button_skill>
+
+			<button_listitem_idelete name="idelete" />
+			<!-- Removed until reference skills are a thing -->
+			<!-- <button_listitem_right name="shortcut">
+				<icon normal="button_link" pressed="button_link_down" />
 				<script>
-					function action(draginfo)
-						window.action(draginfo);
-					end
-
-					function onButtonPress(x, y)
-						action();
-						return true;
-					end
-
-					function onDragStart(button, x, y, draginfo)
-						action(draginfo);
-						return true;
+					function onButtonPress()
+						window.openSkillLink();
 					end
 				</script>
-			</button_roll>
-			
-			<genericcontrol name="rightanchor">
-				<anchored height="0" width="0">
-					<top />
-					<right />
-				</anchored>
-			</genericcontrol>
-			<button_idelete name="idelete">
-				<anchored>
-					<top offset="2" />
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-5" />
-				</anchored>
-			</button_idelete>
-			<basicnumber name="misc">
-				<anchored width="30" height="20">
-					<top offset="2" />
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-7" />
-				</anchored>
-				<tooltip textres="modifier" />
+			</button_listitem_right> -->
+
+			<button_skillroll />
+			<!-- <spacer_listitem_right name="spacer">
+				<anchored width="10" />
+			</spacer_listitem_right> -->
+			<number_charskill name="misc">
 				<tabtarget prev="asset" />
-			</basicnumber>
-			<basicnumber name="asset">
-				<anchored width="30" height="20">
-					<top offset="2" />
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-10" />
-				</anchored>
-				<tooltip textres="assets" />
+			</number_charskill>
+			<number_charskill name="asset">
 				<tabtarget next="misc" prev="training" />
-			</basicnumber>
-			<button_skill name="training">
-				<anchored width="60" height="20">
-					<top offset="2" />
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-10" />
-				</anchored>
-				<default>2</default>
-				<tabtarget next="asset" prev="stat" />
-			</button_skill>
-			<cycler_stat_custom name="stat">
-				<anchored width="60" height="20">
-					<top offset="2" />
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-10" />
-				</anchored>
-				<tabtarget next="training" prev="name" />
-			</cycler_stat_custom>
-			
-			<string_textlistitem name="name">
-				<anchored height="20">
-					<top offset="2" />
-					<left offset="30" />
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-7" />
-				</anchored>
-				<tabtarget next="stat" />
-			</string_textlistitem>
+				<max>2</max>
+				<min>0</min>
+			</number_charskill>
+			<cycler_charskillability name="stat">
+				<tabtarget next="asset" prev="name" />
+			</cycler_charskillability>
+
+			<string_listitem_center_text name="name">
+				<tabtarget next="stat" prev="training" />
+			</string_listitem_center_text>
 		</sheetdata>
 	</windowclass>
+
+	<template name="number_charskill">
+		<number_listitem_right>
+			<anchored width="40" />
+			<delaykeyupdate />
+			<hideonvalue>0</hideonvalue>
+			<nodrag />
+		</number_listitem_right>
+	</template>
+	<template name="cycler_charskillability">
+		<stringcycler_listitem_right name="stat">
+			<anchored width="60" />
+			<script file="common/scripts/cycler_stat_custom.lua" />
+			<parameters>
+				<labelsres>char_label_might|char_label_speed|char_label_intellect</labelsres>
+				<values>might|speed|intellect</values>
+				<defaultlabel>-</defaultlabel>
+			</parameters>
+		</stringcycler_listitem_right>
+	</template>
+	<template name="button_skillroll">
+		<button_listitem_icon_right>
+			<script>
+				function action(draginfo)
+					window.action(draginfo);
+				end
+
+				function onButtonPress(x, y)
+					action();
+					return true;
+				end
+
+				function onDragStart(button, x, y, draginfo)
+					action(draginfo);
+					return true;
+				end
+			</script>
+			<icon normal="button_roll" pressed="button_roll_down" />
+		</button_listitem_icon_right>
+	</template>
 </root>

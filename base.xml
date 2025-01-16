@@ -23,6 +23,7 @@
 	<!-- Graphics -->
 	<includefile source="graphics/graphics_fonts.xml" />
 	<includefile source="graphics/graphics_icons.xml" />
+	<includefile source="graphics/graphics_buttons.xml" />
 
 	<!-- Strings -->
 	<includefile source="strings/strings_cyphersystem.xml" />
