@@ -122,7 +122,9 @@ function modRoll(rSource, rTarget, rRoll)
 	RollManager.encodeEaseHindrance(rRoll, rRoll.nEase, rRoll.nHinder);
 	RollManager.encodeAdvantage(rRoll, bAdv, bDis);
 
-	rRoll.nDifficulty = RollManager.getBaseRollDifficulty(rSource, rTarget, { "defense", "def", rRoll.sDefenseStat });
+	if tonumber(rRoll.nDifficulty or "0") == 0 then
+		rRoll.nDifficulty = RollManager.getBaseRollDifficulty(rSource, rTarget, { "defense", "def", rRoll.sDefenseStat });
+	end
 	RollManager.calculateDifficultyForRoll(rSource, rTarget, rRoll);
 
 	if rRoll.sWeaponType == "light" then

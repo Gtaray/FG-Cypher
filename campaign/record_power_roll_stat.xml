@@ -49,6 +49,8 @@
 				hinder.setVisible(not bNPC);
 				label_hinder.setVisible(not bNPC);
 				hindertext2.setVisible(not bNPC);
+				difficulty.setVisible(not bNPC);
+				difficulty_label.setVisible(not bNPC);
 
 				local bFixed = DB.getValue(getDatabaseNode(), "costtype", "") == "fixed";
 				header_cost.setVisible(not bNPC);
@@ -199,6 +201,15 @@
 				</anchored>
 				<static textres="power_label_leveladjust_text_2" />
 			</label>
+			
+			<label_column name="difficulty_label">
+				<static textres="power_label_difficulty" />
+			</label_column>
+			<number_column name="difficulty">
+				<min>0</min>
+				<hideonvalue value="0" />
+				<tooltip textres="power_tooltip_difficulty" />
+			</number_column>
 
 			<header_column name="header_cost">
 				<static textres="power_header_cost" />

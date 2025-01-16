@@ -363,7 +363,12 @@ function getPowerAction(nodeAction)
 		end
 
 		-- For NPCs, we want to use the custom stat field instead of the cycler
-		if not ActorManager.isPC(rActor) then
+		if ActorManager.isPC(rActor) then
+			local nDiff = DB.getValue(nodeAction, "difficulty", 0)
+			if nDiff > 0 then
+				rAction.nDifficulty = nDiff;
+			end
+		else
 			rAction.sStat = resolveCustomStats(nodeAction, rAction.sStat, "stat_custom", "might");
 		end
 		
@@ -385,6 +390,11 @@ function getPowerAction(nodeAction)
 		-- For PCs, we try to apply an equipped weapon
 		if ActorManager.isPC(rActor) then
 			PowerManager.applyWeaponPropertiesToAttack(rAction, nodePower);
+			
+			local nDiff = DB.getValue(nodeAction, "difficulty", 0)
+			if nDiff > 0 then
+				rAction.nDifficulty = nDiff;
+			end
 		else
 			rAction.sStat = resolveCustomStats(nodeAction, rAction.sStat, "stat_custom", "might");
 			rAction.sDefenseStat = resolveCustomStats(nodeAction, rAction.sDefenseStat, "defensestat_custom", "speed");

@@ -340,6 +340,9 @@
 	<string name="power_label_notes">Notes</string>
 	<string name="power_tooltip_notes">This text is only displayed in the tooltip for this action, and is meant to help context for individual actions.</string>
 
+	<string name="power_label_difficulty">Difficulty</string>
+	<string name="power_tooltip_difficulty">If set, this action will target the set difficulty rather than the global difficulty.</string>
+
 	<string name="power_header_stat">STAT</string>
 	<string name="power_label_roll">Roll</string>
 	<string name="power_label_stat">Stat</string>

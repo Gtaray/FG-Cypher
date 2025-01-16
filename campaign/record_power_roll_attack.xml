@@ -68,6 +68,8 @@
 				asset_label.setVisible(not bNPC);
 				modifier.setVisible(not bNPC);
 				modifier_label.setVisible(not bNPC);
+				difficulty.setVisible(not bNPC);
+				difficulty_label.setVisible(not bNPC);
 
 				level.setVisible(bNPC);
 				level_label.setVisible(bNPC);
@@ -258,6 +260,15 @@
 			<number_column name="modifier">
 				<hideonvalue value="0" />
 				<tooltip textres="power_tooltip_modifier" />
+			</number_column>
+
+			<label_column name="difficulty_label">
+				<static textres="power_label_difficulty" />
+			</label_column>
+			<number_column name="difficulty">
+				<min>0</min>
+				<hideonvalue value="0" />
+				<tooltip textres="power_tooltip_difficulty" />
 			</number_column>
 
 			<label_column name="level_label">

@@ -104,7 +104,10 @@ function modRoll(rSource, rTarget, rRoll)
 	-- We need to process the roll result (success/failure) before printing
 	-- anything to chat, because our messages require us to know if 
 	-- the roll was an automatic success or not.
-	rRoll.nDifficulty = RollManager.getBaseRollDifficulty(rSource, rTarget, { "stat", "stats", rRoll.sStat });
+	-- If nDifficulty was already set, don't overwrite.
+	if tonumber(rRoll.nDifficulty or "0") == 0 then
+		rRoll.nDifficulty = RollManager.getBaseRollDifficulty(rSource, rTarget, { "stat", "stats", rRoll.sStat });
+	end
 	RollManager.calculateDifficultyForRoll(rSource, rTarget, rRoll);
 
 	-- We only need to encode the condition mods because all other effect handling
