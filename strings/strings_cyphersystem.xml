@@ -242,26 +242,22 @@
 	<string name="char_message_not_enough_ammo">You are out of ammo for your %s.</string>
 
 	<!-- Character - Inventory -->
+	<string name="char_label_inventory">EQUIPMENT</string>
 	<string name="char_label_invtype">Type</string>
+	<string name="char_label_invlevel">Lvl</string>
 	<string name="char_label_invtypecypher">Cypher</string>
 	<string name="char_label_invtypeartifact">Artifact</string>
 	<string name="char_label_invtypeoddity">Oddity</string>
 	<string name="char_label_invtypeweapon">Weapon</string>
 	<string name="char_label_invtypearmor">Armor</string>
-
-	<string name="char_label_invtypecypher_short">C</string>
-	<string name="char_label_invtypeartifact_short">A</string>
-	<string name="char_label_invtypeoddity_short">O</string>
-
 	<string name="char_tooltip_invtypecypher">Cypher</string>
 	<string name="char_tooltip_invtypeartifact">Artifact</string>
 	<string name="char_tooltip_invtypeoddity">Oddity</string>
-	
-	<string name="char_label_invlevel">Lvl</string>
-	<string name="char_label_invslots">Slots</string>
-	<string name="char_label_invcypher">Cyphers</string>
-	<string name="char_label_invcypherlimit">Limit</string>
-	<string name="char_label_invcyphertotal">Total</string>
+
+	<string name="char_invmeta_title">INVENTORY META</string>
+	<string name="char_label_cypherlimit">Cypher Limit</string>
+
+	<string name="char_label_money">TREASURE</string>
 
 	<!-- Character - Arcs -->
 	<string name="char_label_arcs">Character Arcs</string>

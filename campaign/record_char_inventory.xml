@@ -6,110 +6,352 @@
 -->
 
 <root>
-	<windowclass name="charsheet_inventory" merge="join">
-		<sheetdata>
-			<genericcontrol name="carried_header" merge="delete" />
-			<label name="weight_label" merge="delete" />
-
-			<label name="type_label" insertbefore="location_label">
-				<anchored to="rightanchor" width="40">
-					<top />
-					<right anchor="left" relation="relative" offset="-20" />
-				</anchored>
-				<center />
-				<static textres="char_label_invtype" />
-			</label>
-			<label name="name_label">
-				<anchored to="rightanchor">
-					<left offset="20" />
-				</anchored>
-			</label>
-			
-			<list_charinv_cypher name="inventorylist" />
-			
-			<simplenumber name="encumbranceload" merge="delete" />
-			<label name="encumbrance_label" merge="delete" />
-			<simplenumber name="cypherload" insertbefore="coinframe">
-				<anchored to="encumbranceframe" position="insidetopleft" offset="100,50" width="30" height="20" />
-				<frame name="fieldlight" offset="7,5,7,5" />
-				<readonly />
-				<script>
-					function onInit()
-						onValueChanged();
-					end
-					
-					function onValueChanged()
-						if getValue() &gt; window.cypherlimit.getValue() then
-							setColor(ColorManager.getUIColor("field_error"));
-							window.cypherload_label.setColor(ColorManager.getUIColor("field_error"));
-						else
-							setColor(nil);
-							window.cypherload_label.setColor(nil);
-						end
-					end
-				</script>
-			</simplenumber>
-			<label_fieldtop name="cypherload_label" insertbefore="coinframe">
-				<anchored to="cypherload" />
-				<static textres="char_label_invcyphertotal" />
-			</label_fieldtop>
-			<label name="cypherslash_label" insertbefore="coinframe">
-				<anchored to="cypherload" position="righthigh" offset="10,0" />
-				<static>/</static>
-			</label>
-			<basicnumber name="cypherlimit" insertbefore="coinframe">
-				<anchored to="cypherslash_label" position="righthigh" offset="10,0" width="30" height="20" />
-				<script>
-					function onValueChanged()
-						window.cypherload.onValueChanged();
-					end
-				</script>
-			</basicnumber>
-			<label_fieldtop name="cypherlimit_label" insertbefore="coinframe">
-				<anchored to="cypherlimit" />
-				<static textres="char_label_invcypherlimit" />
-			</label_fieldtop>
-			<label name="cypher_label" insertbefore="coinframe">
-				<anchored to="cypherload" position="lefthigh" offset="15,0" />
-				<static textres="char_label_invcypher" />
-			</label>
-		</sheetdata>
-	</windowclass>
-
-	<windowclass name="char_currency" merge="join">
-		<sheetdata>
-			<basicnumber name="coinother" merge="delete" />
-		</sheetdata>
-	</windowclass>
-
-	<windowclass name="char_invitem" merge="join">
+	<windowclass name="charsheet_inventory">
 		<script>
-			function onInit()
-				ItemManagerCypher.migrateArmorAndWeaponItemTypes(getDatabaseNode());
-
-				super.onInit()
+			function onDrop(x, y, draginfo)
+				return ItemManager.handleAnyDrop(getDatabaseNode(), draginfo);
 			end
 		</script>
 		<sheetdata>
-			<number_charinv name="weight" merge="delete" />
-			<!-- <button_char_inv_carried name="carried" merge="delete" /> -->
-			<!-- <string_charinvloc name="location" merge="delete" /> -->
+			<anchor_content_top />
+			<anchor_content_bottom />
 
-			<!-- <basicnumber name="level" insertbefore="location">
-				<anchored width="20" height="20">
-					<top offset="2" />
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-7" />
-				</anchored>
-				<tabtarget prev="type" />
-			</basicnumber> -->
-			<button_itemtype_short name="type" insertbefore="location">
-				<anchored height="20">
-					<top offset="2" />
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-7" />
-				</anchored>
-				<tabtarget prev="nonid_name" next="level" />
-				<readonly />
-			</button_itemtype_short>
+			<area_content_framed_groupbox_bottom name="area_controls">
+				<anchored height="20" />
+			</area_content_framed_groupbox_bottom>
+			<button_iedit name="sheet_iedit">
+				<anchored to="area_controls" position="insidetopright" offset="0,0" />
+				<edittarget>content</edittarget>
+			</button_iedit>
+
+			<sub_content_scroll name="content">
+				<class>charsheet_inventory_contents</class>
+			</sub_content_scroll>
+			<scrollbar_content />
 		</sheetdata>
 	</windowclass>
+
+	<windowclass name="charsheet_inventory_contents">
+		<margins control="0,0,0,2" />
+		<sheetdata>
+			<anchor_content_top />
+
+			<sub_content_top name="items">
+				<class>charsheet_inventory_items</class>
+			</sub_content_top>
+			<sub_content_top name="currencies">
+				<class>charsheet_inventory_currencies</class>
+			</sub_content_top>
+			<!-- <sub_content_top name="encumbrance">
+				<class>charsheet_inventory_encumbrance</class>
+			</sub_content_top> -->
+		</sheetdata>
+	</windowclass>
+	
+	<windowclass name="charsheet_inventory_items">
+		<margins control="0,0,0,2" />
+		<script>
+			function onInit()
+				self.updateCypherLimit();
+			end
+			function onCypherLoadChanged()
+				self.updateCypherLimit();
+			end
+			function updateCypherLimit()
+				local node = getDatabaseNode();
+				local nLimit = CharManager.getCypherLimit(node)
+				local nLoad = CharManager.getCypherLoad(node);
+				local sUsage = string.format("%d / %d", nLoad, nLimit);
+
+				cypherlimit.setValue(sUsage);
+				if nLoad > nLimit then
+					cypherlimit.setColor(ColorManager.getUIColor("field_error"))
+				else
+					cypherlimit.setColor(nil);
+				end
+			end
+		</script>
+		<sheetdata>
+			<anchor_content_top />
+
+			<label_charframetop name="header">
+				<anchored to="contentanchor" height="20">
+					<top relation="relative" offset="8" postoffset="8" />
+					<left offset="15" />
+					<right offset="-10" />
+				</anchored>
+				<icons>char_inventory</icons>
+				<static textres="char_label_inventory" />
+			</label_charframetop>
+
+			<button_iadd name="list_iadd">
+				<anchored to="header" position="insidetopright" offset="5,0" />
+				<target>list</target>
+				<recordtype>item</recordtype>
+			</button_iadd>
+			<button_details name="button_invmeta">
+				<anchored to="header" position="insidetopright" offset="35,0" />
+				<script>
+					function onButtonPress()
+						Interface.openWindow("charsheet_invmeta", window.getDatabaseNode());
+					end
+				</script>
+			</button_details>
+			<genericcontrol name="cyphericon">
+				<anchored to="button_invmeta" position="lefthigh" offset="55,0" width="20" height="20" />
+				<icon>cypher</icon>
+			</genericcontrol>
+			<string_charinv_cypherlimit name="cypherlimit">
+				<anchored to="cyphericon" position="righthigh" offset="3,0" height="20" />
+			</string_charinv_cypherlimit>
+
+			<list_content_labeled_alternating_top name="list">
+				<datasource>.inventorylist</datasource>
+				<class>char_invitem</class>
+				<allowcreate />
+				<allowdelete />
+				<script file="campaign/scripts/char_invlist.lua" />
+			</list_content_labeled_alternating_top>
+
+			<anchor_list_content_label_left />
+			<anchor_list_content_label_right />
+			<label_list_content_number_left name="label_count">
+				<anchored width="20" />
+				<static>#</static>
+			</label_list_content_number_left>
+			<spacer_list_content_idelete_label_right name="idelete_header">
+				<editmode>sheet_iedit</editmode>
+			</spacer_list_content_idelete_label_right>
+			<spacer_list_content_link_label_right name="spacer_link" />
+			<icon_list_content_button_label_right name="label_carried">
+				<icon>char_inv_carried_header</icon>
+				<tooltip textres="char_tooltip_itemcarried" />
+			</icon_list_content_button_label_right>
+			<spacer_list_content_label_right name="spacer_type">
+				<anchored width="25" />
+			</spacer_list_content_label_right>
+			<label_list_content_string_noframe_right name="label_location">
+				<static textres="char_label_itemlocation" />
+			</label_list_content_string_noframe_right>
+			<label_list_content_noframe name="label_name">
+				<static textres="char_label_itemname" />
+			</label_list_content_noframe>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="char_invitem">
+		<margins control="0,0,0,2" />
+		<script file="campaign/scripts/char_invitem.lua" />
+		<sheetdata>
+			<hidden_record_isidentified name="isidentified">
+				<class>item</class>
+				<ignorehost />
+			</hidden_record_isidentified>
+
+			<anchor_listitem_left_sm />
+			<anchor_listitem_right_sm />
+
+			<number_listitem_left name="count">
+				<anchored width="20" />
+				<tabtarget next="name" prev="location" />
+				<nodrag />
+				<hideonvalue>0</hideonvalue>
+				<min>0</min>
+			</number_listitem_left>
+
+			<button_listitem_idelete name="idelete">
+				<editmode>sheet_iedit</editmode>
+			</button_listitem_idelete>
+			<linkc_listitem_right name="shortcut">
+				<class>item</class>
+			</linkc_listitem_right>
+			<button_listitem_right name="carried">
+				<state icon="button_char_inv_none" tooltipres="char_tooltip_inv_none" merge="add" />
+				<state icon="button_char_inv_carried" tooltipres="char_tooltip_inv_carried" merge="add" />
+				<state icon="button_char_inv_equipped" tooltipres="char_tooltip_inv_equipped" merge="add" />
+				<default>1</default>
+			</button_listitem_right>
+			<icon_itemtype_right name="type" />
+			<string_listitem_right_text name="location">
+				<nodrop />
+				<delaykeyupdate merge="delete" />
+				<tabtarget next="count" prev="nonid_name" />
+				<script file="campaign/scripts/char_invloc.lua" />
+			</string_listitem_right_text>
+
+			<string_listitem_center_text name="name">
+				<nodrop />
+				<tabtarget next="nonid_name" prev="count" />
+				<script file="campaign/scripts/char_invname.lua" />
+			</string_listitem_center_text>
+			<string_listitem_center_text name="nonid_name">
+				<nodrop />
+				<empty textres="library_recordtype_empty_nonid_item" />
+				<invisible />
+				<tabtarget next="location" prev="name" />
+				<script file="campaign/scripts/char_invname.lua" />
+			</string_listitem_center_text>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="charsheet_invmeta">
+		<frame>charsheethelper</frame>
+		<sizelimits>
+			<minimum width="400" height="145" />
+			<dynamic />
+		</sizelimits>
+		<script>
+			function onInit()
+				DB.addHandler(DB.getPath(getDatabaseNode(), "cypherlimit"), "onUpdate", onCypherLimitChanged);
+
+				self.onCypherLimitChanged();
+			end
+
+			function onClose()
+				DB.removeHandler(DB.getPath(getDatabaseNode(), "cypherlimit"), "onUpdate", onCypherLimitChanged);
+			end
+
+			function onCypherLimitChanged()
+				local rActor = ActorManager.resolveActor(getDatabaseNode())
+				local nLimit = CharManager.getCypherLimit(rActor);
+				cypherlimit.setValue(nLimit);
+			end
+		</script>
+		<sheetdata>
+			<windowtitlebar_charsheethelper name="title">
+				<prefix>char_invmeta_title</prefix>
+			</windowtitlebar_charsheethelper>
+			<anchor_title_charsheethelper name="contentanchor" />
+
+			<label name="label_cypherlimit">
+				<anchored width="100">
+					<top parent="contentanchor" anchor="bottom" relation="relative" offset="20" />
+					<left offset="30" />
+				</anchored>
+				<static textres="char_label_cypherlimit" />
+			</label>
+			<basicnumber name="cypherlimit" source="cypherlimit">
+				<anchored to="label_cypherlimit" position="right" offset="5,0" width="45" />
+			</basicnumber>
+
+			<resize_charsheethelper />
+			<close_charsheethelper />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="charsheet_inventory_currencies">
+		<margins control="0,0,0,2" />
+		<sheetdata>
+			<anchor_content_top />
+
+			<label_charframetop name="header">
+				<anchored to="contentanchor" height="20">
+					<top relation="relative" offset="8" postoffset="8" />
+					<left offset="15" />
+					<right offset="-10" />
+				</anchored>
+				<icons>char_abilities_purple</icons>
+				<static textres="char_label_money" />
+			</label_charframetop>
+			
+			<button_iadd name="list_iadd">
+				<anchored to="header" position="insidetopright" offset="5,0" />
+				<target>list</target>
+			</button_iadd>
+
+			<list_content_noscroll_top name="list">
+				<anchored>
+					<left offset="10" />
+					<right offset="-10" />
+				</anchored>
+				<class>char_currencyitem</class>
+				<datasource>.coins</datasource>
+				<allowdelete />
+				<columns width="150" fillwidth="true" />
+				<script>
+					function onInit()
+						local nodeCurrencyList = getDatabaseNode();
+						if DB.getChildCount(nodeCurrencyList) == 0 then
+							CurrencyManager.populateCharCurrencies(DB.getParent(nodeCurrencyList));
+						end
+					end
+					function onSortCompare(w1, w2)
+						return CurrencyManager.sortCampaignCurrenciesUsingNames(w1.name.getValue(), w2.name.getValue());
+					end
+				</script>
+			</list_content_noscroll_top>
+
+			<stringu_content_noframe_noscroll_top name="coinother">
+				<anchored>
+					<left offset="10" />
+					<right offset="-10" />
+				</anchored>
+			</stringu_content_noframe_noscroll_top>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="char_currencyitem">
+		<margins control="0,0,0,2" />
+		<sheetdata>
+			<anchor_listitem_left_sm />
+			<anchor_listitem_right_sm />
+
+			<button_listitem_idelete name="idelete">
+				<editmode>sheet_iedit</editmode>
+			</button_listitem_idelete>
+
+			<number_dropadd_listitem_left name="amount">
+				<anchored width="50" />
+				<description field="name" />
+				<delaykeyupdate />
+			</number_dropadd_listitem_left>
+
+			<string_listitem_center_text name="name">
+				<nodrag />
+			</string_listitem_center_text>
+		</sheetdata>
+	</windowclass>
+
+	<template name="string_charinv_cypherlimit">
+		<stringcontrol>
+			<font>subwindowsmalltitle</font>
+			<warning>FF2020</warning>
+			<readonly />
+		</stringcontrol>
+	</template>
+	<template name="icon_itemtype_right">
+		<icon_listitem_right>
+			<tintable />
+			<script>
+				function onInit()
+					setColor(ColorManager.getUIColor("usage_full"))
+
+					local node = window.getDatabaseNode();
+					DB.addHandler(DB.getPath(node, "type"), "onUpdate", onUpdate)
+					onUpdate();
+				end
+				function onClose()
+					local node = window.getDatabaseNode();
+					DB.removeHandler(DB.getPath(node, "type"), "onUpdate", onUpdate)
+				end
+				function onUpdate()
+					local sType = DB.getValue(window.getDatabaseNode(), "type", "")
+					
+					if sType == "cypher" then
+						setIcon("cypher");
+						setTooltipText(Interface.getString("char_tooltip_invtypecypher"));
+					elseif sType == "artifact" then
+						setIcon("artifact");
+						setTooltipText(Interface.getString("char_tooltip_invtypeartifact"));
+					elseif sType == "oddity" then
+						setIcon("oddity");
+						setTooltipText(Interface.getString("char_tooltip_invtypeoddity"));
+					end
+
+					setVisible(sType ~= "");
+				end
+			</script>
+			<readonly />
+		</icon_listitem_right>
+	</template>
 </root>

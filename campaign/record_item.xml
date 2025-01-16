@@ -17,17 +17,6 @@
 		</button_stringcycler>
 	</template>
 
-	<template name="button_itemtype_short">
-		<button_stringcycler name="type">
-			<anchored width="20" />
-			<parameters>
-				<defaultlabel>-</defaultlabel>
-				<labelsres>char_label_invtypecypher_short|char_label_invtypeartifact_short|char_label_invtypeoddity_short</labelsres>
-				<values>cypher|artifact|oddity</values>
-			</parameters>
-		</button_stringcycler>
-	</template>
-
 	<template name="button_itemsubtype">
 		<button_stringcycler name="type">
 			<anchored width="80" />

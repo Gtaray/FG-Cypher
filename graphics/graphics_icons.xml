@@ -10,6 +10,10 @@
 	<icon name="button_bigcheckon" file="graphics/icons/button_bigcheckon.png" />
 	<icon name="button_bigcheckoff" file="graphics/icons/button_bigcheckoff.png" />
 
+	<icon name="cypher" file="graphics/icons/cypher.png" />
+	<icon name="oddity" file="graphics/icons/oddity.png" />
+	<icon name="artifact" file="graphics/icons/artifact.png" />
+
 	<!-- Rolls -->
 	<icon name="roll1" file="graphics/icons/roll1.png" />
 	<icon name="roll17" file="graphics/icons/roll17.png" />

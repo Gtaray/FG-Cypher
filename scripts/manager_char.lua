@@ -477,11 +477,48 @@ function updateCyphers(nodeChar)
 
 	for _,vNode in ipairs(DB.getChildList(nodeChar, "inventorylist")) do
 		if DB.getValue(vNode, "type", "") == "cypher" then
-			nCypherTotal = nCypherTotal + 1;
+			if DB.getValue(vNode, "carried", 0) ~= 0 then
+				nCypherTotal = nCypherTotal + DB.getValue(vNode, "count", 0);
+			end
 		end
 	end
 
 	DB.setValue(nodeChar, "cypherload", "number", nCypherTotal);
+	CharManager.onCypherLoadChanged(nodeChar);
+end
+
+function getCypherLoad(rActor)
+	local nodeActor;
+	if type(rActor) == "databasenode" then
+		nodeActor = rActor;
+	else
+		nodeActor = ActorManager.getCreatureNode(rActor);
+	end
+
+	if not ActorManager.isPC(rActor) then
+		return 0;
+	end
+
+	return DB.getValue(nodeActor, "cypherload", 0);
+end
+
+function getCypherLimit(rActor)
+	local nodeActor;
+	if type(rActor) == "databasenode" then
+		nodeActor = rActor;
+	else
+		nodeActor = ActorManager.getCreatureNode(rActor);
+	end
+
+	if not ActorManager.isPC(rActor) then
+		return 0;
+	end
+
+	return DB.getValue(nodeActor, "cypherlimit", 0);
+end
+
+function onCypherLoadChanged(nodeChar)
+	WindowManager.callInnerWindowFunction(Interface.findWindow("charsheet", nodeChar), "onCypherLoadChanged");
 end
 
 -------------------------------------------------------------------------------
