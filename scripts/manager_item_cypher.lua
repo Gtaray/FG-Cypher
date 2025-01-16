@@ -43,17 +43,14 @@ function onItemTransfer(rSource, rTemp, rTarget)
 			-- Migrate the attack/defense/damage stats if necessary
 			if DB.getValue(rSource.node, "attackstat", "") == "custom" then
 				local sCustomStat = DB.getValue(rSource.node, "attackstat_custom", "");
-				Debug.chat('custom attack stat', sCustomStat)
 				DB.setValue(rTemp.node, "attackstat", "string", sCustomStat:lower());
 			end
 			if DB.getValue(rSource.node, "defensestat", "") == "custom" then
 				local sCustomStat = DB.getValue(rSource.node, "defensestat_custom", "");
-				Debug.chat('custom defense stat', sCustomStat)
 				DB.setValue(rTemp.node, "defensestat", "string", sCustomStat:lower());
 			end
 			if DB.getValue(rSource.node, "damagestat", "") == "custom" then
 				local sCustomStat = DB.getValue(rSource.node, "damagestat_custom", "");
-				Debug.chat('custom damage stat', sCustomStat)
 				DB.setValue(rTemp.node, "damagestat", "string", sCustomStat:lower());
 			end
 
