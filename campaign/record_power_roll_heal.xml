@@ -94,12 +94,12 @@
 				</anchored>
 				<static textres="power_label_heal_text_1" />
 			</label_column>
-			<column_stat name="stat">
+			<column_stat_custom name="stat">
 				<anchored width="65">
 					<top offset="20" />
 					<left parent="healtext1" anchor="right" relation="relative" offset="10" />
 				</anchored>
-			</column_stat>
+			</column_stat_custom>
 			<label_fieldtop name="stat_label">
 				<anchored to="stat" />
 				<static textres="power_label_stat" />
@@ -107,7 +107,7 @@
 			<label name="healtext2">
 				<anchored to="stat" width="45">
 					<top />
-					<left anchor="right" relation="relative" offset="10" />
+					<left anchor="right" relation="relative" offset="8" />
 				</anchored>
 				<static textres="power_label_heal_text_2" />
 			</label>
@@ -126,14 +126,15 @@
 				<static textres="power_label_targeting" />
 				<anchored to="healtargeting" />
 			</label_fieldtop>
-
-			<label_column name="healtext3">
-				<anchored width="18">
-					<left offset="30" />
-					<top relation="relative" offset="20" />
+			<label name="healtext3">
+				<anchored to="stat" width="18">
+					<!-- <left offset="30" />
+					<top relation="relative" offset="20" /> -->
+					<top />
+					<left anchor="right" relation="relative" offset="8" />
 				</anchored>
 				<static textres="power_label_heal_text_3" />
-			</label_column>
+			</label>
 			<basicdice name="dice">
 				<anchored to="healtext3" width="60" height="20">
 					<top />
@@ -145,7 +146,7 @@
 				<static textres="power_label_healdice" />
 			</label_fieldtop>
 			<label name="healtext4">
-				<anchored to="healtext3" width="18">
+				<anchored to="healtext3" width="10">
 					<top />
 					<left anchor="right" relation="relative" offset="6" />
 				</anchored>
@@ -163,17 +164,32 @@
 				<anchored to="heal" />
 				<static textres="power_label_healamount" />
 			</label_fieldtop>
-			<button_stat name="healstat">
+			<cycler_stat_custom name="healstat">
 				<anchored to="healtext3" width="70" height="20">
 					<top  />
 					<left anchor="right" relation="relative" offset="10" />
 				</anchored>
 				<tooltip textres="power_tooltip_healstat" />
-			</button_stat>
+			</cycler_stat_custom>
 			<label_fieldtop>
 				<anchored to="healstat" />
 				<static textres="power_label_healstat" />
 			</label_fieldtop>
+
+			<label_column name="stat_custom_label">
+				<static textres="power_label_heal_customstat" />
+			</label_column>
+			<column_custom_stat_field name="stat_custom">
+				<target>stat</target>
+				<tooltip textres="power_tooltip_heal_customstat" />
+			</column_custom_stat_field>
+			<label_column name="healstat_custom_label">
+				<static textres="power_label_heal_customhealstat" />
+			</label_column>
+			<column_custom_stat_field name="healstat_custom">
+				<target>healstat</target>
+				<tooltip textres="power_tooltip_heal_customhealstat" />
+			</column_custom_stat_field>
 
 			<label_column name="overflow_label">
 				<static textres="power_label_heal_overflow" />
@@ -221,13 +237,13 @@
 				</anchored>
 				<static textres="power_label_cost_texft_2" />
 			</label>
-			<button_coststat name="coststat">
+			<button_coststat_custom name="coststat">
 				<anchored to="cost" width="70" height="20">
 					<top />
 					<left anchor="right" relation="relative" offset="10" />
 				</anchored>
 				<tooltip textres="power_tooltip_coststat" />
-			</button_coststat>
+			</button_coststat_custom>
 			<label_fieldtop name="coststat_label">
 				<anchored to="coststat" />
 				<static textres="power_label_coststat" />
@@ -239,6 +255,13 @@
 				</anchored>
 				<static textres="power_label_cost_texft_3" />
 			</label>
+			<label_column name="coststat_custom_label">
+				<static textres="power_label_cost_customstat" />
+			</label_column>
+			<column_custom_stat_field name="coststat_custom">
+				<target>coststat</target>
+				<tooltip textres="power_tooltip_cost_customstat" />
+			</column_custom_stat_field>
 
 			<sub_action_editor_cypher name="cypheradjustments" />
 		</sheetdata>

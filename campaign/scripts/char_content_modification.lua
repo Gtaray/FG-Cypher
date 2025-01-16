@@ -63,6 +63,9 @@ function update()
 	local bCypher = not bEmpty and sProp == "Cypher Limit";
 	local bArmorEffortCost = not bEmpty and sProp == "Armor Effort Penalty";
 
+	local sStat = stat.getSelectedValue();
+	local bCustomStat = (bStats or bSkill or bDef or bEdge) and sStat == "Custom";
+
 	stats_header.setVisible(bStats);
 	skills_header.setVisible(bSkill);
 	defense_header.setVisible(bDef);
@@ -77,6 +80,7 @@ function update()
 	armoreffortcost_header.setVisible(bArmorEffortCost);
 
 	updateCombobox("stat", not (bStats or bSkill or bDef or bEdge));
+	WindowManager.callSafeControlUpdate(self, "custom_stat", false, not bCustomStat)
 	WindowManager.callSafeControlUpdate(self, "skill", false, not bSkill)
 	updateCombobox("training", not (bSkill or bDef or bInit));
 	WindowManager.callSafeControlUpdate(self, "asset", false, not (bSkill or bDef or bInit))

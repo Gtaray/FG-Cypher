@@ -143,13 +143,13 @@
 				</anchored>
 				<static textres="power_label_cost_texft_2" />
 			</label>
-			<button_coststat name="coststat">
+			<button_coststat_custom name="coststat">
 				<anchored to="cost" width="70" height="20">
 					<top />
 					<left anchor="right" relation="relative" offset="10" />
 				</anchored>
 				<tooltip textres="power_tooltip_coststat" />
-			</button_coststat>
+			</button_coststat_custom>
 			<label_fieldtop name="label_coststat">
 				<anchored to="coststat" />
 				<static textres="power_label_coststat" />
@@ -160,7 +160,14 @@
 					<left anchor="right" relation="relative" offset="10" />
 				</anchored>
 				<static textres="power_label_cost_texft_3" />
-			</label>			
+			</label>
+			<label_column name="customstat_label">
+				<static textres="ability_label_customstat" />
+			</label_column>
+			<column_custom_stat_field name="customstat">
+				<target>coststat</target>
+				<tooltip textres="ability_tooltip_customstat" />
+			</column_custom_stat_field>
 
 			<!-- DESCRIPTION -->
 			<header_column name="header_desc">

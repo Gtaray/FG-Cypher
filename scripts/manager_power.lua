@@ -361,6 +361,11 @@ function getPowerAction(nodeAction)
 		if rAction.sSkill ~= "" then
 			rAction.type = "skill"
 		end
+
+		-- For NPCs, we want to use the custom stat field instead of the cycler
+		if not ActorManager.isPC(rActor) then
+			rAction.sStat = resolveCustomStats(nodeAction, rAction.sStat, "stat_custom", "might");
+		end
 		
 	elseif rAction.type == "attack" then
 		rAction.sStat = RollManager.resolveStat(DB.getValue(nodeAction, "stat", ""));
@@ -380,6 +385,9 @@ function getPowerAction(nodeAction)
 		-- For PCs, we try to apply an equipped weapon
 		if ActorManager.isPC(rActor) then
 			PowerManager.applyWeaponPropertiesToAttack(rAction, nodePower);
+		else
+			rAction.sStat = resolveCustomStats(nodeAction, rAction.sStat, "stat_custom", "might");
+			rAction.sDefenseStat = resolveCustomStats(nodeAction, rAction.sDefenseStat, "defensestat_custom", "speed");
 		end
 
 	elseif rAction.type == "damage" then
@@ -402,6 +410,9 @@ function getPowerAction(nodeAction)
 		-- for NPCs, we double check that stat isn't empty
 		if ActorManager.isPC(rActor) then
 			PowerManager.applyWeaponPropertiesToDamage(rAction, nodePower);
+		else
+			rAction.sStat = resolveCustomStats(nodeAction, rAction.sStat, "stat_custom", "might");
+			rAction.sDamageStat = resolveCustomStats(nodeAction, rAction.sDamageStat, "damagestat_custom", "might");
 		end
 
 	elseif rAction.type == "heal" then
@@ -411,6 +422,11 @@ function getPowerAction(nodeAction)
 		rAction.nHeal = DB.getValue(nodeAction, "heal", 0);
 		rAction.sHealStat = RollManager.resolveStat(DB.getValue(nodeAction, "healstat", ""));
 		rAction.bNoOverflow = DB.getValue(nodeAction, "overflow", "") ~= "yes";
+
+		if not ActorManager.isPC(rActor) then
+			rAction.sStat = resolveCustomStats(nodeAction, rAction.sStat, "stat_custom", "might");
+			rAction.sHealStat = resolveCustomStats(nodeAction, rAction.sHealStat, "healstat_custom", "might");
+		end
 
 	elseif rAction.type == "effect" then
 		rAction.sName = DB.getValue(nodeAction, "label", "");
@@ -514,6 +530,17 @@ function applyWeaponPropertiesToDamage(rDamage, nodeAbility)
 	if (rWeapon.sLabel or "") ~= "" then
 		rDamage.label = rDamage.label .. " with " .. rWeapon.sLabel;
 	end
+end
+
+function resolveCustomStats(nodeAction, sStat, sPath, sDefault)
+	if sStat == "custom" then
+		local sCustomStat = DB.getValue(nodeAction, sPath, "")
+		if (sCustomStat or "") ~= "" then
+			return sCustomStat;
+		end
+		return sDefault;
+	end
+	return sStat;
 end
 
 -------------------------

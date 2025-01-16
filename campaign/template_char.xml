@@ -134,28 +134,6 @@
 			<tooltip textres="modifier" />
 		</basicnumber>
 	</template>
-	
-	<template name="button_stat">
-		<button_stringcycler>
-			<parameters>
-				<labelsres>char_label_might|char_label_speed|char_label_intellect</labelsres>
-				<values>might|speed|intellect</values>
-				<defaultlabel>-</defaultlabel>
-			</parameters>
-			<tooltip textres="char_tooltip_stat" />
-		</button_stringcycler>
-	</template>
-
-	<template name="button_coststat">
-		<button_stringcycler>
-			<parameters>
-				<labelsres>char_label_might|char_label_speed|char_label_intellect|xp</labelsres>
-				<values>might|speed|intellect|xp</values>
-				<defaultlabel>-</defaultlabel>
-			</parameters>
-			<tooltip textres="char_tooltip_stat" />
-		</button_stringcycler>
-	</template>
 
 	<template name="button_skill">
 		<buttonfield>
@@ -170,24 +148,6 @@
 		</buttonfield>
 	</template>
 
-	<template name="column_stat">
-		<button_stat>
-			<anchored>
-				<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
-				<left offset="97" />
-			</anchored>
-		</button_stat>
-	</template>
-
-	<template name="column_coststat">
-		<button_coststat>
-			<anchored>
-				<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
-				<left offset="97" />
-			</anchored>
-		</button_coststat>
-	</template>
-
 	<template name="cycler_training">
 		<button_stringcycler>
 			<parameters>
@@ -200,7 +160,7 @@
 
 	<template name="column_training">
 		<cycler_training>
-			<anchored>
+			<anchored width="160">
 				<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
 				<left offset="97" />
 			</anchored>

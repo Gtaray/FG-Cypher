@@ -85,12 +85,12 @@
 				<center />
 			</header_column>
 
-			<button_stat name="stat">
+			<cycler_stat_custom name="stat">
 				<anchored width="80" height="20">
 					<top parent="columnanchor" anchor="bottom" relation="relative" offset="20" />
 					<left offset="5" />
 				</anchored>
-			</button_stat>
+			</cycler_stat_custom>
 			<label_fieldtop>
 				<anchored to="stat" />
 				<static textres="power_label_stat" />
@@ -131,6 +131,14 @@
 				<anchored to="modifier" />
 				<static textres="power_label_modifier" />
 			</label_fieldtop>
+
+			<label_column name="stat_custom_label">
+				<static textres="power_label_roll_customstat" />
+			</label_column>
+			<column_custom_stat_field name="stat_custom">
+				<target>stat</target>
+				<tooltip textres="power_tooltip_roll_customstat" />
+			</column_custom_stat_field>
 
 			<label_column name="easetext1">
 				<script>
@@ -225,13 +233,13 @@
 				</anchored>
 				<static textres="power_label_cost_texft_2" />
 			</label>
-			<button_coststat name="coststat">
+			<button_coststat_custom name="coststat">
 				<anchored to="cost" width="70" height="20">
 					<top />
 					<left anchor="right" relation="relative" offset="10" />
 				</anchored>
 				<tooltip textres="power_tooltip_coststat" />
-			</button_coststat>
+			</button_coststat_custom>
 			<label_fieldtop name="coststat_label">
 				<anchored to="coststat" />
 				<static textres="power_label_coststat" />
@@ -243,6 +251,13 @@
 				</anchored>
 				<static textres="power_label_cost_texft_3" />
 			</label>
+			<label_column name="coststat_custom_label">
+				<static textres="power_label_cost_customstat" />
+			</label_column>
+			<column_custom_stat_field name="coststat_custom">
+				<target>coststat</target>
+				<tooltip textres="power_tooltip_cost_customstat" />
+			</column_custom_stat_field>
 
 			<sub_action_editor_cypher name="cypheradjustments" />
 		</sheetdata>

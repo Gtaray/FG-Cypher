@@ -172,13 +172,13 @@
 				<default>2</default>
 				<tabtarget next="asset" prev="stat" />
 			</button_skill>
-			<button_stat name="stat">
+			<cycler_stat_custom name="stat">
 				<anchored width="60" height="20">
 					<top offset="2" />
 					<right parent="rightanchor" anchor="left" relation="relative" offset="-10" />
 				</anchored>
 				<tabtarget next="training" prev="name" />
-			</button_stat>
+			</cycler_stat_custom>
 			
 			<string_textlistitem name="name">
 				<anchored height="20">

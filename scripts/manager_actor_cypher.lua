@@ -201,6 +201,12 @@ function setStatMax(rActor, sStat, nValue)
 	if not nodeActor or (sStat or "") == "" or nValue == 0 then
 		return 0;
 	end
+
+	-- Look for a custom stat pool
+	if not StringManager.contains({ "might", "speed", "intellect" }, sStat) then
+		ActorManagerCypher.setCustomStatPoolMax(rActor, sStat, nValue);
+		return
+	end
 	
 	local sPath = string.format("abilities.%s.max", sStat:lower());
 	DB.setValue(nodeActor, sPath, "number", nValue);
@@ -410,6 +416,10 @@ function getDefense(rActor, sStat)
 
 	sStat = sStat:lower();
 
+	if not StringManager.contains({ "might", "speed", "intellect" }, sStat) then
+		return getCustomStatDefense(rActor, sStat)
+	end
+
 	local sTraining = RollManager.resolveTraining(DB.getValue(nodeActor, "abilities." .. sStat .. ".def.training", 1));
 	local nAssets = DB.getValue(nodeActor, "abilities." .. sStat .. ".def.asset", 0);
 	local nModifier = DB.getValue(nodeActor, "abilities." .. sStat .. ".def.misc", 0);
@@ -454,8 +464,12 @@ function getCustomStatPools(rActor)
 	else
 		nodeActor = ActorManager.getCreatureNode(rActor);
 	end
+
+	if not nodeActor then
+		return {}
+	end
 	
-	local tPools = {}
+	local aPools = {}
 	for _, node in ipairs(DB.getChildList(nodeActor, "custom_pools")) do
 		local tPool = {
 			sName = DB.getValue(node, "name", ""),
@@ -464,52 +478,63 @@ function getCustomStatPools(rActor)
 			nEdge = DB.getValue(node, "edge", 0),
 		}
 		
-		table.insert(tPools, tPool)
+		table.insert(aPools, tPool)
 	end
 
-	return tPools
+	return aPools
 end
 
 function hasCustomStatPool(rActor, sStat)
-	local nodeActor;
-	if type(rActor) == "databasenode" then
-		nodeActor = rActor;
-	else
-		nodeActor = ActorManager.getCreatureNode(rActor);
-	end
-	
-	for _, node in ipairs(DB.getChildList(nodeActor, "custom_pools")) do
-		local sName = DB.getValue(node, "name", "");
-		if sStat:lower() == sName:lower() then
-			return true;
-		end
-	end
-
-	return false;
+	local node = ActorManagerCypher.getCustomStatPoolNode(rActor, sStat);
+	return node ~= nil;
 end
 
 function getCustomStatPool(rActor, sStat)
-	local nodeActor;
-	if type(rActor) == "databasenode" then
-		nodeActor = rActor;
-	else
-		nodeActor = ActorManager.getCreatureNode(rActor);
+	local node = ActorManagerCypher.getCustomStatPoolNode(rActor, sStat);
+	if not node then
+		return 0, 0, 0;
 	end
 	
-	for _, node in ipairs(DB.getChildList(nodeActor, "custom_pools")) do
-		local sName = DB.getValue(node, "name", "");
-		if sStat:lower() == sName:lower() then
-			local nCur = DB.getValue(node, "current", 0);
-			local nMax = DB.getValue(node, "max", 0);
-			local nEdge = DB.getValue(node, "edge", 0);
-			return nCur, nMax, nEdge
-		end
-	end
-
-	return 0, 0, 0
+	return DB.getValue(node, "current", 0), DB.getValue(node, "max", 0), DB.getValue(node, "edge", 0);
 end
 
 function setCustomStatPool(rActor, sStat, nValue)
+	local node = ActorManagerCypher.getCustomStatPoolNode(rActor, sStat);
+	if not node then
+		return;
+	end
+	
+	DB.setValue(node, "current", "number", nValue);
+end
+
+function setCustomStatPoolMax(rActor, sStat, nValue)
+	local node = ActorManagerCypher.getCustomStatPoolNode(rActor, sStat);
+	if not node then
+		return;
+	end
+	
+	DB.setValue(node, "max", "number", nValue);
+end
+
+function setCustomStatPoolEdge(rActor, sStat, nValue)
+	local node = ActorManagerCypher.getCustomStatPoolNode(rActor, sStat);
+	if not node then
+		return;
+	end
+	
+	DB.setValue(node, "edge", "number", nValue);
+end
+
+function getCustomStatDefense(rActor, sStat)
+	local node = ActorManagerCypher.getCustomStatPoolNode(rActor, sStat);
+	if not node then
+		return "", 0, 0;
+	end
+
+	return DB.getValue(node, "training", ""), DB.getValue(node, "assets", 0), DB.getValue(node, "mod", 0)
+end
+
+function getCustomStatPoolNode(rActor, sStat, bCreateIfDoesNotExist)
 	local nodeActor;
 	if type(rActor) == "databasenode" then
 		nodeActor = rActor;
@@ -520,10 +545,49 @@ function setCustomStatPool(rActor, sStat, nValue)
 	for _, node in ipairs(DB.getChildList(nodeActor, "custom_pools")) do
 		local sName = DB.getValue(node, "name", "");
 		if sStat:lower() == sName:lower() then
-			DB.setValue(node, "current", "number", nValue);
-			return;
+			return node;
 		end
 	end
+
+	if not bCreateIfDoesNotExist then
+		return;
+	end
+
+	-- Create the node then return it.
+	return ActorManagerCypher.createCustomStatPool(rActor, sStat)
+end
+
+function createCustomStatPool(rActor, sStat, nCur, nMax, nEdge)
+	if not nCur then nCur = 0 end;
+	if not nMax then nMax = 0 end;
+	if not nEdge then nEdge = 0 end;
+
+	local nodeActor;
+	if type(rActor) == "databasenode" then
+		nodeActor = rActor;
+	else
+		nodeActor = ActorManager.getCreatureNode(rActor);
+	end
+
+	if not nodeActor then
+		return;
+	end
+
+	local listnode = DB.createChild(nodeActor, "custom_pools");
+	if not listnode then
+		return;
+	end
+
+	local poolnode = DB.createChild(listnode);
+	if not poolnode then
+		return;
+	end
+
+	DB.setValue(poolnode, "name", "string", StringManager.capitalize(sStat))
+	DB.setValue(poolnode, "current", "number", nCur);
+	DB.setValue(poolnode, "max", "number", nMax);
+	DB.setValue(poolnode, "edge", "number", nEdge);
+	return poolnode;
 end
 
 -------------------------------------------------------------------------------

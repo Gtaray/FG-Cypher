@@ -63,6 +63,14 @@
 				<target>intellect</target>
 			</checkbox_ccp_type>
 
+			<label_ccp_type name="custom_label">
+				<static textres="intellect" />
+			</label_ccp_type>
+			<checkbox_ccp_type name="custom_checkbox">
+				<anchored to="custom_label" />
+				<target>custom</target>
+			</checkbox_ccp_type>
+
 			<label name="effort_label">
 				<static textres="diffadj_label_effort" />
 				<anchored width="60" height="22">

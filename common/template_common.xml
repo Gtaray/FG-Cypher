@@ -6,6 +6,101 @@
 -->
 
 <root>
+	<template name="cycler_stat">
+		<button_stringcycler>
+			<parameters>
+				<labelsres>char_label_might|char_label_speed|char_label_intellect</labelsres>
+				<values>might|speed|intellect</values>
+				<defaultlabel>-</defaultlabel>
+			</parameters>
+			<tooltip textres="char_tooltip_stat" />
+		</button_stringcycler>
+	</template>
+	<template name="button_stat">
+		<cycler_stat />
+	</template>
+	<template name="cycler_stat_custom">
+		<cycler_stat>
+			<script file="common/scripts/cycler_stat_custom.lua" />
+		</cycler_stat>
+	</template>
+	<template name="column_stat">
+		<button_stat>
+			<anchored>
+				<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+				<left offset="97" />
+			</anchored>
+		</button_stat>
+	</template>
+	<template name="column_stat_custom">
+		<column_stat>
+			<script file="common/scripts/cycler_stat_custom.lua" />
+		</column_stat>
+	</template>
+
+	<template name="button_coststat">
+		<button_stringcycler>
+			<parameters>
+				<labelsres>char_label_might|char_label_speed|char_label_intellect|xp</labelsres>
+				<values>might|speed|intellect|xp</values>
+				<defaultlabel>-</defaultlabel>
+			</parameters>
+			<tooltip textres="char_tooltip_stat" />
+		</button_stringcycler>
+	</template>
+	<template name="button_coststat_custom">
+		<button_coststat>
+			<script file="common/scripts/cycler_stat_custom.lua" />
+		</button_coststat>
+	</template>
+	<template name="column_coststat">
+		<button_coststat>
+			<anchored>
+				<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+				<left offset="97" />
+			</anchored>
+		</button_coststat>
+	</template>
+	<template name="column_coststat_custom">
+		<column_coststat>
+			<script file="common/scripts/cycler_stat_custom.lua" />
+			<target>coststat_custom</target>
+		</column_coststat>
+	</template>
+
+	<template name="column_custom_stat_field">
+		<string_columnh>
+			<script>
+				function onInit()
+					if target and target[1] then
+						DB.addHandler(DB.getPath(window.getDatabaseNode(), target[1]), "onUpdate", update)
+					end
+					if super and super.onInit then
+						super.onInit()
+					end
+
+					update();
+				end
+				function onClose()
+					if target and target[1] then
+						DB.removeHandler(DB.getPath(window.getDatabaseNode(), target[1]), "onUpdate", update)
+					end
+				end
+				function update()
+					if not target or not target[1] then
+						return;
+					end
+
+					local bShow = DB.getValue(window.getDatabaseNode(), target[1], "") == "custom"
+					local sName = getName();
+
+					setVisible(bShow)
+					window[sName .. "_label"].setVisible(bShow)
+				end
+			</script>
+		</string_columnh>
+	</template>
+
 	<template name="cycler_column">
 		<button_stringcycler>
 			<anchored>

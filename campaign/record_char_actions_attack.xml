@@ -232,13 +232,13 @@
 				</anchored>
 				<static textres="power_label_attack_text_1" />
 			</label_column>
-			<column_stat name="stat">
+			<column_stat_custom name="stat">
 				<anchored to="attacktext1" width="70" height="20">
 					<top offset="20"/>
 					<left anchor="right" relation="relative" offset="10" />
 				</anchored>
 				<tooltip textres="power_tooltip_attackstat" />
-			</column_stat>
+			</column_stat_custom>
 			<label_fieldtop>
 				<anchored to="stat" />
 				<static textres="power_label_attackstat" />
@@ -250,13 +250,13 @@
 				</anchored>
 				<static textres="power_label_attack_text_2" />
 			</label>
-			<button_stat name="defensestat">
+			<cycler_stat_custom name="defensestat">
 				<anchored to="stat" width="70" height="20">
 					<top />
 					<left anchor="right" relation="relative" offset="10" />
 				</anchored>
 				<tooltip textres="power_tooltip_defensestat" />
-			</button_stat>
+			</cycler_stat_custom>
 			<label_fieldtop>
 				<anchored to="defensestat" />
 				<static textres="power_label_defensestat" />
@@ -310,7 +310,7 @@
 				<static textres="power_label_damage_text_1" />
 			</label_column>
 			<!-- Stat2 is only used for display purposes, and is edited in the attack section -->
-			<column_stat name="stat2">
+			<column_stat_custom name="stat2">
 				<script>
 					function onInit()
 						super.onInit();
@@ -333,7 +333,7 @@
 				</anchored>
 				<tooltip textres="power_tooltip_damagestat" />
 				<readonly />
-			</column_stat>
+			</column_stat_custom>
 			<label_fieldtop name="stat_label">
 				<anchored to="stat2" />
 				<static textres="power_label_statpool" />
@@ -362,13 +362,13 @@
 				</anchored>
 				<static textres="power_label_damage_text_3" />
 			</label>
-			<button_stat name="damagestat">
+			<cycler_stat_custom name="damagestat">
 				<anchored to="stat2" width="65" height="20">
 					<top />
 					<left anchor="right" relation="relative" offset="10" />
 				</anchored>
 				<tooltip textres="power_tooltip_damagestat" />
-			</button_stat>
+			</cycler_stat_custom>
 			<label_fieldtop name="damagestat_label">
 				<anchored to="damagestat" />
 				<static textres="power_label_damagestat" />

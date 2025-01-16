@@ -1,6 +1,7 @@
 local rPc = nil;
 local rAction = nil;
 local aStats = nil;
+local sCustomStat = nil;
 
 
 function onInit()
@@ -22,28 +23,50 @@ function setData(pc, action, stats)
 
 	if #(aStats) > 1 then
 		for _, sStat in ipairs(aStats) do
+			-- For custom stats, we manually adjust the label text
+			if not StringManager.contains({ "might", "speed", "intellect" }, sStat) then
+				sStat = setCustomStat(sStat);
+			end
+
 			self[sStat .. "_label"].setVisible(true);
 			self[sStat .. "_checkbox"].setVisible(true);
 		end
 	end
 
 	if (rAction.sStat or "") ~= "" then
-		self[rAction.sStat .. "_checkbox"].setValue(1);
+		local sStat = rAction.sStat;
+		if not StringManager.contains({ "might", "speed", "intellect" }, sStat) then
+			sStat = setCustomStat(sStat);
+		end
+
+		self[sStat .. "_checkbox"].setValue(1);
 	end
 
 	updateDifficulty();
 end
 
+function setCustomStat(sStat)
+	self["custom_label"].setValue(StringManager.capitalize(sStat))
+	sCustomStat = sStat;
+	return "custom"
+end
+
 function getStatText()
-	local s = "";
-	if #(aStats) == 1 then
-		return aStats[1];
-	end
-	if #(aStats) == 3 then
-		return "any stat";
+	s = ""
+	for i, sStat in ipairs(aStats or {}) do
+		if sStat == "custom" then
+			sStat = sCustomStat;
+		end
+		if #aStats > 2 and i > 1 then
+			s = s .. ", ";
+		end
+		if #aStats > 1 and i == #aStats then
+			s = s .. "or ";
+		end
+		s  = s .. sStat
 	end
 
-	return string.format("%s or %s", aStats[1], aStats[2]);
+	return s;
 end
 
 function updateDifficulty()
@@ -85,6 +108,9 @@ function onOptionSelected(sType, bSelected)
 	if sType ~= "intellect" then
 		uncheckCheckbox("intellect")
 	end
+	if sType ~= "custom" then
+		uncheckCheckbox("custom");
+	end
 
 	self["button_roll"].setVisible(bSelected);
 end
@@ -105,6 +131,8 @@ function getStat()
 		sStat = "speed";
 	elseif self["intellect_checkbox"].getValue() == 1 then
 		sStat = "intellect";
+	elseif self["custom_checkbox"].getValue() == 1 then
+		sStat = sCustomStat;
 	end
 
 	return sStat

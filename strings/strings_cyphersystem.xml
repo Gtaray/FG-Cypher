@@ -42,6 +42,7 @@
 	<string name="might">Might</string>
 	<string name="speed">Speed</string>
 	<string name="intellect">Intellect</string>
+	<string name="custom">Custom</string>
 
 	<string name="status_hale">Hale</string>
 	<string name="status_impaired">Impaired</string>
@@ -132,6 +133,7 @@
 	<string name="char_label_might">MIGHT</string>
 	<string name="char_label_speed">SPEED</string>
 	<string name="char_label_intellect">INTELLECT</string>
+	<string name="char_label_custom">CUSTOM</string>
 	<string name="char_label_statmax">Max</string>
 	<string name="char_label_statedge">Edge</string>
 	<string name="char_label_statdef">Def</string>
@@ -166,9 +168,18 @@
 	<string name="char_tab_pools">Pools</string>
 	<string name="char_header_custom_pools">Custom Stat Pools</string>
 	<string name="char_label_custom_pool_name">Stat Pool Name</string>
+	<string name="char_label_custom_pool_name_short">Pool Name</string>
 	<string name="char_label_custom_pool_current">Current</string>
 	<string name="char_label_custom_pool_max">Max</string>
+	<string name="char_label_custom_pool_maximum">Maximum</string>
 	<string name="char_label_custom_pool_edge">Edge</string>
+
+	<string name="char_custompool_title">Custom Stat Pool</string>
+	<string name="char_header_custom_pool">Properties</string>
+	<string name="char_header_custom_defense">Defense</string>
+	<string name="char_label_custom_pool_training">Training</string>
+	<string name="char_label_custom_pool_assets">Assets</string>
+	<string name="char_label_custom_pool_mod">Modifier</string>
 
 	<string name="char_message_add_ability">Ability '%s' added to '%s'</string>
 	<string name="char_message_add_type">Type '%s' added to '%s'</string>
@@ -232,7 +243,7 @@
 
 	<!-- Character - Inventory -->
 	<string name="char_label_invtype">Type</string>
-	<string name="char_label_invtypecypher">Cyper</string>
+	<string name="char_label_invtypecypher">Cypher</string>
 	<string name="char_label_invtypeartifact">Artifact</string>
 	<string name="char_label_invtypeoddity">Oddity</string>
 	<string name="char_label_invtypeweapon">Weapon</string>
@@ -334,6 +345,8 @@
 	<string name="power_label_stat">Stat</string>
 	<string name="power_label_skill">Skill Name</string>
 	<string name="power_tooltip_skill_description">Entering a skill name will turn this into a skill roll.</string>
+	<string name="power_label_roll_customstat">Custom Pool</string>
+	<string name="power_tooltip_roll_customstat">Name of the custom stat pool this roll uses.</string>
 
 	<string name="power_header_attack">ATTACK</string>
 	<string name="power_label_attack_text_1">Use my</string>
@@ -354,6 +367,10 @@
 	<string name="power_tooltip_modifier">This is a flat modifier that's added to the roll. Every +3 is converted to an asset.</string>
 	<string name="power_label_leveladjust_text_1">%s this roll by</string>
 	<string name="power_label_leveladjust_text_2">steps.</string>
+	<string name="power_label_attack_customstat">Attack Stat</string>
+	<string name="power_tooltip_attack_customstat">Name of the custom stat pool this attack uses.</string>
+	<string name="power_label_attack_customdefensestat">Defense Stat</string>
+	<string name="power_tooltip_attack_customdefensestat">Name of the custom stat that the target will defend with.</string>
 
 	<string name="power_header_damage">DAMAGE</string>
 	<string name="power_label_damage_text_1">Use</string>
@@ -375,6 +392,10 @@
 	<string name="power_tooltip_level">Level modifier for this attack.</string>
 	<string name="power_label_ambient">Ambient Dmg</string>
 	<string name="power_tooltip_ambient">Ambient damage ignores armor regardless of stat that's damaged</string>
+	<string name="power_label_damage_customstat">Action Stat</string>
+	<string name="power_tooltip_damage_customstat">Name of the custom stat pool this action uses to deal damage.</string>
+	<string name="power_label_damage_customdamagestat">Damage Stat</string>
+	<string name="power_tooltip_damage_customdamagestat">Name of the custom stat pool this damage is dealt to.</string>
 
 	<string name="power_header_cost">COST</string>
 	<string name="power_label_costtype">Source</string>
@@ -387,6 +408,8 @@
 	<string name="power_tooltip_cost">How many stat points are spent when making this attack.</string>
 	<string name="power_label_coststat">Cost Stat</string>
 	<string name="power_tooltip_coststat">Cost is deducted from this stat pool. Defaults to the Attack Stat.</string>
+	<string name="power_label_cost_customstat">Cost Stat</string>
+	<string name="power_tooltip_cost_customstat">Name of the custom stat pool this action uses for its cost.</string>
 
 	<string name="power_header_heal">HEAL</string>
 	<string name="power_label_heal">Heal</string>
@@ -395,10 +418,14 @@
 	<string name="power_label_heal_text_3">for</string>
 	<string name="power_label_healdice">Dice</string>
 	<string name="power_label_healamount">Mod</string>
-	<string name="power_label_healstat">Stat Pool</string>
+	<string name="power_label_healstat">Heal Pool</string>
 	<string name="power_tooltip_healstat">Heal which stat pool?</string>
 	<string name="power_label_heal_overflow">Overflow</string>
 	<string name="power_tooltip_heal_overflow">If this heals a stat fully, does any extra healing overflow to other stats?</string>
+	<string name="power_label_heal_customstat">Action Stat</string>
+	<string name="power_tooltip_heal_customstat">Name of the custom stat pool this heal uses.</string>
+	<string name="power_label_heal_customhealstat">Heal Stat</string>
+	<string name="power_tooltip_heal_customhealstat">Name of the custom stat pool this healing is applied to.</string>
 
 	<string name="power_header_description">DESCRIPTION</string>
 
@@ -413,7 +440,7 @@
 	<string name="power_label_effect_scaling_dicemult">Dice Mult</string>
 	<string name="power_label_effect_scaling_mod">Mod</string>
 	<string name="power_label_effect_scaling_modmult">Mod Mult</string>
-	<string name="power_effect_scaling_effort">Effort</string>
+	<string name="power_effect_scaling_effort">Effort</string>	
 
 	<!-- Power adjustment by Cypher Level -->
 	<string name="power_header_cypher">Adjustments by Cypher Level</string>
@@ -443,6 +470,8 @@
 	<string name="ability_select_limit_once">Once</string>
 	<string name="ability_select_limit_many">Multiple times</string>
 	<string name="ability_tooltip_select_limit">Can this ability be selected multiple?</string>
+	<string name="ability_label_customstat">Custom Pool</string>
+	<string name="ability_tooltip_customstat">Name of the custom stat pool this ability uses for its cost.</string>
 
 	<string name="ref_ability_tooltip_ability_given">If checked, this ability will be given to the character. If unchecked, this ability will be listed as an optional ability for the character to select for its tier.</string>
 	<string name="ref_ability_tooltip_ability_tier">Tier this ability is offered at</string>
@@ -521,6 +550,7 @@
 	<string name="char_mod_header_armoreffortcost">Armor Effort Penalty</string>
 
 	<string name="char_mod_label_stat">Stat</string>
+	<string name="char_mod_label_custom_stat">Custom Pool</string>
 	<string name="char_mod_label_skill">Skill</string>
 	<string name="char_mod_label_training">Training</string>
 	<string name="char_mod_label_assets">Asset</string>

@@ -44,6 +44,10 @@ function update()
 	coststat.setVisible(bShowCost);
 	coststat.setReadOnly(bReadOnly);
 	costtext3.setVisible(bShowCost);
+
+	local bShowCustomStat = coststat.getStringValue() == "custom";
+	WindowManager.callSafeControlUpdate(self, "customstat", bReadOnly, not bShowCustomStat);
+	WindowManager.setControlVisibleWithLabel(self, "customstat", bShowCustomStat);
 	
 	ftdesc.setReadOnly(bReadOnly);
 end

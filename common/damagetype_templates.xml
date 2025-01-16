@@ -74,9 +74,10 @@
 			<minimum width="400" height="350" />
 		</sizelimits>
 		<sheetdata>
-			<windowtitlebar name="title">
-				<resource>special_armor_title_editor</resource>
-			</windowtitlebar>
+			<windowtitlebar_charsheethelper name="title">
+				<prefix>special_armor_title_editor</prefix>
+				<field>damagetype</field>
+			</windowtitlebar_charsheethelper>
 
 			<sub_content_framed_groupbox name="main">
 				<class>special_armor_editor_main</class>

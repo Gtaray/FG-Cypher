@@ -107,12 +107,12 @@
 				</anchored>
 				<static textres="power_label_damage_text_1" />
 			</label_column>
-			<column_stat name="stat">
+			<column_stat_custom name="stat">
 				<anchored width="65">
 					<top offset="20" />
 					<left parent="damagetext1" anchor="right" relation="relative" offset="10" />
 				</anchored>
-			</column_stat>
+			</column_stat_custom>
 			<label_fieldtop name="stat_label">
 				<anchored to="stat" />
 				<static textres="power_label_stat" />
@@ -141,17 +141,33 @@
 				</anchored>
 				<static textres="power_label_damage_text_3" />
 			</label>
-			<button_stat name="damagestat">
+			<cycler_stat_custom name="damagestat">
 				<anchored to="stat" width="65" height="20">
 					<top />
 					<left anchor="right" relation="relative" offset="10" />
 				</anchored>
 				<tooltip textres="power_tooltip_damagestat" />
-			</button_stat>
+			</cycler_stat_custom>
 			<label_fieldtop name="damagestat_label">
 				<anchored to="damagestat" />
 				<static textres="power_label_damagestat" />
 			</label_fieldtop>
+
+			<label_column name="stat_custom_label">
+				<static textres="power_label_damage_customstat" />
+			</label_column>
+			<column_custom_stat_field name="stat_custom">
+				<target>stat</target>
+				<tooltip textres="power_tooltip_damage_customstat" />
+			</column_custom_stat_field>
+			<label_column name="damagestat_custom_label">
+				<static textres="power_label_damage_customdamagestat" />
+			</label_column>
+			<column_custom_stat_field name="damagestat_custom">
+				<target>damagestat</target>
+				<tooltip textres="power_tooltip_damage_customdamagestat" />
+			</column_custom_stat_field>
+
 			<label_column name="damagetype_label">
 				<static textres="power_label_damagetype" />
 			</label_column>
@@ -216,13 +232,13 @@
 				</anchored>
 				<static textres="power_label_cost_texft_2" />
 			</label>
-			<button_coststat name="coststat">
+			<button_coststat_custom name="coststat">
 				<anchored to="cost" width="70" height="20">
 					<top />
 					<left anchor="right" relation="relative" offset="10" />
 				</anchored>
 				<tooltip textres="power_tooltip_coststat" />
-			</button_coststat>
+			</button_coststat_custom>
 			<label_fieldtop name="coststat_label">
 				<anchored to="coststat" />
 				<static textres="power_label_coststat" />
@@ -234,6 +250,13 @@
 				</anchored>
 				<static textres="power_label_cost_texft_3" />
 			</label>
+			<label_column name="coststat_custom_label">
+				<static textres="power_label_cost_customstat" />
+			</label_column>
+			<column_custom_stat_field name="coststat_custom">
+				<target>coststat</target>
+				<tooltip textres="power_tooltip_cost_customstat" />
+			</column_custom_stat_field>
 
 			<sub_action_editor_cypher name="cypheradjustments" />
 		</sheetdata>

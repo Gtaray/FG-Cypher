@@ -97,7 +97,7 @@
 		<stringcontrol>
 			<anchored to="description" width="70">
 				<left offset="75" />
-				<top anchor="bottom" relation="relative" offset="3" />
+				<top anchor="bottom" relation="relative" offset="0" />
 			</anchored>
 			<multilinespacing>20</multilinespacing>
 			<font>sheetlabel</font>

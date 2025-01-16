@@ -145,6 +145,13 @@ function applyFloatingStatsAndEdge(rData)
 end
 
 function applyStatModification(rActor, rData)
+	-- If this is a custom stat, then create the pool if it doesn't exist.
+	if not StringManager.contains({ "might", "speed", "intellect" }, rData.sStat) then
+		if not ActorManagerCypher.hasCustomStatPool(rActor, rData.sStat) then
+			ActorManagerCypher.createCustomStatPool(rActor, rData.sStat);
+		end
+	end
+
 	ActorManagerCypher.addToStatMax(rActor, rData.sStat, rData.nMod);
 
 	rData.sSummary = "Stats: " .. rData.sSummary;
@@ -152,6 +159,13 @@ function applyStatModification(rActor, rData)
 end
 
 function applySkillModification(rActor, rData)
+	-- If this is a custom stat, then create the pool if it doesn't exist.
+	if not StringManager.contains({ "might", "speed", "intellect" }, rData.sStat) then
+		if not ActorManagerCypher.hasCustomStatPool(rActor, rData.sStat) then
+			ActorManagerCypher.createCustomStatPool(rActor, rData.sStat);
+		end
+	end
+
 	local charnode = ActorManager.getCreatureNode(rActor);
 	local skilllist = DB.createChild(charnode, "skilllist");
 	local sSkill = StringManager.trim(rData.sSkill or ""):lower();
@@ -189,6 +203,20 @@ function applySkillModification(rActor, rData)
 end
 
 function applyDefenseModification(rActor, rData)
+	-- If this is a custom stat, then create the pool if it doesn't exist.
+	if not StringManager.contains({ "might", "speed", "intellect" }, rData.sStat) then
+		local node = ActorManagerCypher.getCustomStatPoolNode(rActor, rData.sStat, true);
+	
+		local nTraining = RollManager.convertTrainingStringToNumber(DB.getValue(node, "training", ""));
+		nTraining = nTraining + RollManager.processTrainingFromString(rData.sTraining)
+
+		-- Can't use the applyModToTrainingNode method because it saves the value as a number
+		-- not a string
+		DB.setValue(node, "training", "string", RollManager.resolveTraining(nTraining))
+		CharModManager.applyModToAssetNode(node, "assets", rData.nAsset);
+		CharModManager.applyModToModifierNode(node, "mod", rData.nMod);
+	end
+
 	local charnode = ActorManager.getCreatureNode(rActor);
 	local sPath = "abilities." .. rData.sStat;
 	local statnode = DB.getChild(charnode, sPath)
@@ -292,6 +320,14 @@ function applyInitiativeModification(rActor, rData)
 	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
 end
 
+local _tCustomStatFields = {
+	"coststat",
+	"stat",
+	"defensestat",
+	"damagestat",
+	"healstat",
+}
+
 function applyAbilityModification(rActor, rData, rPromptData)
 	-- Add ability to list
 	local charnode = ActorManager.getCreatureNode(rActor);
@@ -304,6 +340,23 @@ function applyAbilityModification(rActor, rData, rPromptData)
 	end
 
     DB.copyNode(sourcenode, abilitynode);
+
+	-- If the ability references custom stat pools, we need to make some edits here
+	if DB.getValue(abilitynode, "coststat", "") == "custom" then
+		local sCustomStat = DB.getValue(abilitynode, "customstat", "");
+		DB.setValue(abilitynode, "coststat", "string", sCustomStat:lower());
+	end
+
+	-- Check if actions on the ability reference custom stat pools
+	for _, actionnode in ipairs(DB.getChildList(abilitynode, "actions")) do		
+		-- For all UI elements that can have custom stats associated with them
+		-- Go through and update them with the specified custom stat
+		for _, sField in ipairs(_tCustomStatFields) do
+			if DB.getValue(actionnode, sField, "") == "custom" then
+				DB.setValue(actionnode, sField, "string", DB.getValue(actionnode, sField .. "_custom"):lower());
+			end
+		end
+	end
 
 	-- Save the ability name for later
 	local sAbilityName = rData.sSummary or "";
@@ -330,8 +383,14 @@ end
 
 function applyEdgeModification(rActor, rData)
 	local charnode = ActorManager.getCreatureNode(rActor);
-	local sPath = "abilities." .. rData.sStat;
-	local statnode = DB.getChild(charnode, sPath)
+
+	local statnode;
+	if not StringManager.contains({ "might", "speed", "intellect" }, rData.sStat) then
+		statnode = ActorManagerCypher.getCustomStatPoolNode(rActor, rData.sStat, true);
+	else 
+		statnode = DB.getChild(charnode, "abilities." .. rData.sStat);
+	end
+
 	if not statnode then
 		return;
 	end
@@ -443,12 +502,18 @@ function getModificationData(modNode)
 	if rMod.sProperty == "Stat Pool" then
 		rMod.sProperty = "stat"
 		rMod.sStat = DB.getValue(modNode, "stat", ""):lower();
+		if rMod.sStat == "custom" then
+			rMod.sStat = DB.getValue(modNode, "custom_stat", ""):lower();
+		end
 		rMod.nMod = DB.getValue(modNode, "mod", 0);
 
 	elseif rMod.sProperty == "Skill" then
 		rMod.sProperty = "skill"
 		rMod.sSkill = DB.getValue(modNode, "skill", "");
 		rMod.sStat = DB.getValue(modNode, "stat", ""):lower();
+		if rMod.sStat == "custom" then
+			rMod.sStat = DB.getValue(modNode, "custom_stat", ""):lower();
+		end
 		rMod.sTraining = DB.getValue(modNode, "training", ""):lower();
 		rMod.nAsset = DB.getValue(modNode, "asset", 0);
 		rMod.nMod = DB.getValue(modNode, "mod", 0);
@@ -456,6 +521,9 @@ function getModificationData(modNode)
 	elseif rMod.sProperty == "Defense" then
 		rMod.sProperty = "defense"
 		rMod.sStat = DB.getValue(modNode, "stat", ""):lower();
+		if rMod.sStat == "custom" then
+			rMod.sStat = DB.getValue(modNode, "custom_stat", ""):lower();
+		end
 		rMod.sTraining = DB.getValue(modNode, "training", ""):lower();
 		rMod.nAsset = DB.getValue(modNode, "asset", 0);
 		rMod.nMod = DB.getValue(modNode, "mod", 0);
@@ -490,6 +558,9 @@ function getModificationData(modNode)
 	elseif rMod.sProperty == "Edge" then
 		rMod.sProperty = "edge"
 		rMod.sStat = DB.getValue(modNode, "stat", ""):lower();
+		if rMod.sStat == "custom" then
+			rMod.sStat = DB.getValue(modNode, "custom_stat", ""):lower();
+		end
 		rMod.nMod = DB.getValue(modNode, "mod", 0);
 
 	elseif rMod.sProperty == "Effort" then

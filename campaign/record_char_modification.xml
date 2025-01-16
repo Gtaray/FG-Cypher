@@ -162,6 +162,11 @@
 			</label_column>
 			<combobox_stat name="stat" />
 
+			<label_column name="custom_stat_label">
+				<static textres="char_mod_label_custom_stat" />
+			</label_column>
+			<string_columnh name="custom_stat" />
+
 			<label_column name="training_label">
 				<static textres="char_mod_label_training" />
 			</label_column>
@@ -222,10 +227,20 @@
 		</sheetdata>
 	</windowclass>
 
-	<template name="combobox_edge">
+	<template name="combobox_base">
 		<combobox_column>
 			<listdirection>down</listdirection>
 			<unsorted />
+			<script>
+				function onValueChanged()
+					window.update();
+				end
+			</script>
+		</combobox_column>
+	</template>
+
+	<template name="combobox_edge">
+		<combobox_base>
 			<script>
 				function onInit()
 					super.onInit();
@@ -240,45 +255,55 @@
 					});
 				end
 			</script>
-		</combobox_column>
+		</combobox_base>
 	</template>
 
 	<template name="combobox_stat">
-		<combobox_column>
-			<listdirection>down</listdirection>
-			<unsorted />
+		<combobox_base>
 			<script>
 				function onInit()
+					DB.addHandler(DB.getPath(window.getDatabaseNode(), "property"), "onUpdate", onPropertyChanged);
 					super.onInit();
-					addItems({ "", "Might", "Speed", "Intellect", "Flex" });
+					onPropertyChanged();
 				end
-				function onValueChanged()
-					window.update();
+				function onClose()
+					DB.removeHandler(DB.getPath(window.getDatabaseNode(), "property"), "onUpdate", onPropertyChanged);
+				end
+				function onPropertyChanged()
+					local sCurrentValue = getValue();
+					local sProp = window.property.getValue();
+					local aItems = { "", "Might", "Speed", "Intellect" };
+
+					if sProp == "Stat Pool" then
+						table.insert(aItems, "Flex");
+					end
+
+					table.insert(aItems, "Custom");
+					
+					self.clear();
+					addItems(aItems);
+
+					if not self.hasValue(sCurrentValue) then
+						setListValue("");
+					end
 				end
 			</script>
-		</combobox_column>
+		</combobox_base>
 	</template>
 
 	<template name="combobox_training">
-		<combobox_column>
-			<listdirection>down</listdirection>
-			<unsorted />
+		<combobox_base>
 			<script>
 				function onInit()
 					super.onInit();
 					addItems({ "", "Trained", "Specialized", "Inability" });
 				end
-				function onValueChanged()
-					window.update();
-				end
 			</script>
-		</combobox_column>
+		</combobox_base>
 	</template>
 
 	<template name="combobox_yesno">
-		<combobox_column>
-			<listdirection>down</listdirection>
-			<unsorted />
+		<combobox_base>
 			<script>
 				function onInit()
 					super.onInit();
@@ -287,17 +312,12 @@
 						super.setListValue("No")
 					end
 				end
-				function onValueChanged()
-					window.update();
-				end
 			</script>
-		</combobox_column>
+		</combobox_base>
 	</template>
 
 	<template name="combobox_inclusiveexclusive">
-		<combobox_column>
-			<listdirection>down</listdirection>
-			<unsorted />
+		<combobox_base>
 			<script>
 				function onInit()
 					super.onInit();
@@ -306,11 +326,8 @@
 						super.setListValue("No")
 					end
 				end
-				function onValueChanged()
-					window.update();
-				end
 			</script>
-		</combobox_column>
+		</combobox_base>
 	</template>
 
 	<template name="linkfield_column">

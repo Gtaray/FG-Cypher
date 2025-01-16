@@ -374,7 +374,7 @@
 				<class>charsheet_armor</class>
 				<activate />
 			</sub_tab_maincharsheet>
-			<!-- <sub_tab_maincharsheet name="charsheet_pools">
+			<sub_tab_maincharsheet name="charsheet_pools">
 				<class>charsheet_pools</class>
 			</sub_tab_maincharsheet>
 			<buttongroup_tabs_h name="main_tabs">
@@ -391,7 +391,7 @@
 					<tabres>char_tab_pools</tabres>
 					<subwindow>charsheet_pools</subwindow>
 				</tab>
-			</buttongroup_tabs_h> -->
+			</buttongroup_tabs_h>
 			
 			<!-- DAMAGE TRACK -->
 			<frame_char name="damageframe">
@@ -625,11 +625,24 @@
 				</anchored>
 			</button_idelete>
 
+			<button_details name="activatedetail">
+				<anchored to="rightanchor">
+					<top />
+					<right anchor="left" relation="relative" offset="-5" />
+				</anchored>
+				<script>
+					function onButtonPress()
+						Interface.openWindow("charsheet_custompool_editor", window.getDatabaseNode());
+					end
+				</script>
+			</button_details>
+
 			<button_custom_stat_pool_statroll name="statroll">
 				
 			</button_custom_stat_pool_statroll>
 
 			<number_custom_stat_pool name="edge">
+				<min>0</min>
 				<max>6</max>
 			</number_custom_stat_pool>
 			<label_fieldtop name="label_edge">
@@ -646,6 +659,7 @@
 						window.current.updateMax(getValue())
 					end
 				</script>
+				<min>0</min>
 				<default>10</default>
 			</number_custom_stat_pool>
 			<label_fieldtop name="label_max">
@@ -663,6 +677,7 @@
 					end
 				</script>
 				<anchored width="40" />
+				<min>0</min>
 				<default>10</default>
 			</number_custom_stat_pool>
 			<label_fieldtop name="label_current">
@@ -678,6 +693,78 @@
 				</anchored>
 				<labelres>char_label_custom_pool_name</labelres>
 			</string_labeled>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="charsheet_custompool_editor" copy="charsheethelper_base">
+		<sizelimits>
+			<minimum width="350" height="325" />
+		</sizelimits>
+		<sheetdata>
+			<windowtitlebar_charsheethelper name="title">
+				<prefix>char_custompool_title</prefix>
+			</windowtitlebar_charsheethelper>
+			<area_content_framed_groupbox name="area_content" />
+
+			<sub_content_framed_groupbox name="main">
+				<class>charsheet_custompool_editor_main</class>
+			</sub_content_framed_groupbox>
+			<scrollbar_content_main />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="charsheet_custompool_editor_main">
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+
+			<header_column name="header_properties">
+				<static textres="char_header_custom_pool" />
+				<center />
+			</header_column>
+			<label_column name="label_name">
+				<static textres="char_label_custom_pool_name_short"/>
+			</label_column>
+			<string_column name="name" />
+			<label_column name="label_current">
+				<static textres="char_label_custom_pool_current"/>
+			</label_column>
+			<number_column name="current">
+				<min>0</min>
+			</number_column>
+			<label_column name="label_max">
+				<static textres="char_label_custom_pool_maximum"/>
+			</label_column>
+			<number_column name="max">
+				<min>0</min>
+			</number_column>
+			<label_column name="label_edge">
+				<static textres="char_label_custom_pool_edge"/>
+			</label_column>
+			<number_column name="edge">
+				<min>0</min>
+				<max>6</max>
+			</number_column>
+
+			<header_column name="header_defense">
+				<static textres="char_header_custom_defense" />
+				<center />
+			</header_column>
+			<label_column name="label_training">
+				<static textres="char_label_custom_pool_training"/>
+			</label_column>
+			<column_training name="training" />
+			<label_column name="label_assets">
+				<static textres="char_label_custom_pool_assets"/>
+			</label_column>
+			<number_column name="assets">
+				<max>2</max>
+				<min>0</min>
+			</number_column>
+			<label_column name="label_edge">
+				<static textres="char_label_custom_pool_mod"/>
+			</label_column>
+			<number_column name="mod" />
+
 		</sheetdata>
 	</windowclass>
 

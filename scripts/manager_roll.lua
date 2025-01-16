@@ -227,9 +227,9 @@ end
 function resolveTraining(nTraining)
 	if nTraining == 2 then
 		return "trained";
-	elseif nTraining == 3 then
+	elseif nTraining >= 3 then
 		return "specialized";
-	elseif nTraining == 0 then
+	elseif nTraining <= 0 then
 		return "inability";
 	end
 	return "";
@@ -302,6 +302,10 @@ function processTraining(bInability, bTrained, bSpecialized)
 	elseif bTrained then return 1
 	elseif bSpecialized then return 2
 	else return 0 end
+end
+
+function processTrainingFromString(sTraining)
+	return RollManager.processTraining(sTraining == "inability", sTraining == "trained", sTraining == "specialized")
 end
 
 function processTrainingEffects(rSource, rTarget, rRoll, aFilter)
