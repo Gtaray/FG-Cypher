@@ -336,6 +336,8 @@ function getStatPool(rActor, sStat)
 		nMax = DB.getValue(nodeActor, sPath .. ".max", 10);
 	end
 
+	--local nMaxEffect = EffectManagerCypher.getPoolEffectBonus(rActor, sStat)
+	--return nCur, nMax + nMaxEffect;	
 	return nCur, nMax;	
 end
 

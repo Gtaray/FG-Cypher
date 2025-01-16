@@ -28,6 +28,67 @@ function onItemTransfer(rSource, rTemp, rTarget)
 	if rSource.sClass == "item" and (rTarget.sType == "treasureparcel" or rTarget.sType == "charsheet" or rTarget.sType == "partysheet") then
 		CypherManager.generateCypherLevel(rTemp.node, false);
 	end
+
+	if rSource.sClass == "item" then
+		local _tCustomStatFields = {
+			"coststat",
+			"stat",
+			"attackstat",
+			"defensestat",
+			"damagestat",
+			"healstat",
+		}
+
+		if rTarget.sType == "charsheet" then
+			-- Migrate the attack/defense/damage stats if necessary
+			if DB.getValue(rSource.node, "attackstat", "") == "custom" then
+				local sCustomStat = DB.getValue(rSource.node, "attackstat_custom", "");
+				Debug.chat('custom attack stat', sCustomStat)
+				DB.setValue(rTemp.node, "attackstat", "string", sCustomStat:lower());
+			end
+			if DB.getValue(rSource.node, "defensestat", "") == "custom" then
+				local sCustomStat = DB.getValue(rSource.node, "defensestat_custom", "");
+				Debug.chat('custom defense stat', sCustomStat)
+				DB.setValue(rTemp.node, "defensestat", "string", sCustomStat:lower());
+			end
+			if DB.getValue(rSource.node, "damagestat", "") == "custom" then
+				local sCustomStat = DB.getValue(rSource.node, "damagestat_custom", "");
+				Debug.chat('custom damage stat', sCustomStat)
+				DB.setValue(rTemp.node, "damagestat", "string", sCustomStat:lower());
+			end
+
+			-- Migrate all custom stats used by actions
+			for _, actionnode in ipairs(DB.getChildList(rTemp.node, "actions")) do		
+				for _, sField in ipairs(_tCustomStatFields) do
+					if DB.getValue(actionnode, sField, "") == "custom" then
+						DB.setValue(actionnode, sField, "string", DB.getValue(actionnode, sField .. "_custom"):lower());
+					end
+				end
+			end
+		else
+			local aNonCustomValues = { "", "might", "speed", "intellect" };
+
+			-- If the item uses custom stats, we need to set the cyclers back to "custom"
+			if not StringManager.contains(aNonCustomValues, DB.getValue(rSource.node, "attackstat", "")) then
+				DB.setValue(rTemp.node, "attackstat", "string", "custom");
+			end
+			if not StringManager.contains(aNonCustomValues, DB.getValue(rSource.node, "defensestat", "")) then
+				DB.setValue(rTemp.node, "defensestat", "string", "custom");
+			end
+			if not StringManager.contains(aNonCustomValues, DB.getValue(rSource.node, "damagestat", "")) then
+				DB.setValue(rTemp.node, "damagestat", "string", "custom");
+			end
+
+			-- Migrate all custom stats used by actions
+			for _, actionnode in ipairs(DB.getChildList(rTemp.node, "actions")) do		
+				for _, sField in ipairs(_tCustomStatFields) do
+					if not StringManager.contains(aNonCustomValues, DB.getValue(actionnode, sField, "")) then
+						DB.setValue(actionnode, sField, "string", "custom");
+					end
+				end
+			end
+		end
+	end
 end
 
 function hasActions(itemnode)

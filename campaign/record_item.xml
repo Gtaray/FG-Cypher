@@ -176,17 +176,31 @@
 			<label_column name="attackstat_label">
 				<static textres="item_label_attackstat" />
 			</label_column>
-			<column_stat name="attackstat">
+			<column_stat_custom name="attackstat">
 				<anchored width="80" />
 				<tooltip textres="item_tooltip_attackstat" />
-			</column_stat>
+			</column_stat_custom>
+			<label_column name="attackstat_custom_label">
+				<static textres="item_label_attackstat_custom" />
+			</label_column>
+			<column_custom_stat_field name="attackstat_custom">
+				<target>attackstat</target>
+				<tooltip textres="item_toolip_attackstat_custom" />
+			</column_custom_stat_field>
 			<label_column name="defensestat_label">
 				<static textres="item_label_defensestat" />
 			</label_column>
-			<column_stat name="defensestat">
+			<column_stat_custom name="defensestat">
 				<anchored width="80" />
 				<tooltip textres="item_tooltip_defensestat" />
-			</column_stat>
+			</column_stat_custom>
+			<label_column name="defensestat_custom_label">
+				<static textres="item_label_defensestat_custom" />
+			</label_column>
+			<column_custom_stat_field name="defensestat_custom">
+				<target>defensestat</target>
+				<tooltip textres="item_toolip_defensestat_custom" />
+			</column_custom_stat_field>
 			<label_column name="atkrange_label">
 				<static textres="item_label_attackrange" />
 			</label_column>
@@ -216,10 +230,17 @@
 			<label_column name="damagestat_label">
 				<static textres="item_label_damagestat" />
 			</label_column>
-			<column_stat name="damagestat">
+			<column_stat_custom name="damagestat">
 				<anchored width="80" />
 				<tooltip textres="item_tooltip_damagestat" />
-			</column_stat>
+			</column_stat_custom>
+			<label_column name="damagestat_custom_label">
+				<static textres="item_label_damagestat_custom" />
+			</label_column>
+			<column_custom_stat_field name="damagestat_custom">
+				<target>damagestat</target>
+				<tooltip textres="item_toolip_damagestat_custom" />
+			</column_custom_stat_field>
 			<label_column name="damage_label">
 				<static textres="item_label_damage" />
 			</label_column>

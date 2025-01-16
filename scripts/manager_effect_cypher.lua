@@ -509,6 +509,14 @@ function getVulnerabilityEffectBonus(rActor, aFilter, sDamageType, bAmbient, rTa
 	return EffectManagerCypher.getEffectsBonusForDamageType(rActor, "VULN", aFilter, sDamageType, rTarget);
 end
 
+function getPoolEffectBonus(rActor, aFilter) 
+	if type(aFilter) == "string" then
+		aFilter = { aFilter }
+	end
+
+	return EffectManagerCypher.getEffectsBonusByType(rActor, "POOL", aFilter, false);
+end
+
 function getAdvantageEffects(rActor, aFilter, rTarget)
 	return EffectManagerCypher.getEffectsByType(rActor, "ADV", aFilter, true, nil, false, rTarget)
 end

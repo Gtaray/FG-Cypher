@@ -601,8 +601,12 @@
 	<string name="item_header_attack">ATTACK</string>
 	<string name="item_label_attackstat">Attack Stat</string>
 	<string name="item_tooltip_attackstat">Stat that's used to make attacks with this weapon.</string>
+	<string name="item_label_attackstat_custom">Attack Stat</string>
+	<string name="item_toolip_attackstat_custom">Name of the custom stat this attack uses.</string>
 	<string name="item_label_defensestat">Defense Stat</string>
 	<string name="item_tooltip_defensestat">Stat that's used to defend against attacks made with this weapon.</string>
+	<string name="item_label_defensestat_custom">Defense Stat</string>
+	<string name="item_tooltip_defensestat_custom">Name of the custom stat that the target will defend with.</string>
 	<string name="item_label_attackrange">Attack Range</string>
 	<string name="item_tooltip_attackrange">Weapon's attack range.</string>
 	<string name="item_label_asset">Attack Asset</string>
@@ -611,6 +615,8 @@
 	<string name="item_header_damage">DAMAGE</string>
 	<string name="item_label_damagestat">Damage Stat</string>
 	<string name="item_tooltip_attackstat">Stat pool that this weapon deals damage to (only applies when attacking PCs).</string>
+	<string name="item_label_damagestat_custom">Damage Stat</string>
+	<string name="item_tooltip_damagestat_custom">Name of the custom stat pool that this damage is dealt to.</string>
 	<string name="item_label_damage">Damage</string>
 	<string name="item_label_pierce">Armor Pierce</string>
 	<string name="item_tooltip_pierceamount">How much damage pierces armor? Leave blank to ignore all Armor.</string>
