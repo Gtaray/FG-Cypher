@@ -259,6 +259,13 @@
 
 	<string name="char_label_money">TREASURE</string>
 
+	<!-- Character - Abilities -->
+	<string name="char_abilities_label_actions">ACTIONS</string>
+	<string name="char_abilities_label_enablers">ENABLERS</string>
+	<string name="char_abilities_label_other">OTHER</string>
+	<string name="char_abilities_label_items">ITEMS</string>
+	<string name="char_abilities_label_languages">LANGUAGES</string>
+
 	<!-- Character - Arcs -->
 	<string name="char_label_arcs">Character Arcs</string>
 	<string name="char_empty_arc">&#171; New Character Arc &#187;</string>

@@ -7,135 +7,213 @@
 
 <root>
 	<windowclass name="charsheet_abilities">
-		<script>
-			function onEditModeChanged()
-				abilitylist.update();
-			end
-		</script>
 		<sheetdata>
-			<frame_char name="abilityframe">
-				<anchored position="over" />
-			</frame_char>
-			<label_frametop name="header_abilities">
-				<anchored to="abilityframe" />
-				<static textres="char_label_abilities" />
-			</label_frametop>
-			<list_text name="abilities">
-				<anchored to="abilityframe">
-					<left offset="15" />
-					<top offset="35" />
-					<right offset="-20" />
-					<bottom offset="-20" />
-				</anchored>
-				<childfocus>name</childfocus>
-				<datasource>.abilitylist</datasource>
-				<class>char_ability</class>
-				<script>
-					function onInit()
-						local charnode = UtilityManager.getTopWindow(window).getDatabaseNode();
-						DB.addHandler(DB.getPath(charnode, "inventorylist.*.isidentified"), "onUpdate", onItemIdUpdated)
-					end
+			<anchor_content_top />
+			<anchor_content_bottom />
 
-					function onClose()
-						local charnode = UtilityManager.getTopWindow(window).getDatabaseNode();
-						DB.removeHandler(DB.getPath(charnode, "inventorylist.*.isidentified"), "onUpdate", onItemIdUpdated)
-					end
-					function onItemIdUpdated()
-						applyFilter()
-					end
-					function onFilter(w)
-						local attacknode = w.getDatabaseNode();
-						local _, sRecord = DB.getValue(attacknode, "itemlink");
-						local itemnode = DB.findNode(sRecord or "");
-
-						-- if this ability is tied to an item, and that item is unidentified, then do not display this.
-						if itemnode and DB.getValue(itemnode, "isidentified", 1) ~= 1 then
-							return false;
-						end
-
-						return true;
-					end
-				</script>
-			</list_text>
-			<scrollbar_list>
-				<anchored to="abilities" />
-				<target>abilities</target>
-			</scrollbar_list>
-
-			<button_iedit name="abilities_iedit">
-				<anchored to="abilities" position="aboveright" offset="-13,5" />
-				<edittarget>abilities</edittarget>
+			<area_content_framed_groupbox_bottom name="area_controls">
+				<anchored height="20" />
+			</area_content_framed_groupbox_bottom>
+			<button_iedit name="sheet_iedit">
+				<anchored to="area_controls" position="insidetopright" offset="0,0" />
+				<edittarget>content</edittarget>
 			</button_iedit>
-			<button_iadd name="abilities_iadd">
-				<anchored to="abilities_iedit" position="lefthigh" offset="3,0" />
-				<target>abilities</target>
-			</button_iadd>
+
+			<sub_content_scroll name="content">
+				<class>charsheet_abilities_contents</class>
+			</sub_content_scroll>
+			<scrollbar_content />
 		</sheetdata>
 	</windowclass>
 
-	<windowclass name="char_ability">
+	<windowclass name="charsheet_abilities_contents">
+		<sheetdata>
+			<anchor_content_top />
+
+			<sub_content_top name="actions">
+				<class>charsheet_abilities_actions</class>
+			</sub_content_top>
+			<sub_content_top name="enablers">
+				<class>charsheet_abilities_enablers</class>
+			</sub_content_top>
+			<sub_content_top name="other">
+				<class>charsheet_abilities_other</class>
+			</sub_content_top>
+			<!-- If I ever add more explicit support for armor/weapon training, it goes here -->
+			<!-- <sub_content_top name="proficiencies">
+				<class>charsheet_abilities_proficiencies</class>
+			</sub_content_top> -->
+			<sub_content_top name="languages">
+				<class>charsheet_abilities_languages</class>
+			</sub_content_top>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="charsheet_abilities_list">
+		<margins control="0,0,0,2" />
+		<sheetdata>
+			<anchor_content_top />
+			
+			<label_charframetop name="header">
+				<anchored to="contentanchor" height="20">
+					<top relation="relative" offset="8" postoffset="8" />
+					<left offset="15" />
+					<right offset="-10" />
+				</anchored>
+				<icons>char_abilities</icons>
+			</label_charframetop>
+			<button_iadd name="list_iadd">
+				<anchored to="header" position="insidetopright" offset="5,0" />
+				<target>list</target>
+			</button_iadd>
+
+			<list_content_noscroll_alternating_top name="list">
+				<anchored>
+					<left offset="10" />
+					<right offset="-10" />
+				</anchored>
+				<script file="campaign/scripts/char_abilitylist.lua" />
+				<datasource>.abilitylist</datasource>
+				<sortby><control>name</control></sortby>
+			</list_content_noscroll_alternating_top>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="charsheet_abilities_actions" copy="charsheet_abilities_list">
+		<sheetdata>
+			<label_charframetop name="header">
+				<static textres="char_abilities_label_actions" />
+			</label_charframetop>
+			
+			<list_content_noscroll_alternating_top name="list">
+				<class>charsheet_ability_ability</class>
+				<filter>
+					<property>usetype</property>
+					<value>Action</value>
+				</filter>
+			</list_content_noscroll_alternating_top>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="charsheet_abilities_enablers" copy="charsheet_abilities_list">
+		<sheetdata>
+			<label_charframetop name="header">
+				<static textres="char_abilities_label_enablers" />
+			</label_charframetop>
+			
+			<list_content_noscroll_alternating_top name="list">
+				<class>charsheet_ability_ability</class>
+				<filter>
+					<property>usetype</property>
+					<value>Enabler</value>
+				</filter>
+			</list_content_noscroll_alternating_top>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="charsheet_abilities_other" copy="charsheet_abilities_list">
+		<sheetdata>
+			<label_charframetop name="header">
+				<static textres="char_abilities_label_other" />
+			</label_charframetop>
+			
+			<list_content_noscroll_alternating_top name="list">
+				<class>charsheet_ability_ability</class>
+				<filter>
+					<property>usetype</property>
+					<!-- No 'value' property will leave the filter on the default value of "" -->
+				</filter>
+			</list_content_noscroll_alternating_top>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="charsheet_abilities_languages" copy="charsheet_abilities_list">
+		<sheetdata>
+			<anchor_content_top />
+
+			<label_charframetop name="header">
+				<static textres="char_abilities_label_languages" />
+			</label_charframetop>
+
+			<list_content_noscroll_alternating_top name="list">
+				<datasource>.languagelist</datasource>
+				<class>char_language</class>
+				<sortby><control>name</control></sortby>
+			</list_content_noscroll_alternating_top>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="charsheet_ability_item">
+		<margins control="0,0,0,2" />
+		<sheetdata>
+			<anchor_listitem_left_sm />
+			<anchor_listitem_right_sm />
+
+			<button_listitem_idelete name="idelete">
+				<editmode>sheet_iedit</editmode>
+			</button_listitem_idelete>
+			<linkc_listitem_right name="shortcut" />
+
+			<string_listitem_center_underline name="name">
+				<delaykeyupdate />
+			</string_listitem_center_underline>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="charsheet_ability_ability" copy="charsheet_ability_item">
+		<sheetdata>
+			<linkc_listitem_right name="shortcut">
+				<class>ability</class>
+			</linkc_listitem_right>
+
+			<string_abilitydetail name="type" insertbefore="name" />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="char_language">
+		<margins control="0,0,0,2" />
 		<script>
-			function onInit()
-				registerMenuItem(Interface.getString("char_menu_showability"), "tokenvisibility", 7);
-			end
-			function onMenuSelection(selection)
-				if selection == 7 then
-					DB.setValue(getDatabaseNode(), "actionTabVisibility", "string", "show")
+			function onDragStart(button, x, y, draginfo)
+				local sLang = name.getValue()
+				if sLang ~= "" then
+					draginfo.setType("language")
+					draginfo.setIcon("button_speak")
+					draginfo.setStringData(sLang)
+					return true
 				end
 			end
 		</script>
-		<margins control="0,0,0,2" />
 		<sheetdata>
-			<genericcontrol name="rightanchor">
-				<anchored height="0" width="0">
-					<top offset="2" />
-					<right />
-				</anchored>
-			</genericcontrol>
-			<button_idelete name="idelete">
-				<anchored to="rightanchor">
-					<top />
-					<right anchor="left" relation="relative" offset="-5" />
-				</anchored>
-				<editmode>abilities_iedit</editmode>
-			</button_idelete>
-			<linkcontrol_static name="link">
-				<anchored to="rightanchor" width="20" height="20">
-					<top />
-					<right anchor="left" relation="relative" offset="-5" />
-				</anchored>
-				<class>ability</class>
-			</linkcontrol_static>
-			<string_abilitydetail name="usetype" />
-			<string_abilitydetail name="type" />
-			<string_textlistitem name="name">
-				<anchored to="rightanchor">
-					<top />
-					<left parent="" offset="5" />
-					<right anchor="left" relation="relative" offset="-5" />
-				</anchored>
-				<multilinespacing>20</multilinespacing>
-			</string_textlistitem>
+			<anchor_listitem_left_sm />
+			<anchor_listitem_right_sm />
+
+			<button_listitem_idelete name="idelete">
+				<editmode>sheet_iedit</editmode>
+			</button_listitem_idelete>
+
+			<string_listitem_center_underline name="name">
+				<delaykeyupdate />
+				<script>
+					function onDragStart(...)
+						return window.onDragStart(...)
+					end
+				</script>
+			</string_listitem_center_underline>
 		</sheetdata>
 	</windowclass>
 
 	<template name="string_abilitydetail">
-		<basicstring>
-				<anchored to="rightanchor" width="80" height="20">
-					<top />
-					<right anchor="left" relation="relative" offset="-10" />
-				</anchored>
-				<frame mergerule="replace" name="fielddark" offset="7,5,7,5" />
-				<readonly />
-				<center />
-				<script>
-					function onInit()
-						onValueChanged();
-					end
-					function onValueChanged()
-						setVisible((getValue() or "") ~= "")
-					end
-				</script>
-			</basicstring>
+		<string_listitem_right_text>
+			<readonly />
+			<anchored width="120" />
+			<script>
+				function onInit()
+					onValueChanged();
+				end
+				function onValueChanged()
+					setVisible((getValue() or "") ~= "")
+				end
+			</script>
+		</string_listitem_right_text>
 	</template>
 </root>

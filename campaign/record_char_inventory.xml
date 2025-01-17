@@ -172,6 +172,11 @@
 				<default>1</default>
 			</button_listitem_right>
 			<icon_itemtype_right name="type" />
+			<stringc_listitem_right_noframe_static name="type_na">
+				<anchored width="14" />
+				<static text="-" />
+				<center />
+			</stringc_listitem_right_noframe_static>
 			<string_listitem_right_text name="location">
 				<nodrop />
 				<delaykeyupdate merge="delete" />
@@ -250,7 +255,7 @@
 					<left offset="15" />
 					<right offset="-10" />
 				</anchored>
-				<icons>char_abilities_purple</icons>
+				<icons>char_treasure</icons>
 				<static textres="char_label_money" />
 			</label_charframetop>
 			

@@ -49,7 +49,7 @@
 					<left offset="15" />
 					<right offset="-10" />
 				</anchored>
-				<icons>char_abilities_purple</icons>
+				<icons>char_abilities</icons>
 				<static textres="char_label_skills" />
 			</label_charframetop>
 
