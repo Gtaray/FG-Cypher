@@ -145,6 +145,16 @@
 		</button_listitem_left>
 	</template>
 
+	<template name="button_weapontraining">
+		<button_listitem_left>
+			<state icon="button_prof" tooltipres="char_tooltip_skillinability" merge="add" />
+			<state icon="button_prof_half" tooltipres="char_tooltip_skilluntrained" merge="add" />
+			<state icon="button_prof_down" tooltipres="char_tooltip_skilltrained" merge="add" />
+			<state icon="button_prof_double" tooltipres="char_tooltip_skillspecialized" merge="add" />
+			<default>0</default>
+		</button_listitem_left>
+	</template>
+
 	<template name="cycler_training">
 		<button_stringcycler>
 			<parameters>
@@ -274,25 +284,6 @@
 			<spacing>12</spacing>
 			<script file="campaign/scripts/buttongroup_counter_power.lua" />
 		</genericcontrol>
-	</template>
-
-	<template name="list_poweraction">
-		<windowlist>
-			<anchored>
-				<top parent="name" anchor="bottom" relation="relative" offset="5" />
-				<left offset="20" />
-				<right offset="-20" />
-			</anchored>
-			<datasource>.actions</datasource>
-			<class>power_action_item</class>
-			<noscroll />
-			<sortby><field>order</field></sortby>
-			<script>
-				function reset()
-					DB.deleteChildren(getDatabaseNode());
-				end
-			</script>
-		</windowlist>
 	</template>
 
 	<!-- TEMPLATES FOR CHARACTER TYPE, FOCUS, DESRIPTION, FLAVOR, ANCESTRY -->

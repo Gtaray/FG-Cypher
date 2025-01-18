@@ -74,7 +74,7 @@
 				</anchored>
 				<script file="campaign/scripts/char_abilitylist.lua" />
 				<datasource>.abilitylist</datasource>
-				<sortby><control>name</control></sortby>
+				<allowdelete />
 			</list_content_noscroll_alternating_top>
 		</sheetdata>
 	</windowclass>
@@ -86,7 +86,7 @@
 			</label_charframetop>
 			
 			<list_content_noscroll_alternating_top name="list">
-				<class>charsheet_ability_ability</class>
+				<class>charsheet_ability_item</class>
 				<filter>
 					<property>usetype</property>
 					<value>Action</value>
@@ -102,7 +102,7 @@
 			</label_charframetop>
 			
 			<list_content_noscroll_alternating_top name="list">
-				<class>charsheet_ability_ability</class>
+				<class>charsheet_ability_item</class>
 				<filter>
 					<property>usetype</property>
 					<value>Enabler</value>
@@ -118,7 +118,7 @@
 			</label_charframetop>
 			
 			<list_content_noscroll_alternating_top name="list">
-				<class>charsheet_ability_ability</class>
+				<class>charsheet_ability_item</class>
 				<filter>
 					<property>usetype</property>
 					<!-- No 'value' property will leave the filter on the default value of "" -->
@@ -152,21 +152,14 @@
 			<button_listitem_idelete name="idelete">
 				<editmode>sheet_iedit</editmode>
 			</button_listitem_idelete>
-			<linkc_listitem_right name="shortcut" />
+
+			<linkc_ability_or_item name="shortcut" />
+
+			<string_abilitydetail name="type" />
 
 			<string_listitem_center_underline name="name">
 				<delaykeyupdate />
 			</string_listitem_center_underline>
-		</sheetdata>
-	</windowclass>
-
-	<windowclass name="charsheet_ability_ability" copy="charsheet_ability_item">
-		<sheetdata>
-			<linkc_listitem_right name="shortcut">
-				<class>ability</class>
-			</linkc_listitem_right>
-
-			<string_abilitydetail name="type" insertbefore="name" />
 		</sheetdata>
 	</windowclass>
 
@@ -215,5 +208,21 @@
 				end
 			</script>
 		</string_listitem_right_text>
+	</template>
+
+	<template name="linkc_ability_or_item">
+		<linkc_listitem_right>
+			<script>
+				function onInit()
+					local sClass, sRecord = DB.getValue(window.getDatabaseNode(), "itemlink", "", "")
+					if sClass ~= "" and sRecord ~= "" then
+						setValue(sClass, sRecord)
+					else
+						sClass, sRecord = getValue();
+						setValue("ability", sRecord)
+					end
+				end
+			</script>
+		</linkc_listitem_right>
 	</template>
 </root>

@@ -410,14 +410,13 @@ function addItemAsAbility(itemnode)
 		return;
 	end
 
+	DB.setValue(abilitynode, "name", "string", ItemManagerCypher.getItemName(itemnode));
+
 	local sItemType = StringManager.capitalize(ItemManagerCypher.getItemType(itemnode) or "");
-	local sName = ItemManagerCypher.getItemName(itemnode);
 	if sItemType ~= "" then
-		sName = string.format("%s: %s", sItemType, sName);
 		DB.setValue(abilitynode, "type", "string", sItemType);
 	end
 
-	DB.setValue(abilitynode, "name", "string", sName);
 	if ItemManagerCypher.isItemWeapon(itemnode) then
 		DB.setValue(abilitynode, "useequipped", "string", "yes");
 	end
@@ -431,6 +430,9 @@ function addItemAsAbility(itemnode)
 	if sDesc ~= "" then
 		DB.setValue(abilitynode, "ftdesc", "formattedtext", sDesc)
 	end
+
+	-- Set the ability's group so it shows up in its own section on the actions tab
+	DB.setValue(abilitynode, "group", "string", "Items");
 
 	-- Save links between the item and ability
 	-- These are used so that if one is deleted, so is the other.

@@ -70,6 +70,10 @@ function update()
 	updateControl("pierceamount", bReadOnly, not (bID and bWeapon and bPierce));
 	WindowManager.callSafeControlUpdate(self, "damagetype", bReadOnly, not (bID and bWeapon));
 
+	updateControl("attackstat_custom", bReadOnly, not (bID and bWeapon and attackstat.getValue() == "CUSTOM"));
+	updateControl("defensestat_custom", bReadOnly, not (bID and bWeapon and defensestat.getValue() == "CUSTOM"));
+	updateControl("damagestat_custom", bReadOnly, not (bID and bWeapon and damagestat.getValue() == "CUSTOM"));
+
 	-- ARMOR PROPERTIES
 	local bShield = ItemManagerCypher.getArmorType(nodeRecord) == "shield";
 	updateControl("armortype", bReadOnly, not bArmor);

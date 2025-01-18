@@ -42,7 +42,7 @@
 	<includefile source="campaign/record_char_arcs.xml" />
 	<includefile source="campaign/record_char_notes.xml" />
 	<includefile source="campaign/record_char_actions.xml" />
-	<includefile source="campaign/record_char_actions_attack.xml" />
+	<includefile source="campaign/record_char_actions_weapon.xml" />
 	<includefile source="campaign/record_char_actions_power.xml" />
 	<includefile source="campaign/record_char_modification.xml" />
 	<includefile source="campaign/record_char_tracker.xml" />
@@ -108,6 +108,7 @@
 	<script name="CharFlavorManager" file="scripts/manager_char_flavor.lua" />
 	<script name="CharModManager" file="scripts/manager_char_modification.lua" />
 	<script name="CharTrackerManager" file="scripts/manager_char_tracker.lua" />
+	<script name="CharPowerManager" file="scripts/manager_char_power.lua" />
 
 	<script name="ActorManagerCypher" file="scripts/manager_actor_cypher.lua" />
 	<script name="EffectManagerCypher" file="scripts/manager_effect_cypher.lua" />

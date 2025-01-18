@@ -165,4 +165,44 @@
 			</anchored>
 		</genericcontrol>
 	</template>
+
+	<template name="label_charframetop_collapsible">
+		<label_charframetop>
+			<anchored to="contentanchor" height="20">
+				<top relation="relative" offset="8" postoffset="8" />
+				<left offset="15" />
+				<right offset="-10" />
+			</anchored>
+			<script>
+				local sControl
+				function onInit()
+					if super and super.onInit then
+						super.onInit();
+					end
+					if target and target[1] then
+						sControl = target[1];
+					end
+				end
+				function onClickDown()
+					return true;
+				end
+				function onClickRelease()
+					if not sControl then return true; end
+
+					local c = window[sControl];
+					if not c then return true; end
+
+					local bVisible = c.isVisible();
+					if bVisible then
+						setFont("subwindowsmalltitle_disabled");
+						c.setVisible(false);
+					else
+						setFont("subwindowsmalltitle");
+						c.setVisible(true);
+					end
+					return true;
+				end
+			</script>
+		</label_charframetop>
+	</template>
 </root>

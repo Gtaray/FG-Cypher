@@ -1,6 +1,7 @@
 function onInit()
 	local tPowerHandlers = {
-		fnGetActorNode = PowerManager.getPowerActorNode
+		fnGetActorNode = PowerManager.getPowerActorNode,
+		fnUpdateDisplay = CharPowerManager.updatePowerDisplay
 	}
 	PowerManagerCore.registerPowerHandlers(tPowerHandlers);
 	

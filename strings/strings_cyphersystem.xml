@@ -219,7 +219,11 @@
 	<string name="char_message_tier_increase">%s advanced to tier %s.</string>
 
 	<!-- Character - Actions -->
-	<string name="char_label_attacks">Weapons</string>
+	<string name="power_label_modestd">Standard</string>
+	<string name="power_label_modeprep">Preparation</string>
+	<string name="power_label_modecombat">Combat</string>
+
+	<string name="char_label_weapon">Weapons</string>
 	<string name="char_title_attack_editor">Attack Editor</string>
 	<string name="char_label_weaponammo">Uses</string>
 	
@@ -234,10 +238,10 @@
 	<string name="char_label_weapontype_heavy">Heavy</string>
 	<string name="char_label_useammo">Uses Ammo</string>
 
-	<string name="char_label_abilityname">Abilities</string>
-	<string name="char_menu_hideability">Hide ability from the Action tab</string>
-	<string name="char_menu_showability">Show ability on the Action tab</string>
-	<string name="char_menu_confirm">Confirm</string>
+	<string name="char_label_abilities">Abilities</string>
+	<string name="char_tooltip_ability_group">Ability Group</string>
+	<string name="char_tooltip_ability_summary">Ability Summary</string>
+	<string name="char_empty_ability_name">&#171; New Ability &#187;</string>
 
 	<string name="char_message_not_enough_ammo">You are out of ammo for your %s.</string>
 
@@ -319,9 +323,8 @@
 	<string name="char_tracker_label_source">Source:</string>
 
 	<!-- Powers -->
-	<string name="power_title_stat">Spell/Ability Roll</string>
-	<string name="power_menu_action_add_stat">Add Stat Roll</string>
-	<string name="power_menu_action_add_attack">Add Attack</string>
+	<string name="power_groupdeatil_title">Power Group</string>
+	<string name="power_label_groupname">Group Name</string>
 
 	<string name="power_tooltip_stat">ROLL</string>
 	<string name="power_tooltip_skill">SKILL</string>

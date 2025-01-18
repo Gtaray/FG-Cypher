@@ -532,6 +532,29 @@ function convertDifficultyAdjustmentToFlatBonus(nDifficulty)
 	return (nDifficulty or 0) * -3;
 end
 
+function convertToFlatBonus(sTraining, nAssets, nModifier, nEase, nHinder)
+	local nTotal = 0;
+
+	if nAssets then
+		nTotal = nTotal + (nAssets * 3)
+	end
+	if nEase then
+		nTotal = nTotal + (nEase * 3)
+	end
+	if nHinder then
+		nTotal = nTotal - (nHinder * 3)
+	end
+	if nModifier then
+		nTotal = nTotal + nModifier
+	end
+	if sTraining then
+		local nTraining = RollManager.processTrainingFromString(sTraining)
+		nTotal = nTotal + (nTraining * 3)
+	end
+
+	return nTotal;
+end
+
 -----------------------------------------------------------------------
 -- ROLL TEXT ENCODING / DECODING
 -----------------------------------------------------------------------

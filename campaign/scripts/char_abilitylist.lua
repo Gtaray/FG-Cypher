@@ -47,6 +47,23 @@ function onFilter(w)
 	return sValue == sFilterValue:lower();
 end
 
+function onSortCompare(w1, w2)
+	local s1 = w1.type.getValue() or ""
+	local s2 = w2.type.getValue() or ""
+
+	-- Typed abilities show up first in the list, ordered alphabetically by type
+	-- Then untyped abilities show up, ordered alphabetically by name.
+	if s1 ~= "" and s2 == "" then
+		return false;
+	elseif s1 == "" and s2 ~= "" then
+		return true;
+	elseif s1 ~= "" and s2 ~= "" then
+		return s1 > s2
+	else
+		return w1.name.getValue() > w2.name.getValue();
+	end
+end
+
 function addEntry()
 	local w = createWindow(nil, true);
 	if not w then
