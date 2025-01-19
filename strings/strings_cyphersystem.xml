@@ -61,6 +61,9 @@
 	<string name="global_difficulty_label">Difficulty</string>
 	<string name="gmi_threshold_label">Intrusion</string>
 
+	<string name="button_dialog_yes">Yes</string>
+	<string name="button_dialog_no">No</string>
+
 	<!-- Options -->
 	<string name="option_label_GDIFF">Enable global difficulty</string>
 	<string name="option_label_GMIT">Enable GM intrusion threshold</string>
@@ -271,44 +274,43 @@
 	<string name="char_abilities_label_languages">LANGUAGES</string>
 
 	<!-- Character - Arcs -->
-	<string name="char_label_arcs">Character Arcs</string>
+	<string name="char_title_arcs">Character Arcs</string>
+	<string name="char_subtitle_arc_progress">Progress</string>
+	<string name="char_subtitle_arc_climax">Climax</string>
+	<string name="char_subtitle_arc_resolution">Resolution</string>
+
+	<string name="char_button_start_arc">Start Arc</string>
+	<string name="char_button_move_to_climax">To Climax</string>
+	<string name="char_button_move_to_resolution">To Resolution</string>
+	<string name="char_button_complete_arc">Complete Arc</string>
+
 	<string name="char_empty_arc">&#171; New Character Arc &#187;</string>
-	<string name="char_label_name">Name</string>
-	<string name="char_label_opening">Opening</string>
-	<string name="char_label_inprogress">In Progress</string>
-	<string name="char_label_step_complete">Complete?</string>
-	<string name="char_label_climax">Climax</string>
-	<string name="char_label_arc_complete">Complete</string>
-	<string name="char_label_climax_success">Succeeded?</string>
-	<string name="char_label_resolution">Resolution</string>
-	<string name="char_label_arc_resolved">Resolve</string>
-	<string name="char_label_resolution_resolved">Resolved?</string>
-	<string name="char_tooltip_arc_editor">Open up the details for this character arc</string>
-	<string name="char_header_arc_editor">Character Arc</string>
 
-	<string name="char_tooltip_arc_add">Spend %s XP to gain a new character arc</string>
-	<string name="char_tooltip_arc_opening_highlight">Edit the arc's opening details</string>
-	<string name="char_tooltip_arc_opening_next">Move this arc to in progress</string>
-	<string name="char_tooltip_arc_inprogress_highlight">Edit this arc's progress</string>
-	<string name="char_tooltip_arc_inprogress_previous">Revert this arc back to its opening</string>
-	<string name="char_tooltip_arc_inprogress_next">Move this arc to its climax</string>
-	<string name="char_tooltip_arc_climax_highlight">Edit this arc's climax details</string>
-	<string name="char_tooltip_arc_climax_previous">Revert this arc back to in progress</string>
-	<string name="char_tooltip_arc_climax_next">Move this arc to its resolution</string>
-	<string name="char_tooltip_arc_resolution_highlight">Edit this arc's resolution details</string>
-	<string name="char_tooltip_arc_resolution_previous">Revert this arc back to its climax</string>
+	<string name="arc_start_prompt_window_title">Start Arc?</string>
+	<string name="arc_start_prompt_text">Spend %s XP to start this arc?</string>
+	<string name="arc_step_prompt_window_title">Complete a Goal</string>
+	<string name="arc_step_prompt_text">Complete this step and gain %s XP?</string>
+	<string name="arc_progress_prompt_window_title">Making Progress</string>
+	<string name="arc_progress_prompt_text">Are you prepared for the climax of this arc?</string>
+	<string name="arc_climax_prompt_window_title">A Climactic Encounter</string>
+	<string name="arc_climax_prompt_text">Did you succeed at the climactic moment of this arc?\n\nSelect 'Yes' to mark as successful.\nSelect 'No' to mark as unsuccessful.</string>
+	<string name="arc_resolution_prompt_window_title">Denouement</string>
+	<string name="arc_resolution_prompt_text">Did you ultimately resolve this arc?\n\nSelect 'Yes' to mark as resolved.\nSelect 'No' to mark as unresolved.</string>
 
-	<string name="char_message_not_enough_xp_for_arc">You do not have enough XP to gain a new character arc.</string>
-	<string name="char_message_add_arc">%s spent %s XP to gain a new character arc.</string>
-	<string name="char_message_arc_complete_step">%s gained %s XP for completing a step in one of their character arcs.</string>
-	<string name="char_message_arc_climax_success">%s successfully completed the finale of one of their character arcs and gains %s XP.</string>
-	<string name="char_message_arc_climax_failure">%s was not able to complete the finale of one of their character arcs and gains %s XP.</string>
-	<string name="char_message_arc_resolution_success">%s resolved one of their character arcs and gains %s XP.</string>
-	<string name="char_message_arc_resolution_failure">%s was unable to resolve one of their character arcs.</string>
+	<string name="arc_start_prompt_text">Spend %s XP to start this arc?</string>
 
 	<string name="arc_complete_prompt_window_title">Select</string>
 	<string name="arc_climax_prompt_label">Were you victorious?</string>
 	<string name="arc_resolution_prompt_label">Were you victorious?</string>
+
+	<string name="char_message_not_enough_xp_for_arc">You do not have enough XP to gain a new character arc.</string>
+	<string name="char_message_add_arc">%s spent %s XP to gain a new character arc.</string>
+	<string name="char_message_arc_complete_step">%s gained %s XP for completing a step in one of their character arcs.</string>
+	<string name="char_message_arc_complete_progress">%s is ready for a pivotal moment in one of their arcs.</string>
+	<string name="char_message_arc_climax_success">%s successfully completed the finale of one of their character arcs and gains %s XP.</string>
+	<string name="char_message_arc_climax_failure">%s was not able to complete the finale of one of their character arcs and gains %s XP.</string>
+	<string name="char_message_arc_resolution_success">%s resolved one of their character arcs and gains %s XP.</string>
+	<string name="char_message_arc_resolution_failure">%s was unable to resolve one of their character arcs.</string>
 	
 	<!-- Character - Notes -->
 	<string name="char_label_background">Background</string>

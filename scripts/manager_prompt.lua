@@ -134,10 +134,147 @@ end
 -------------------------------------------------------------------------------
 -- CHARACTER ARCS
 -------------------------------------------------------------------------------
+function promptCharacterArcStart(nodeArc)
+	local nodeChar = DB.getChild(nodeArc, "...");
+	local nCost = CharManager.getCostToBuyNewCharacterArc(nodeChar);
+
+	-- If the arc is free, just add it
+	if nCost == 0 then
+		return true;
+	end
+
+	local data = {
+		nodeChar = nodeChar,
+		nodeArc = nodeArc,
+		sTitleRes = "arc_start_prompt_window_title",
+		sText = string.format(Interface.getString("arc_start_prompt_text"), nCost),
+		fnCallback = PromptManager.handleStartCharacterArcPromptResult
+	}
+
+	local window = Interface.openWindow("dialog_yesno", nodeArc);
+	if window then
+		window.setData(data)
+
+		-- Don't want to progress any further, so we terminate the stack here
+		return false;
+	end
+
+	-- Failed to prompt somehow? Just give them the arc
+	return true;
+end
+function handleStartCharacterArcPromptResult(sResult, tData)
+	if sResult == "ok" then
+		CharManager.buyNewCharacterArc(tData.nodeChar, tData.nodeArc);
+	end
+end
+
+function promptCharacterArcStep(nodeStep)
+	local nXp = OptionsManagerCypher.getArcStepXpReward();
+
+	-- If the reward is nothing, then just give it to them.
+	if nXp == 0 then
+		return true;
+	end
+	
+	local nodeArc = DB.getChild(nodeStep, "...");
+	local nodeChar = DB.getChild(nodeArc, "...");
+	local data = {
+		nodeChar = nodeChar,
+		nodeArc = nodeArc,
+		nodeStep = nodeStep,
+		sTitleRes = "arc_step_prompt_window_title",
+		sText = string.format(Interface.getString("arc_step_prompt_text"), nXp),
+		fnCallback = PromptManager.handleCharacterArcStepPromptResult
+	}
+
+	local window = Interface.openWindow("dialog_yesno", nodeArc);
+	if window then
+		window.setData(data)
+		return false;
+	end
+	return true;
+end
+function handleCharacterArcStepPromptResult(sResult, tData)
+	if sResult == "ok" then
+		CharManager.completeCharacterArcStep(tData.nodeChar, tData.nodeStep);
+	end
+end
+
+function promptCharacterArcProgress(nodeArc)
+	local nodeChar = DB.getChild(nodeArc, "...");
+	local data = {
+		nodeChar = nodeChar,
+		nodeArc = nodeArc,
+		sTitleRes = "arc_progress_prompt_window_title",
+		sTextRes = "arc_progress_prompt_text",
+		fnCallback = PromptManager.handleProgressCharacterArcPromptResult
+	}
+
+	local window = Interface.openWindow("dialog_yesno", nodeArc);
+	if window then
+		window.setData(data)
+
+		-- Don't want to progress any further, so we terminate the stack here
+		return false;
+	end
+	return true;
+end
+function handleProgressCharacterArcPromptResult(sResult, tData)
+	if sResult == "ok" then
+		CharManager.completeCharacterArcProgress(tData.nodeChar, tData.nodeArc);
+	end
+end
+
 function promptCharacterArcClimax(nodeArc)
-	local window = Interface.openWindow("prompt_arc_climax", nodeArc);
+	local nodeChar = DB.getChild(nodeArc, "...");
+	local data = {
+		nodeChar = nodeChar,
+		nodeArc = nodeArc,
+		sTitleRes = "arc_climax_prompt_window_title",
+		sTextRes = "arc_climax_prompt_text",
+		fnCallback = PromptManager.handleCharacterArcClimaxPromptResult
+	}
+
+	local window = Interface.openWindow("dialog_yesno", nodeArc);
+	if window then
+		window.setData(data)
+
+		-- Don't want to progress any further, so we terminate the stack here
+		return false;
+	end
+	return true;
+end
+function handleCharacterArcClimaxPromptResult(sResult, tData)
+	if sResult == "cancel" then
+		CharManager.completeCharacterArcClimax(tData.nodeChar, tData.nodeArc, false);
+	elseif sResult == "ok" then
+		CharManager.completeCharacterArcClimax(tData.nodeChar, tData.nodeArc, true);
+	end
 end
 
 function promptCharacterArcResolution(nodeArc)
-	local window = Interface.openWindow("prompt_arc_resolution", nodeArc);
+	local nodeChar = DB.getChild(nodeArc, "...");
+	local data = {
+		nodeChar = nodeChar,
+		nodeArc = nodeArc,
+		sTitleRes = "arc_resolution_prompt_window_title",
+		sTextRes = "arc_resolution_prompt_text",
+		fnCallback = PromptManager.handleCharacterArcResolutionPromptResult
+	}
+
+	local window = Interface.openWindow("dialog_yesno", nodeArc);
+	if window then
+		window.setData(data)
+
+		-- Don't want to progress any further, so we terminate the stack here
+		return false;
+	end
+	return true;
+end
+function handleCharacterArcResolutionPromptResult(sResult, tData)
+	if sResult == "cancel" then
+		CharManager.completeCharacterArcResolution(tData.nodeChar, tData.nodeArc, false);
+	elseif sResult == "ok" then
+		CharManager.completeCharacterArcResolution(tData.nodeChar, tData.nodeArc, true);
+	end
 end

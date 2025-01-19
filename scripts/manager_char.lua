@@ -536,15 +536,22 @@ end
 -------------------------------------------------------------------------------
 
 function getCostToBuyNewCharacterArc(nodeChar)
-	local nCost = 0;
+	local nCost = OptionsManagerCypher.getXpCostToAddArc();
+	
 	-- Only the first character arc is free
-	if DB.getChildCount(nodeChar, "characterarcs") > 0 then
-		nCost = OptionsManagerCypher.getXpCostToAddArc();
+	for _, node in ipairs(DB.getChildList(nodeChar, "characterarcs")) do
+		if DB.getValue(node, "stage", 1) > 1 then
+			return nCost;
+		end
 	end
-	return nCost;
+	return 0;
 end
 
-function buyNewCharacterArc(nodeChar)
+function buyNewCharacterArc(nodeChar, nodeArc)
+	if not nodeChar or not nodeArc then
+		return false;
+	end
+
 	local nCost = CharManager.getCostToBuyNewCharacterArc(nodeChar);
 
 	-- Check to see if character has enough XP
@@ -558,19 +565,27 @@ function buyNewCharacterArc(nodeChar)
 		return false;
 	end
 
+	-- Deduct XP and set the stage of the arc to "progress"
 	DB.setValue(nodeChar, "xp", "number", math.max(nXP - nCost, 0));
+	DB.setValue(nodeArc, "stage", "number", 2);
 	
 	-- Notify chat
 	CharManager.sendCharacterArcMessage(nodeChar, "char_message_add_arc", nCost)
 	return true;
 end
 
-function completeCharacterArcStep(nodeChar)
+function completeCharacterArcStep(nodeChar, nodeStep)
 	local nReward = OptionsManagerCypher.getArcStepXpReward();
 	CharManager.sendCharacterArcMessage(nodeChar, "char_message_arc_complete_step", nReward)
 
 	local nXP = DB.getValue(nodeChar, "xp", 0);
 	DB.setValue(nodeChar, "xp", "number", math.max(nXP + nReward, 0));
+	DB.setValue(nodeStep, "done", "number", 1);
+end
+
+function completeCharacterArcProgress(nodeChar, nodeArc)
+	CharManager.sendCharacterArcMessage(nodeChar, "char_message_arc_complete_progress")
+	DB.setValue(nodeArc, "stage", "number", 3);
 end
 
 function completeCharacterArcClimax(nodeChar, nodeArc, bSuccess)
@@ -578,15 +593,16 @@ function completeCharacterArcClimax(nodeChar, nodeArc, bSuccess)
 	if bSuccess then
 		nReward = OptionsManagerCypher.getArcClimaxSuccessXpReward();
 		CharManager.sendCharacterArcMessage(nodeChar, "char_message_arc_climax_success", nReward)
-		DB.setValue(nodeArc, "success", "string", "Yes");
+		DB.setValue(nodeArc, "climax.done", "number", 1);
 	else
 		nReward = OptionsManagerCypher.getArcClimaxFailureXpReward();
 		CharManager.sendCharacterArcMessage(nodeChar, "char_message_arc_climax_failure", nReward)
-		DB.setValue(nodeArc, "success", "string", "No");
+		DB.setValue(nodeArc, "climax.done", "number", 2);
 	end
 
 	local nXP = DB.getValue(nodeChar, "xp", 0);
 	DB.setValue(nodeChar, "xp", "number", math.max(nXP + nReward, 0));
+	DB.setValue(nodeArc, "stage", "number", 4);
 end
 
 function completeCharacterArcResolution(nodeChar, nodeArc, bSuccess)
@@ -594,14 +610,15 @@ function completeCharacterArcResolution(nodeChar, nodeArc, bSuccess)
 	if bSuccess then
 		nReward = OptionsManagerCypher.getArcResolutionXpReward();
 		CharManager.sendCharacterArcMessage(nodeChar, "char_message_arc_resolution_success", nReward)
-		DB.setValue(nodeArc, "resolved", "string", "Yes");
+		DB.setValue(nodeArc, "resolution.done", "number", 1);
 	else
 		CharManager.sendCharacterArcMessage(nodeChar, "char_message_arc_resolution_failure", nReward)
-		DB.setValue(nodeArc, "resolved", "string", "No");
+		DB.setValue(nodeArc, "resolution.done", "number", 2);
 	end
 	
 	local nXP = DB.getValue(nodeChar, "xp", 0);
 	DB.setValue(nodeChar, "xp", "number", math.max(nXP + nReward, 0));
+	DB.setValue(nodeArc, "stage", "number", 5);
 end
 
 function sendCharacterArcMessage(nodeChar, sMessageResource, nXp)
@@ -610,13 +627,25 @@ function sendCharacterArcMessage(nodeChar, sMessageResource, nXp)
 		return;
 	end
 
-	local rMessage = {
-		text = string.format(
-			Interface.getString(sMessageResource), 
-			sName, 
-			nXp),
+	rMessage = {
 		font = "msgfont"
-	};
+	}
+	if nXp then
+		rMessage = {
+			text = string.format(
+				Interface.getString(sMessageResource), 
+				sName, 
+				nXp),
+			font = "msgfont"
+		};
+	else
+		rMessage = {
+			text = string.format(
+				Interface.getString(sMessageResource), 
+				sName),
+			font = "msgfont"
+		};
+	end
 
 	Comm.deliverChatMessage(rMessage);
 end

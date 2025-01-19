@@ -174,6 +174,7 @@
 				<right offset="-10" />
 			</anchored>
 			<script>
+				local bCollapsed = false;
 				local sControl
 				function onInit()
 					if super and super.onInit then
@@ -189,20 +190,89 @@
 				function onClickRelease()
 					if not sControl then return true; end
 
+					self.toggle();
+					return true;
+				end
+				function isCollapsed()
+					return bCollapsed
+				end
+				function toggle(bShow)
+					if not sControl then return; end
+
 					local c = window[sControl];
 					if not c then return true; end
 
 					local bVisible = c.isVisible();
+					if bShow ~= nil then
+						bVisible = not bShow;
+					end
+
 					if bVisible then
 						setFont("subwindowsmalltitle_disabled");
 						c.setVisible(false);
+						bCollapsed = true;
 					else
 						setFont("subwindowsmalltitle");
 						c.setVisible(true);
+						bCollapsed = false;
 					end
-					return true;
 				end
 			</script>
 		</label_charframetop>
+	</template>
+
+	<template name="button_bigcheckbox">
+		<buttonfield>
+			<state icon="button_bigcheckoff" />
+			<state icon="button_bigcheckon" />
+		</buttonfield>
+	</template>
+	<template name="button_bigcheckbox_withcross">
+		<buttonfield>
+			<state icon="button_bigcheckoff" />
+			<state icon="button_bigcheckon" />
+			<state icon="button_bigcheckcross" />
+		</buttonfield>
+	</template>
+	<template name="button_listitem_bigcheckbox_base">
+		<button_bigcheckbox>
+			<anchored width="20" height="20" />
+		</button_bigcheckbox>
+	</template>
+	<template name="button_listitem_bigcheckbox_left">
+		<button_listitem_bigcheckbox_base>
+			<anchored to="leftanchor">
+				<top />
+				<left relation="relative" offset="-2" postoffset="-2" />
+			</anchored>
+		</button_listitem_bigcheckbox_base>
+	</template>
+	<template name="button_listitem_bigcheckbox_right">
+		<button_listitem_bigcheckbox_base>
+			<anchored to="rightanchor">
+				<top />
+				<right relation="relative" offset="-2" postoffset="-2" />
+			</anchored>
+		</button_listitem_bigcheckbox_base>
+	</template>
+	
+	<template name="string_listitem_center_underline_multiline">
+		<string_listitem_underline_base>
+			<anchored to="rightanchor">
+				<top />
+				<left parent="leftanchor" relation="current" offset="5" />
+				<right relation="current" offset="-5" />
+			</anchored>
+			<multilinespacing>20</multilinespacing>
+		</string_listitem_underline_base>
+	</template>
+
+	<template name="button_text_content_right_top">
+		<button_text>
+			<anchored to="contentanchor" width="100">
+				<right />
+				<top relation="relative" offset="10" postoffset="10" />
+			</anchored>
+		</button_text>
 	</template>
 </root>

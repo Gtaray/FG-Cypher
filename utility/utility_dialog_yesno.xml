@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!--
+	Please see the license.html file included with this distribution for
+	attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="dialog_yesno" copy="dialog_okcancel">
+		<sheetdata>
+			<sub_content_bottom name="sub_buttons">
+				<class>dialog_buttons_yesno</class>
+			</sub_content_bottom>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="dialog_buttons_yesno" copy="dialog_buttons_okcancel">
+		<sheetdata>
+			<button_dialog_ok name="button_ok">
+				<tooltip textres="button_dialog_yes" />
+			</button_dialog_ok>
+			<button_dialog_cancel name="button_cancel">
+				<tooltip textres="button_dialog_no" />
+			</button_dialog_cancel>
+		</sheetdata>
+	</windowclass>
+</root>
