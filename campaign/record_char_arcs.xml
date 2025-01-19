@@ -96,12 +96,15 @@
 				<editmode>sheet_iedit</editmode>
 			</button_idelete>
 			
-			<button_details name="link">
+			<button_details name="details">
 				<anchored to="rightanchor">
 					<top />
 					<right anchor="left" relation="relative" offset="-5,0" />
 				</anchored>
-				<script>
+				<script>					
+					function onButtonPress()
+						Interface.openWindow("char_arc_details", window.getDatabaseNode());
+					end
 				</script>
 			</button_details>
 
@@ -311,6 +314,54 @@
 				</script>
 				<anchored width="88" height="14" position="insidetopright" />
 			</genericcontrol>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="char_arc_details">
+		<margins control="30,0,0,0" />
+		<frame>charsheethelper</frame>
+		<sizelimits>
+			<minimum width="430" height="290" />
+			<dynamic />
+		</sizelimits>
+		<script file="campaign/scripts/char_arc_editor.lua" />
+		<sheetdata>
+			<windowtitlebar_charsheethelper name="title">
+				<prefix>char_title_arc_editor</prefix>
+			</windowtitlebar_charsheethelper>
+			<anchor_title_charsheethelper name="contentanchor" />
+
+			<anchor_column name="columnanchor">
+				<anchored to="contentanchor" position="below" offset="0,-5" />
+			</anchor_column>
+			
+			<label_column name="name_label">
+				<static textres="char_arc_editor_label_name" />
+			</label_column>
+			<string_column name="name">
+				<anchored>
+					<right offset="-35" />
+				</anchored>
+			</string_column>
+
+			<label_column name="stage_label">
+				<static textres="char_arc_editor_label_stage" />
+			</label_column>
+			<comboboxc_column name="stage">
+				<listdirection>down</listdirection>
+				<unsorted />
+				<anchored>
+					<right offset="-35" />
+				</anchored>
+				<script>
+					function onValueChanged()
+						window.onStageSelected();
+					end
+				</script>
+			</comboboxc_column>
+
+			<resize_charsheethelper />
+			<close_charsheethelper />
 		</sheetdata>
 	</windowclass>
 

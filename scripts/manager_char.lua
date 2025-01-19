@@ -534,6 +534,22 @@ end
 -------------------------------------------------------------------------------
 -- CHARACTER ARCS
 -------------------------------------------------------------------------------
+-- Checks if the rewards for a specific part of an arc have been given already
+-- if sStage is present, then vNode is considered to be the stage of an arc
+-- if sStage is nil, then vNode is treated as a progress step node
+function hasArcRewardAlreadyBeenGained(vNode, sStage)
+	-- sStage is either "climax" or "resolution"
+	if (sStage or "") ~= "" then
+		return DB.getValue(DB.getPath(vNode, sStage, "rewardGained"), 0) == 1;
+	end
+
+	-- vNode is a progress step node, so we simply look in that node.
+	return DB.getValue(vNode, "rewardGained", 0) == 1;
+end
+
+function hasArcAlreadyBeenPaidFor(arcNode)
+	return DB.getValue(arcNode, "paid", 0) == 1;
+end
 
 function getCostToBuyNewCharacterArc(nodeChar)
 	local nCost = OptionsManagerCypher.getXpCostToAddArc();
@@ -553,6 +569,10 @@ function buyNewCharacterArc(nodeChar, nodeArc)
 	end
 
 	local nCost = CharManager.getCostToBuyNewCharacterArc(nodeChar);
+	if CharManager.hasArcAlreadyBeenPaidFor(nodeArc) then
+		CharManager.sendAlreadyPaidXpMessage()
+		nCost = 0;
+	end
 
 	-- Check to see if character has enough XP
 	local nXP = DB.getValue(nodeChar, "xp", 0);
@@ -568,6 +588,7 @@ function buyNewCharacterArc(nodeChar, nodeArc)
 	-- Deduct XP and set the stage of the arc to "progress"
 	DB.setValue(nodeChar, "xp", "number", math.max(nXP - nCost, 0));
 	DB.setValue(nodeArc, "stage", "number", 2);
+	DB.setValue(nodeArc, "paid", "number", 1);
 	
 	-- Notify chat
 	CharManager.sendCharacterArcMessage(nodeChar, "char_message_add_arc", nCost)
@@ -578,8 +599,14 @@ function completeCharacterArcStep(nodeChar, nodeStep)
 	local nReward = OptionsManagerCypher.getArcStepXpReward();
 	CharManager.sendCharacterArcMessage(nodeChar, "char_message_arc_complete_step", nReward)
 
-	local nXP = DB.getValue(nodeChar, "xp", 0);
-	DB.setValue(nodeChar, "xp", "number", math.max(nXP + nReward, 0));
+	if not CharManager.hasArcRewardAlreadyBeenGained(nodeStep) then
+		local nXP = DB.getValue(nodeChar, "xp", 0);
+		DB.setValue(nodeChar, "xp", "number", math.max(nXP + nReward, 0));
+		DB.setValue(nodeStep, "rewardGained", "number", 1);
+	else
+		CharManager.sendAlreadyGainedXpMessage();
+	end
+	
 	DB.setValue(nodeStep, "done", "number", 1);
 end
 
@@ -600,8 +627,14 @@ function completeCharacterArcClimax(nodeChar, nodeArc, bSuccess)
 		DB.setValue(nodeArc, "climax.done", "number", 2);
 	end
 
-	local nXP = DB.getValue(nodeChar, "xp", 0);
-	DB.setValue(nodeChar, "xp", "number", math.max(nXP + nReward, 0));
+	if not CharManager.hasArcRewardAlreadyBeenGained(nodeArc, "climax") then
+		local nXP = DB.getValue(nodeChar, "xp", 0);
+		DB.setValue(nodeChar, "xp", "number", math.max(nXP + nReward, 0));
+		DB.setValue(nodeArc, "climax.rewardGained", "number", 1);
+	else
+		CharManager.sendAlreadyGainedXpMessage();
+	end
+
 	DB.setValue(nodeArc, "stage", "number", 4);
 end
 
@@ -615,9 +648,15 @@ function completeCharacterArcResolution(nodeChar, nodeArc, bSuccess)
 		CharManager.sendCharacterArcMessage(nodeChar, "char_message_arc_resolution_failure", nReward)
 		DB.setValue(nodeArc, "resolution.done", "number", 2);
 	end
+
+	if not CharManager.hasArcRewardAlreadyBeenGained(nodeArc, "resolution") then
+		local nXP = DB.getValue(nodeChar, "xp", 0);
+		DB.setValue(nodeChar, "xp", "number", math.max(nXP + nReward, 0));
+		DB.setValue(nodeArc, "resolution.rewardGained", "number", 1);
+	else
+		CharManager.sendAlreadyGainedXpMessage();
+	end
 	
-	local nXP = DB.getValue(nodeChar, "xp", 0);
-	DB.setValue(nodeChar, "xp", "number", math.max(nXP + nReward, 0));
 	DB.setValue(nodeArc, "stage", "number", 5);
 end
 
@@ -627,7 +666,7 @@ function sendCharacterArcMessage(nodeChar, sMessageResource, nXp)
 		return;
 	end
 
-	rMessage = {
+	local rMessage = {
 		font = "msgfont"
 	}
 	if nXp then
@@ -650,6 +689,21 @@ function sendCharacterArcMessage(nodeChar, sMessageResource, nXp)
 	Comm.deliverChatMessage(rMessage);
 end
 
+function sendAlreadyPaidXpMessage()
+	local rMessage = {
+		font = "msgfont",
+		text = Interface.getString("char_message_arc_already_paid_for")
+	};
+	Comm.addChatMessage(rMessage);
+end
+
+function sendAlreadyGainedXpMessage()
+	local rMessage = {
+		font = "msgfont",
+		text = Interface.getString("char_message_arc_xp_already_gained")
+	};
+	Comm.addChatMessage(rMessage);
+end
 -------------------------------------------------------------------------------
 -- HEALTH
 -------------------------------------------------------------------------------

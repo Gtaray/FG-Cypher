@@ -285,6 +285,10 @@
 	<string name="char_button_complete_arc">Complete Arc</string>
 
 	<string name="char_empty_arc">&#171; New Character Arc &#187;</string>
+	
+	<string name="char_title_arc_editor">Character Arc</string>
+	<string name="char_arc_editor_label_name">Arc Name</string>
+	<string name="char_arc_editor_label_stage">Arc Phase</string>
 
 	<string name="arc_start_prompt_window_title">Start Arc?</string>
 	<string name="arc_start_prompt_text">Spend %s XP to start this arc?</string>
@@ -297,12 +301,6 @@
 	<string name="arc_resolution_prompt_window_title">Denouement</string>
 	<string name="arc_resolution_prompt_text">Did you ultimately resolve this arc?\n\nSelect 'Yes' to mark as resolved.\nSelect 'No' to mark as unresolved.</string>
 
-	<string name="arc_start_prompt_text">Spend %s XP to start this arc?</string>
-
-	<string name="arc_complete_prompt_window_title">Select</string>
-	<string name="arc_climax_prompt_label">Were you victorious?</string>
-	<string name="arc_resolution_prompt_label">Were you victorious?</string>
-
 	<string name="char_message_not_enough_xp_for_arc">You do not have enough XP to gain a new character arc.</string>
 	<string name="char_message_add_arc">%s spent %s XP to gain a new character arc.</string>
 	<string name="char_message_arc_complete_step">%s gained %s XP for completing a step in one of their character arcs.</string>
@@ -311,6 +309,8 @@
 	<string name="char_message_arc_climax_failure">%s was not able to complete the finale of one of their character arcs and gains %s XP.</string>
 	<string name="char_message_arc_resolution_success">%s resolved one of their character arcs and gains %s XP.</string>
 	<string name="char_message_arc_resolution_failure">%s was unable to resolve one of their character arcs.</string>
+	<string name="char_message_arc_already_paid_for">You already paid the XP cost to start this arc.</string>
+	<string name="char_message_arc_xp_already_gained">You already gained XP for this part of the arc.</string>
 	
 	<!-- Character - Notes -->
 	<string name="char_label_background">Background</string>
