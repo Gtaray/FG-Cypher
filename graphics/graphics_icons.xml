@@ -67,6 +67,7 @@
 	<icon name="gmi20" file="graphics/icons/gmi20.png" />
 
 	<icon name="playerintrusion" file="graphics/icons/player_intrusion.png" />
+	<icon name="armor_icon" file="graphics/icons/armor_icon.png" />
 
 	<!-- Radial -->
 	<icon name="radial_power_action_stat" file="graphics/radial/icon_dice_custom.png" />

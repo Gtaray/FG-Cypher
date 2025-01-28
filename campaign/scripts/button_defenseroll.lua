@@ -4,12 +4,12 @@
 --
 
 function action(draginfo)
-	local sStat = stat[1];
+	local sStat = window.getStat()
 	if (sStat or "") == "" then
 		return;
 	end
 
-	local rActor = ActorManager.resolveActor(window.getDatabaseNode());
+	local rActor = ActorManager.resolveActor(window.getActorNode());
 	local rAction = {};
 	rAction.label = StringManager.capitalize(sStat);
 	rAction.sStat = sStat;

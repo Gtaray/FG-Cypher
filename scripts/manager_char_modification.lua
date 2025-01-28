@@ -218,7 +218,7 @@ function applyDefenseModification(rActor, rData)
 	end
 
 	local charnode = ActorManager.getCreatureNode(rActor);
-	local sPath = "abilities." .. rData.sStat;
+	local sPath = "stats." .. rData.sStat;
 	local statnode = DB.getChild(charnode, sPath)
 	if not statnode then
 		return;
@@ -247,12 +247,12 @@ function applyArmorModification(rActor, rData)
 	-- First we handle the case where the damage type is empty
 	-- thus we place the armor in the character's Armor node
 	if (sDmgType or "") == "" then
-		nCurArmor = DB.getValue(charnode, "Armor.mod", 0);
-		DB.setValue(charnode, "Armor.mod", "number", nCurArmor + rData.nMod);
+		nCurArmor = DB.getValue(charnode, "defenses.armor.mod", 0);
+		DB.setValue(charnode, "defenses.armor.mod", "number", nCurArmor + rData.nMod);
 
 		if rData.bSuperArmor then
-			local nSuperArmor = DB.getValue(charnode, "Armor.superarmor", 0);
-			DB.setValue(charnode, "Armor.superarmor", "number", nSuperArmor + rData.nMod);
+			local nSuperArmor = DB.getValue(charnode, "defenses.armor.superarmor", 0);
+			DB.setValue(charnode, "defenses.armor.superarmor", "number", nSuperArmor + rData.nMod);
 		end
 
 		CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
@@ -312,9 +312,9 @@ end
 function applyInitiativeModification(rActor, rData)
 	local charnode = ActorManager.getCreatureNode(rActor);
 
-	CharModManager.applyModToTrainingNode(charnode, "inittraining", rData.sTraining);
-	CharModManager.applyModToAssetNode(charnode, "initasset", rData.nAsset);
-	CharModManager.applyModToModifierNode(charnode, "initmod", rData.nMod);
+	CharModManager.applyModToTrainingNode(charnode, "initiative.training", rData.sTraining);
+	CharModManager.applyModToAssetNode(charnode, "initiative.assets", rData.nAsset);
+	CharModManager.applyModToModifierNode(charnode, "initiative.mod", rData.nMod);
 
 	rData.sSummary = "Initiative: " .. rData.sSummary;
 	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
@@ -375,7 +375,7 @@ end
 function applyRecoveryModification(rActor, rData)
 	local charnode = ActorManager.getCreatureNode(rActor);
 
-	CharModManager.applyModToModifierNode(charnode, "recoveryrollmod", rData.nMod);
+	CharModManager.applyModToModifierNode(charnode, "health.recovery.mod", rData.nMod);
 
 	rData.sSummary = "Recovery: " .. rData.sSummary;
 	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
@@ -388,7 +388,7 @@ function applyEdgeModification(rActor, rData)
 	if not StringManager.contains({ "might", "speed", "intellect" }, rData.sStat) then
 		statnode = ActorManagerCypher.getCustomStatPoolNode(rActor, rData.sStat, true);
 	else 
-		statnode = DB.getChild(charnode, "abilities." .. rData.sStat);
+		statnode = DB.getChild(charnode, "stats." .. rData.sStat);
 	end
 
 	if not statnode then
@@ -404,7 +404,7 @@ end
 function applyEffortModification(rActor, rData)
 	local charnode = ActorManager.getCreatureNode(rActor);
 
-	CharModManager.applyModToModifierNode(charnode, "effort", rData.nMod);
+	CharModManager.applyModToModifierNode(charnode, "effort.base", rData.nMod);
 
 	rData.sSummary = "Effort: " .. rData.sSummary;
 	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
@@ -437,7 +437,7 @@ end
 function applyArmorEffortPenaltyModification(rActor, rData)
 	local charnode = ActorManager.getCreatureNode(rActor);
 
-	CharModManager.applyModToModifierNode(charnode, "ArmorSpeedPenalty.mod", rData.nMod);
+	CharModManager.applyModToModifierNode(charnode, "effort.armorpenalty.mod", rData.nMod);
 
 	rData.sSummary = "Armor: " .. rData.sSummary;
 	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);

@@ -6,9 +6,14 @@
 -->
 
 <root>
+	<icon name="button_action_defend" file="graphics/buttons/button_action_defense.png" />
+	<icon name="button_action_defend_down" file="graphics/buttons/button_action_defense_down.png" />
+
 	<!-- Character Sheet -->
 	<icon name="button_prof" file="graphics/buttons/button_prof.png" />
 	<icon name="button_prof_down" file="graphics/buttons/button_prof_down.png" />
 	<icon name="button_prof_double" file="graphics/buttons/button_prof_double.png" />
 	<icon name="button_prof_half" file="graphics/buttons/button_prof_half.png" />
+
+	<icon name="button_advancement" file="graphics/buttons/button_advancement.png" />
 </root>

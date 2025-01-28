@@ -9,7 +9,7 @@
 	<template name="cycler_stat">
 		<button_stringcycler>
 			<parameters>
-				<labelsres>char_label_might|char_label_speed|char_label_intellect</labelsres>
+				<labelsres>might|speed|intellect</labelsres>
 				<values>might|speed|intellect</values>
 				<defaultlabel>-</defaultlabel>
 			</parameters>
@@ -41,7 +41,7 @@
 	<template name="button_coststat">
 		<button_stringcycler>
 			<parameters>
-				<labelsres>char_label_might|char_label_speed|char_label_intellect|xp</labelsres>
+				<labelsres>might|speed|intellect|xp</labelsres>
 				<values>might|speed|intellect|xp</values>
 				<defaultlabel>-</defaultlabel>
 			</parameters>
@@ -274,5 +274,12 @@
 				<top relation="relative" offset="10" postoffset="10" />
 			</anchored>
 		</button_text>
+	</template>
+
+	<template name="hnl">
+		<number_linked>
+			<bounds>0,0,0,0</bounds>
+			<invisible />
+		</number_linked>
 	</template>
 </root>

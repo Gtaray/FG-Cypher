@@ -94,7 +94,7 @@ end
 
 function getCharSelectDetailHost(nodeChar)
 	local sValue = DB.getValue(nodeChar, "class.descriptor", "") .. " " .. DB.getValue(nodeChar, "class.type", "") .. " who " .. DB.getValue(nodeChar, "class.focus", "");
-	sValue = sValue .. " (Tier " .. DB.getValue(nodeChar, "tier", 0) .. ")";
+	sValue = sValue .. " (Tier " .. DB.getValue(nodeChar, "advancement.tier", 0) .. ")";
 	return sValue;
 end
 

@@ -17,7 +17,7 @@ function getRoll(rActor, rAction)
 	local rRoll = {};
 	rRoll.sType = "recovery";
 	rRoll.aDice = DiceRollManager.getActorDice(rAction.aDice or { "d6" }, rActor);
-	rRoll.nMod = ActorManagerCypher.getTier(rActor) + ActorManagerCypher.getRecoveryRollMod(rActor) + (rAction.nModifer or 0);
+	rRoll.nMod = ActorManagerCypher.getRecoveryRollMod(rActor) + (rAction.nModifer or 0);
 	rRoll.sDesc = "[RECOVERY]";
 	return rRoll;
 end
@@ -61,8 +61,9 @@ function onRoll(rSource, rTarget, rRoll)
 			rMessage.text = rMessage.text .. " [1 ACTION]";
 			sFilter = "action"
 		end
+		
 		if c < 4 then
-			DB.setValue(nodeActor, "recoveryused", "number", c + 1);
+			DB.setValue(nodeActor, "health.recovery.used", "number", c + 1);
 		end
 
 		if EffectManagerCypher.ignoreRecovery(rSource, sFilter) then
@@ -137,7 +138,7 @@ function applyRecovery(nodeChar, nMightNew, nSpeedNew, nIntellectNew, nRemainder
 
     Comm.deliverChatMessage(rMessage);
 
-	local nRecoveryUsed = DB.getValue(nodeChar, "recoveryused", 0);
+	local nRecoveryUsed = DB.getValue(nodeChar, "health.recovery.used", 0);
 
 	-- Handle recharging powers
 	for _, abilityNode in ipairs(DB.getChildList(nodeChar, "abilitylist")) do

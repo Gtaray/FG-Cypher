@@ -73,14 +73,19 @@
 	<string name="option_label_MAXTARGET">Maximum Difficulty Level for Rolls</string>
 	<string name="option_label_HRXP">Hero Points (Intrusion XP)</string>
 	<string name="option_label_SPLITATKEFFORT">Pay Attack and Damage Effort separately</string>
+	<string name="option_label_DEATHMARKER_ONDELETE">Death Markers: Place death markers when a dead or dying creature is removed from the combat tracker</string>
+	<string name="option_label_DEATHMARKER_ONDAMAGE">Death Markers: Place death markers when an NPC on the combat tracker is reduced to 0 HP</string>
+	<string name="option_label_DEATHMARKER_ONWOUND">Death Markers: Place death markers when a PC becomes impaired, debilitated, or dead</string>
+
+	<string name="option_header_characters">Characters</string>
+	<string name="option_label_DESCRIPTOR_COUNT">Characters: How many Descriptors can a PC have?</string>
+	<string name="option_label_FOCUS_COUNT">Characters: How many Focuses can a PC have?</string>
+	<string name="option_label_ANCESTRY_COUNT">Characters: How many Ancestries can a PC have?</string>
 	<string name="option_label_ARCCOST">Character Arcs: XP Cost to gain new character arcs</string>
 	<string name="option_label_ARCXPSTEP">Character Arcs: How much XP is gained for each step of a character arc</string>
 	<string name="option_label_ARCXPCLIMAX_SUCCESS">Charater Arcs: How much XP is gained when successfully completing a character arc's climax</string>
 	<string name="option_label_ARCXPCLIMAX_FAILURE">Charater Arcs: How much XP is gained when failing to complete a character arc's climax</string>
 	<string name="option_label_ARCXPRESOLVE">Character Arcs: How much XP is gained when resolving a character arc</string>
-	<string name="option_label_DEATHMARKER_ONDELETE">Death Markers: Place death markers when a dead or dying creature is removed from the combat tracker</string>
-	<string name="option_label_DEATHMARKER_ONDAMAGE">Death Markers: Place death markers when an NPC on the combat tracker is reduced to 0 HP</string>
-	<string name="option_label_DEATHMARKER_ONWOUND">Death Markers: Place death markers when a PC becomes impaired, debilitated, or dead</string>
 
 	<string name="option_val_yes">Yes</string>
 	<string name="option_val_no">No</string>
@@ -117,72 +122,97 @@
 	
 	<!-- Character - Main -->
 	<string name="char_tooltip_pc_intrusion">Click to invoke a Player Intrusion</string>
-	<string name="char_label_main1">is a</string>
-	<string name="char_label_main2">who</string>
-	<string name="char_label_main3">&#x2014;</string>
-	<string name="char_label_descriptor">DESCRIPTOR</string>
-	<string name="char_label_type">TYPE</string>
-	<string name="char_label_focus">FOCUS</string>
-	<string name="char_label_ancestry">ANCESTRY</string>
-	<string name="char_label_flavor">FLAVOR</string>
-	<string name="char_label_tier">TIER</string>
-	<string name="char_label_effort">EFFORT</string>
-	<string name="char_label_hero">HERO PTS</string>
-	<string name="char_label_adv_stats">STAT</string>
-	<string name="char_label_adv_edge">EDGE</string>
-	<string name="char_label_adv_effort">EFF</string>
-	<string name="char_label_adv_skill">SKILL</string>
-	
-	<string name="char_label_might">MIGHT</string>
-	<string name="char_label_speed">SPEED</string>
-	<string name="char_label_intellect">INTELLECT</string>
-	<string name="char_label_custom">CUSTOM</string>
-	<string name="char_label_statmax">Max</string>
-	<string name="char_label_statedge">Edge</string>
+
+	<string name="char_label_statement">Character Statement</string>
+	<string name="char_statement">%s is a %s %s who %s</string>
+
+	<string name="char_title_statement">Character Statement</string>
+	<string name="char_title_character_editor">Character Editor</string>
+	<string name="char_label_tier">Tier</string>
+	<string name="char_label_type">Type</string>
+	<string name="char_label_descriptor">Descriptor</string>
+	<string name="char_label_focus">Focus</string>
+	<string name="char_label_ancestry">Ancetry</string>
+	<string name="char_label_flavor">Flavor</string>
+
+	<string name="char_title_might">Might</string>
+	<string name="char_title_speed">Speed</string>
+	<string name="char_title_intellect">Intellect</string>
+	<string name="char_label_stat_current">Pool</string>
+	<string name="char_label_stat_maximum">Max</string>
+	<string name="char_label_stat_edge">Edge</string>
 	<string name="char_label_statdef">Def</string>
-	<string name="char_tooltip_mightdef">Might Defense</string>
-	<string name="char_tooltip_speeddef">Speed Defense</string>
-	<string name="char_tooltip_intellectdef">Intellect Defense</string>
-	
-	<string name="char_label_status">DAMAGE TRACK</string>
-	<string name="char_label_recovery">RECOVERY</string>
+	<string name="char_tooltip_statdef">Defense Roll</string>
+
+	<string name="char_title_statpool_editor">Stat Pool Details</string>
+	<string name="char_tooltip_stat_current">Current points in this stat pool</string>
+	<string name="char_tooltip_stat_max">Maximum total points that can be in this stat pool</string>
+	<string name="char_tooltip_stat_maxbase">Base value for this pools maximum based on your type and abilities</string>
+	<string name="char_tooltip_stat_maxmod">Miscellaneous and temporary increases to this stat pool's maximum</string>
+	<string name="char_label_stat_maxbase">Base</string>
+	<string name="char_label_stat_maxmod">Mod</string>
+	<string name="char_label_stat_defense">Defense</string>
+	<string name="char_label_statdef_training">Training</string>
+	<string name="char_label_statdef_assets">Assets</string>
+	<string name="char_tooltip_statdef_assets">Assets given to this defense roll</string>
+	<string name="char_label_statdef_mod">Mod</string>
+	<string name="char_tooltip_statdef_mod">Miscillaneous modifier added to the defense roll</string>
+
+	<string name="char_label_initiative">Init</string>
+	<string name="char_tooltip_initiative">Total bonus to initiative rolls</string>
+	<string name="char_label_effort">Effort</string>
+	<string name="char_tooltip_effort">Total effort you can apply to tests</string>
+	<string name="char_title_special_defenses">Special Defenses</string>
+
+	<string name="char_title_combatcalc_editor">Combat Details</string>
+	<string name="char_label_armor">Armor</string>
+	<string name="char_tooltip_armor">Total armor against mundane, physical damage</string>
+	<string name="char_label_armorbase">Base</string>
+	<string name="char_tooltip_armorbase">Base Armor granted from armor</string>
+	<string name="char_label_armormod">Mod</string>
+	<string name="char_tooltip_armormod">Armor granted from abilities or other features</string>
+	<string name="char_label_superarmor">Pierce-Proof</string>
+	<string name="char_tooltip_superarmor">How much of your Armor is immune to effects that would pierce or bypass Armor?</string>
+	<string name="char_label_armorspeedcost">Effort Penalty</string>
+	<string name="char_label_armorpenaltybase">Base</string>
+	<string name="char_tooltip_armorpenaltybase">Base amount that your armor increases the cost of applying Speed Effort.</string>
+	<string name="char_label_armorpenaltymod">Mod</string>
+	<string name="char_tooltip_armorpenaltymod">Modifier for the Speed Effort cost penalty (due to advancements or abilities).</string>
+	<string name="char_label_initiative_full">Initiative</string>
+	<string name="char_label_inittraining">Training</string>
+	<string name="char_label_initassets">Assets</string>
+	<string name="char_tooltip_initassets">Assets applied to initiative rolls</string>
+	<string name="char_label_initmods">Mod</string>
+	<string name="char_tooltip_initmods">Flat modifier applied to initiative rolls</string>
+	<string name="char_label_effortbase">Base</string>
+	<string name="char_tooltip_effortbase">Base effort value</string>
+	<string name="char_label_effortmod">Mod</string>
+	<string name="char_tooltip_effortmod">A flat modifier added to your effort limit</string>
+
+	<string name="char_title_damagetrack">Damage Track</string>
+
+	<string name="char_title_recoveries">Recoveries</string>
 	<string name="char_label_recovery1action">1 Action</string>
 	<string name="char_label_recovery10min">10 Minutes</string>
 	<string name="char_label_recovery1hr">1 Hour</string>
 	<string name="char_label_recovery10hr">10 Hours</string>
-	<string name="char_label_recoveryused">Used</string>
-
-	<string name="char_tab_armor">Armor</string>
-	<string name="char_tooltip_armor">Adjust armor and effort cost penalty</string>	
-	<string name="char_armorcalc_title">Armor Calc</string>
-	<string name="char_label_armorbase">Base</string>
-	<string name="char_label_armormod">Mod</string>
-	<string name="char_label_superarmor">Pierce-Proof</string>
-	<string name="char_label_armor">Armor: </string>
-	<string name="char_tooltip_armorbase">Base Armor granted from armor</string>
-	<string name="char_tooltip_armormod">Armor granted from abilities or other features</string>
-	<string name="char_tooltip_superarmor">How much of your Armor is immune to effects that would pierce or bypass Armor?</string>
-	<string name="char_label_armorspeedcost">Effort Penalty:</string>
-	<string name="char_tooltip_armorspeedcostbase">Base amount that your armor increases the cost of applying Speed Effort.</string>
-	<string name="char_tooltip_armorspeedcostmod">Modifier for the Speed Effort cost penalty (due to advancements or abilities).</string>
+	<string name="char_label_recoveryused">No Recoveries</string>
+	<string name="char_title_recoverytotal">Roll</string>
+	<string name="char_tooltip_recoverytotal">Total bonus to recovery rolls. Double-click or drag/drop to initiate a recovery roll.</string>
 	
-	<string name="char_header_special_defenses">Special Defenses</string>
+	<string name="char_title_recovery_editor">Recovery Editor</string>
+	<string name="char_label_recoverymod">Recovery Bonus</string>
+	<string name="char_tooltip_recoverymod">Flat bonus added to recovery rolls</string>
 
-	<string name="char_tab_pools">Pools</string>
-	<string name="char_header_custom_pools">Custom Stat Pools</string>
-	<string name="char_label_custom_pool_name">Stat Pool Name</string>
-	<string name="char_label_custom_pool_name_short">Pool Name</string>
-	<string name="char_label_custom_pool_current">Current</string>
-	<string name="char_label_custom_pool_max">Max</string>
-	<string name="char_label_custom_pool_maximum">Maximum</string>
-	<string name="char_label_custom_pool_edge">Edge</string>
+	<string name="char_label_xp">XP</string>
+	<string name="char_label_advancements">Advancements</string>
+	<string name="char_label_adv_stats">Stats</string>
+	<string name="char_label_adv_edge">Edge</string>
+	<string name="char_label_adv_effort">Effort</string>
+	<string name="char_label_adv_skill">Training</string>
+	<string name="char_tooltip_advance_button">Click to take a character advancement</string>
 
-	<string name="char_custompool_title">Custom Stat Pool</string>
-	<string name="char_header_custom_pool">Properties</string>
-	<string name="char_header_custom_defense">Defense</string>
-	<string name="char_label_custom_pool_training">Training</string>
-	<string name="char_label_custom_pool_assets">Assets</string>
-	<string name="char_label_custom_pool_mod">Modifier</string>
+	<string name="char_label_hero">HERO PTS</string>
 
 	<string name="char_message_add_ability">Ability '%s' added to '%s'</string>
 	<string name="char_message_add_type">Type '%s' added to '%s'</string>
@@ -271,7 +301,28 @@
 	<string name="char_abilities_label_enablers">ENABLERS</string>
 	<string name="char_abilities_label_other">OTHER</string>
 	<string name="char_abilities_label_items">ITEMS</string>
+	<string name="char_abilities_label_customstatpools">CUSTOM STAT POOLS</string>
 	<string name="char_abilities_label_languages">LANGUAGES</string>
+
+	<string name="char_label_custom">CUSTOM</string>
+	<string name="char_label_statmax">Max</string>
+	<string name="char_label_statedge">Edge</string>
+	<string name="char_label_statdef">Def</string>
+
+	<string name="char_header_custom_pools">Custom Stat Pools</string>
+	<string name="char_label_custom_pool_name">Stat Pool Name</string>
+	<string name="char_label_custom_pool_name_short">Pool Name</string>
+	<string name="char_label_custom_pool_current">Current</string>
+	<string name="char_label_custom_pool_max">Max</string>
+	<string name="char_label_custom_pool_maximum">Maximum</string>
+	<string name="char_label_custom_pool_edge">Edge</string>
+
+	<string name="char_custompool_title">Custom Stat Pool</string>
+	<string name="char_header_custom_pool">Properties</string>
+	<string name="char_header_custom_defense">Defense</string>
+	<string name="char_label_custom_pool_training">Training</string>
+	<string name="char_label_custom_pool_assets">Assets</string>
+	<string name="char_label_custom_pool_mod">Modifier</string>
 
 	<!-- Character - Arcs -->
 	<string name="char_title_arcs">Character Arcs</string>

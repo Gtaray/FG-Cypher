@@ -18,8 +18,8 @@ function addDescriptorDrop(nodeChar, sClass, sRecord)
 		"Manual");
 
 	-- Add the name and link to the character sheet
-	DB.setValue(rAdd.nodeChar, "class.descriptor", "string", rAdd.sSourceName);
-	DB.setValue(rAdd.nodeChar, "class.descriptorlink", "windowreference", rAdd.sSourceClass, DB.getPath(rAdd.nodeSource));
+	DB.setValue(rAdd.nodeChar, "class.descriptor.name", "string", rAdd.sSourceName);
+	DB.setValue(rAdd.nodeChar, "class.descriptor.link", "windowreference", rAdd.sSourceClass, DB.getPath(rAdd.nodeSource));
 
 	for _, modnode in ipairs(DB.getChildList(rAdd.nodeSource, "features")) do
 		local rMod = CharModManager.getModificationData(modnode)

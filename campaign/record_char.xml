@@ -8,7 +8,7 @@
 <root>
 	<windowclass name="charsheet" copy="charsheet_base">
 		<sizelimits>
-			<minimum width="530" height="630" />
+			<minimum width="525" height="630" />
 		</sizelimits>
 		<tab>
 			<name>main</name>

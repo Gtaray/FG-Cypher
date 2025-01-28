@@ -10,6 +10,33 @@ function onInit()
 end
 
 -------------------------------------------------------------------------------
+-- Character class and statement functions
+-------------------------------------------------------------------------------
+function getCharacterStatement(nodeChar)
+	if not nodeChar then
+		return "";
+	end
+
+	local sAncestry = DB.getValue(nodeChar, "class.ancestry.name", "");
+	local sDescriptor = DB.getValue(nodeChar, "class.descriptor.name", "");
+	local sDescText = "";
+	if sAncestry ~= "" and sDescriptor ~= "" then
+		sDescText = string.format("%s %s", sDescriptor, sAncestry)
+	elseif sAncestry ~= "" then
+		sDescText = sAncestry
+	elseif sDescriptor ~= "" then
+		sDescText = sDescriptor
+	end
+
+	return string.format(
+		Interface.getString("char_statement"), 
+		DB.getValue(nodeChar, "name", ""),
+		sDescText,
+		DB.getValue(nodeChar, "class.type.name", ""),
+		DB.getValue(nodeChar, "class.focus.name", ""))
+end
+
+-------------------------------------------------------------------------------
 -- Character sheet drops
 -------------------------------------------------------------------------------
 function addInfoDB(nodeChar, sClass, sRecord)
@@ -121,9 +148,6 @@ function takeSkillAdvancement(nodeChar)
 end
 
 function takeAdvancement(nodeChar, sMessage, rData)
-	if bProcessing then
-		return false;
-	end
 	if not nodeChar then
 		return false;
 	end
@@ -132,9 +156,10 @@ function takeAdvancement(nodeChar, sMessage, rData)
 		return false;
 	end
 
-	if (sMessage or "") ~= "" then
-		CharManager.sendAdvancementMessage(nodeChar, "char_message_advancement_taken", sMessage);
-	end
+	-- TODO: Do this later
+	-- if (sMessage or "") ~= "" then
+	-- 	CharManager.sendAdvancementMessage(nodeChar, "char_message_advancement_taken", sMessage);
+	-- end
 
 	local w = Interface.openWindow("select_dialog_advancement", "");
 	w.setData(rData, CharManager.completeAdvancement);
@@ -143,7 +168,7 @@ function takeAdvancement(nodeChar, sMessage, rData)
 end
 
 function hasEnoughXpForAdvancement(nodeChar, nCost)
-	local nXP = DB.getValue(nodeChar, "xp", 0);
+	local nXP = DB.getValue(nodeChar, "advancement.xp", 0);
 
 	if nXP < nCost then
 		local rMessage = {
@@ -157,13 +182,13 @@ function hasEnoughXpForAdvancement(nodeChar, nCost)
 end
 
 function deductXpForAdvancement(nodeChar, nCost)
-	local nXP = DB.getValue(nodeChar, "xp", 0);
+	local nXP = DB.getValue(nodeChar, "advancement.xp", 0);
 
 	if nXP < nCost then
 		return false;
 	end
 
-	DB.setValue(nodeChar, "xp", "number", math.max(nXP - nCost, 0));
+	DB.setValue(nodeChar, "advancement.xp", "number", math.max(nXP - nCost, 0));
 	return true;
 end
 
@@ -249,16 +274,16 @@ function sendAdvancementMessage(nodeChar, sMessageResource, sMessage)
 end
 
 function checkForAllAdvancements(nodeChar)
-	local bAbilities = DB.getValue(nodeChar, "advancement.abilities", 0) == 1;
+	local bStats = DB.getValue(nodeChar, "advancement.stats", 0) == 1;
 	local bEdge = DB.getValue(nodeChar, "advancement.edge", 0) == 1;
 	local bEffort = DB.getValue(nodeChar, "advancement.effort", 0) == 1;
 	local bSkill = DB.getValue(nodeChar, "advancement.skill", 0) == 1;
 
-	return bAbilities and bEdge and bEffort and bSkill;
+	return bStats and bEdge and bEffort and bSkill;
 end
 
 function increaseTier(nodeChar)
-	local nTier = DB.getValue(nodeChar, "tier", 0);
+	local nTier = DB.getValue(nodeChar, "advancement.tier", 0);
 	nTier = nTier + 1;
 
 	CharManager.sendAdvancementMessage(
@@ -266,8 +291,8 @@ function increaseTier(nodeChar)
 		"char_message_tier_increase", 
 		tostring(nTier));
 
-	DB.setValue(nodeChar, "tier", "number", nTier);
-	DB.setValue(nodeChar, "advancement.abilities", "number", 0);
+	DB.setValue(nodeChar, "advancement.tier", "number", nTier);
+	DB.setValue(nodeChar, "advancement.stats", "number", 0);
 	DB.setValue(nodeChar, "advancement.edge", "number", 0);
 	DB.setValue(nodeChar, "advancement.effort", "number", 0);
 	DB.setValue(nodeChar, "advancement.skill", "number", 0);
@@ -276,8 +301,8 @@ function increaseTier(nodeChar)
 end
 
 function promptAbilitiesForNextTier(nodeChar)
-	local nTier = DB.getValue(nodeChar, "tier", 0);
-	local _, sRecord = DB.getValue(nodeChar, "class.typelink", "");
+	local nTier = DB.getValue(nodeChar, "advancement.tier", 0);
+	local _, sRecord = DB.getValue(nodeChar, "class.type.link", "");
 	local typenode = DB.findNode(sRecord);
 
 	local rData = { nodeChar = nodeChar, sSourceName = DB.getValue(nodeChar, "class.type", ""), nTier = nTier };
@@ -295,7 +320,7 @@ end
 function applyTypeAbilitiesAndPromptFocusAbilities(rData)
 	CharTypeManager.applyTier(rData);
 
-	local _, sRecord = DB.getValue(rData.nodeChar, "class.focuslink", "");
+	local _, sRecord = DB.getValue(rData.nodeChar, "class.focus.link", "");
 	local focusnode = DB.findNode(sRecord);
 
 	-- This re-initializes the ability lists for the focus
@@ -315,12 +340,12 @@ function applyFocusAbilities(rData)
 end
 
 function getExperience(nodeChar)
-	local nTier = DB.getValue(nodeChar, "tier", 1)
-	local nExp = DB.getValue(nodeChar, "xp", 0)
-	local nStats = DB.getValue(nodeChar, "adv_stats", 0)
-	local nEdge = DB.getValue(nodeChar, "adv_edge", 0)
-	local nEffort = DB.getValue(nodeChar, "adv_effort", 0)
-	local nSkill = DB.getValue(nodeChar, "adv_skill", 0)
+	local nTier = DB.getValue(nodeChar, "advancement.tier", 1)
+	local nExp = DB.getValue(nodeChar, "advancement.xp", 0)
+	local nStats = DB.getValue(nodeChar, "advancement.stats", 0)
+	local nEdge = DB.getValue(nodeChar, "advancement.edge", 0)
+	local nEffort = DB.getValue(nodeChar, "advancement.effort", 0)
+	local nSkill = DB.getValue(nodeChar, "advancement.skill", 0)
 
 	return ((nTier - 1) * 16) + (nStats * 4) + (nEdge * 4) + (nEffort * 4) + (nSkill * 4) + nExp
 end
@@ -528,7 +553,7 @@ end
 -------------------------------------------------------------------------------
 
 function rest(nodeChar)
-	DB.setValue(nodeChar, "recoveryused", "number", 0);
+	DB.setValue(nodeChar, "health.recovery.used", "number", 0);
 end
 
 -------------------------------------------------------------------------------

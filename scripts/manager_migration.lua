@@ -1,0 +1,21 @@
+function migrateV2_to_V3()
+	-- Things that are migrated:
+	-- Character sheet:
+		-- "abilities" root node to "stat"
+		-- Add "health" node that contains:
+			-- "wounds" renamed to "damagetrack"
+			-- Recovery data put in here under "recovery" root node
+				-- "recoveryrollmod" renamed to "mod"
+				-- "recoveryused" renamed to "used"
+		-- Add root node "defenses", under which is:
+			-- "Armor" and "ArmorSpeedDefense" both renamed to lower case
+		-- Class data is collected under its own node.
+			-- typelink and type become type.name and type.link
+			-- Same for descriptor, focus, flavor, and ancestry
+		-- "tier" moved under "advancement" root node
+		-- initiative moved under "initiative" root node
+			-- "inittraining" to renamed to "training"
+			-- "initmod" renamed to "mod"
+			-- "initasset" renamed to "assets"
+		-- A lot changed with character arcs...
+end

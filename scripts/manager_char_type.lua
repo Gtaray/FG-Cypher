@@ -22,7 +22,7 @@ function addTypeDrop(nodeChar, sClass, sRecord)
 end
 
 function getTypeNode(nodeChar)
-	local _, sRecord = DB.getValue(nodeChar, "class.typelink");
+	local _, sRecord = DB.getValue(nodeChar, "class.type.link");
 	return DB.findNode(sRecord);
 end
 
@@ -114,8 +114,8 @@ function applyTier1(rData)
 		"Manual");
 
 	-- Add the name and link to the character sheet
-	DB.setValue(rData.nodeChar, "class.type", "string", rData.sSourceName);
-	DB.setValue(rData.nodeChar, "class.typelink", "windowreference", rData.sSourceClass, DB.getPath(rData.nodeSource));
+	DB.setValue(rData.nodeChar, "class.type.name", "string", rData.sSourceName);
+	DB.setValue(rData.nodeChar, "class.type.link", "windowreference", rData.sSourceClass, DB.getPath(rData.nodeSource));
 
 	CharTypeManager.addStartingEffort(rData);
 	CharTypeManager.addStartingCypherLimit(rData);
@@ -166,7 +166,7 @@ end
 --------------------------------------------------------------
 
 function addStartingEffort(rData)
-	DB.setValue(rData.nodeChar, "effort", "number", rData.nEffort or 1);
+	DB.setValue(rData.nodeChar, "effort.base", "number", rData.nEffort or 1);
 
 	local sSummary = string.format(
 		"Effort: Set to %s", 

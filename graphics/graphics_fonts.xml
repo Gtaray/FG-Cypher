@@ -8,6 +8,5 @@
 <root>
 	<font name="char_pool">
 		<ttf file="graphics/fonts/Rokkitt-Bold.ttf" name="Rokkitt" size="30" />
-		<color value="#660000" />
 	</font>
 </root>

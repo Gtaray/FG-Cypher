@@ -18,8 +18,8 @@ function addAncestryDrop(nodeChar, sClass, sRecord)
 		"Manual");
 
 	-- Add the name and link to the character sheet
-	DB.setValue(rAdd.nodeChar, "class.ancestry", "string", rAdd.sSourceName);
-	DB.setValue(rAdd.nodeChar, "class.ancestrylink", "windowreference", rAdd.sSourceClass, DB.getPath(rAdd.nodeSource));
+	DB.setValue(rAdd.nodeChar, "class.ancestry.name", "string", rAdd.sSourceName);
+	DB.setValue(rAdd.nodeChar, "class.ancestry.link", "windowreference", rAdd.sSourceClass, DB.getPath(rAdd.nodeSource));
 
 	for _, modnode in ipairs(DB.getChildList(rAdd.nodeSource, "features")) do
 		local rMod = CharModManager.getModificationData(modnode)

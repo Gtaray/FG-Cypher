@@ -85,7 +85,7 @@ function getPCWoundPercent(rActor)
 	end
 	
 	-- Track status based on the number of wounds the PC has
-	local nWounds = DB.getValue(nodePC, "wounds", 0);
+	local nWounds = ActorManagerCypher.getDamageTrack(rActor);
 	local sStatus;
 	if nWounds <= 0 then
 		sStatus = STATUS_HALE;
@@ -143,7 +143,7 @@ function getTier(rActor)
 		return;
 	end
 
-	return DB.getValue(nodeActor, "tier", 1);
+	return DB.getValue(nodeActor, "advancements.tier", 1);
 end
 
 function moveDamageTrack(rActor, nIncrement)
@@ -175,7 +175,7 @@ function setDamageTrack(rActor, nValue)
 
 	nValue = math.max(math.min(nValue, 3), 0);
 
-	DB.setValue(nodeActor, "wounds", "number", nValue);
+	DB.setValue(nodeActor, "health.damagetrack", "number", nValue);
 end
 function getDamageTrack(rActor)
 	local nodeActor;
@@ -188,7 +188,7 @@ function getDamageTrack(rActor)
 		return 0;
 	end
 
-	return DB.getValue(nodeActor, "wounds", 0);
+	return DB.getValue(nodeActor, "health.damagetrack", 0);
 end
 
 function setStatMax(rActor, sStat, nValue)
@@ -208,7 +208,7 @@ function setStatMax(rActor, sStat, nValue)
 		return
 	end
 	
-	local sPath = string.format("abilities.%s.max", sStat:lower());
+	local sPath = string.format("stats.%s.maxbase", sStat:lower());
 	DB.setValue(nodeActor, sPath, "number", nValue);
 
 	--ActorManagerCypher.setStatPool(rActor, sStat, nValue);
@@ -296,7 +296,7 @@ function setStatPool(rActor, sStat, nValue)
 		return
 	end
 
-	local sPath = "abilities." .. sStat;
+	local sPath = "stats." .. sStat;
 	nValue = math.max(math.min(nValue, nMax), 0);
 	DB.setValue(nodeActor, sPath .. ".current", "number", nValue);
 
@@ -331,7 +331,7 @@ function getStatPool(rActor, sStat)
 	if not StringManager.contains({ "might", "speed", "intellect" }, sStat) then
 		nCur, nMax = ActorManagerCypher.getCustomStatPool(rActor, sStat);
 	else 
-		local sPath = "abilities." .. sStat;
+		local sPath = "stats." .. sStat;
 		nCur = DB.getValue(nodeActor, sPath .. ".current", 0);
 		nMax = DB.getValue(nodeActor, sPath .. ".max", 10);
 	end
@@ -377,7 +377,7 @@ function getEdge(rActor, sStat, aFilter)
 		local _, _, nCustomEdge = ActorManagerCypher.getCustomStatPool(rActor, sStat);
 		nBase = nCustomEdge;
 	else
-		nBase = DB.getValue(nodeActor, "abilities." .. sStat .. ".edge", 0);
+		nBase = DB.getValue(nodeActor, "stats." .. sStat .. ".edge", 0);
 	end
 
 	local nBonus = EffectManagerCypher.getEdgeEffectBonus(rActor, aFilter);
@@ -403,7 +403,7 @@ function getArmorSpeedCost(rActor)
 		return 0;
 	end
 
-	local nBase = DB.getValue(nodeActor, "ArmorSpeedPenalty.total", 0);
+	local nBase = DB.getValue(nodeActor, "effort.armorpenalty.total", 0);
 	local nBonus = EffectManagerCypher.getCostEffectBonus(rActor, { "armor" });
 
 	-- This value can never be lower than 0, because 0 means there's no penalty
@@ -422,9 +422,9 @@ function getDefense(rActor, sStat)
 		return getCustomStatDefense(rActor, sStat)
 	end
 
-	local sTraining = RollManager.resolveTraining(DB.getValue(nodeActor, "abilities." .. sStat .. ".def.training", 1));
-	local nAssets = DB.getValue(nodeActor, "abilities." .. sStat .. ".def.asset", 0);
-	local nModifier = DB.getValue(nodeActor, "abilities." .. sStat .. ".def.misc", 0);
+	local sTraining = RollManager.resolveTraining(DB.getValue(nodeActor, "stats." .. sStat .. ".def.training", 1));
+	local nAssets = DB.getValue(nodeActor, "stats." .. sStat .. ".def.asset", 0);
+	local nModifier = DB.getValue(nodeActor, "stats." .. sStat .. ".def.misc", 0);
 
 	return sTraining, nAssets, nModifier
 end
@@ -435,9 +435,9 @@ function getInitiative(rActor)
 		return;
 	end
 
-	local sTraining = RollManager.resolveTraining(DB.getValue(nodeActor, "inittraining", 1))
-	local nAssets = DB.getValue(nodeActor, "initasset", 0);
-	local nModifier = DB.getValue(nodeActor, "initmod", 0);
+	local sTraining = RollManager.resolveTraining(DB.getValue(nodeActor, "initiative.training", 1))
+	local nAssets = DB.getValue(nodeActor, "initiative.assets", 0);
+	local nModifier = DB.getValue(nodeActor, "initiative.mod", 0);
 
 	return sTraining, nAssets, nModifier;
 end
@@ -453,7 +453,7 @@ function getRecoveryRollMod(rActor)
 		return;
 	end
 
-	return DB.getValue(nodeActor, "recoveryrollmod", 0);
+	return DB.getValue(nodeActor, "health.recovery.total", 0);
 end
 
 ---------------------------------------------------------------
@@ -682,8 +682,8 @@ function getArmorData(rActor, sStat, aDamageTypes)
 			}
 
 			if ActorManager.isPC(rActor) then
-				tDefault.nArmor = DB.getValue(node, "Armor.total", 0);
-				tDefault.nSuperArmor = DB.getValue(node, "Armor.superarmor", 0);
+				tDefault.nArmor = DB.getValue(node, "defenses.armor.total", 0);
+				tDefault.nSuperArmor = DB.getValue(node, "defenses.armor.superarmor", 0);
 			else
 				tDefault.nArmor = DB.getValue(node, "armor", 0);
 			end
@@ -695,7 +695,7 @@ function getArmorData(rActor, sStat, aDamageTypes)
 		end
 
 		-- Start by getting special armor values from the creature node
-		for _, resist in ipairs(DB.getChildList(node, "resistances")) do
+		for _, resist in ipairs(DB.getChildList(node, "defenses.resistances")) do
 			local sBehavior = DB.getValue(resist, "behavior", ""):lower();
 			local sType = DB.getValue(resist, "damagetype", ""):lower();
 			local bInverted = DB.getValue(resist, "invert", "") == "yes";

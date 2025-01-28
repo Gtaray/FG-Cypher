@@ -26,6 +26,7 @@ function registerOptions()
 		{ labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "on" });
 	OptionsManager.registerOption2("HITMISS", false, "option_header_game", "option_lable_HITMISS", "option_entry_cycler",
 		{ labels = "option_val_yes", values = "yes", baselabel = "option_val_no", baseval = "no", default = "yes" });
+		
 	OptionsManager.registerOption2("INITNPC", false, "option_header_combat", "option_label_INITNPC", "option_entry_cycler", 
 		{ labels = "option_val_group", values = "group", baselabel = "option_val_standard", baseval = "off", default = "off" });
 	OptionsManager.registerOption2("INITPC", false, "option_header_combat", "option_label_INITPC", "option_entry_cycler", 
@@ -41,24 +42,29 @@ function registerOptions()
 	OptionsManager.registerOption2("DEATHMARKER_ONWOUND", false, "option_header_combat", "option_label_DEATHMARKER_ONWOUND", "option_entry_cycler", 
 		{ labels = "option_val_yes", values = "yes", baselabel = "option_val_no", baseval = "no", default = "no" });
 
+	OptionsManager.registerOption2("DESCRIPTOR_COUNT", false, "option_header_characters", "option_label_DESCRIPTOR_COUNT", "option_entry_cycler", 
+		{ labels = "option_val_1|option_val_2", values = "1|2", baselabel = "option_val_0", baseval = "0", default = "1" });
+	OptionsManager.registerOption2("FOCUS_COUNT", false, "option_header_characters", "option_label_FOCUS_COUNT", "option_entry_cycler", 
+		{ labels = "option_val_1|option_val_2", values = "1|2", baselabel = "option_val_0", baseval = "0", default = "1" });
+	OptionsManager.registerOption2("ANCESTRY_COUNT", false, "option_header_characters", "option_label_ANCESTRY_COUNT", "option_entry_cycler", 
+		{ labels = "option_val_1|option_val_2", values = "1|2", baselabel = "option_val_0", baseval = "0", default = "1" });
+	OptionsManager.registerOption2("ARCCOST", false, "option_header_characters", "option_label_ARCCOST", "option_entry_cycler", 
+		{ labels = "option_val_1|option_val_2|option_val_3|option_val_4|option_val_5", values = "1|2|3|4|5", baselabel = "option_val_0", baseval = "0", default = "1" });
+	OptionsManager.registerOption2("ARCXPSTEP", false, "option_header_characters", "option_label_ARCXPSTEP", "option_entry_cycler", 
+		{ labels = "option_val_1|option_val_2|option_val_3|option_val_4|option_val_5", values = "1|2|3|4|5", baselabel = "option_val_0", baseval = "0", default = "2" });
+	OptionsManager.registerOption2("ARCXPCLIMAX_SUCCESS", false, "option_header_characters", "option_label_ARCXPCLIMAX_SUCCESS", "option_entry_cycler", 
+		{ labels = "option_val_1|option_val_2|option_val_3|option_val_4|option_val_5", values = "1|2|3|4|5", baselabel = "option_val_0", baseval = "0", default = "4" });
+	OptionsManager.registerOption2("ARCXPCLIMAX_FAILURE", false, "option_header_characters", "option_label_ARCXPCLIMAX_FAILURE", "option_entry_cycler", 
+		{ labels = "option_val_1|option_val_2|option_val_3|option_val_4|option_val_5", values = "1|2|3|4|5", baselabel = "option_val_0", baseval = "0", default = "2" });
+	OptionsManager.registerOption2("ARCXPRESOLVE", false, "option_header_characters", "option_label_ARCXPRESOLVE", "option_entry_cycler", 
+		{ labels = "option_val_1|option_val_2|option_val_3|option_val_4|option_val_5", values = "1|2|3|4|5", baselabel = "option_val_0", baseval = "0", default = "1" });
+
 	OptionsManager.registerOption2("MAXTARGET", false, "option_header_houserule", "option_label_MAXTARGET", "option_entry_cycler",
 		{ labels = "option_val_maxtarget_15", values = "15", baselabel = "option_val_maxtarget_10", baseval = "10", default = "10" });
 	OptionsManager.registerOption2("HRXP", false, "option_header_houserule", "option_label_HRXP", "option_entry_cycler", 
 		{ labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "off" });
-
 	OptionsManager.registerOption2("SPLITATKEFFORT", false, "option_header_houserule", "option_label_SPLITATKEFFORT", "option_entry_cycler", 
 		{ labels = "option_val_yes", values = "yes", baselabel = "option_val_no", baseval = "no", default = "yes" });
-
-	OptionsManager.registerOption2("ARCCOST", false, "option_header_houserule", "option_label_ARCCOST", "option_entry_cycler", 
-		{ labels = "option_val_1|option_val_2|option_val_3|option_val_4|option_val_5", values = "1|2|3|4|5", baselabel = "option_val_0", baseval = "0", default = "1" });
-	OptionsManager.registerOption2("ARCXPSTEP", false, "option_header_houserule", "option_label_ARCXPSTEP", "option_entry_cycler", 
-		{ labels = "option_val_1|option_val_2|option_val_3|option_val_4|option_val_5", values = "1|2|3|4|5", baselabel = "option_val_0", baseval = "0", default = "2" });
-	OptionsManager.registerOption2("ARCXPCLIMAX_SUCCESS", false, "option_header_houserule", "option_label_ARCXPCLIMAX_SUCCESS", "option_entry_cycler", 
-		{ labels = "option_val_1|option_val_2|option_val_3|option_val_4|option_val_5", values = "1|2|3|4|5", baselabel = "option_val_0", baseval = "0", default = "4" });
-	OptionsManager.registerOption2("ARCXPCLIMAX_FAILURE", false, "option_header_houserule", "option_label_ARCXPCLIMAX_FAILURE", "option_entry_cycler", 
-		{ labels = "option_val_1|option_val_2|option_val_3|option_val_4|option_val_5", values = "1|2|3|4|5", baselabel = "option_val_0", baseval = "0", default = "2" });
-	OptionsManager.registerOption2("ARCXPRESOLVE", false, "option_header_houserule", "option_label_ARCXPRESOLVE", "option_entry_cycler", 
-		{ labels = "option_val_1|option_val_2|option_val_3|option_val_4|option_val_5", values = "1|2|3|4|5", baselabel = "option_val_0", baseval = "0", default = "1" });
 end
 
 function calcEncumbrance(nodeChar)

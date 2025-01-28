@@ -50,8 +50,8 @@ function applyTier1(rData)
 		"Manual");
 
 	-- Add the name and link to the character sheet
-	DB.setValue(rData.nodeChar, "class.focus", "string", rData.sSourceName);
-	DB.setValue(rData.nodeChar, "class.focuslink", "windowreference", rData.sSourceClass, DB.getPath(rData.nodeSource));
+	DB.setValue(rData.nodeChar, "class.focus.name", "string", rData.sSourceName);
+	DB.setValue(rData.nodeChar, "class.focus.link", "windowreference", rData.sSourceClass, DB.getPath(rData.nodeSource));
 
 	-- Give starting abilities
 	CharFocusManager.addAbilities(rData);

@@ -42,7 +42,6 @@ function onStageSelected()
 
 	local sStage = stage.getSelectedValue();
 	local nStage = getStageIndex(sStage);
-	Debug.chat('stage changed to', sStage, nStage)
 	DB.setValue(getDatabaseNode(), "stage", "number", nStage)
 end
 

@@ -8,550 +8,331 @@
 <root>
 	<windowclass name="charsheet_main">
 		<sheetdata>
-			<!-- ADVANCEMENT -->
-			<frame_char name="overviewframe">
-				<anchored position="insidetop" height="50" />
-			</frame_char>
-
-			<genericcontrol name="overviewanchor">
-				<anchored to="overviewframe" position="insidetopleft" offset="5,15" height="20" width="0" />
-				<disabled />
-			</genericcontrol>
-			<label name="tier_label">
-				<anchored to="overviewanchor">
-					<top />
-					<left anchor="right" relation="relative" offset="10" />
-				</anchored>
-				<static textres="char_label_tier" />
-			</label>
-			<basicnumber name="tier">
-				<anchored to="overviewanchor" width="30" height="20">
-					<top />
-					<left anchor="right" relation="relative" offset="10" />
-				</anchored>
-				<default>1</default>
-				<min>1</min>
-			</basicnumber>
-			<label name="effort_label">
-				<anchored to="overviewanchor">
-					<top />
-					<left anchor="right" relation="relative" offset="20" />
-				</anchored>
-				<static textres="char_label_effort" />
-			</label>
-			<basicnumber name="effort">
-				<anchored to="overviewanchor" width="30" height="20">
-					<top />
-					<left anchor="right" relation="relative" offset="10" />
-				</anchored>
-				<default>1</default>
-				<min>0</min>
-				<max>6</max>
-			</basicnumber>
-			<label name="xp_label">
-				<anchored to="overviewanchor">
-					<top />
-					<left anchor="right" relation="relative" offset="20" />
-				</anchored>
-				<static textres="xp" />
-			</label>
-			<basicnumber name="xp">
-				<anchored to="overviewanchor" width="30" height="20">
-					<top />
-					<left anchor="right" relation="relative" offset="10" />
-				</anchored>
-				<min>0</min>
-			</basicnumber>
-			<button_checkbox_advancement name="adv_stats" source="advancement.abilities">
-				<anchored offset="35,-2"/>
-				<script>
-					function onButtonPress()
-						super.processAdvancement(CharManager.takeAbilityAdvancement)
-					end
-				</script>
-			</button_checkbox_advancement>
-			<stringcontrol>
-				<anchored to="adv_stats" position="lefthigh" offset="2,0" />
-				<font>sheetlabelmini</font>
-				<static textres="char_label_adv_stats" />
-			</stringcontrol>
-			<button_checkbox_advancement name="adv_edge" source="advancement.edge">
-				<anchored offset="82,-2" />
-				<script>
-					function onButtonPress()
-						super.processAdvancement(CharManager.takeEdgeAdvancement)
-					end
-				</script>
-			</button_checkbox_advancement>
-			<stringcontrol>
-				<anchored to="adv_edge" position="lefthigh" offset="2,0" />
-				<font>sheetlabelmini</font>
-				<static textres="char_label_adv_edge" />
-			</stringcontrol>
-			<button_checkbox_advancement name="adv_effort" source="advancement.effort">
-				<anchored offset="35,10"/>
-				<script>
-					function onButtonPress()
-						super.processAdvancement(CharManager.takeEffortAdvancement)
-					end
-				</script>
-			</button_checkbox_advancement>
-			<stringcontrol>
-				<anchored to="adv_effort" position="lefthigh" offset="2,0" />
-				<font>sheetlabelmini</font>
-				<static textres="char_label_adv_effort" />
-			</stringcontrol>
-			<button_checkbox_advancement name="adv_skill" source="advancement.skill">
-				<anchored offset="82,10"/>
-				<script>
-					function onButtonPress()
-						super.processAdvancement(CharManager.takeSkillAdvancement)
-					end
-				</script>
-			</button_checkbox_advancement>
-			<stringcontrol>
-				<anchored to="adv_skill" position="lefthigh" offset="2,0" />
-				<font>sheetlabelmini</font>
-				<static textres="char_label_adv_skill" />
-			</stringcontrol>
-
-			<!-- TYPE / FOCUS / DESCRIPTOR -->
-			<frame_char name="characterframe">
-				<anchored position="insidetopleft" offset="150,50" width="330" height="190" />
-			</frame_char>
-			<genericcontrol name="charanchor">
-				<anchored to="characterframe">
-					<top offset="15" />
-					<left offset="20" />
-				</anchored>
-				<invisible />
-			</genericcontrol>
-
-			<string_labeled_character_newline name="name">
-				<anchored width="244" />
-				<labelres>char_label_name</labelres>
-				<readonly />
-			</string_labeled_character_newline>
-			<label_character_overview name="label_is_a">
-				<anchored to="name" />
-				<static textres="char_label_main1" />
-			</label_character_overview>
-
-			<stringu_descriptor name="descriptor" source="class.descriptor" />
-			<linkfield_char_detail name="descriptorlink" source="class.descriptorlink">
-				<anchored to="descriptor" />
-				<description field="descriptor" />
-				<target>descriptor</target>
-			</linkfield_char_detail>
-
-			<stringu_ancestry name="ancestry" source="class.ancestry" />
-			<linkfield_char_detail name="ancestrylink" source="class.ancestrylink">
-				<anchored to="ancestry" />
-				<description field="ancestry" />
-				<target>ancestry</target>
-			</linkfield_char_detail>
-
-			<stringu_flavor name="flavor" source="class.flavor" />
-			<linkfield_char_detail name="flavorlink" source="class.flavorlink">
-				<anchored to="flavor" />
-				<description field="flavor" />
-				<target>flavor</target>
-			</linkfield_char_detail>
-
-			<label_character_overview name="label_flavor">
-				<anchored to="flavor">
-					<top />
-					<left offset="0" />
-				</anchored>
-				<static textres="char_label_main3" />
-			</label_character_overview>
-
-			<stringu_type name="type" source="class.type" />
-			<linkfield_char_detail name="typelink" source="class.typelink">
-				<anchored to="type" />
-				<description field="type" />
-				<target>type</target>
-			</linkfield_char_detail>
-
-			<label_character_overview name="label_who">
-				<anchored to="type" />
-				<static textres="char_label_main2" />
-			</label_character_overview>
-
-			<stringu_focus name="focus" source="class.focus" />
-			<linkfield_char_detail name="focuslink" source="class.focuslink">
-				<anchored to="focus" />
-				<description field="focus" />
-				<target>focus</target>
-			</linkfield_char_detail>
-
-			<button_details name="button_tracker">
-				<anchored to="characterframe">
+			<label_charframetop name="statementtitle">
+				<anchored height="20">
 					<top offset="10" />
-					<right offset="-10" />
+					<left offset="15" />
+					<right offset="-15" />
 				</anchored>
-				<tooltip textres="char_tooltip_tracker" />
-				<script>
-					function onButtonPress()
-						Interface.openWindow("charsheet_tracker", window.getDatabaseNode());
-					end
-				</script>
-			</button_details>
-			
-			<!-- STATS -->
-			<frame_char name="mightframe">
-				<anchored position="insidetopleft" offset="0,50" width="150" height="130" />
-			</frame_char>
-			<number_charabilitymax name="mightmax" source="abilities.might.max">
-				<anchored to="mightframe" />
-				<target>mightpool</target>
-			</number_charabilitymax>
-			<label_fieldtop>
-				<anchored to="mightmax" />
-				<static textres="char_label_statmax" />
-			</label_fieldtop>
-			<number_charedge name="mightedge" source="abilities.might.edge">
-				<anchored to="mightmax" />
-			</number_charedge>
-			<label_fieldtop>
-				<anchored to="mightedge" />
-				<static textres="char_label_statedge" />
-			</label_fieldtop>
-			<number_charabilitypool name="mightpool" source="abilities.might.current">
-				<anchored to="mightframe" />
-				<stat>might</stat>
-			</number_charabilitypool>
-			<label_charabilitypool>
-				<anchored to="mightpool" />
-				<static textres="char_label_might" />
-			</label_charabilitypool>
-			<button_statroll name="mightstatroll">
-				<anchored to="mightpool" />
-				<stat>might</stat>
-			</button_statroll>
+				<icons>char_class</icons>
+				<static textres="char_label_statement" />
+			</label_charframetop>
+			<button_charclasslevel name="button_statement">
+				<anchored to="statementtitle" position="insidetopright" offset="-5,0" />
+			</button_charclasslevel>
+			<stringc_charstatement name="statement">
+				<anchored to="statementtitle" />
+			</stringc_charstatement>
 
-			<button_defenseroll name="mightdefroll">
-				<anchored to="mightpool" />
-				<stat>might</stat>
-				<tooltip textres="char_tooltip_mightdef" />
-			</button_defenseroll>
-			<label_defenseroll name="mightdeflabel">
-				<anchored to="mightdefroll" />
-			</label_defenseroll>
-			<button_defensetraining name="mightdefskill" source="abilities.might.def.training">
-				<anchored to="mightdeflabel" />
-			</button_defensetraining>
-			<number_defenseasset name="mightdefasset" source="abilities.might.def.asset">
-				<anchored to="mightdefskill" />
-			</number_defenseasset>
-			<number_defensemod name="mightdefmod" source="abilities.might.def.misc">
-				<anchored to="mightdefasset" />
-			</number_defensemod>
-			
-			<frame_char name="speedframe">
-				<anchored position="insidetopleft" offset="0,180" width="150" height="130" />
-			</frame_char>
-			<number_charabilitymax name="speedmax" source="abilities.speed.max">
-				<anchored to="speedframe" />
-				<target>speedpool</target>
-			</number_charabilitymax>
-			<label_fieldtop>
-				<anchored to="speedmax" />
-				<static textres="char_label_statmax" />
-			</label_fieldtop>
-			<number_charedge name="speededge" source="abilities.speed.edge">
-				<anchored to="speedmax" />
-			</number_charedge>
-			<label_fieldtop>
-				<anchored to="speededge" />
-				<static textres="char_label_statedge" />
-			</label_fieldtop>
-			<number_charabilitypool name="speedpool" source="abilities.speed.current">
-				<anchored to="speedframe" />
-				<stat>speed</stat>
-			</number_charabilitypool>
-			<label_charabilitypool>
-				<anchored to="speedpool" />
-				<static textres="char_label_speed" />
-			</label_charabilitypool>
-			<button_statroll name="speedstatroll">
-				<anchored to="speedpool" />
-				<stat>speed</stat>
-			</button_statroll>
-			
-			<genericcontrol name="speedarmor_notice">
-				<anchored to="speedpool" position="righthigh" offset="-3,-5" width="10" height="10" />
-				<frame name="tempmodmini" offset="3,2,4,5" />
-				<icon>char_encumbrance</icon>
-				<invisible />
-			</genericcontrol>
-			<hn name="armorspeedcost" source="Armor.total">
-				<script>
-					function onInit()
-						onValueChanged();
-					end
-					
-					function onValueChanged()
-						window.speedarmor_notice.setVisible(getValue() &gt; 0);
-					end
-				</script>
+			<!-- This stuff is here so that its initialized with everything else -->
+			<hn name="tier" source="advancement.tier">
+				<default>1</default>
 			</hn>
 
-			<button_defenseroll name="speeddefroll">
-				<anchored to="speedpool" />
+			<!-- STATS -->
+			<sub_char_statpool name="sub_speed">
+				<anchored>
+					<top parent="statementtitle" anchor="bottom" relation="relative" offset="25" />
+					<left anchor="center" offset="-80" />
+				</anchored>
 				<stat>speed</stat>
-				<tooltip textres="char_tooltip_speeddef" />
-			</button_defenseroll>
-			<label_defenseroll name="speeddeflabel">
-				<anchored to="speeddefroll" />
-			</label_defenseroll>
-			<button_defensetraining name="speeddefskill" source="abilities.speed.def.training">
-				<anchored to="speeddeflabel" />
-			</button_defensetraining>
-			<number_defenseasset name="speeddefasset" source="abilities.speed.def.asset">
-				<anchored to="speeddefskill" />
-			</number_defenseasset>
-			<number_defensemod name="speeddefmod" source="abilities.speed.def.misc">
-				<anchored to="speeddefasset" />
-			</number_defensemod>
-			
-			<frame_char name="intellectframe">
-				<anchored position="insidetopleft" offset="0,310" width="150" height="130" />
-			</frame_char>
-			<number_charabilitymax name="intellectmax" source="abilities.intellect.max">
-				<anchored to="intellectframe" />
-				<target>intellectpool</target>
-			</number_charabilitymax>
-			<label_fieldtop>
-				<anchored to="intellectmax" />
-				<static textres="char_label_statmax" />
-			</label_fieldtop>
-			<number_charedge name="intellectedge" source="abilities.intellect.edge">
-				<anchored to="intellectmax" />
-			</number_charedge>
-			<label_fieldtop>
-				<anchored to="intellectedge" />
-				<static textres="char_label_statedge" />
-			</label_fieldtop>
-			<number_charabilitypool name="intellectpool" source="abilities.intellect.current">
-				<anchored to="intellectframe" />
+			</sub_char_statpool>
+			<sub_char_statpool name="sub_might">
+				<anchored to="sub_speed">
+					<top />
+					<right anchor="left" offset="00" />
+				</anchored>
+				<stat>might</stat>
+			</sub_char_statpool>
+			<sub_char_statpool name="sub_intellect">
+				<anchored to="sub_speed">
+					<top />
+					<left anchor="right" offset="0" />
+				</anchored>
 				<stat>intellect</stat>
-			</number_charabilitypool>
-			<label_charabilitypool>
-				<anchored to="intellectpool" />
-				<static textres="char_label_intellect" />
-			</label_charabilitypool>
-			<button_statroll name="intellectstatroll">
-				<anchored to="intellectpool" />
-				<stat>intellect</stat>
-			</button_statroll>
-			
-			<button_defenseroll name="intellectdefroll">
-				<anchored to="intellectpool" />
-				<stat>intellect</stat>
-				<tooltip textres="char_tooltip_intellectdef" />
-			</button_defenseroll>
-			<label_defenseroll name="intellectdeflabel">
-				<anchored to="intellectdefroll" />
-			</label_defenseroll>
-			<button_defensetraining name="intellectdefskill" source="abilities.intellect.def.training">
-				<anchored to="intellectdeflabel" />
-			</button_defensetraining>
-			<number_defenseasset name="intellectdefasset" source="abilities.intellect.def.asset">
-				<anchored to="intellectdefskill" />
-			</number_defenseasset>
-			<number_defensemod name="intellectdefmod" source="abilities.intellect.def.misc">
-				<anchored to="intellectdefasset" />
-			</number_defensemod>
+			</sub_char_statpool>
 
-			<!-- ARMOR -->
-			<frame_char name="subwindowframe">
-				<anchored position="insidetopleft" offset="150,240" width="330">
-					<bottom offset="-80" />
+			<!-- COMBAT SECTION -->
+			<subwindow name="sub_combat">
+				<anchored>
+					<top parent="statementtitle" anchor="bottom" offset="15" relation="current" />
+					<left />
+					<right anchor="center"/>
+					<bottom offset="-15" />
 				</anchored>
-			</frame_char>
-			<sub_tab_maincharsheet name="charsheet_armor">
-				<class>charsheet_armor</class>
+				<class>charsheet_combat</class>
 				<activate />
-			</sub_tab_maincharsheet>
-			<sub_tab_maincharsheet name="charsheet_pools">
-				<class>charsheet_pools</class>
-			</sub_tab_maincharsheet>
-			<buttongroup_tabs_h name="main_tabs">
-				<anchored to="subwindowframe" width="329" height="18">
-					<top offset="-10" />
-					<left offset="10" />
-				</anchored>
-				<tab>
-					<tabres>char_tab_armor</tabres>
-					<subwindow>charsheet_armor</subwindow>
-					<activate />
-				</tab>
-				<tab>
-					<tabres>char_tab_pools</tabres>
-					<subwindow>charsheet_pools</subwindow>
-				</tab>
-			</buttongroup_tabs_h>
-			
-			<!-- DAMAGE TRACK -->
-			<frame_char name="damageframe">
-				<anchored position="insidebottomleft" width="225" height="80" />
-			</frame_char>
-			<label_frametop>
-				<anchored to="damageframe" />
-				<static textres="char_label_status" />
-			</label_frametop>
-			<genericcontrol name="damagetrack">
-				<anchored to="damageframe" position="insidetopleft" offset="20,10" />
-				<stateicons>
-					<on>button_bigcheckon</on>
-					<off>button_bigcheckoff</off>
-				</stateicons>
-				<script file="campaign/scripts/counter_wounds.lua" />
-			</genericcontrol>
-			<label name="damagestatus">
-				<anchored to="damagetrack" position="righthigh" offset="10,25" width="75" />
-				<frame name="fieldlight" offset="7,5,7,5" />
-				<static textres="status_hale" />
-				<center />
-			</label>
+			</subwindow>
 
 			<!-- RECOVERIES -->
-			<frame_char name="recoveryframe">
-				<bounds>225,-80,254,75</bounds>
-			</frame_char>
-			<label_frametop>
-				<anchored to="recoveryframe" />
-				<static textres="char_label_recovery" />
-			</label_frametop>
-			<genericcontrol name="recoverytrack">
-				<anchored to="recoveryframe" position="insidetopleft" offset="20,10" />
-				<stateicons>
-					<on>button_bigcheckon</on>
-					<off>button_bigcheckoff</off>
-				</stateicons>
-				<script file="campaign/scripts/counter_recovery.lua" />
-			</genericcontrol>
-			<label name="recoverystatus">
-				<anchored to="recoverytrack" position="righthigh" offset="10,25" width="70" />
-				<frame name="fieldlight" offset="7,5,7,5" />
-				<static textres="char_label_recovery1action" />
-				<center />
-			</label>
-			<button_roll name="recoveryroll">
-				<anchored to="recoverystatus" position="aboveleft" offset="5,5" />
-				<script>
-					function action(draginfo)
-						local rActor = ActorManager.resolveActor(window.getDatabaseNode());
-						ActionRecovery.performRoll(draginfo, rActor, {});
-					end
+			<subwindow name="sub_recoveries">
+				<anchored>
+					<top parent="statementtitle" anchor="bottom" offset="15" relation="relative" />
+					<left anchor="center" offset="0" />
+					<right offset="-5" />
+				</anchored>
+				<class>charsheet_recoveries</class>
+				<activate />
+			</subwindow>
 
-					function onButtonPress(x, y)
-						action();
-						return true;
-					end
+			<!-- DAMAGE TRACK -->
+			<subwindow name="sub_damagetrack">
+				<anchored>
+					<top parent="statementtitle" anchor="bottom" offset="15" relation="relative" />
+					<left anchor="center" offset="0" />
+					<right offset="-5" />
+				</anchored>
+				<class>charsheet_damagetrack</class>
+				<activate />
+			</subwindow>
 
-					function onDragStart(button, x, y, draginfo)
-						action(draginfo);
-						return true;
-					end
-				</script>
-			</button_roll>
-			<label name="recoveryrollplus">
-				<anchored to="recoveryroll" position="righthigh" offset="5,0" />
-				<static>+</static>
-			</label>
-			<basicnumber name="recoveryrollmod">
-				<anchored to="recoveryrollplus" position="righthigh" offset="7,0" width="20" height="20" />
-			</basicnumber>
+			<!-- ADVANCEMENTS -->
+			<subwindow name="sub_advancements">
+				<anchored>
+					<top parent="statementtitle" anchor="bottom" offset="15" relation="relative" />
+					<left anchor="center" offset="0" />
+					<right offset="-5" />
+				</anchored>
+				<class>charsheet_advancements</class>
+				<activate />
+			</subwindow>
+
 		</sheetdata>
 	</windowclass>
 
-	<windowclass name="charsheet_armor">
+	<!-- STAT POOLS -->
+	<windowclass name="charsheet_statpool">
+		<margins control="0,0,0,10" />
+		<script file="campaign/scripts/char_sub_statpool.lua" />
 		<sheetdata>
-			<label name="armor_label">
-				<anchored height="20" width="40">
-					<left offset="30"/>
-					<top offset="15" />
-				</anchored>	
+			<hn name="maxbase">
+				<default>10</default>
+			</hn>
+			<hnl name="max">
+				<source><name>maxbase</name><op>+</op></source>
+				<source><name>maxmod</name><op>+</op></source>
+			</hnl>
+			<hn name="deftraining" source="def.training">
+				<default>1</default>
+			</hn>
+			<hn name="defassets" source="def.asset">
+				<default>0</default>
+			</hn>
+			<hn name="defmod" source="def.misc">
+				<default>0</default>
+			</hn>
+
+			<title_stat name="title" />
+			<button_statdetails name="button_details">
+				<anchored to="title" />
+			</button_statdetails>
+			<number_charabilitypool name="current">
+				<anchored to="title" />
+			</number_charabilitypool>
+			<label_fieldtop>
+				<anchored to="current" />
+				<static textres="char_label_stat_current" />
+			</label_fieldtop>
+			<number_charedge name="edge" source="edge">
+				<anchored to="current" />
+			</number_charedge>
+			<label_fieldtop>
+				<anchored to="edge" />
+				<static textres="char_label_statedge" />
+			</label_fieldtop>
+			<button_statpool_defenseroll name="button_defense">
+				<anchored>
+					<bottom parent="current" offset="0" />
+					<left parent="edge" anchor="center" offset="-12" />
+				</anchored>
+				<tooltip textres="char_tooltip_statdef" />
+			</button_statpool_defenseroll>
+		</sheetdata>
+	</windowclass>
+	<windowclass name="charsheet_statpool_editor" copy="charsheethelper_base">
+		<sizelimits>
+			<minimum width="350" height="200" />
+		</sizelimits>
+		<sheetdata>
+			<!-- Exclusively here so the title can display nicely -->
+			<hsc name="stat">
+				<script>
+					function onInit()
+						setValue(DB.getName(window.getDatabaseNode()))
+					end
+				</script>
+			</hsc>
+
+			<windowtitlebar_charsheethelper name="title">
+				<prefix>char_title_statpool_editor</prefix>
+				<script>
+					function onInit()
+						super.onInit()
+						local sStat = DB.getName(window.getDatabaseNode())
+						local sTitle = Interface.getString("char_title_statpool_editor") .. " - " .. sStat
+						self.setValue(sTitle)
+					end
+				</script>
+			</windowtitlebar_charsheethelper>
+
+			<area_content_framed_groupbox name="area_content" />
+
+			<!-- Current stat pool -->
+			<label name="label_current">
+				<anchored to="area_content" position="insidetopleft" offset="0,10" width="70" />
+				<static textres="char_label_stat_current" />
+			</label>
+			<basicnumber name="current">
+				<anchored to="label_current" position="righthigh" offset="5,0" width="45" height="20" />
+				<tooltip textres="char_tooltip_stat_current"/>
+				<min>0</min>
+			</basicnumber>
+			
+			<!-- Stat pool max -->
+			<label name="label_max">
+				<anchored to="area_content" position="insidetopleft" offset="0,50" width="70" />
+				<static textres="char_label_stat_maximum" />
+			</label>
+			<basicnumber name="maxbase">
+				<anchored to="label_max" position="righthigh" offset="5,0" width="45" height="20" />
+				<tooltip textres="char_tooltip_stat_maxbase"/>
+				<min>0</min>
+			</basicnumber>
+			<label_fieldtop name="label_maxbase">
+				<anchored to="maxbase" />
+				<static textres="char_label_stat_maxbase" />
+			</label_fieldtop>
+			<label name="label_maxplus">
+				<anchored to="maxbase" position="righthigh" offset="5,0" width="10" />
+				<static>+</static>
+				<center />
+			</label>
+			<basicnumber name="maxmod">
+				<anchored to="label_maxplus" position="right" offset="5,0" width="45" />
+				<tooltip textres="char_tooltip_stat_maxmod"/>
+			</basicnumber>
+			<label_fieldtop name="label_maxmod">
+				<anchored to="maxmod" />
+				<static textres="char_label_stat_maxmod" />
+			</label_fieldtop>
+
+			<!-- Stat defense -->
+			<label name="label_defense">
+				<anchored to="area_content" position="insidetopleft" offset="0,90" width="70" />
+				<static textres="char_label_stat_defense" />
+			</label>
+			<button_training_base name="defense_training" source="def.training">
+				<anchored to="label_defense" position="righthigh" offset="18,0" />
+			</button_training_base>
+			<label_fieldtop name="label_deftraining">
+				<anchored to="defense_training">
+					<left offset="-20" />
+					<right offset="20" />
+				</anchored>
+				<static textres="char_label_statdef_training" />
+			</label_fieldtop>
+			<basicnumber name="defense_assets" source="def.asset">
+				<anchored to="defense_training" position="righthigh" offset="25,0" width="45" height="20" />
+				<tooltip textres="char_tooltip_statdef_assets"/>
+				<min>0</min>
+				<max>2</max>
+			</basicnumber>
+			<label_fieldtop name="label_defassets">
+				<anchored to="defense_assets" />
+				<static textres="char_label_statdef_assets" />
+			</label_fieldtop>
+			<basicnumber name="defense_mod" source="def.misc">
+				<anchored to="defense_assets" position="righthigh" offset="15,0" width="45" height="20" />
+				<tooltip textres="char_tooltip_statdef_mod"/>
+			</basicnumber>
+			<label_fieldtop name="label_defmod">
+				<anchored to="defense_mod" />
+				<static textres="char_label_statdef_mod" />
+			</label_fieldtop>
+		</sheetdata>
+	</windowclass>
+
+	<!-- EFFORT, ARMOR, INITIATIVE -->
+	<windowclass name="charsheet_combat">
+		<margins control="0,0,0,10" />
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+
+			<label_charframetop name="combattitle">
+				<anchored height="20">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="5" />
+					<left offset="15" />
+					<right offset="-10" />
+				</anchored>
+				<icons>char_init</icons>
+			</label_charframetop>
+			<button_charcombatcalc name="button_charcombatcalc">
+				<anchored to="combattitle" />
+			</button_charcombatcalc>
+
+			<number_charinit name="initiative" source="initiative.total">
+				<anchored to="columnanchor" width="40" height="30">
+					<top anchor="bottom" relation="relative" offset="10" />
+					<left parent="combattitle" anchor="center" offset="-20" />
+				</anchored>
+			</number_charinit>
+			<button_inittraining name="armorprof" source="initiative.training">
+				<anchored to="initiative" />
+			</button_inittraining>
+			<label_charfieldtop>
+				<anchored to="initiative" offset="0,10" />
+				<static textres="char_label_initiative" />
+			</label_charfieldtop>
+
+			<hn name="superarmor" source="defenses.armor.superarmor" />
+			<number_chartotalarmor name="armor" source="defenses.armor.total">
+				<anchored width="30" height="40">
+					<top parent="combattitle" anchor="bottom" offset="10" />
+					<right parent="initiative" anchor="left" offset="-20" />
+				</anchored>
+				<frame name="acicon" offset="2,0,2,4" />
+			</number_chartotalarmor>
+			<label_charfieldtop_expanded>
+				<anchored to="armor" />
 				<static textres="char_label_armor" />
-			</label>
-			<hn name="armorbase" source="Armor.base" />
-			<hn name="armormod" source="Armor.mod" />
-			<number_linked name="armortotal" source="Armor.total">
-				<script file="common/scripts/number_migrate_value.lua" />
-				<migrate>armortotal</migrate>
-				<anchored to="armor_label" position="righthigh" offset="5,0" height="20" width="20" />
-				<source><name>Armor.base</name><op>+</op></source>
-				<source><name>Armor.mod</name><op>+</op></source>
-				<nodrag />
-			</number_linked>
-			<label name="armorspeedcost_label">
-				<anchored to="armortotal" position="righthigh" offset="20,0" height="20" width="100" />
-				<static textres="char_label_armorspeedcost" />
-			</label>
-			<hn name="armorspeedpenaltybase" source="ArmorSpeedPenalty.base" />
-			<hn name="armorspeedpenaltytotal" source="ArmorSpeedPenalty.mod" />
-			<number_linked name="armorspeedcosttotal" source="ArmorSpeedPenalty.total">
-				<script file="common/scripts/number_migrate_value.lua" />
-				<migrate>armorspeedcosttotal</migrate>
-				<anchored to="armorspeedcost_label" position="righthigh" offset="5,0" height="20" width="20" />
-				<tooltip textres="char_tooltip_armorspeedcost" />
-				<source><name>ArmorSpeedPenalty.base</name><op>+</op></source>
-				<source><name>ArmorSpeedPenalty.mod</name><op>+</op></source>
-				<nodrag />
-			</number_linked>
+			</label_charfieldtop_expanded>
 
-			<button_details name="button_armorcalc">
-				<anchored>
-					<top offset="10" />
+			<hnl name="effortpenalty_total" source="effort.armorpenalty.total">
+				<source><name>effort.armorpenalty.base</name><op>+</op></source>
+				<source><name>effort.armorpenalty.mod</name><op>+</op></source>
+			</hnl>
+			<hn name="effort_base" source="effort.base">
+				<default>1</default>
+			</hn>
+			<number_chareffort name="effort" source="effort.total">
+				<anchored to="initiative" position="righthigh" offset="20,0" width="40" height="30" />
+			</number_chareffort>
+			<label_charfieldtop_expanded>
+				<anchored to="effort" />
+				<static textres="char_label_effort" />
+			</label_charfieldtop_expanded>
+			<icon_armorpenalty>
+				<anchored to="effort" />
+			</icon_armorpenalty>
+
+			<label_charframetop name="specialdefensestitle">
+				<anchored height="20">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="25" />
+					<left offset="15" />
 					<right offset="-10" />
 				</anchored>
-				<tooltip textres="char_tooltip_armor" />
-				<script>
-					function onButtonPress()
-						Interface.openWindow("charsheet_armorcalc", window.getDatabaseNode());
-					end
-				</script>
-			</button_details>
-
-			<label_frametop name="header_special_defenses">
-				<anchored>
-					<top offset="40" />
-				</anchored>
-				<static textres="char_header_special_defenses" />
-			</label_frametop>
-
-			<list_damagemods name="resistances">
-				<script>
-					function update()
-						local bEditMode = (window.resistances_iedit.getValue() == 1);
-						if window.idelete_header then
-							window.idelete_header.setVisible(bEditMode);
-						end
-						for _,w in ipairs(getWindows()) do
-							w.idelete.setVisible(bEditMode);
-						end
-					end
-				</script>
-				<anchored>
-					<left offset="10" />
-					<top parent="header_special_defenses" anchor="bottom" offset="5" />
-					<right offset="-10" />
-					<bottom offset="-10" />
-				</anchored>
-				<noscroll merge="delete" />
-			</list_damagemods>
-
+				<icons>char_stats</icons>
+				<static textres="char_title_special_defenses" />
+			</label_charframetop>
+			<list_char_resistances name="resistances" />
 			<scrollbar>
 				<anchored to="resistances" />
 				<target>resistances</target>
 			</scrollbar>
-
 			<button_iedit name="resistances_iedit">
-				<anchored to="header_special_defenses">
+				<anchored to="specialdefensestitle">
 					<top />
-					<right anchor="right" offset="-15" />
+					<right anchor="right" />
 				</anchored>
 				<target>resistances</target>
 			</button_iedit>
@@ -561,220 +342,14 @@
 			</button_iadd>
 		</sheetdata>
 	</windowclass>
-
-	<windowclass name="charsheet_pools">
-		<sheetdata>
-			<label_frametop name="header_custom_pools">
-				<anchored>
-					<top offset="15" />
-				</anchored>
-				<static textres="char_header_custom_pools" />
-			</label_frametop>
-
-			<list_customstatpools name="custom_pools">
-				<script>
-					function update()
-						local bEditMode = (window.custom_pools_iedit.getValue() == 1);
-						if window.idelete_header then
-							window.idelete_header.setVisible(bEditMode);
-						end
-						for _,w in ipairs(getWindows()) do
-							w.idelete.setVisible(bEditMode);
-						end
-					end
-				</script>
-				<anchored>
-					<left offset="10" />
-					<top parent="header_custom_pools" anchor="bottom" offset="5" />
-					<right offset="-10" />
-					<bottom offset="-10" />
-				</anchored>
-				<noscroll merge="delete" />
-			</list_customstatpools>
-
-			<scrollbar>
-				<anchored to="custom_pools" />
-				<target>custom_pools</target>
-			</scrollbar>
-
-			<button_iedit name="custom_pools_iedit">
-				<anchored to="header_custom_pools">
-					<top />
-					<right anchor="right" offset="-15" />
-				</anchored>
-				<target>custom_pools</target>
-			</button_iedit>
-			<button_iadd name="custom_pools_iadd">
-				<anchored to="custom_pools_iedit" position="lefthigh" offset="5,0" />
-				<target>custom_pools</target>
-			</button_iadd>
-		</sheetdata>
-	</windowclass>
-
-	<windowclass name="custom_stat_pool">
-		<margins control="0,10,0,7" />
-		<sheetdata>
-			<genericcontrol name="rightanchor">
-				<anchored position="insidetopright" offset="0,2" height="0" width="0" />
-				<invisible />
-			</genericcontrol>
-			<button_idelete name="idelete">
-				<anchored to="rightanchor">
-					<top />
-					<right anchor="left" relation="relative" offset="-5" />
-				</anchored>
-			</button_idelete>
-
-			<button_details name="activatedetail">
-				<anchored to="rightanchor">
-					<top />
-					<right anchor="left" relation="relative" offset="-5" />
-				</anchored>
-				<script>
-					function onButtonPress()
-						Interface.openWindow("charsheet_custompool_editor", window.getDatabaseNode());
-					end
-				</script>
-			</button_details>
-
-			<button_custom_stat_pool_statroll name="statroll">
-				
-			</button_custom_stat_pool_statroll>
-
-			<number_custom_stat_pool name="edge">
-				<min>0</min>
-				<max>6</max>
-			</number_custom_stat_pool>
-			<label_fieldtop name="label_edge">
-				<anchored to="edge" />
-				<static textres="char_label_custom_pool_edge" />
-			</label_fieldtop>
-
-			<number_custom_stat_pool name="max">
-				<script>
-					function onInit()
-						onValueChanged()
-					end
-					function onValueChanged()
-						window.current.updateMax(getValue())
-					end
-				</script>
-				<min>0</min>
-				<default>10</default>
-			</number_custom_stat_pool>
-			<label_fieldtop name="label_max">
-				<anchored to="max" />
-				<static textres="char_label_custom_pool_max" />
-			</label_fieldtop>
-
-			<number_custom_stat_pool name="current">
-				<script>
-					function updateMax(nMax)
-						setMaxValue(nMax)
-						if getValue() &gt; nMax then
-							setValue(nMax)
-						end
-					end
-				</script>
-				<anchored width="40" />
-				<min>0</min>
-				<default>10</default>
-			</number_custom_stat_pool>
-			<label_fieldtop name="label_current">
-				<anchored to="current" />
-				<static textres="char_label_custom_pool_current" />
-			</label_fieldtop>
-
-			<string_labeled name="name">
-				<anchored height="20" width="30">
-					<top />
-					<left anchor="left" offset="10" />
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-10" />
-				</anchored>
-				<labelres>char_label_custom_pool_name</labelres>
-			</string_labeled>
-		</sheetdata>
-	</windowclass>
-
-	<windowclass name="charsheet_custompool_editor" copy="charsheethelper_base">
+	<windowclass name="charsheet_combat_editor" copy="charsheethelper_base">
 		<sizelimits>
-			<minimum width="350" height="325" />
+			<minimum width="350" height="300" />
 		</sizelimits>
 		<sheetdata>
 			<windowtitlebar_charsheethelper name="title">
-				<prefix>char_custompool_title</prefix>
-			</windowtitlebar_charsheethelper>
-			<area_content_framed_groupbox name="area_content" />
-
-			<sub_content_framed_groupbox name="main">
-				<class>charsheet_custompool_editor_main</class>
-			</sub_content_framed_groupbox>
-			<scrollbar_content_main />
-		</sheetdata>
-	</windowclass>
-
-	<windowclass name="charsheet_custompool_editor_main">
-		<sheetdata>
-			<anchor_column name="columnanchor" />
-
-			<header_column name="header_properties">
-				<static textres="char_header_custom_pool" />
-				<center />
-			</header_column>
-			<label_column name="label_name">
-				<static textres="char_label_custom_pool_name_short"/>
-			</label_column>
-			<string_column name="name" />
-			<label_column name="label_current">
-				<static textres="char_label_custom_pool_current"/>
-			</label_column>
-			<number_column name="current">
-				<min>0</min>
-			</number_column>
-			<label_column name="label_max">
-				<static textres="char_label_custom_pool_maximum"/>
-			</label_column>
-			<number_column name="max">
-				<min>0</min>
-			</number_column>
-			<label_column name="label_edge">
-				<static textres="char_label_custom_pool_edge"/>
-			</label_column>
-			<number_column name="edge">
-				<min>0</min>
-				<max>6</max>
-			</number_column>
-
-			<header_column name="header_defense">
-				<static textres="char_header_custom_defense" />
-				<center />
-			</header_column>
-			<label_column name="label_training">
-				<static textres="char_label_custom_pool_training"/>
-			</label_column>
-			<column_training name="training" />
-			<label_column name="label_assets">
-				<static textres="char_label_custom_pool_assets"/>
-			</label_column>
-			<number_column name="assets">
-				<max>2</max>
-				<min>0</min>
-			</number_column>
-			<label_column name="label_edge">
-				<static textres="char_label_custom_pool_mod"/>
-			</label_column>
-			<number_column name="mod" />
-
-		</sheetdata>
-	</windowclass>
-
-	<windowclass name="charsheet_armorcalc" copy="charsheethelper_base">
-		<sizelimits>
-			<minimum width="350" height="140" />
-		</sizelimits>
-		<sheetdata>
-			<windowtitlebar_charsheethelper name="title">
-				<prefix>char_armorcalc_title</prefix>
+				<prefix>char_title_combatcalc_editor</prefix>
+				<field>name</field>
 			</windowtitlebar_charsheethelper>
 
 			<area_content_framed_groupbox name="area_content" />
@@ -784,11 +359,10 @@
 				<anchored to="area_content" position="insidetopleft" offset="0,10" width="100" />
 				<static textres="char_label_armor" />
 			</label>
-			<basicnumber name="armorbase" source="Armor.base">
+			<basicnumber name="armorbase" source="defenses.armor.base">
 				<anchored to="label_armor" position="righthigh" offset="5,0" width="45" height="20" />
 				<tooltip textres="char_tooltip_armorbase"/>
-				<migrate>armorbase</migrate>
-				<script file="common/scripts/number_migrate_value.lua" />
+				<min>0</min>
 			</basicnumber>
 			<label_fieldtop name="label_armorbase">
 				<anchored to="armorbase" />
@@ -799,58 +373,418 @@
 				<static>+</static>
 				<center />
 			</label>
-			<basicnumber name="armor" source="Armor.mod">
+			<basicnumber name="armormod" source="defenses.armor.mod">
 				<anchored to="label_armorplus" position="right" offset="5,0" width="45" />
 				<tooltip textres="char_tooltip_armormod"/>
-				<migrate>armor</migrate>
-				<script file="common/scripts/number_migrate_value.lua" />
+				<min>0</min>
 			</basicnumber>
 			<label_fieldtop name="label_armormod">
-				<anchored to="armor" />
+				<anchored to="armormod" />
 				<static textres="char_label_armormod" />
 			</label_fieldtop>
-			<basicnumber name="superarmor" source="Armor.superarmor">
-				<anchored to="armor" position="right" offset="15,0" width="45" />
-				<tooltip textres="char_tooltip_superarmor"/>
-			</basicnumber>
-			<label_fieldtop name="label_superarmor">
-				<anchored to="superarmor">
-					<left offset="-10" />
-					<right offset="10" />
-				</anchored>
+
+			<!-- Super-Armor -->
+			<label name="label_superarmor">
+				<anchored to="area_content" position="insidetopleft" offset="0,40" width="100" />
 				<static textres="char_label_superarmor" />
-			</label_fieldtop>
+			</label>
+			<basicnumber name="superarmor" source="defenses.armor.superarmor">
+				<anchored to="label_superarmor" position="right" offset="5,0" width="45" />
+				<tooltip textres="char_tooltip_superarmor"/>
+				<min>0</min>
+			</basicnumber>
 			
 			<!-- Speed Effort Penalty -->
+			<hnl name="effortpenalty_total" source="effort.armorpenalty.total">
+				<source><name>effort.armorpenalty.base</name><op>+</op></source>
+				<source><name>effort.armorpenalty.mod</name><op>+</op></source>
+			</hnl>
 			<label name="label_armorspeedcost">
-				<anchored to="area_content" position="insidetopleft" offset="0,50" width="100" />
+				<anchored to="area_content" position="insidetopleft" offset="0,80" width="100" />
 				<static textres="char_label_armorspeedcost" />
 			</label>
-			<basicnumber name="armorspeedcostbase" source="ArmorSpeedPenalty.base">
+			<basicnumber name="armorspeedcostbase" source="effort.armorpenalty.base">
 				<anchored to="label_armorspeedcost" position="righthigh" offset="5,0" width="45" height="20" />
-				<tooltip textres="char_tooltip_armorspeedcostbase" />
-				<migrate>armorspeedcostbase</migrate>
-				<script file="common/scripts/number_migrate_value.lua" />
+				<tooltip textres="char_tooltip_armorpenaltybase" />
+				<min>0</min>
 			</basicnumber>
 			<label_fieldtop name="label_armorspeedcostbase">
 				<anchored to="armorspeedcostbase" />
-				<static textres="char_label_armorbase" />
+				<static textres="char_label_armorpenaltybase" />
 			</label_fieldtop>
 			<label name="label_armorspeedcostplus">
 				<anchored to="armorspeedcostbase" position="righthigh" offset="5,0" width="10" />
 				<static>+</static>
 				<center />
 			</label>
-			<basicnumber name="armorspeedcost" source="ArmorSpeedPenalty.mod">
+			<basicnumber name="armorspeedcost" source="effort.armorpenalty.mod">
 				<anchored to="label_armorspeedcostplus" position="righthigh" offset="5,0" width="45" height="20" />
-				<tooltip textres="char_tooltip_armorspeedcostmod" />
-				<migrate>armorspeedcost</migrate>
-				<script file="common/scripts/number_migrate_value.lua" />
+				<tooltip textres="char_tooltip_armorpenaltymod" />
 			</basicnumber>
 			<label_fieldtop name="label_armorspeedcostmod">
 				<anchored to="armorspeedcost" />
-				<static textres="char_label_armormod" />
+				<static textres="char_label_armorpenaltymod" />
 			</label_fieldtop>
+
+			<!-- Initiative -->
+			<label name="label_initiative">
+				<anchored to="area_content" position="insidetopleft" offset="0,130" width="100" />
+				<static textres="char_label_initiative_full" />
+			</label>
+			<button_training_base name="inittraining" source="initiative.training">
+				<anchored to="label_initiative" position="righthigh" offset="18,0" />
+			</button_training_base>
+			<label_fieldtop name="label_inittraining">
+				<anchored to="inittraining">
+					<left offset="-20" />
+					<right offset="20" />
+				</anchored>
+				<static textres="char_label_inittraining" />
+			</label_fieldtop>
+			<basicnumber name="initassets" source="initiative.assets">
+				<anchored to="inittraining" position="righthigh" offset="25,0" width="45" height="20" />
+				<tooltip textres="char_tooltip_initassets" />
+				<min>0</min>
+				<max>2</max>
+			</basicnumber>
+			<label_fieldtop name="label_initassets">
+				<anchored to="initassets" />
+				<static textres="char_label_initassets" />
+			</label_fieldtop>
+			<label name="label_initplus">
+				<anchored to="initassets" position="righthigh" offset="5,0" width="10" />
+				<static>+</static>
+				<center />
+			</label>
+			<basicnumber name="initmod" source="initiative.mod">
+				<anchored to="label_initplus" position="righthigh" offset="5,0" width="45" height="20" />
+				<tooltip textres="char_tooltip_initmods" />
+			</basicnumber>
+			<label_fieldtop name="label_initmod">
+				<anchored to="initmod" />
+				<static textres="char_label_initmods" />
+			</label_fieldtop>
+
+			<!-- EFFORT -->
+			<label name="label_effort">
+				<anchored to="area_content" position="insidetopleft" offset="0,180" width="100" />
+				<static textres="char_label_effort" />
+			</label>
+			<basicnumber name="effortbase" source="effort.base">
+				<anchored to="label_effort" position="righthigh" offset="5,0" width="45" height="20" />
+				<tooltip textres="char_tooltip_effortbase" />
+				<min>1</min>
+				<max>6</max>
+				<default>1</default>
+			</basicnumber>
+			<label_fieldtop name="label_effortbase">
+				<anchored to="effortbase" />
+				<static textres="char_label_effortbase" />
+			</label_fieldtop>
+			<label name="label_effortplus">
+				<anchored to="effortbase" position="righthigh" offset="5,0" width="10" />
+				<static>+</static>
+				<center />
+			</label>
+			<basicnumber name="effortmod" source="effort.mod">
+				<anchored to="label_effortplus" position="righthigh" offset="5,0" width="45" height="20" />
+				<tooltip textres="char_tooltip_effortmod" />
+			</basicnumber>
+			<label_fieldtop name="label_effortmod">
+				<anchored to="effortmod" />
+				<static textres="char_label_effortmod" />
+			</label_fieldtop>
+		</sheetdata>
+	</windowclass>
+
+	<!-- DAMAGE TRACK -->
+	<windowclass name="charsheet_damagetrack">
+		<margins control="0,0,0,10" />
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+
+			<label_charframetop name="title">
+				<anchored height="20">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="5" />
+					<left offset="15" />
+					<right offset="-10" />
+				</anchored>
+				<static textres="char_title_damagetrack" />
+				<icons>char_stats</icons>
+			</label_charframetop>
+			<!-- Removing until I actually have something to put in this editor -->
+			<!-- <button_damagetrackdetails name="button_details">
+				<anchored to="title" />
+			</button_damagetrackdetails> -->
+
+			<button_damagetrack name="damagetrack">
+				<anchored to="title" />
+			</button_damagetrack>
+			<label_damagetrackstatus name="damagestatus">
+				<anchored to="damagetrack" />
+			</label_damagetrackstatus>
+		</sheetdata>
+	</windowclass>
+
+	<!-- RECOVERIES -->
+	<windowclass name="charsheet_recoveries">
+		<margins control="0,0,0,10" />
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+
+			<label_charframetop name="title">
+				<anchored height="20">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="5" />
+					<left offset="15" />
+					<right offset="-10" />
+				</anchored>
+				<icons>char_stats</icons>
+			</label_charframetop>
+			<button_recoverydetails name="button_details">
+				<anchored to="title" />
+			</button_recoverydetails>
+
+			<button_recoveries name="recoverytrack">
+				<anchored to="title" />
+			</button_recoveries>
+			<label_charfieldtop>
+				<anchored to="recoverytrack" offset="0,10" />
+				<static textres="char_title_recoveries" />
+			</label_charfieldtop>
+			<label_recoverystatus name="recoverystatus">
+				<anchored to="recoverytrack" />
+			</label_recoverystatus>
+
+			<number_charrecovery name="recoverytotal" source="health.recovery.total">
+				<anchored to="recoverytrack" position="righthigh" offset="20,0" width="40" height="30" />
+			</number_charrecovery>
+			<label_charfieldtop>
+				<anchored to="recoverytotal" offset="0,10" />
+				<static textres="char_title_recoverytotal" />
+			</label_charfieldtop>
+		</sheetdata>
+	</windowclass>
+	<windowclass name="charsheet_recovery_editor" copy="charsheethelper_base">
+		<sizelimits>
+			<minimum width="350" height="120" />
+		</sizelimits>
+		<sheetdata>
+			<windowtitlebar_charsheethelper name="title">
+				<prefix>char_title_recovery_editor</prefix>
+				<field>name</field>
+			</windowtitlebar_charsheethelper>
+
+			<area_content_framed_groupbox name="area_content" />
+			
+			<!-- Recovery -->
+			<label name="label_recoverymod">
+				<anchored to="area_content" position="insidetopleft" offset="0,10" width="100" />
+				<static textres="char_label_recoverymod" />
+			</label>
+			<basicnumber name="recoverymod" source="health.recovery.mod">
+				<anchored to="label_recoverymod" position="righthigh" offset="5,0" width="45" height="20" />
+				<tooltip textres="char_tooltip_recoverymod"/>
+				<min>0</min>
+			</basicnumber>
+		</sheetdata>
+	</windowclass>
+
+	<!-- ADVANCEMENTS -->
+	<windowclass name="charsheet_advancements">
+		<margins control="0,0,0,10" />
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+
+			<label_charframetop name="title">
+				<anchored height="20">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="5" />
+					<left offset="15" />
+					<right offset="-15" />
+				</anchored>
+				<icons>char_stats</icons>
+			</label_charframetop>
+			<button_advancement name="button_advancement">
+				<anchored to="title" />
+			</button_advancement>
+
+			<basicnumber name="xp" source="advancement.xp">
+				<anchored to="columnanchor" width="40" height="30">
+					<top anchor="bottom" relation="relative" offset="10" />
+					<left parent="title" offset="20" />
+				</anchored>
+				<min>0</min>
+			</basicnumber>
+			<label_charfieldtop name="xp_label">
+				<anchored to="xp" offset="0,10" />
+				<static textres="char_label_xp" />
+			</label_charfieldtop>
+
+			<button_checkbox_advancement name="adv_stats" source="advancement.stats">
+				<anchored offset="50,0"/>
+				<script>
+					function onButtonPress()
+						super.processAdvancement(CharManager.takeAbilityAdvancement)
+					end
+				</script>
+			</button_checkbox_advancement>
+			<label_advancements>
+				<anchored to="adv_stats" />
+				<static textres="char_label_adv_stats" />
+			</label_advancements>
+			<button_checkbox_advancement name="adv_edge" source="advancement.edge">
+				<anchored offset="120,0" />
+				<script>
+					function onButtonPress()
+						super.processAdvancement(CharManager.takeEdgeAdvancement)
+					end
+				</script>
+			</button_checkbox_advancement>
+			<label_advancements name="edge_label">
+				<anchored to="adv_edge" />
+				<static textres="char_label_adv_edge" />
+			</label_advancements>
+			<button_checkbox_advancement name="adv_effort" source="advancement.effort">
+				<anchored offset="50,18"/>
+				<script>
+					function onButtonPress()
+						super.processAdvancement(CharManager.takeEffortAdvancement)
+					end
+				</script>
+			</button_checkbox_advancement>
+			<label_advancements name="effort_label">
+				<anchored to="adv_effort" />
+				<static textres="char_label_adv_effort" />
+			</label_advancements>
+			<button_checkbox_advancement name="adv_skill" source="advancement.skill">
+				<anchored offset="120,18"/>
+				<script>
+					function onButtonPress()
+						super.processAdvancement(CharManager.takeSkillAdvancement)
+					end
+				</script>
+			</button_checkbox_advancement>
+			<label_advancements>
+				<anchored to="adv_skill" />
+				<static textres="char_label_adv_skill" />
+			</label_advancements>
+
+			<header_advancements>
+				<static textres="char_label_advancements" />
+			</header_advancements>
+		</sheetdata>
+	</windowclass>
+
+	<!-- EDITOR: TYPE, DESCRIPTOR, FOCUS, FLAVOR, ANCESTRY -->
+	<windowclass name="charsheet_statement_editor">
+		<script>
+			function onDrop(x, y, draginfo)
+				if draginfo.isType("shortcut") then
+					local sClass, sRecord = draginfo.getShortcutData();
+
+					if StringManager.contains({"ability", "type", "descriptor", "focus", "flavor", "ancestry"}, sClass) then
+						CharManager.addInfoDB(getDatabaseNode(), sClass, sRecord);
+						return true;
+					end
+				end
+			end
+		</script>
+		<frame>charsheethelper</frame>
+		<sizelimits>
+			<minimum width="470" height="450" />
+			<dynamic />
+		</sizelimits>
+		<sheetdata>
+			<windowtitlebar_charsheethelper name="title">
+				<prefix>char_title_character_editor</prefix>
+				<field>name</field>
+			</windowtitlebar_charsheethelper>
+			<anchor_title_charsheethelper name="contentanchor" />
+
+			<label_charframetop name="tiertitle">
+				<anchored to="contentanchor" position="belowleft" offset="10,5" height="20" width="80" />
+				<static textres="char_label_tier" />
+				<icons>char_class</icons>
+			</label_charframetop>
+			<number_static name="level" source="advancement.tier">
+				<anchored to="tiertitle" height="30" width="40">
+					<top anchor="bottom" offset="10" />
+					<left anchor="center" offset="-20" />
+				</anchored>
+			</number_static>
+
+			<subwindow name="sub_advancements">
+				<anchored to="contentanchor" position="belowleft" offset="100,5">
+					<right offset="-10" />
+				</anchored>
+				<class>charsheet_advancements</class>
+				<activate />
+			</subwindow>
+
+			<sub_charhseet_statement_part name="sub_type">
+				<anchored>
+					<top offset="80" />
+				</anchored>
+				<path>type</path>
+				<recordtype>type</recordtype>
+				<header>char_label_type</header>
+			</sub_charhseet_statement_part>
+
+			<sub_charhseet_statement_part name="sub_descriptor">
+				<path>descriptor</path>
+				<recordtype>descriptor</recordtype>
+				<header>char_label_descriptor</header>
+				<option>DESCRIPTOR_COUNT</option>
+				<valuethreshold>1</valuethreshold>
+			</sub_charhseet_statement_part>
+
+			<sub_charhseet_statement_part name="sub_ancestry">
+				<path>ancestry</path>
+				<recordtype>ancestry</recordtype>
+				<header>char_label_ancestry</header>
+				<option>ANCESTRY_COUNT</option>
+				<valuethreshold>1</valuethreshold>
+			</sub_charhseet_statement_part>
+
+			<sub_charhseet_statement_part name="sub_focus">
+				<path>focus</path>
+				<recordtype>focus</recordtype>
+				<header>char_label_focus</header>
+				<option>FOCUS_COUNT</option>
+				<valuethreshold>1</valuethreshold>
+			</sub_charhseet_statement_part>
+
+			<sub_charhseet_statement_part name="sub_flavor">
+				<path>flavor</path>
+				<recordtype>flavor</recordtype>
+				<header>char_label_flavor</header>
+			</sub_charhseet_statement_part>
+
+			<resize_charsheethelper />
+			<close_charsheethelper />
+		</sheetdata>
+	</windowclass>
+
+	<!-- One specific part of the character statement editor -->
+	<windowclass name="charsheet_statement_part">
+		<script>
+			function onInit()
+				title.setValue(Interface.getString(parentcontrol.header[1]))
+			end
+			function onLinkUpdated()
+				local sClass, sRecord = link.getValue()
+				button_iadd.setVisible((sRecord or "") == "")
+			end
+			function openRecordList()
+				RecordManager.openRecordIndex(parentcontrol.recordtype[1])
+			end
+		</script>
+		<sheetdata>
+			<anchor_content_top />
+			<title_charstatement_editor name="title" />
+			<charstatement_rightanchor name="rightanchor" />
+			<charstatement_link name="link" />
+			<button_charstatement_iadd name="button_iadd" />
+			<stringu_charstatement_editor name="name" />
 		</sheetdata>
 	</windowclass>
 
@@ -891,9 +825,9 @@
 	<windowclass name="recovery_content">
 		<script file="campaign/scripts/recovery.lua" />
 		<sheetdata>
-			<hn name="might_max" source="abilities.might.max" />
-			<hn name="speed_max" source="abilities.speed.max" />
-			<hn name="intellect_max" source="abilities.intellect.max" />
+			<hn name="might_max" source="stats.might.max" />
+			<hn name="speed_max" source="stats.speed.max" />
+			<hn name="intellect_max" source="stats.intellect.max" />
 
 			<anchor_column name="columnanchor" />
 
@@ -922,7 +856,7 @@
 			<label_column name="label_might">
 				<static textres="might" />
 			</label_column>
-			<number_column name="might_current" source="abilities.might.current">
+			<number_column name="might_current" source="stats.might.current">
 				<readonly />
 			</number_column>
 			<basicnumberc name="might_new">
@@ -945,7 +879,7 @@
 			<label_column name="label_speed">
 				<static textres="speed" />
 			</label_column>
-			<number_column name="speed_current" source="abilities.speed.current">
+			<number_column name="speed_current" source="stats.speed.current">
 				<readonly />
 			</number_column>
 			<basicnumberc name="speed_new">
@@ -968,7 +902,7 @@
 			<label_column name="label_intellect">
 				<static textres="intellect" />
 			</label_column>
-			<number_column name="intellect_current" source="abilities.intellect.current">
+			<number_column name="intellect_current" source="stats.intellect.current">
 				<readonly />
 			</number_column>
 			<basicnumberc name="intellect_new">

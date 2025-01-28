@@ -164,7 +164,7 @@
 			<anchored width="60" />
 			<script file="common/scripts/cycler_stat_custom.lua" />
 			<parameters>
-				<labelsres>char_label_might|char_label_speed|char_label_intellect</labelsres>
+				<labelsres>might|speed|intellect</labelsres>
 				<values>might|speed|intellect</values>
 				<defaultlabel>-</defaultlabel>
 			</parameters>
