@@ -172,6 +172,7 @@
 					<top />
 					<right anchor="left" relation="relative" offset="-5" />
 				</anchored>
+				<editmode>sheet_iedit</editmode>
 			</button_idelete>
 
 			<button_details name="activatedetail">

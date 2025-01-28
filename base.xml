@@ -122,6 +122,7 @@
 	<script name="DamageTypeManager" file="scripts/manager_damage_types.lua" />
 	<script name="DifficultyManager" file="scripts/manager_difficulty.lua" />
 	<script name="IntrusionManager" file="scripts/manager_intrusion.lua" />
+	<script name="MigrationManager" file="scripts/manager_migration.lua" />
 	<script name="TokenManagerCypher" file="scripts/manager_token_cypher.lua" />
 	<script name="DeathMarkers" file="scripts/manager_deathmarkers.lua" />
 

@@ -31,6 +31,13 @@ function onFilter(w)
 		return true;
 	end
 
+	-- If an attack has no linked item, then always display it
+	local _, sRecord = DB.getValue(attacknode, "itemlink", "", "");
+	local itemnode = DB.findNode(sRecord);
+	if not itemnode then
+		return true;
+	end
+
 	-- If not in edit mode, then only display non-carried weapons if the display mode is set to preparation
 	local sDisplayMode = DB.getValue(window.getDatabaseNode(), "powermode", "");
 	if sDisplayMode ~= "preparation" and w.carried.getValue() == 0 then
