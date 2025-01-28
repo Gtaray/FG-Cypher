@@ -623,7 +623,7 @@
 				<anchored offset="50,0"/>
 				<script>
 					function onButtonPress()
-						super.processAdvancement(CharManager.takeAbilityAdvancement)
+						super.processAdvancement(CharAdvancementManager.takeAbilityAdvancement)
 					end
 				</script>
 			</button_checkbox_advancement>
@@ -635,7 +635,7 @@
 				<anchored offset="120,0" />
 				<script>
 					function onButtonPress()
-						super.processAdvancement(CharManager.takeEdgeAdvancement)
+						super.processAdvancement(CharAdvancementManager.takeEdgeAdvancement)
 					end
 				</script>
 			</button_checkbox_advancement>
@@ -647,7 +647,7 @@
 				<anchored offset="50,18"/>
 				<script>
 					function onButtonPress()
-						super.processAdvancement(CharManager.takeEffortAdvancement)
+						super.processAdvancement(CharAdvancementManager.takeEffortAdvancement)
 					end
 				</script>
 			</button_checkbox_advancement>
@@ -659,7 +659,7 @@
 				<anchored offset="120,18"/>
 				<script>
 					function onButtonPress()
-						super.processAdvancement(CharManager.takeSkillAdvancement)
+						super.processAdvancement(CharAdvancementManager.takeSkillAdvancement)
 					end
 				</script>
 			</button_checkbox_advancement>

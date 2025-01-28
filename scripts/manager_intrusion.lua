@@ -80,7 +80,7 @@ function sendGmIntrusionPrompt(rActor)
 			if OptionsManagerCypher.areHeroPointsEnabled() then
 				msgOOB[sKey .. "_xp"] = CharManager.getHeroPoints(charnode)
 			else
-				msgOOB[sKey .. "_xp"] = CharManager.getExperience(charnode);
+				msgOOB[sKey .. "_xp"] = CharAdvancementManager.getTotalExperienceGained(charnode);
 			end
 
 			i = i + 1;

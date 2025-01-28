@@ -486,7 +486,7 @@
 					local rData = {
 						nodeChar = window.getDatabaseNode()
 					}
-					CharManager.takeAdvancement(rData.nodeChar, "", rData)
+					CharAdvancementManager.takeAdvancement(rData.nodeChar, "", rData)
 				end
 			</script> -->
 			<tooltip textres="char_tooltip_advance_button" />
