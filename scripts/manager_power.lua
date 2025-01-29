@@ -491,7 +491,7 @@ function applyWeaponPropertiesToAttack(rAttack, nodeAbility)
 	local rWeapon = {};
 	local bUseEquipped = DB.getValue(nodeAbility, "useequipped", "") == "yes";
 	if bUseEquipped then
-		rWeapon = ActorManagerCypher.getEquippedWeapon(nodeActor)
+		rWeapon = CharInventoryManager.getEquippedWeapon(nodeActor)
 	end
 
 	if (rAttack.sAttackRange or "") == "" then
@@ -522,7 +522,7 @@ function applyWeaponPropertiesToDamage(rDamage, nodeAbility)
 	local rWeapon = {};
 	local bUseEquipped = DB.getValue(nodeAbility, "useequipped", "") == "yes";
 	if bUseEquipped then
-		rWeapon = ActorManagerCypher.getEquippedWeapon(nodeActor)
+		rWeapon = CharInventoryManager.getEquippedWeapon(nodeActor)
 	end
 
 	if (rDamage.sStatDamage or "") == "" then

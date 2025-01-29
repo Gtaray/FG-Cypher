@@ -75,7 +75,7 @@ function startArc()
 
 	-- If the prompt returns true, it means we the prompt wasn't shown and we can just add the arc
 	if PromptManager.promptCharacterArcStart(nodeArc) then
-		CharManager.buyNewCharacterArc(nodeChar, nodeArc);
+		CharArcManager.buyNewCharacterArc(nodeChar, nodeArc);
 	end
 end
 
@@ -88,7 +88,7 @@ function completeProgress()
 
 	-- If the prompt returns true, it means we the prompt wasn't shown and we can just add the arc
 	if PromptManager.promptCharacterArcProgress(nodeArc) then
-		CharManager.completeCharacterArcProgress(nodeChar, nodeArc);
+		CharArcManager.completeCharacterArcProgress(nodeChar, nodeArc);
 	end
 end
 
@@ -98,7 +98,7 @@ function completeClimax()
 
 	-- If the prompt returns true, it means we the prompt wasn't shown and we can just add the arc
 	if PromptManager.promptCharacterArcClimax(nodeArc) then
-		CharManager.completeCharacterArcClimax(nodeChar, nodeArc);
+		CharArcManager.completeCharacterArcClimax(nodeChar, nodeArc);
 	end
 end
 
@@ -108,6 +108,6 @@ function completeResolution()
 
 	-- If the prompt returns true, it means we the prompt wasn't shown and we can just add the arc
 	if PromptManager.promptCharacterArcResolution(nodeArc) then
-		CharManager.completeCharacterArcResolution(nodeChar, nodeArc);
+		CharArcManager.completeCharacterArcResolution(nodeChar, nodeArc);
 	end
 end

@@ -167,7 +167,7 @@ function addMaxAssetsToAction(rActor, rAction, aFilter)
 		return;
 	end
 
-	rAction.nMaxAssets = ActorManagerCypher.getMaxAssets(rActor, aFilter);
+	rAction.nMaxAssets = CharManager.getMaxAssets(rActor, aFilter);
 end
 
 -----------------------------------------------------------------------
@@ -280,7 +280,7 @@ end
 
 function processAssets(rSource, rTarget, aFilter, nAssets)
 	local nAssetEffect = EffectManagerCypher.getAssetEffectBonus(rSource, aFilter, rTarget)
-	local nMaxAssets = ActorManagerCypher.getMaxAssets(rSource, aFilter);
+	local nMaxAssets = CharManager.getMaxAssets(rSource, aFilter);
 
 	return math.min(nAssetEffect, nMaxAssets - nAssets), nMaxAssets;
 end
@@ -289,7 +289,7 @@ function processEffort(rSource, rTarget, aFilter, nEffort, nMaxEffort)
 	local nEffortEffect = EffectManagerCypher.getEffortEffectBonus(rSource, aFilter, rTarget)
 
 	if not nMaxEffort then
-		nMaxEffort = ActorManagerCypher.getMaxEffort(rSource, aFilter);
+		nMaxEffort = CharManager.getMaxEffort(rSource, aFilter);
 	end
 
 	return math.min(nEffortEffect, nMaxEffort - nEffort);

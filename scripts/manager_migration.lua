@@ -1,5 +1,18 @@
 function onInit()
+	if not Session.IsHost then
+		return;
+	end
+
+	DB.addHandler("charsheet", "onChildAdded", onCharsheetAdded);
 	self.migrateV2_to_V3();
+end
+
+function onClose()
+	DB.removeHandler("charsheet", "onChildAdded", onCharsheetAdded);
+end
+
+function onCharsheetAdded(nodeParent, charNode)
+	DB.setValue(charNode, "version", "number", 3);
 end
 
 -- V2 is not an official designation, as V3 is the first version that's 'officially' tracked

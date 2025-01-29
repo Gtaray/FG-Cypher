@@ -165,14 +165,14 @@
 			<script>
 				function onSourceUpdate()
 					local rActor = ActorManager.resolveActor(window.getDatabaseNode());
-					local sTraining, nAssets, nModifier = ActorManagerCypher.getInitiative(rActor);
+					local sTraining, nAssets, nModifier = CharStatManager.getInitiative(rActor);
 					setValue(RollManager.convertToFlatBonus(sTraining, nAssets, nModifier));
 				end
 				function action(draginfo)
 					local rActor = ActorManager.resolveActor(window.getDatabaseNode());
 					local rAction = {};
 					rAction.sStat = "speed";
-					rAction.sTraining, rAction.nAssets, rAction.nModifier = ActorManagerCypher.getInitiative(rActor);
+					rAction.sTraining, rAction.nAssets, rAction.nModifier = CharStatManager.getInitiative(rActor);
 					ActionInit.payCostAndRoll(draginfo, rActor, rAction);
 				end
 				function onDragStart(button, x, y, draginfo)
@@ -215,8 +215,8 @@
 				end
 				function update()
 					local node = window.getDatabaseNode();
-					local nCost = ActorManagerCypher.getArmorSpeedCost(node);
-					local bImpaired = ActorManagerCypher.isImpaired(node);
+					local nCost = CharArmorManager.getEffortPenalty(node);
+					local bImpaired = CharHealthManager.isImpaired(node);
 					setVisible(nCost > 0 or bImpaired);
 				end
 			</script>

@@ -167,8 +167,8 @@
 	<string name="char_title_combatcalc_editor">Combat Details</string>
 	<string name="char_label_armor">Armor</string>
 	<string name="char_tooltip_armor">Total armor against mundane, physical damage</string>
-	<string name="char_label_armorbase">Base</string>
-	<string name="char_tooltip_armorbase">Base Armor granted from armor</string>
+	<string name="char_label_armorbase">Equipped</string>
+	<string name="char_tooltip_armorbase">Base Armor granted from equipped items.</string>
 	<string name="char_label_armormod">Mod</string>
 	<string name="char_tooltip_armormod">Armor granted from abilities or other features</string>
 	<string name="char_label_superarmor">Pierce-Proof</string>

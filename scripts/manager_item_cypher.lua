@@ -2,27 +2,6 @@ function onInit()
 	ItemManager.registerCleanupTransferHandler(onItemTransfer);
 end
 
-----------------------------------------------------------------------
--- DATA MIGRATION
-----------------------------------------------------------------------
-function migrateArmorAndWeaponItemTypes(nodeItem)
-	local sType = ItemManagerCypher.getItemType(nodeItem);
-
-	if sType == "weapon" then
-		DB.setValue(nodeItem, "type", "string", "")
-		DB.setValue(nodeItem, "subtype", "string", "weapon")
-	end
-
-	if sType == "armor" then
-		DB.setValue(nodeItem, "type", "string", "")
-		DB.setValue(nodeItem, "subtype", "string", "armor")
-	end
-end
-
--------------------------------------------------------------------------
--- ACCESSORS
-----------------------------------------------------------------------
-
 function onItemTransfer(rSource, rTemp, rTarget)
 	-- Handle automatically rolling levels for cyphers
 	if rSource.sClass == "item" and (rTarget.sType == "treasureparcel" or rTarget.sType == "charsheet" or rTarget.sType == "partysheet") then
@@ -88,6 +67,34 @@ function onItemTransfer(rSource, rTemp, rTarget)
 	end
 end
 
+----------------------------------------------------------------------
+-- DATA MIGRATION
+----------------------------------------------------------------------
+function migrateArmorAndWeaponItemTypes(nodeItem)
+	local sType = ItemManagerCypher.getItemType(nodeItem);
+
+	if sType == "weapon" then
+		DB.setValue(nodeItem, "type", "string", "")
+		DB.setValue(nodeItem, "subtype", "string", "weapon")
+	end
+
+	if sType == "armor" then
+		DB.setValue(nodeItem, "type", "string", "")
+		DB.setValue(nodeItem, "subtype", "string", "armor")
+	end
+end
+
+-------------------------------------------------------------------------
+-- ACCESSORS
+----------------------------------------------------------------------
+function isCarried(itemnode)
+	return DB.getValue(itemnode, "carried", 0) >= 1;
+end
+
+function isEquipped(itemnode)
+	return DB.getValue(itemnode, "carried", 0) == 2;
+end
+
 function hasActions(itemnode)
 	return (DB.getChildCount(itemnode, "actions") or 0) > 0;
 end
@@ -118,6 +125,10 @@ end
 
 function isItemArmor(itemNode)
 	return ItemManagerCypher.getItemSubtype(itemNode) == "armor";
+end
+
+function isItemShield(itemNode)
+	return DB.getValue(itemNode, "armortype", "") == "shield"
 end
 
 function getArmorType(itemNode)

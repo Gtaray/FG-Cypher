@@ -86,39 +86,39 @@ end
 
 function applyRecovery(nodeChar, nMightNew, nSpeedNew, nIntellectNew, nRemainder)
     local rActor = ActorManager.resolveActor(nodeChar);
-	local nWoundTrackCurrent = ActorManagerCypher.getDamageTrack(rActor);
+	local nWoundTrackCurrent = CharHealthManager.getDamageTrack(rActor);
     local nWoundTrackAdjust = 0; -- This is tracked as a negative amount
     local rMessage = ChatManager.createBaseMessage(rActor, User.getUsername());
     rMessage.text = "[RECOVERY]";
 
-    local nMightCurrent = ActorManagerCypher.getStatPool(rActor, "might");
+    local nMightCurrent = CharStatManager.getStatPool(rActor, "might");
     if nMightCurrent < nMightNew then
         if nMightCurrent == 0 then
             nWoundTrackAdjust = nWoundTrackAdjust - 1;
         end
 
         rMessage.text = string.format("%s [APPLIED %s to MIGHT]", rMessage.text, tostring(nMightNew - nMightCurrent));
-		ActorManagerCypher.setStatPool(rActor, "might", nMightNew);
+		CharStatManager.setStatPool(rActor, "might", nMightNew);
     end
 
-    local nSpeedCurrent = ActorManagerCypher.getStatPool(rActor, "speed");
+    local nSpeedCurrent = CharStatManager.getStatPool(rActor, "speed");
     if nSpeedCurrent < nSpeedNew then
         if nSpeedCurrent == 0 then
             nWoundTrackAdjust = nWoundTrackAdjust - 1;
         end
 
 		rMessage.text = string.format("%s [APPLIED %s to SPEED]", rMessage.text, tostring(nSpeedNew - nSpeedCurrent));
-        ActorManagerCypher.setStatPool(rActor, "speed", nSpeedNew);
+        CharStatManager.setStatPool(rActor, "speed", nSpeedNew);
     end
 
-    local nIntellectCurrent = ActorManagerCypher.getStatPool(rActor, "intellect");
+    local nIntellectCurrent = CharStatManager.getStatPool(rActor, "intellect");
     if nIntellectCurrent < nIntellectNew then
         if nIntellectCurrent == 0 then
 			nWoundTrackAdjust = nWoundTrackAdjust - 1;
         end
 
 		rMessage.text = string.format("%s [APPLIED %s to INTELLECT]", rMessage.text, tostring(nIntellectNew - nIntellectCurrent));
-        ActorManagerCypher.setStatPool(rActor, "intellect", nIntellectNew);
+        CharStatManager.setStatPool(rActor, "intellect", nIntellectNew);
     end
 
     if nRemainder > 0 then

@@ -242,170 +242,87 @@ end
 -----------------------------------------------------------
 -- SETTERS / GETTERS
 -----------------------------------------------------------
-function getTier(rActor)
-	local nodeChar;
-	if type(rActor) == "databasenode" then
-		nodeChar = rActor;
-	else
-		nodeChar = ActorManager.getCreatureNode(rActor);
-	end
-	if not nodeChar or not ActorManager.isPC(rActor) then
-		return 1;
+function getTier(nodeChar)
+	if not nodeChar or not ActorManager.isPC(nodeChar) then
+		return 0;
 	end
 
 	return DB.getValue(nodeChar, "advancement.tier", 1);
 end
-function setTier(rActor, nTier)
-	local nodeChar;
-	if type(rActor) == "databasenode" then
-		nodeChar = rActor;
-	else
-		nodeChar = ActorManager.getCreatureNode(rActor);
-	end
-	if not nodeChar or not ActorManager.isPC(rActor) then
+function setTier(nodeChar, nTier)
+	if not nodeChar or not ActorManager.isPC(nodeChar) then
 		return;
 	end
-
 	DB.setValue(nodeChar, "advancement.tier", "number", nTier)
 end
-function modifyTier(rActor, nDelta)
-	local nodeChar;
-	if type(rActor) == "databasenode" then
-		nodeChar = rActor;
-	else
-		nodeChar = ActorManager.getCreatureNode(rActor);
-	end
-	if not nodeChar or not ActorManager.isPC(rActor) then
+function modifyTier(nodeChar, nDelta)
+	if not nodeChar or not ActorManager.isPC(nodeChar) then
 		return;
 	end
-
 	local nTier = CharAdvancementManager.getTier(nodeChar);
 	nTier = nTier + nDelta;
 	CharAdvancementManager.setTier(nodeChar, nTier);
 end
 
-function getExperience(rActor)
-	local nodeChar;
-	if type(rActor) == "databasenode" then
-		nodeChar = rActor;
-	else
-		nodeChar = ActorManager.getCreatureNode(rActor);
-	end
-	if not nodeChar or not ActorManager.isPC(rActor) then
+function getExperience(nodeChar)
+	if not nodeChar or not ActorManager.isPC(nodeChar) then
 		return;
 	end
-
 	return DB.getValue(nodeChar, "advancement.xp", 0);
 end
-function setExperience(rActor, nXP)
-	local nodeChar;
-	if type(rActor) == "databasenode" then
-		nodeChar = rActor;
-	else
-		nodeChar = ActorManager.getCreatureNode(rActor);
-	end
-	if not nodeChar or not ActorManager.isPC(rActor) then
+function setExperience(nodeChar, nXP)
+	if not nodeChar or not ActorManager.isPC(nodeChar) then
 		return;
 	end
-
 	DB.setValue(nodeChar, "advancement.xp", "number", nXP);
 end
-function modifyExperience(rActor, nDelta)
-	local nodeChar;
-	if type(rActor) == "databasenode" then
-		nodeChar = rActor;
-	else
-		nodeChar = ActorManager.getCreatureNode(rActor);
-	end
-	if not nodeChar or not ActorManager.isPC(rActor) then
+function modifyExperience(nodeChar, nDelta)
+	if not nodeChar or not ActorManager.isPC(nodeChar) then
 		return;
 	end
-
 	local nXP = CharAdvancementManager.getExperience(nodeChar);
 	nXP = nXP + nDelta;
 	CharAdvancementManager.setExperience(nodeChar, nXP);
 end
 
-function hasTakenStatAdvancement(rActor)
-	local nodeChar;
-	if type(rActor) == "databasenode" then
-		nodeChar = rActor;
-	else
-		nodeChar = ActorManager.getCreatureNode(rActor);
-	end
-	if not nodeChar or not ActorManager.isPC(rActor) then
+function hasTakenStatAdvancement(nodeChar)
+	if not nodeChar or not ActorManager.isPC(nodeChar) then
 		return;
 	end
-
 	return DB.getValue(nodeChar, "advancement.stats", 0) == 1;
 end
-function hasTakenEdgeAdvancement(rActor)
-	local nodeChar;
-	if type(rActor) == "databasenode" then
-		nodeChar = rActor;
-	else
-		nodeChar = ActorManager.getCreatureNode(rActor);
-	end
-	if not nodeChar or not ActorManager.isPC(rActor) then
+function hasTakenEdgeAdvancement(nodeChar)
+	if not nodeChar or not ActorManager.isPC(nodeChar) then
 		return;
 	end
-
 	return DB.getValue(nodeChar, "advancement.edge", 0) == 1;
 end
-function hasTakenSkillAdvancement(rActor)
-	local nodeChar;
-	if type(rActor) == "databasenode" then
-		nodeChar = rActor;
-	else
-		nodeChar = ActorManager.getCreatureNode(rActor);
-	end
-	if not nodeChar or not ActorManager.isPC(rActor) then
+function hasTakenSkillAdvancement(nodeChar)
+	if not nodeChar or not ActorManager.isPC(nodeChar) then
 		return;
 	end
-
 	return DB.getValue(nodeChar, "advancement.skill", 0) == 1;
 end
-function hasTakenEffortAdvancement(rActor)
-	local nodeChar;
-	if type(rActor) == "databasenode" then
-		nodeChar = rActor;
-	else
-		nodeChar = ActorManager.getCreatureNode(rActor);
-	end
-	if not nodeChar or not ActorManager.isPC(rActor) then
+function hasTakenEffortAdvancement(nodeChar)
+	if not nodeChar or not ActorManager.isPC(nodeChar) then
 		return;
 	end
-	
 	return DB.getValue(nodeChar, "advancement.effort", 0) == 1;
 end
-function resetAdvancements(rActor)
-	local nodeChar;
-	if type(rActor) == "databasenode" then
-		nodeChar = rActor;
-	else
-		nodeChar = ActorManager.getCreatureNode(rActor);
-	end
-	if not nodeChar or not ActorManager.isPC(rActor) then
+function resetAdvancements(nodeChar)
+	if not nodeChar or not ActorManager.isPC(nodeChar) then
 		return;
 	end
-
 	DB.setValue(nodeChar, "advancement.stats", "number", 0);
 	DB.setValue(nodeChar, "advancement.edge", "number", 0);
 	DB.setValue(nodeChar, "advancement.effort", "number", 0);
 	DB.setValue(nodeChar, "advancement.skill", "number", 0);
 end
 
-function getTotalExperienceGained(rActor)
-	local nodeChar;
-	if type(rActor) == "databasenode" then
-		nodeChar = rActor;
-	else
-		nodeChar = ActorManager.getCreatureNode(rActor);
-	end
-	if not nodeChar or not ActorManager.isPC(rActor) then
+function getTotalExperienceGained(nodeChar)
+	if not nodeChar or not ActorManager.isPC(nodeChar) then
 		return;
 	end
-
 	local nTier = CharAdvancementManager.getTier();
 	local nExp = CharAdvancementManager.getExperience();
 	if CharAdvancementManager.hasTakenStatAdvancement(nodeChar) then

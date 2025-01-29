@@ -109,6 +109,12 @@
 	<script name="CharModManager" file="scripts/manager_char_modification.lua" />
 	<script name="CharTrackerManager" file="scripts/manager_char_tracker.lua" />
 	<script name="CharPowerManager" file="scripts/manager_char_power.lua" />
+	<script name="CharAdvancementManager" file="scripts/manager_char_advancement.lua" />
+	<script name="CharHealthManager" file="scripts/manager_char_health.lua" />
+	<script name="CharStatManager" file="scripts/manager_char_stat.lua" />
+	<script name="CharArmorManager" file="scripts/manager_char_armor.lua" />
+	<script name="CharArcManager" file="scripts/manager_char_arc.lua" />
+	<script name="CharInventoryManager" file="scripts/manager_char_inventory.lua" />
 
 	<script name="ActorManagerCypher" file="scripts/manager_actor_cypher.lua" />
 	<script name="EffectManagerCypher" file="scripts/manager_effect_cypher.lua" />

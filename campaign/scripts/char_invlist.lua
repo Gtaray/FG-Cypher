@@ -58,5 +58,5 @@ function onDrop(x, y, draginfo)
 end
 
 function onCyphersChanged()
-	CharManager.updateCyphers(window.getDatabaseNode());
+	CharInventoryManager.updateCyphers(window.getDatabaseNode());
 end

@@ -28,13 +28,13 @@ end
 function onValueChanged()
 	-- Update the text color based on value
 	local nodeActor = self.getActorNode()
-	local nCur, nMax = ActorManagerCypher.getStatPool(nodeActor, _sStat)
+	local nCur, nMax = CharStatManager.getStatPool(nodeActor, _sStat)
 	setColor(ColorManager.getTokenHealthColor(1 - (nCur / nMax), false));
 end
 
 function onMaxUpdated()
 	local nodeActor = self.getActorNode()
-	local nCur, nMax = ActorManagerCypher.getStatPool(nodeActor, _sStat)
+	local nCur, nMax = CharStatManager.getStatPool(nodeActor, _sStat)
 
 	-- If the pool is at max, then have the pool increase with the max
 	local bUpdateCurrent = false;
@@ -74,7 +74,7 @@ end
 
 function updateWidgetDisplay()
 	local nodeActor = self.getActorNode()
-	local _, nMax = ActorManagerCypher.getStatPool(nodeActor, _sStat)
+	local _, nMax = CharStatManager.getStatPool(nodeActor, _sStat)
 
 	maxWidget.setText(string.format("%d", nMax));
 end
@@ -128,7 +128,7 @@ function handleRecoveryDrop(draginfo)
     end
 
 	local nodeActor = self.getActorNode();
-	local nCur, nMax = ActorManagerCypher.getStatPool(nodeActor, _sStat)
+	local nCur, nMax = CharStatManager.getStatPool(nodeActor, _sStat)
 	local nPool = nCur + nApplied;
 	
 	if nPool > nMax then

@@ -144,7 +144,7 @@ function updateAction()
 	rAction.bConverted = sStat ~= rAction.sStat;
 	rAction.sStat = getStat()
 	rAction.label = StringManager.capitalize(rAction.sStat)
-	rAction.sTraining, rAction.nAssets, rAction.nModifier = ActorManagerCypher.getDefense(rPc, rAction.sStat)
+	rAction.sTraining, rAction.nAssets, rAction.nModifier = CharStatManager.getDefense(rPc, rAction.sStat)
 	rAction.nEffort = effort.getValue();
 	rAction.nAssets = (rAction.nAssets or 0) + assets.getValue();
 

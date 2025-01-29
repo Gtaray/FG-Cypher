@@ -59,8 +59,8 @@
 			end
 			function updateCypherLimit()
 				local node = getDatabaseNode();
-				local nLimit = CharManager.getCypherLimit(node)
-				local nLoad = CharManager.getCypherLoad(node);
+				local nLimit = CharInventoryManager.getCypherLimit(node)
+				local nLoad = CharInventoryManager.getCypherLoad(node);
 				local sUsage = string.format("%d / %d", nLoad, nLimit);
 
 				cypherlimit.setValue(sUsage);
@@ -218,7 +218,7 @@
 
 			function onCypherLimitChanged()
 				local rActor = ActorManager.resolveActor(getDatabaseNode())
-				local nLimit = CharManager.getCypherLimit(rActor);
+				local nLimit = CharInventoryManager.getCypherLimit(rActor);
 				cypherlimit.setValue(nLimit);
 			end
 		</script>

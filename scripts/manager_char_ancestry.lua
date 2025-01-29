@@ -29,9 +29,9 @@ function addAncestryDrop(nodeChar, sClass, sRecord)
 
 	if (rAdd.nFloatingStats or 0) > 0 or #(rAdd.aEdgeOptions or {}) > 0 then
 		-- Prompt player for the data
-		rAdd.nMight = ActorManagerCypher.getStatPool(rAdd.nodeChar, "might");
-		rAdd.nSpeed = ActorManagerCypher.getStatPool(rAdd.nodeChar, "speed");
-		rAdd.nIntellect = ActorManagerCypher.getStatPool(rAdd.nodeChar, "intellect");
+		rAdd.nMight = CharStatManager.getStatPool(rAdd.nodeChar, "might");
+		rAdd.nSpeed = CharStatManager.getStatPool(rAdd.nodeChar, "speed");
+		rAdd.nIntellect = CharStatManager.getStatPool(rAdd.nodeChar, "intellect");
 		rAdd.sSource = string.format("%s (Ancestry)", StringManager.capitalize(rAdd.sSourceName));
 		local w = Interface.openWindow("select_dialog_char", "");
 		w.setData(rAdd, CharModManager.applyFloatingStatsAndEdge);

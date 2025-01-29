@@ -11,9 +11,9 @@ function setData(data, callback)
 	updateCheckbox("skill", rData.sType == "skill");
 
 	if rData.sType == "stats" then
-		local _, nMight = ActorManagerCypher.getStatPool(rData.nodeChar, "might")
-		local _, nSpeed = ActorManagerCypher.getStatPool(rData.nodeChar, "speed")
-		local _, nInt = ActorManagerCypher.getStatPool(rData.nodeChar, "intellect")
+		local _, nMight = CharStatManager.getStatPool(rData.nodeChar, "might")
+		local _, nSpeed = CharStatManager.getStatPool(rData.nodeChar, "speed")
+		local _, nInt = CharStatManager.getStatPool(rData.nodeChar, "intellect")
 		stats.subwindow.setData(nMight, nSpeed, nInt, rData.nFloatingStats);
 		stats_checkbox.setValue(1);
 
@@ -48,7 +48,7 @@ function setData(data, callback)
 	end
 
 	-- Focus
-	local nTier = ActorManagerCypher.getTier(rData.nodeChar);
+	local nTier = CharAdvancementManager.getTier(rData.nodeChar);
 	local aFocusAbilities = buildFocusAdvancementList();
 	updateCheckbox("focus", nTier >= 3 and #aFocusAbilities > 0);
 	if nTier >= 3 and #aFocusAbilities > 0 then
@@ -122,7 +122,7 @@ function buildSkillAdvancementList()
 end
 
 function buildAbilityAdvancementList()
-	local nCharTier = ActorManagerCypher.getTier(rData.nodeChar);
+	local nCharTier = CharAdvancementManager.getTier(rData.nodeChar);
 	local typenode = CharTypeManager.getTypeNode(rData.nodeChar);
 	local flavornode = CharFlavorManager.getFlavorNode(rData.nodeChar);
 
@@ -187,7 +187,7 @@ function buildAbilityAdvancementList()
 end
 
 function buildFocusAdvancementList()
-	local nCharTier = ActorManagerCypher.getTier(rData.nodeChar);
+	local nCharTier = CharAdvancementManager.getTier(rData.nodeChar);
 	local _, sFocusNode = DB.getValue(rData.nodeChar, "class.focuslink");
 	local focusnode = DB.findNode(sFocusNode or "");
 

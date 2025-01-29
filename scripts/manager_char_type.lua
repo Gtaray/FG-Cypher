@@ -200,7 +200,7 @@ function setStartingPools(rData)
 end
 
 function setStartingStat(nodeChar, sStat, nValue, sSource)
-	ActorManagerCypher.setStatMax(nodeChar, sStat, nValue);
+	CharStatManager.setStatMax(nodeChar, sStat, nValue);
 
 	local sSummary = string.format(
 		"Stats: Set %s to %s", 

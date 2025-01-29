@@ -101,7 +101,7 @@ function rest(bShort)
 			if sClass == "charsheet" and sRecord ~= "" then
 				local nodePC = DB.findNode(sRecord);
 				if nodePC then
-					CharManager.rest(nodePC);
+					CharHealthManager.rest(nodePC);
 				end
 			end
 		end

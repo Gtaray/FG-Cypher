@@ -37,7 +37,7 @@ function onEquippedChanged()
 
 	if bEquipped then
 		local nodeActor = windowlist.window.getDatabaseNode();
-		ActorManagerCypher.setEquippedWeapon(nodeActor, getDatabaseNode())
+		CharInventoryManager.setEquippedWeapon(nodeActor, getDatabaseNode())
 	end
 end
 

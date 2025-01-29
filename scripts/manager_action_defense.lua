@@ -78,7 +78,7 @@ function modRoll(rSource, rTarget, rRoll)
 	-- Get the shield bonus of the defender
 	local nShieldBonus = 0;
 	if rRoll.sStat == "speed" then
-		nShieldBonus = ActorManagerCypher.getShieldBonus(rSource);
+		nShieldBonus = CharStatManager.getShieldBonus(rSource);
 	end
 	rRoll.nAssets = math.min(rRoll.nAssets + nShieldBonus, nMaxAssets);
 

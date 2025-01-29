@@ -284,6 +284,28 @@
 				<static textres="char_label_initiative" />
 			</label_charfieldtop>
 
+			<hn name="basearmor" source="defenses.armor.base">
+				<script>
+					function onInit()
+						local node = window.getDatabaseNode()
+						DB.addHandler(DB.getPath(node, "inventorylist.*.carried"), "onUpdate", onEquipmentChanged)
+						DB.addHandler(DB.getPath(node, "inventorylist.*.armor"), "onUpdate", onEquipmentChanged)
+						DB.addHandler(DB.getPath(node, "inventorylist.*.armortype"), "onUpdate", onEquipmentChanged)
+						DB.addHandler(DB.getPath(node, "inventorylist.*.subtype"), "onUpdate", onEquipmentChanged)
+						onEquipmentChanged();
+					end
+					function onClose()
+						DB.removeHandler(DB.getPath(node, "inventorylist.*.carried"), "onUpdate", onEquipmentChanged)
+						DB.removeHandler(DB.getPath(node, "inventorylist.*.armor"), "onUpdate", onEquipmentChanged)
+						DB.removeHandler(DB.getPath(node, "inventorylist.*.armortype"), "onUpdate", onEquipmentChanged)
+						DB.removeHandler(DB.getPath(node, "inventorylist.*.subtype"), "onUpdate", onEquipmentChanged)
+					end
+					function onEquipmentChanged()
+						local nArmor = CharInventoryManager.calculateEquippedArmor(window.getDatabaseNode())
+						setValue(nArmor);
+					end
+				</script>
+			</hn>
 			<hn name="superarmor" source="defenses.armor.superarmor" />
 			<number_chartotalarmor name="armor" source="defenses.armor.total">
 				<anchored width="30" height="40">
@@ -363,6 +385,7 @@
 				<anchored to="label_armor" position="righthigh" offset="5,0" width="45" height="20" />
 				<tooltip textres="char_tooltip_armorbase"/>
 				<min>0</min>
+				<readonly />
 			</basicnumber>
 			<label_fieldtop name="label_armorbase">
 				<anchored to="armorbase" />

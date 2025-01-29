@@ -308,7 +308,7 @@ function applyOngoingDamageAdjustment(nodeActor, nodeEffect, rEffectComp)
 		-- if there's no overflow regen, and the stat we're healing is already
 		-- maxed out, then we bail early.
 		if rAction.bNoOverflow then
-			local nCur, nMax = ActorManagerCypher.getStatPool(rActor, rAction.sHealStat);
+			local nCur, nMax = CharStatManager.getStatPool(rActor, rAction.sHealStat);
 			if nCur == nMax then
 				return;
 			end
@@ -360,7 +360,7 @@ function applyOngoingDamageAdjustment(nodeActor, nodeEffect, rEffectComp)
 		-- if there's no overflow damagestat, and the stat we're damaging is already
 		-- maxed out, then we bail early.
 		if rAction.bNoOverflow then
-			local nCur = ActorManagerCypher.getStatPool(rActor, rAction.sDamageStat);
+			local nCur = CharStatManager.getStatPool(rActor, rAction.sDamageStat);
 			if nCur == 0 then
 				return;
 			end
@@ -923,8 +923,8 @@ function checkConditional(rActor, aFilter, nodeEffect, rEffectComp, rTarget, aIg
 				break;
 			end
 		elseif v.sConditional == "impaired" then
-			if  (v.bInvert and ActorManagerCypher.isImpaired(rActor)) or 
-				(not v.bInvert and not ActorManagerCypher.isImpaired(rActor)) then
+			if  (v.bInvert and CharHealthManager.isImpaired(rActor)) or 
+				(not v.bInvert and not CharHealthManager.isImpaired(rActor)) then
 				bReturn = false;
 				break;
 			end
@@ -960,7 +960,7 @@ function checkConditional(rActor, aFilter, nodeEffect, rEffectComp, rTarget, aIg
 				break;
 			end
 
-			local nCur, nMax = ActorManagerCypher.getStatPool(rActor, v.sConditional);
+			local nCur, nMax = CharStatManager.getStatPool(rActor, v.sConditional);
 			if v.bMax then
 				v.nOperand = nMax
 			end

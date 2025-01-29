@@ -28,7 +28,7 @@ function onMenuSelection(selection, subselection)
 		if subselection == 6 then
 			local nodeChar = getDatabaseNode();
 			ChatManager.Message(Interface.getString("message_restovernight"), true, ActorManager.resolveActor(nodeChar));
-			CharManager.rest(nodeChar);
+			CharHealthManager.rest(nodeChar);
 		end
 	end
 end
@@ -45,11 +45,11 @@ function onDrop(x, y, draginfo)
 end
 
 function onAbilityDeleted(abilitynode)
-	CharManager.removeItemLinkedToRecord(abilitynode);
+	CharInventoryManager.getEquippedWeapon(abilitynode);
 end
 
 function onAttackDeleted(attacknode)
-	CharManager.removeItemLinkedToRecord(attacknode);
+	CharInventoryManager.getEquippedWeapon(attacknode);
 end
 
 function migrateAttackTraining()

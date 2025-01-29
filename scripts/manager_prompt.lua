@@ -114,7 +114,7 @@ function getActionFromOobMsg(rSource, rTarget, msgOOB)
 	rAction.nDifficulty = tonumber(msgOOB.nDifficulty) or 0;
 	rAction.sStat = msgOOB.sStat;
 	rAction.rTarget = rTarget
-	rAction.sTraining, rAction.nAssets, rAction.nModifier = ActorManagerCypher.getDefense(rSource, rAction.sStat)
+	rAction.sTraining, rAction.nAssets, rAction.nModifier = CharStatManager.getDefense(rSource, rAction.sStat)
 	rAction.label = StringManager.capitalize(rAction.sStat);
 	rAction.sAttackRange = msgOOB.sAttackRange or "";
 
@@ -136,7 +136,7 @@ end
 -------------------------------------------------------------------------------
 function promptCharacterArcStart(nodeArc)
 	local nodeChar = DB.getChild(nodeArc, "...");
-	local nCost = CharManager.getCostToBuyNewCharacterArc(nodeChar);
+	local nCost = CharArcManager.getCostToBuyNewCharacterArc(nodeChar);
 
 	-- If the arc is free, just add it
 	if nCost == 0 then
@@ -164,7 +164,7 @@ function promptCharacterArcStart(nodeArc)
 end
 function handleStartCharacterArcPromptResult(sResult, tData)
 	if sResult == "ok" then
-		CharManager.buyNewCharacterArc(tData.nodeChar, tData.nodeArc);
+		CharArcManager.buyNewCharacterArc(tData.nodeChar, tData.nodeArc);
 	end
 end
 
@@ -196,7 +196,7 @@ function promptCharacterArcStep(nodeStep)
 end
 function handleCharacterArcStepPromptResult(sResult, tData)
 	if sResult == "ok" then
-		CharManager.completeCharacterArcStep(tData.nodeChar, tData.nodeStep);
+		CharArcManager.completeCharacterArcStep(tData.nodeChar, tData.nodeStep);
 	end
 end
 
@@ -221,7 +221,7 @@ function promptCharacterArcProgress(nodeArc)
 end
 function handleProgressCharacterArcPromptResult(sResult, tData)
 	if sResult == "ok" then
-		CharManager.completeCharacterArcProgress(tData.nodeChar, tData.nodeArc);
+		CharArcManager.completeCharacterArcProgress(tData.nodeChar, tData.nodeArc);
 	end
 end
 
@@ -246,9 +246,9 @@ function promptCharacterArcClimax(nodeArc)
 end
 function handleCharacterArcClimaxPromptResult(sResult, tData)
 	if sResult == "cancel" then
-		CharManager.completeCharacterArcClimax(tData.nodeChar, tData.nodeArc, false);
+		CharArcManager.completeCharacterArcClimax(tData.nodeChar, tData.nodeArc, false);
 	elseif sResult == "ok" then
-		CharManager.completeCharacterArcClimax(tData.nodeChar, tData.nodeArc, true);
+		CharArcManager.completeCharacterArcClimax(tData.nodeChar, tData.nodeArc, true);
 	end
 end
 
@@ -273,8 +273,8 @@ function promptCharacterArcResolution(nodeArc)
 end
 function handleCharacterArcResolutionPromptResult(sResult, tData)
 	if sResult == "cancel" then
-		CharManager.completeCharacterArcResolution(tData.nodeChar, tData.nodeArc, false);
+		CharArcManager.completeCharacterArcResolution(tData.nodeChar, tData.nodeArc, false);
 	elseif sResult == "ok" then
-		CharManager.completeCharacterArcResolution(tData.nodeChar, tData.nodeArc, true);
+		CharArcManager.completeCharacterArcResolution(tData.nodeChar, tData.nodeArc, true);
 	end
 end

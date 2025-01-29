@@ -558,7 +558,7 @@ function applyDamageToPc(rSource, rTarget, nDamage, sStat, bNoOverflow, aNotific
 	-- and Negative damage (healing) causes a positive change of health
 	-- Which is why we invert nDamage here.
 	-- Start by applying damage to the stat specified
-	local nOverflow = ActorManagerCypher.addToStatPool(rTarget, sStat, -nDamage);
+	local nOverflow = CharStatManager.addToStatPool(rTarget, sStat, -nDamage);
 
 	-- if there's overflow to the damage, then that means a stat was reduced to 0
 	-- in which case we want to drop a blood marker.
@@ -576,13 +576,13 @@ function applyDamageToPc(rSource, rTarget, nDamage, sStat, bNoOverflow, aNotific
 	-- which means we need to apply an inversion depending on if we're healing or damaging
 	-- Overflow will follow the normal might -> speed -> intellect damage
 	if sStat ~= "might" then
-		nOverflow = ActorManagerCypher.addToStatPool(rTarget, "might", nOverflow * nNegativeIfDamage);
+		nOverflow = CharStatManager.addToStatPool(rTarget, "might", nOverflow * nNegativeIfDamage);
 	end
 	if sStat ~= "speed" then
-		nOverflow = ActorManagerCypher.addToStatPool(rTarget, "speed", nOverflow * nNegativeIfDamage);
+		nOverflow = CharStatManager.addToStatPool(rTarget, "speed", nOverflow * nNegativeIfDamage);
 	end
 	if sStat ~= "intellect" then
-		nOverflow = ActorManagerCypher.addToStatPool(rTarget, "intellect", nOverflow * nNegativeIfDamage);
+		nOverflow = CharStatManager.addToStatPool(rTarget, "intellect", nOverflow * nNegativeIfDamage);
 	end
 
 	-- Lastly, the addToStatPool function handles updating the character damage track
