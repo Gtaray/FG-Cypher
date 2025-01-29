@@ -13,8 +13,6 @@ function onInit()
 	DB.addHandler(DB.getPath(getDatabaseNode(), "abilitylist.*"), "onDelete", onAbilityDeleted)
 	DB.addHandler(DB.getPath(getDatabaseNode(), "attacklist.*"), "onDelete", onAttackDeleted)
 
-	self.migrateAttackTraining();
-
 	WindowTabManager.populate(self);
 end
 
@@ -50,21 +48,4 @@ end
 
 function onAttackDeleted(attacknode)
 	CharInventoryManager.getEquippedWeapon(attacknode);
-end
-
-function migrateAttackTraining()
-	for _, attacknode in ipairs(DB.getChildList(getDatabaseNode(), "attacklist")) do
-		local vTraining = DB.getValue(attacknode, "training");
-		if type(vTraining) == "number" then
-			DB.deleteChild(attacknode, "training");
-
-			if vTraining == 2 then
-				DB.setValue(attacknode, "training", "string", "trained");
-			elseif vTraining == 3 then
-				DB.setValue(attacknode, "training", "string", "specialized");
-			elseif vTraining == 0 then
-				DB.setValue(attacknode, "training", "string", "inability");
-			end
-		end
-	end
 end

@@ -294,25 +294,42 @@
 				<max>6</max>
 			</number_column>
 
-			<header_column name="header_defense">
-				<static textres="char_header_custom_defense" />
-				<center />
-			</header_column>
-			<label_column name="label_training">
-				<static textres="char_label_custom_pool_training"/>
+			<label_column name="label_defense">
+				<anchored>
+					<top offset="25" />
+				</anchored>
+				<static textres="char_label_stat_defense" />
 			</label_column>
-			<column_training name="training" />
-			<label_column name="label_assets">
-				<static textres="char_label_custom_pool_assets"/>
-			</label_column>
-			<number_column name="assets">
-				<max>2</max>
+			<button_training_base name="defense_training" source="def.training">
+				<anchored to="label_defense" position="righthigh">
+					<left parent="" offset="107" />
+				</anchored>
+			</button_training_base>
+			<label_fieldtop name="label_deftraining">
+				<anchored to="defense_training">
+					<left offset="-20" />
+					<right offset="20" />
+				</anchored>
+				<static textres="char_label_statdef_training" />
+			</label_fieldtop>
+			<basicnumber name="defense_assets" source="def.asset">
+				<anchored to="defense_training" position="righthigh" offset="25,0" width="45" height="20" />
+				<tooltip textres="char_tooltip_statdef_assets"/>
 				<min>0</min>
-			</number_column>
-			<label_column name="label_edge">
-				<static textres="char_label_custom_pool_mod"/>
-			</label_column>
-			<number_column name="mod" />
+				<max>2</max>
+			</basicnumber>
+			<label_fieldtop name="label_defassets">
+				<anchored to="defense_assets" />
+				<static textres="char_label_statdef_assets" />
+			</label_fieldtop>
+			<basicnumber name="defense_mod" source="def.misc">
+				<anchored to="defense_assets" position="righthigh" offset="15,0" width="45" height="20" />
+				<tooltip textres="char_tooltip_statdef_mod"/>
+			</basicnumber>
+			<label_fieldtop name="label_defmod">
+				<anchored to="defense_mod" />
+				<static textres="char_label_statdef_mod" />
+			</label_fieldtop>
 
 		</sheetdata>
 	</windowclass>

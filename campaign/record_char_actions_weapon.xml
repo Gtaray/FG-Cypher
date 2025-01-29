@@ -44,9 +44,10 @@
 				</script>
 			</stringc_listitem_right_static>
 
-			<spacer_listitem_right name="attackframe">
-				<anchored width="70" />
-				<frame name="fieldlight" offset="5,10,5,10" />
+			<stringc_listitem_right_static name="attackview">
+				<anchored width="70" height="-1" />
+				<frame name="fieldlight" offset="10,10,10,10" />
+				<multilinespacing>20</multilinespacing>
 				<cursor hover="hand" />
 				<script>
 					function onDoubleClick(x,y)
@@ -56,43 +57,7 @@
 						return window.onAttackAction(draginfo);
 					end
 				</script>
-			</spacer_listitem_right>
-			<genericcontrol name="attackicon">
-				<anchored to="attackframe" position="insidetopleft" offset="10,0" width="20" height="20" />
-				<icon>d20icon</icon>
-				<cursor hover="hand" />
-				<script>
-					function onDoubleClick(x,y)
-						return window.onAttackAction();
-					end			
-					function onDragStart(button, x, y, draginfo)
-						return window.onAttackAction(draginfo);
-					end
-				</script>
-			</genericcontrol>
-			<numberc_text_noframe_static name="attackview">
-				<anchored to="attackicon" position="righthigh" width="40" height="20" />
-				<cursor hover="hand" />
-				<displaysign />
-				<script>
-					function onDoubleClick(x,y)
-						return window.onAttackAction();
-					end			
-					function onDragStart(button, x, y, draginfo)
-						return window.onAttackAction(draginfo);
-					end
-				</script>
-			</numberc_text_noframe_static>
-
-			<!-- <button_weapontraining name="training">
-				<anchored to="attackview" position="rightlow" offset="-7,-10" width="12" height="12" />
-				<default>1</default>
-				<script>
-					function onValueChanged()
-						window.onAttackChanged();
-					end
-				</script>
-			</button_weapontraining> -->
+			</stringc_listitem_right_static>
 
 			<string_listitem_center_underline name="name" />
 
@@ -222,6 +187,7 @@
 				<center />
 			</header_column>
 
+			<!-- Stat line -->
 			<label_column name="attacktext1">
 				<anchored width="45">
 					<top offset="20" />
@@ -265,33 +231,58 @@
 				<static textres="power_label_attack_text_3" />
 			</label>
 
+			<!-- Modifiers line -->
+			<label_column name="label_modifiers">
+				<anchored>
+					<top offset="20" />
+				</anchored>
+				<static textres="power_label_modifiers" />
+			</label_column>
+			<genericcontrol name="modanchor">
+				<anchored height="30" width="0">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="25" />
+					<left offset="97" />
+				</anchored> 
+				<disabled />
+			</genericcontrol>
+			<button_rolltraining name="training" />
+			<label_fieldtop name="label_training">
+				<anchored to="training">
+					<left offset="-20" />
+					<right offset="20" />
+				</anchored>
+				<static textres="power_label_training" />
+			</label_fieldtop>
+			<label_fieldtop>
+				<anchored to="training">
+					<left offset="-20" />
+					<right offset="20" />
+				</anchored>
+				<static textres="power_label_training" />
+			</label_fieldtop>
+			<number_rollassets name="asset">
+				<anchored to="training">
+					<left offset="30" />
+				</anchored>
+			</number_rollassets>
+			<label_fieldtop>
+				<anchored to="asset" />
+				<static textres="power_label_asset" />
+			</label_fieldtop>
+			<number_rollmod name="modifier">
+				<anchored to="training" />
+			</number_rollmod>
+			<label_fieldtop>
+				<anchored to="modifier" />
+				<static textres="power_label_modifier" />
+			</label_fieldtop>
+
 			<label_column name="atkrange_label">
 				<static textres="power_label_attackrange" />
 			</label_column>
 			<column_range name="atkrange">
 				<anchored width="80" />
 			</column_range>
-
-			<label_column name="training_label">
-				<static textres="power_label_training" />
-			</label_column>
-			<column_training name="training">
-				<anchored width="80" />
-			</column_training>
-
-			<label_column name="asset_label">
-				<static textres="power_label_asset" />
-			</label_column>
-			<number_column name="asset">
-				<hideonvalue value="0" />
-			</number_column>
-
-			<label_column name="modifier_label">
-				<static textres="power_label_modifier" />
-			</label_column>
-			<number_column name="modifier">
-				<hideonvalue value="0" />
-			</number_column>
 
 			<!-- DAMAGE -->
 			<header_column name="header_damage">

@@ -114,7 +114,7 @@ function getActionFromOobMsg(rSource, rTarget, msgOOB)
 	rAction.nDifficulty = tonumber(msgOOB.nDifficulty) or 0;
 	rAction.sStat = msgOOB.sStat;
 	rAction.rTarget = rTarget
-	rAction.sTraining, rAction.nAssets, rAction.nModifier = CharStatManager.getDefense(rSource, rAction.sStat)
+	rAction.nTraining, rAction.nAssets, rAction.nModifier = CharStatManager.getDefense(rSource, rAction.sStat)
 	rAction.label = StringManager.capitalize(rAction.sStat);
 	rAction.sAttackRange = msgOOB.sAttackRange or "";
 

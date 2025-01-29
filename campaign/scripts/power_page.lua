@@ -113,10 +113,6 @@ end
 --------------------------
 function updateAbilityFilters()
 	local nodeChar = getDatabaseNode();
-	-- if CharPowerManager.arePowerUsageUpdatesPaused(nodeChar) then
-	-- 	return;
-	-- end
-	-- CharPowerManager.pausePowerUsageUpdates(nodeChar);
 
 	local sMode = DB.getValue(nodeChar, "powermode", "");
 

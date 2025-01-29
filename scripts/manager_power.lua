@@ -116,8 +116,10 @@ function getPowerStatActionText(nodeAction)
 
 	local rAction, rActor = PowerManager.getPowerAction(nodeAction);
 	if rAction then
-		local nDiff, nMod = RollManager.resolveDifficultyModifier(rAction.sTraining, rAction.nAssets, rAction.nLevel, rAction.nModifier);
-		local sDice = StringManager.convertDiceToString({ "d20" }, nMod);
+		local nFlatBonus = RollManager.convertToFlatBonus(rAction.nTraining, rAction.nAssets, rAction.nModifier, rAction.nEase, rAction.nHinder)
+		nFlatBonus = nFlatBonus + (rAction.nLevel * 3)
+
+		local sDice = StringManager.convertDiceToString({ "d20" }, nFlatBonus);
 
 		if rAction.type == "skill" and (rAction.sSkill or "") ~= "" then
 			sText = string.format("%s (%s): %s", StringManager.capitalize(rAction.sSkill), StringManager.capitalize(rAction.sStat), sDice)
@@ -125,10 +127,8 @@ function getPowerStatActionText(nodeAction)
 			sText = string.format("%s: %s", StringManager.capitalize(rAction.sStat), sDice)
 		end
 
-		if nDiff < 0 then
-			sText = string.format("%s [Diff: %s]", sText, nDiff);
-		elseif nDiff > 0 then
-			sText = string.format("%s [Diff: +%s]", sText, nDiff);
+		if rAction.nDifficulty and rAction.nDifficulty > 0 then
+			sText = string.format("%s vs difficulty %s (%s)", sText, rAction.nDifficulty, rAction.nDifficulty * 3)
 		end
 
 		if rAction.nCost > 0 then
@@ -163,8 +163,10 @@ end
 
 function getPCAttackText(rAction)
 	local sAttack = ""
-	local nDiff, nMod = RollManager.resolveDifficultyModifier(rAction.sTraining, rAction.nAssets, rAction.nLevel, rAction.nModifier);
-	local sDice = StringManager.convertDiceToString({ "d20" }, nMod);
+	local nFlatBonus = RollManager.convertToFlatBonus(rAction.nTraining, rAction.nAssets, rAction.nModifier, rAction.nEase, rAction.nHinder)
+	nFlatBonus = nFlatBonus + (rAction.nLevel * 3)
+
+	local sDice = StringManager.convertDiceToString({ "d20" }, nFlatBonus);
 
 	if rAction.sAttackRange ~= "" then
 		sAttack = string.format("%s (%s): %s", StringManager.capitalize(rAction.sStat), rAction.sAttackRange, sDice)
@@ -172,10 +174,8 @@ function getPCAttackText(rAction)
 		sAttack = string.format("%s: %s", StringManager.capitalize(rAction.sStat), sDice)
 	end
 
-	if nDiff < 0 then
-		sAttack = string.format("%s [Diff: %s]", sAttack, nDiff);
-	elseif nDiff > 0 then
-		sAttack = string.format("%s [Diff: +%s]", sAttack, nDiff);
+	if rAction.nDifficulty and rAction.nDifficulty > 0 then
+		sAttack = string.format("%s vs difficulty %s (%s)", sAttack, rAction.nDifficulty, rAction.nDifficulty * 3)
 	end
 
 	if rAction.nCost > 0 then
@@ -351,11 +351,14 @@ function getPowerAction(nodeAction)
 	if rAction.type == "stat" then
 		rAction.sStat = RollManager.resolveStat(DB.getValue(nodeAction, "stat", ""));
 		rAction.sSkill = DB.getValue(nodeAction, "skill", "");
-		rAction.sTraining = DB.getValue(nodeAction, "training", "");
+		rAction.nTraining = DB.getValue(nodeAction, "training", 1);
 		rAction.nAssets = DB.getValue(nodeAction, "asset", 0);
 		rAction.nModifier = DB.getValue(nodeAction, "modifier", 0);
 		rAction.nEase = DB.getValue(nodeAction, "ease", 0);
 		rAction.nHinder = DB.getValue(nodeAction, "hinder", 0);
+
+		-- Only for NPCs
+		rAction.nLevel = DB.getValue(nodeAction, "level", 0);
 
 		-- If a skill value is present, then treat this action as a skill roll
 		-- from here on out		
@@ -363,13 +366,14 @@ function getPowerAction(nodeAction)
 			rAction.type = "skill"
 		end
 
+		-- Don't add difficulty values less than 1
+		local nDiff = DB.getValue(nodeAction, "difficulty", 0)
+		if nDiff > 0 then
+			rAction.nDifficulty = nDiff;
+		end
+
 		-- For NPCs, we want to use the custom stat field instead of the cycler
-		if ActorManager.isPC(rActor) then
-			local nDiff = DB.getValue(nodeAction, "difficulty", 0)
-			if nDiff > 0 then
-				rAction.nDifficulty = nDiff;
-			end
-		else
+		if not ActorManager.isPC(rActor) then
 			rAction.sStat = resolveCustomStats(nodeAction, rAction.sStat, "stat_custom", "might");
 		end
 		
@@ -378,8 +382,14 @@ function getPowerAction(nodeAction)
 		rAction.sDefenseStat = RollManager.resolveStat(DB.getValue(nodeAction, "defensestat", ""), "speed");
 		rAction.sAttackRange = DB.getValue(nodeAction, "atkrange", "");
 
+		-- Don't add difficulty values less than 1
+		local nDiff = DB.getValue(nodeAction, "difficulty", 0)
+		if nDiff > 0 then
+			rAction.nDifficulty = nDiff;
+		end
+
 		-- Only for PCs
-		rAction.sTraining = DB.getValue(nodeAction, "training", "");
+		rAction.nTraining = DB.getValue(nodeAction, "training", 1);
 		rAction.nAssets = DB.getValue(nodeAction, "asset", 0);
 		rAction.nModifier = DB.getValue(nodeAction, "modifier", 0);
 		rAction.nEase = DB.getValue(nodeAction, "ease", 0);
@@ -391,12 +401,8 @@ function getPowerAction(nodeAction)
 		-- For PCs, we try to apply an equipped weapon
 		if ActorManager.isPC(rActor) then
 			PowerManager.applyWeaponPropertiesToAttack(rAction, nodePower);
-			
-			local nDiff = DB.getValue(nodeAction, "difficulty", 0)
-			if nDiff > 0 then
-				rAction.nDifficulty = nDiff;
-			end
 		else
+			-- These only matter for NPCs
 			rAction.sStat = resolveCustomStats(nodeAction, rAction.sStat, "stat_custom", "might");
 			rAction.sDefenseStat = resolveCustomStats(nodeAction, rAction.sDefenseStat, "defensestat_custom", "speed");
 		end
@@ -503,9 +509,11 @@ function applyWeaponPropertiesToAttack(rAttack, nodeAbility)
 	if (rAttack.sDefenseStat or "") == "" then
 		rAttack.sDefenseStat = rWeapon.sDefenseStat;
 	end
-	if (rAttack.sTraining or "") == "" then
-		rAttack.sTraining = rWeapon.sTraining;
-	end
+	
+	-- We have to apply -1 so the difficulty adjustment is flipped
+	-- We want to ADD for trained/specialized, and SUBTRACT for inability
+	local nWeaponAdjust = -1 * TrainingManager.getDifficultyModifier(rWeapon.nTraining or 1);
+	rAttack.nTraining = TrainingManager.modifyTraining(rAttack.nTraining, nWeaponAdjust)
 
 	rAttack.nAssets = rAttack.nAssets + (rWeapon.nAssets or 0)
 	rAttack.nModifier = rAttack.nModifier + (rWeapon.nModifier or 0)

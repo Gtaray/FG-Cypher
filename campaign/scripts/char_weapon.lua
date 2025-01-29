@@ -57,13 +57,15 @@ end
 
 function onAttackChanged()
 	local rAction = self.getAttackAction();
-	local nBonus = RollManager.convertToFlatBonus(rAction.sTraining, rAction.nAssets, rAction.nModifier)
+	local nBonus = RollManager.convertToFlatBonus(rAction.nTraining, rAction.nAssets, rAction.nModifier)
 
 	local bWeapon = DB.getValue(nodeAction, "type", "") == ""
 	if bWeapon and rAction.sWeaponType == "light" then
 		nBonus = nBonus + 3	
 	end
-	local sAttack = StringManager.convertDiceToString({}, nBonus);
+
+	-- Hardcode a little exception because convertDiceToString doesn't put a sign if the value is 0
+	local sAttack = StringManager.convertDiceToString({"d20"}, nBonus, true);
 	attackview.setValue(sAttack)
 end
 
@@ -75,7 +77,7 @@ function getAttackAction()
 	rAction.sAttackRange = DB.getValue(nodeAction, "atkrange", "");
 	rAction.sStat = RollManager.resolveStat(DB.getValue(nodeAction, "stat", ""));
 	rAction.sDefenseStat = RollManager.resolveStat(DB.getValue(nodeAction, "defensestat", ""), "speed");
-	rAction.sTraining = DB.getValue(nodeAction, "training", "");
+	rAction.nTraining = DB.getValue(nodeAction, "training", 1);
 	rAction.nAssets = DB.getValue(nodeAction, "asset", 0);
 	rAction.nModifier = DB.getValue(nodeAction, "modifier", 0);
 	rAction.nLevel = DB.getValue(nodeAction, "level", 0);
@@ -124,9 +126,9 @@ function onDamageChanged()
 	local rAction = self.getDamageAction();
 	local s = ""
 	if rAction.sDamageType ~= "" then
-		s = string.format("%s %s damage", rAction.nDamage, rAction.sDamageType)
+		s = string.format("%s %s dmg", rAction.nDamage, rAction.sDamageType)
 	else
-		s = string.format("%s damage", rAction.nDamage)
+		s = string.format("%s dmg", rAction.nDamage)
 	end
 	damageview.setValue(s)
 end

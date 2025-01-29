@@ -278,6 +278,10 @@
 
 	<string name="char_message_not_enough_ammo">You are out of ammo for your %s.</string>
 
+	<string name="power_menu_action_add_stat">Add Roll</string>
+	<string name="power_menu_action_add_attack">Add Attack</string>
+	<string name="power_title_stat">Spell/Ability Roll</string>
+
 	<!-- Character - Inventory -->
 	<string name="char_label_inventory">EQUIPMENT</string>
 	<string name="char_label_invtype">Type</string>
@@ -423,12 +427,14 @@
 	<string name="power_label_rangeshort">Short</string>
 	<string name="power_label_rangelong">Long</string>
 	<string name="power_label_range200">Very Long</string>
+	<string name="power_label_modifiers">Modifiers</string>
 	<string name="power_label_training">Training</string>
 	<string name="power_label_asset">Asset</string>
 	<string name="power_label_modifier">Mod</string>
 	<string name="power_tooltip_modifier">This is a flat modifier that's added to the roll. Every +3 is converted to an asset.</string>
 	<string name="power_label_leveladjust_text_1">%s this roll by</string>
 	<string name="power_label_leveladjust_text_2">steps.</string>
+	<string name="power_label_vs_difficulty">vs Difficulty</string>
 	<string name="power_label_attack_customstat">Attack Stat</string>
 	<string name="power_tooltip_attack_customstat">Name of the custom stat pool this attack uses.</string>
 	<string name="power_label_attack_customdefensestat">Defense Stat</string>

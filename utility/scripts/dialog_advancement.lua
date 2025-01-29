@@ -88,7 +88,7 @@ function buildSkillAdvancementList()
 	local abilities = {};
 	for _, abilitynode in ipairs(DB.getChildList(rData.nodeChar, "abilitylist")) do
 		local bInclude = false;
-		local sTraining = "";
+		local nTraining = 1;
 
 		-- Only include abilities that are not linked to items
 		local _, sItemLink = DB.getValue(abilitynode, "itemlink");
@@ -99,9 +99,9 @@ function buildSkillAdvancementList()
 
 				if sType == "attack" or sType == "stat" then
 					-- Only include abilities that are not already specialized
-					sTraining = DB.getValue(actionnode, "training", "");
+					nTraining = DB.getValue(actionnode, "training", 1);
 
-					if sTraining ~= "specialized" then
+					if nTraining ~= 3 then
 						bInclude = true;
 						break;
 					end
@@ -113,7 +113,7 @@ function buildSkillAdvancementList()
 			table.insert(abilities, {
 				node = abilitynode,
 				sName = DB.getValue(abilitynode, "name", ""),
-				nTraining = RollManager.convertTrainingStringToNumber(sTraining)
+				nTraining = nTraining
 			})
 		end
 	end
@@ -300,7 +300,7 @@ function processOK()
 			rData.abilitynode = rSkillData.abilitynode;
 		else
 			rData.sSkill = rSkillData.sName;
-			rData.sTraining = "trained";
+			rData.sTraining = "trained"; -- Hardcode a single step up in training
 		end
 	elseif rData.sType == "ability" then
 		local aTypeAbilities, aFlavorAbilities = abilities.subwindow.getData()

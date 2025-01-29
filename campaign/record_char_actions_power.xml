@@ -125,7 +125,7 @@ power_item_header has all of the rest of the things you'd normally associate wit
 			<anchor_poweritem_header_left name="leftanchor" />
 
 			<genericcontrol name="leftpacer">
-				<anchored to="leftanchor" width="10" height="20">
+				<anchored to="leftanchor" width="5" height="20">
 					<top />
 					<left anchor="right" relation="relative" />
 				</anchored>
@@ -133,21 +133,7 @@ power_item_header has all of the rest of the things you'd normally associate wit
 
 			<buttongroup_counter_power name="used" />
 
-			<genericcontrol name="usespacer">
-				<anchored to="leftanchor" width="2" height="20">
-					<top />
-					<left anchor="right" relation="relative" />
-				</anchored>
-			</genericcontrol>
-
 			<string_statcost name="statcostview" />
-
-			<genericcontrol name="costpacer">
-				<anchored to="leftanchor" width="2" height="20">
-					<top />
-					<left anchor="right" relation="relative" />
-				</anchored>
-			</genericcontrol>
 
 			<string_poweritem_header_name name="name">
 				<empty textres="char_empty_ability_name" />
@@ -263,20 +249,20 @@ power_item_header has all of the rest of the things you'd normally associate wit
 		<stringc_static>
 			<script>
 				function onDragStart(button, x, y, draginfo)
-					window.initiateCostRoll(draginfo);
+					window.parentcontrol.window.initiateCostRoll(draginfo);
 					return true;
 				end
 				function onDoubleClick(x, y)
-					window.initiateCostRoll();
+					window.parentcontrol.window.initiateCostRoll();
 				end
 			</script>
 			<anchored height="20">
 				<top offset="2" />
-				<left parent="leftanchor" anchor="right" relation="relative" offset="5" />
+				<left parent="leftanchor" anchor="right" relation="relative" offset="10" />
 			</anchored>
 			<font>sheetlabel</font>
 			<cursor>
-				<hover>arrow</hover>
+				<hover>hand</hover>
 			</cursor>
 		</stringc_static>
 	</template>

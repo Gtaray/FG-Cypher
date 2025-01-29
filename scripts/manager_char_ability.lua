@@ -57,16 +57,14 @@ function addTrainingToAbility(nodeChar, nodeAbility)
 end
 
 function addTrainingToAbilityAction(nodeAction)
-	sTraining = DB.getValue(nodeAction, "training", "");
-	if sTraining == "specialized" then
+	local nTraining = DB.getValue(nodeAction, "training", 1);
+	if nTraining == 2 then
 		return;
 	end
 
-	local nTraining = RollManager.convertTrainingStringToNumber(sTraining) + 1;
-	nTraining = math.max(math.min(nTraining, 3), 0);
-	sTraining = RollManager.resolveTraining(nTraining)
+	nTraining = TrainingManager.modifyTraining(nTraining, 1);
 
-	DB.setValue(nodeAction, "training", "string", sTraining);
+	DB.setValue(nodeAction, "training", "number", nTraining);
 end
 
 function addAbility(nodeChar, sAbilityRecord, sSourceName, sSourceType, rPromptData)

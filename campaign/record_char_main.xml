@@ -276,7 +276,7 @@
 					<left parent="combattitle" anchor="center" offset="-20" />
 				</anchored>
 			</number_charinit>
-			<button_inittraining name="armorprof" source="initiative.training">
+			<button_inittraining name="inittraining" source="initiative.training">
 				<anchored to="initiative" />
 			</button_inittraining>
 			<label_charfieldtop>
@@ -416,42 +416,10 @@
 				<tooltip textres="char_tooltip_superarmor"/>
 				<min>0</min>
 			</basicnumber>
-			
-			<!-- Speed Effort Penalty -->
-			<hnl name="effortpenalty_total" source="effort.armorpenalty.total">
-				<source><name>effort.armorpenalty.base</name><op>+</op></source>
-				<source><name>effort.armorpenalty.mod</name><op>+</op></source>
-			</hnl>
-			<label name="label_armorspeedcost">
-				<anchored to="area_content" position="insidetopleft" offset="0,80" width="100" />
-				<static textres="char_label_armorspeedcost" />
-			</label>
-			<basicnumber name="armorspeedcostbase" source="effort.armorpenalty.base">
-				<anchored to="label_armorspeedcost" position="righthigh" offset="5,0" width="45" height="20" />
-				<tooltip textres="char_tooltip_armorpenaltybase" />
-				<min>0</min>
-			</basicnumber>
-			<label_fieldtop name="label_armorspeedcostbase">
-				<anchored to="armorspeedcostbase" />
-				<static textres="char_label_armorpenaltybase" />
-			</label_fieldtop>
-			<label name="label_armorspeedcostplus">
-				<anchored to="armorspeedcostbase" position="righthigh" offset="5,0" width="10" />
-				<static>+</static>
-				<center />
-			</label>
-			<basicnumber name="armorspeedcost" source="effort.armorpenalty.mod">
-				<anchored to="label_armorspeedcostplus" position="righthigh" offset="5,0" width="45" height="20" />
-				<tooltip textres="char_tooltip_armorpenaltymod" />
-			</basicnumber>
-			<label_fieldtop name="label_armorspeedcostmod">
-				<anchored to="armorspeedcost" />
-				<static textres="char_label_armorpenaltymod" />
-			</label_fieldtop>
 
 			<!-- Initiative -->
 			<label name="label_initiative">
-				<anchored to="area_content" position="insidetopleft" offset="0,130" width="100" />
+				<anchored to="area_content" position="insidetopleft" offset="0,90" width="100" />
 				<static textres="char_label_initiative_full" />
 			</label>
 			<button_training_base name="inittraining" source="initiative.training">
@@ -490,7 +458,7 @@
 
 			<!-- EFFORT -->
 			<label name="label_effort">
-				<anchored to="area_content" position="insidetopleft" offset="0,180" width="100" />
+				<anchored to="area_content" position="insidetopleft" offset="0,140" width="100" />
 				<static textres="char_label_effort" />
 			</label>
 			<basicnumber name="effortbase" source="effort.base">
@@ -499,6 +467,7 @@
 				<min>1</min>
 				<max>6</max>
 				<default>1</default>
+				<readonly />
 			</basicnumber>
 			<label_fieldtop name="label_effortbase">
 				<anchored to="effortbase" />
@@ -516,6 +485,39 @@
 			<label_fieldtop name="label_effortmod">
 				<anchored to="effortmod" />
 				<static textres="char_label_effortmod" />
+			</label_fieldtop>
+
+			<!-- Speed Effort Penalty -->
+			<hnl name="effortpenalty_total" source="effort.armorpenalty.total">
+				<source><name>effort.armorpenalty.base</name><op>+</op></source>
+				<source><name>effort.armorpenalty.mod</name><op>+</op></source>
+			</hnl>
+			<label name="label_armorspeedcost">
+				<anchored to="area_content" position="insidetopleft" offset="0,180" width="100" />
+				<static textres="char_label_armorspeedcost" />
+			</label>
+			<basicnumber name="armorspeedcostbase" source="effort.armorpenalty.base">
+				<anchored to="label_armorspeedcost" position="righthigh" offset="5,0" width="45" height="20" />
+				<tooltip textres="char_tooltip_armorpenaltybase" />
+				<min>0</min>
+				<readonly />
+			</basicnumber>
+			<label_fieldtop name="label_armorspeedcostbase">
+				<anchored to="armorspeedcostbase" />
+				<static textres="char_label_armorpenaltybase" />
+			</label_fieldtop>
+			<label name="label_armorspeedcostplus">
+				<anchored to="armorspeedcostbase" position="righthigh" offset="5,0" width="10" />
+				<static>+</static>
+				<center />
+			</label>
+			<basicnumber name="armorspeedcost" source="effort.armorpenalty.mod">
+				<anchored to="label_armorspeedcostplus" position="righthigh" offset="5,0" width="45" height="20" />
+				<tooltip textres="char_tooltip_armorpenaltymod" />
+			</basicnumber>
+			<label_fieldtop name="label_armorspeedcostmod">
+				<anchored to="armorspeedcost" />
+				<static textres="char_label_armorpenaltymod" />
 			</label_fieldtop>
 		</sheetdata>
 	</windowclass>

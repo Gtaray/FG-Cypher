@@ -13,7 +13,7 @@ function action(draginfo)
 	local rAction = {};
 	rAction.label = StringManager.capitalize(sStat);
 	rAction.sStat = sStat;
-	rAction.sTraining, rAction.nAssets, rAction.nModifier = CharStatManager.getDefense(rActor, sStat);
+	rAction.nTraining, rAction.nAssets, rAction.nModifier = CharStatManager.getDefense(rActor, sStat);
 	ActionDefense.payCostAndRoll(draginfo, rActor, rAction);
 end
 

@@ -107,7 +107,7 @@ function getEquippedWeapon(nodeActor)
 	rWeapon.sStat = RollManager.resolveStat(DB.getValue(node, "stat", ""));
 	rWeapon.sDefenseStat = RollManager.resolveStat(DB.getValue(node, "defensestat", ""), "speed");
 	rWeapon.sAttackRange = DB.getValue(node, "atkrange", "");
-	rWeapon.sTraining = DB.getValue(node, "training", "");
+	rWeapon.nTraining = DB.getValue(node, "training", 1);
 	rWeapon.nAssets = DB.getValue(node, "asset", 0);
 	rWeapon.nModifier = DB.getValue(node, "modifier", 0);
 

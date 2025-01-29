@@ -184,7 +184,7 @@
 		</sheetdata>
 	</windowclass>
 	<windowclass name="npc_action">
-		<script file="campaign/scripts/power_item.lua" />
+		<script file="campaign/scripts/power_item_npc.lua" />
 		<margins control="0,0,0,2" />
 		<sheetdata>
 			<genericcontrol name="rightanchor">

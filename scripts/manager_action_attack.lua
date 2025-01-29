@@ -39,7 +39,7 @@ function getRoll(rActor, rAction)
 	rRoll.sDesc = ActionAttack.getRollLabel(rActor, rAction, rRoll)
 
 	rRoll.nDifficulty = rAction.nDifficulty or 0;
-	rRoll.sTraining = rAction.sTraining;
+	rRoll.nTraining = rAction.nTraining;
 	rRoll.nAssets = rAction.nAssets or 0;
 	rRoll.nEffort = rAction.nEffort or 0;
 	rRoll.nEase = rAction.nEase or 0;
@@ -109,14 +109,11 @@ function modRoll(rSource, rTarget, rRoll)
 	elseif nMiscAdjust < 0 then
 		rRoll.nHinder = rRoll.nHinder + nMiscAdjust
 	end
-	
-	-- Process conditions
-	rRoll.nConditionMod = RollManager.processStandardConditionsForActor(rSource);
 
 	-- Process Lucky (advantage / disadvantage)
 	local bAdv, bDis = RollManager.processAdvantage(rSource, rTarget, rRoll, aFilter)
 
-	RollManager.encodeTraining(rRoll.sTraining, rRoll);
+	RollManager.encodeTraining(rRoll.nTraining, rRoll);
 	RollManager.encodeEffort(rRoll.nEffort, rRoll);
 	RollManager.encodeAssets(rRoll.nAssets, rRoll);
 	RollManager.encodeEaseHindrance(rRoll, rRoll.nEase, rRoll.nHinder);
@@ -319,8 +316,8 @@ function rebuildRoll(rSource, rTarget, rRoll)
 	if not rRoll.nConditionMod then
 		rRoll.nConditionMod = RollManager.decodeConditionMod(rRoll, true);
 	end
-	if not rRoll.sTraining then
-		rRoll.sTraining = RollManager.decodeTraining(rRoll, true);
+	if not rRoll.nTraining then
+		rRoll.nTraining = RollManager.decodeTraining(rRoll, true);
 	end
 	if rRoll.sWeaponType == nil and rRoll.sDesc:match("%[LIGHT%]") ~= nil then
 		rRoll.sWeaponType = "light";

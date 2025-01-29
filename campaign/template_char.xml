@@ -165,14 +165,14 @@
 			<script>
 				function onSourceUpdate()
 					local rActor = ActorManager.resolveActor(window.getDatabaseNode());
-					local sTraining, nAssets, nModifier = CharStatManager.getInitiative(rActor);
-					setValue(RollManager.convertToFlatBonus(sTraining, nAssets, nModifier));
+					local nTraining, nAssets, nModifier = CharStatManager.getInitiative(rActor);
+					setValue(RollManager.convertToFlatBonus(nTraining, nAssets, nModifier));
 				end
 				function action(draginfo)
 					local rActor = ActorManager.resolveActor(window.getDatabaseNode());
 					local rAction = {};
 					rAction.sStat = "speed";
-					rAction.sTraining, rAction.nAssets, rAction.nModifier = CharStatManager.getInitiative(rActor);
+					rAction.nTraining, rAction.nAssets, rAction.nModifier = CharStatManager.getInitiative(rActor);
 					ActionInit.payCostAndRoll(draginfo, rActor, rAction);
 				end
 				function onDragStart(button, x, y, draginfo)
@@ -494,71 +494,82 @@
 	</template>
 	<!-- END MAIN TAB -->
 
-	<template name="sub_tab_maincharsheet">
-		<subwindow>
-			<anchored to="subwindowframe">
-				<left offset="0" />
-				<top offset="0" />
-				<right offset="0" />
-				<bottom offset="0" />
+	<!-- SKILL TAB-->
+	<template name="button_skill">
+		<button_listitem_left>
+			<state icon="button_prof" tooltipres="char_tooltip_skillinability" merge="add" />
+			<state icon="button_prof_half" tooltipres="char_tooltip_skilluntrained" merge="add" />
+			<state icon="button_prof_down" tooltipres="char_tooltip_skilltrained" merge="add" />
+			<state icon="button_prof_double" tooltipres="char_tooltip_skillspecialized" merge="add" />
+			<default>2</default>
+		</button_listitem_left>
+	</template>
+	<!-- END SKILL TAB -->
+
+	<!-- POWERS AND ACTIONS TAB -->
+	<template name="button_rolltraining">
+		<button_training_base>
+			<anchored to="modanchor" height="20" width="20">
+				<top />
+				<left offset="15" relation="relative" />
 			</anchored>
-		</subwindow>
+		</button_training_base>
 	</template>
-
-	<template name="button_statroll">
-		<button_roll>
-			<anchored width="25" height="25">
-				<top offset="-8" />
-				<left offset="-10" />
-			</anchored>
-			<script>
-				function action(draginfo)
-					local sStat = stat[1];
-					if (sStat or "") == "" then
-						return;
-					end
-
-					local rAction = {
-						label = StringManager.capitalize(sStat),
-						sStat = sStat
-					}
-					
-					local rActor = ActorManager.resolveActor(window.getDatabaseNode())
-					ActionStat.payCostAndRoll(draginfo, rActor, rAction);
-				end
-
-				function onButtonPress(x, y)
-					action();
-					return true;
-				end
-				function onDragStart(button, x, y, draginfo)
-					action(draginfo);
-					return true;
-				end
-			</script>
-		</button_roll>
-	</template>
-
-	<template name="button_defensetraining">
-		<button_skill>
-			<anchored position="righthigh" offset="7,0" width="15" height="20" />
-			<default>1</default>
-		</button_skill>
-	</template>
-	<template name="number_defenseasset">
+	<template name="number_rollassets">
 		<basicnumber>
-			<anchored position="righthigh" offset="7,0" width="15" height="20" />
-			<tooltip textres="assets" />
+			<anchored to="modanchor" width="40" height="20">
+				<top />
+				<left anchor="right" offset="30" relation="relative" />
+			</anchored>
+		</basicnumber>
+	</template>
+	<template name="number_rollmod">
+		<basicnumber>
+			<anchored to="modanchor" width="40" height="20">
+				<top />
+				<left anchor="right" offset="10" relation="relative" />
+			</anchored>
+		</basicnumber>
+	</template>
+	<template name="number_rollease">
+		<basicnumber>
+			<anchored to="modanchor" width="40" height="20">
+				<top />
+				<left anchor="right" relation="relative" offset="10" />
+			</anchored>
 			<min>0</min>
-			<max>2</max>
 		</basicnumber>
 	</template>
-	<template name="number_defensemod">
+	<template name="number_rollhinder">
 		<basicnumber>
-			<anchored position="righthigh" offset="7,0" width="15" height="20" />
-			<tooltip textres="modifier" />
+			<anchored to="modanchor" width="40" height="20">
+				<top />
+				<left anchor="right" relation="relative" offset="10" />
+			</anchored>
+			<min>0</min>
 		</basicnumber>
 	</template>
+	<template name="number_rolldifficulty">
+		<basicnumber>
+			<anchored to="modanchor" width="40" height="20">
+				<top />
+				<left anchor="right" relation="relative" offset="10" />
+			</anchored>
+			<min>0</min>
+			<hideonvalue value="0" />
+			<tooltip textres="power_tooltip_difficulty" />
+		</basicnumber>
+	</template>
+	<template name="number_rolllevel">
+		<basicnumber>
+			<anchored to="modanchor" width="40" height="20">
+				<top />
+				<left anchor="right" relation="relative" offset="10" />
+			</anchored>
+			<tooltip textres="power_tooltip_level" />
+		</basicnumber>
+	</template>
+	<!-- END POWERS AND ACTION TAB -->
 
 	<template name="button_training_base">
 		<buttonfield>
@@ -569,26 +580,6 @@
 			<state icon="button_prof_double" tooltipres="char_tooltip_skillspecialized" merge="add" />
 			<default>1</default>
 		</buttonfield>
-	</template>
-
-	<template name="button_skill">
-		<button_listitem_left>
-			<state icon="button_prof" tooltipres="char_tooltip_skillinability" merge="add" />
-			<state icon="button_prof_half" tooltipres="char_tooltip_skilluntrained" merge="add" />
-			<state icon="button_prof_down" tooltipres="char_tooltip_skilltrained" merge="add" />
-			<state icon="button_prof_double" tooltipres="char_tooltip_skillspecialized" merge="add" />
-			<default>2</default>
-		</button_listitem_left>
-	</template>
-
-	<template name="button_weapontraining">
-		<button_listitem_left>
-			<state icon="button_prof" tooltipres="char_tooltip_skillinability" merge="add" />
-			<state icon="button_prof_half" tooltipres="char_tooltip_skilluntrained" merge="add" />
-			<state icon="button_prof_down" tooltipres="char_tooltip_skilltrained" merge="add" />
-			<state icon="button_prof_double" tooltipres="char_tooltip_skillspecialized" merge="add" />
-			<default>0</default>
-		</button_listitem_left>
 	</template>
 
 	<template name="cycler_training">
@@ -711,7 +702,7 @@
 		<genericcontrol>
 			<anchored to="leftanchor">
 				<top offset="0" />
-				<left anchor="right" relation="relative" />
+				<left anchor="right" relation="relative" offset="10" />
 			</anchored>
 			<stateicons>
 				<on>button_checkon</on>
@@ -827,13 +818,19 @@
 						return;
 					end
 
+					local nodeChar = DB.getChild(window.getDatabaseNode(), "...")
+					local nTraining, nAssets, nMod = CharStatManager.getDefense(nodeChar, sStat);
+
 					local rAction = {
 						label = StringManager.capitalize(sStat),
-						sStat = sStat
+						sStat = sStat,
+						nTraining = nTraining,
+						nAssets = nAssets,
+						nModifier = nMod
 					}
 					
 					local w = UtilityManager.getTopWindow(window);
-					local rActor = ActorManager.resolveActor(w.getDatabaseNode())
+					local rActor = ActorManager.resolveActor(nodeChar)
 					ActionDefense.payCostAndRoll(draginfo, rActor, rAction);
 				end
 			</script>

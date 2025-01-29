@@ -26,14 +26,36 @@ function migrateV2_to_V3()
 			self.migrateCharacterToV3(charnode)
 		end
 	end
+
+	-- Migrate training data on all items, abilities, and NPCs
+	for _, itemnode in ipairs(DB.getChildList("item")) do
+		local nVersion = DB.getValue(itemnode, "version", 0)
+		if nVersion < 3 then
+			self.migrateItemToV3(itemnode)
+		end
+	end
+	for _, abilitynode in ipairs(DB.getChildList("ability")) do
+		local nVersion = DB.getValue(abilitynode, "version", 0)
+		if nVersion < 3 then
+			self.migrateAbilityToV3(abilitynode)
+		end
+	end
+	for _, npcnode in ipairs(DB.getChildList("npc")) do
+		local nVersion = DB.getValue(npcnode, "version", 0)
+		if nVersion < 3 then
+			self.migrateAbilityToV3(npcnode)
+		end
+	end
 end
 
 function migrateCharacterToV3(charnode)
-	local statnode = DB.createChild(charnode, "stats");
-	self.migrateStatToV3(charnode, "might");
-	self.migrateStatToV3(charnode, "speed");
-	self.migrateStatToV3(charnode, "intellect");
-	DB.deleteChild(charnode, "abilities");
+	if DB.getChild(charnode, "abilities") then
+		local statnode = DB.createChild(charnode, "stats");
+		self.migrateStatToV3(charnode, "might");
+		self.migrateStatToV3(charnode, "speed");
+		self.migrateStatToV3(charnode, "intellect");
+		DB.deleteChild(charnode, "abilities");
+	end
 
 	MigrationManager.moveValue(charnode, "tier", "advancement.tier", "number", 1);
 	MigrationManager.moveValue(charnode, "xp", "advancement.xp", "number", 0);
@@ -42,20 +64,26 @@ function migrateCharacterToV3(charnode)
 	local defnode = DB.createChild(charnode, "defenses")
 	local armornode = DB.createChild(defnode, "armor");
 
-	DB.setValue(armornode, "base", "number", DB.getValue(charnode, "Armor.base", 0));
-	MigrationManager.moveValue(charnode, "Armor.base", "defenses.armor.base", "number", 0);
-	MigrationManager.moveValue(charnode, "Armor.mod", "defenses.armor.mod", "number", 0);
-	MigrationManager.moveValue(charnode, "Armor.superarmor", "defenses.armor.superarmor", "number", 0);
-	DB.deleteChild(charnode, "Armor");
+	if DB.getChild(charnode, "Armor") then
+		DB.setValue(armornode, "base", "number", DB.getValue(charnode, "Armor.base", 0));
+		MigrationManager.moveValue(charnode, "Armor.base", "defenses.armor.base", "number", 0);
+		MigrationManager.moveValue(charnode, "Armor.mod", "defenses.armor.mod", "number", 0);
+		MigrationManager.moveValue(charnode, "Armor.superarmor", "defenses.armor.superarmor", "number", 0);
+		DB.deleteChild(charnode, "Armor");
+	end
 
-	DB.copyNode(DB.getChild(charnode, "resistances"), DB.createChild(defnode, "resistances"));
-	DB.deleteChild(charnode, "resistances");
+	if DB.getChild(charnode, "resistances") then
+		DB.copyNode(DB.getChild(charnode, "resistances"), DB.createChild(defnode, "resistances"));
+		DB.deleteChild(charnode, "resistances");
+	end
 
 	MigrationManager.moveValue(charnode, "effort", "effort.base", "number", 1);
 
-	MigrationManager.moveValue(charnode, "ArmorSpeedPenalty.base", "effort.armorpenalty.base", "number", 0);
-	MigrationManager.moveValue(charnode, "ArmorSpeedPenalty.mod", "effort.armorpenalty.mod", "number", 0);
-	DB.deleteChild(charnode, "ArmorSpeedPenalty");
+	if DB.getChild(charnode, "ArmorSpeedPenalty") then
+		MigrationManager.moveValue(charnode, "ArmorSpeedPenalty.base", "effort.armorpenalty.base", "number", 0);
+		MigrationManager.moveValue(charnode, "ArmorSpeedPenalty.mod", "effort.armorpenalty.mod", "number", 0);
+		DB.deleteChild(charnode, "ArmorSpeedPenalty");
+	end
 
 	MigrationManager.moveValue(charnode, "recoveryrollmod", "health.recovery.mod", "number", 0);
 	MigrationManager.moveValue(charnode, "recoveryused", "health.recovery.used", "number", 0);
@@ -64,7 +92,6 @@ function migrateCharacterToV3(charnode)
 	MigrationManager.moveValue(charnode, "inittraining", "initiative.training", "number", 1);
 	MigrationManager.moveValue(charnode, "initasset", "initiative.assets", "number", 0);
 	MigrationManager.moveValue(charnode, "initmod", "initiative.mod", "number", 0);
-
 
 	MigrationManager.moveValue(charnode, "class.type", "class.type_temp.name", "string", "");
 	MigrationManager.moveValue(charnode, "class.typelink", "class.type_temp.link", "windowreference", "");
@@ -90,12 +117,38 @@ function migrateCharacterToV3(charnode)
 		self.migrateCharacterArcToV3(arcnode)
 	end
 
+	-- Migrate all places where "Training" is saved as a string to a number
+	for _, attacknode in ipairs(DB.getChildList(charnode, "attacklist")) do
+		MigrationManager.migrateTrainingStringToNumber(attacknode)
+	end
+
+	for _, abilitynode in ipairs(DB.getChildList(charnode, "abilitylist")) do
+		for _, actionnode in ipairs(DB.getChildList(abilitynode, "actions")) do
+			MigrationManager.migrateTrainingStringToNumber(actionnode)
+		end
+	end
+
+	for _, itemnode in ipairs(DB.getChildList(charnode, "inventorylist")) do
+		for _, actionnode in ipairs(DB.getChildList(itemnode, "actions")) do
+			MigrationManager.migrateTrainingStringToNumber(actionnode)
+		end
+	end
+
+	for _, custompool in ipairs(DB.getChildList(charnode, "custom_pools")) do
+		MigrationManager.migrateTrainingStringToNumber(custompool)
+	end
+
 	DB.setValue(charnode, "version", "number", 3);
 end
 
 function migrateStatToV3(charnode, sStat)
 	local sOldPath = "abilities." .. sStat;
 	local sNewPath = "stats." .. sStat;
+
+	-- If the old node is already not here, then we can return.
+	if not DB.getChild(charnode, sOldPath) then
+		return;
+	end
 	MigrationManager.moveValue(charnode, sOldPath .. ".current", sNewPath .. ".current", "number", 0);
 	MigrationManager.moveValue(charnode, sOldPath .. ".max", sNewPath .. ".maxbase", "number", 0);
 	MigrationManager.moveValue(charnode, sOldPath .. ".edge", sNewPath .. ".edge", "number", 0);
@@ -152,6 +205,41 @@ function migrateCharacterArcToV3(arcnode)
 	DB.deleteChild(arcnode, "resolution");
 	DB.copyNode(resolutionnode, DB.createChild(arcnode, "resolution"))
 	DB.deleteChild(arcnode, "resolution_temp");
+end
+
+function migrateItemToV3(item)
+	for _, actionnode in ipairs(DB.getChildList(item, "actions")) do
+		MigrationManager.migrateTrainingStringToNumber(actionnode)
+	end
+
+	DB.setValue(item, "version", "number", 3);
+end
+
+function migrateAbilityToV3(ability)
+	for _, actionnode in ipairs(DB.getChildList(item, "actions")) do
+		MigrationManager.migrateTrainingStringToNumber(actionnode)
+	end
+
+	DB.setValue(ability, "version", "number", 3);
+end
+
+function migrateNpcToV3(npc)
+	-- NPCs have an <actions> node that holds all of their powers
+	-- And each of those actions nodes has another list of <actions> for the invidual rolls
+	for _, powernode in ipairs(DB.getChildList(npc, "actions")) do
+		for _, actionnode in ipairs(DB.getChildList(powernode, "actions")) do
+			MigrationManager.migrateTrainingStringToNumber(actionnode)
+		end
+	end
+	DB.setValue(npc, "version", "number", 3);
+end
+
+function migrateTrainingStringToNumber(node)
+	local vValue = DB.getValue(node, "training");
+	if vValue ~= nil and type(vValue) == "string" then
+		DB.deleteChild(node, "training")
+		DB.setValue(node, "training", "number", TrainingManager.convertTrainingStringToNumber(vValue))
+	end
 end
 
 function moveValue(node, sOriginPath, sDesinationPath, sType, vDefault, bPersistOrigin)

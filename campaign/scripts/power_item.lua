@@ -45,6 +45,7 @@ end
 function onCostChanged()
 	local bShow = (header.subwindow.cost.getValue() ~= 0);
 	header.subwindow.statcostview.setVisible(bShow);
+	--header.subwindow.costpacer.setVisible(bShow);
 				
 	local sStatView = "" .. header.subwindow.cost.getValue();
 	local sStat = header.subwindow.coststat.getValue();
@@ -69,4 +70,5 @@ end
 function onUsePeriodChanged()
 	local bShowUseCheckbox = DB.getValue(getDatabaseNode(), "period", "") ~= "";
 	header.subwindow.used.setVisible(bShowUseCheckbox);
+	--header.subwindow.usespacer.setVisible(bShowUseCheckbox);
 end

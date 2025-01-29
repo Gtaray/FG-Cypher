@@ -36,7 +36,7 @@
 				<script>
 					function onButtonPress()
 						window.content.subwindow.actions.subwindow.addPower(true);
-						DB.setValue(window.getDatabaseNode(), "powermode", "string", "standard");
+						DB.setValue(window.getDatabaseNode(), "powermode", "string", "preparation");
 					end
 				</script>
 			</buttoncontrol>

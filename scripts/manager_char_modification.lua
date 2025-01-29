@@ -203,16 +203,11 @@ function applySkillModification(rActor, rData)
 end
 
 function applyDefenseModification(rActor, rData)
-	-- If this is a custom stat, then create the pool if it doesn't exist.
 	if not StringManager.contains({ "might", "speed", "intellect" }, rData.sStat) then
+		-- If this is a custom stat, then create the pool if it doesn't exist.
 		local node = CharStatManager.getCustomStatPoolNode(rActor, rData.sStat, true);
-	
-		local nTraining = RollManager.convertTrainingStringToNumber(DB.getValue(node, "training", ""));
-		nTraining = nTraining + RollManager.processTrainingFromString(rData.sTraining)
-
-		-- Can't use the applyModToTrainingNode method because it saves the value as a number
-		-- not a string
-		DB.setValue(node, "training", "string", RollManager.resolveTraining(nTraining))
+		
+		CharModManager.applyModToTrainingNode(node, "training", rData.sTraining)
 		CharModManager.applyModToAssetNode(node, "assets", rData.nAsset);
 		CharModManager.applyModToModifierNode(node, "mod", rData.nMod);
 		return;
@@ -311,7 +306,7 @@ end
 function applyInitiativeModification(rActor, rData)
 	local charnode = ActorManager.getCreatureNode(rActor);
 
-	CharModManager.applyModToTrainingNode(charnode, "initiative.training", rData.sTraining);
+	CharStatManager.modifyInitiativeTraining(charnode, rData.sTraining)
 	CharStatManager.modifyInitiativeMod(charnode, rData.nMod);
 	CharStatManager.modifyInitiativeAssets(charnode, rData.nAsset);
 
@@ -445,15 +440,9 @@ function applyModToTrainingNode(node, sPath, sTraining)
 	end
 
 	local nCurTraining = DB.getValue(node, sPath, 1);
-	nCurTraining = nCurTraining + RollManager.processTraining(
-		sTraining == "inability",
-		sTraining == "trained",
-		sTraining == "specialized"
-	)
+	local nTraining = TrainingManager.convertTrainingStringToDifficultyModifier(sTraining)
 
-	-- Clamp training between 0 and 3
-	nCurTraining = math.min(math.max(nCurTraining, 0), 3);
-	DB.setValue(node, sPath, "number", nCurTraining);
+	DB.setValue(node, sPath, "number", TrainingManager.modifyTraining(nCurTraining, nTraining));
 end
 function applyModToAssetNode(node, sPath, nAsset)
 	if (nAsset or 0) == 0 then

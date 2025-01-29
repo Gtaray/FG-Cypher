@@ -1,7 +1,7 @@
 function getDefense(rActor, sStat)
 	local nodeActor = ActorManager.getCreatureNode(rActor);
 	if not nodeActor or (sStat or "") == "" then
-		return;
+		return 1, 0, 0;
 	end
 
 	sStat = sStat:lower();
@@ -10,11 +10,11 @@ function getDefense(rActor, sStat)
 		return getCustomStatDefense(rActor, sStat)
 	end
 
-	local sTraining = RollManager.resolveTraining(DB.getValue(nodeActor, "stats." .. sStat .. ".def.training", 1));
+	local nTraining = DB.getValue(nodeActor, "stats." .. sStat .. ".def.training", 1);
 	local nAssets = DB.getValue(nodeActor, "stats." .. sStat .. ".def.asset", 0);
 	local nModifier = DB.getValue(nodeActor, "stats." .. sStat .. ".def.misc", 0);
 
-	return sTraining, nAssets, nModifier
+	return nTraining, nAssets, nModifier
 end
 
 ---------------------------------------------------------------
@@ -31,11 +31,11 @@ function getInitiative(rActor)
 		return "", 0, 0;
 	end
 
-	local sTraining = RollManager.resolveTraining(DB.getValue(nodeChar, "initiative.training", 1))
+	local nTraining = DB.getValue(nodeChar, "initiative.training", 1)
 	local nAssets = DB.getValue(nodeChar, "initiative.assets", 0);
 	local nModifier = DB.getValue(nodeChar, "initiative.mod", 0);
 
-	return sTraining, nAssets, nModifier;
+	return nTraining, nAssets, nModifier;
 end
 
 function setInitiativeMod(rActor, nValue)
@@ -94,6 +94,38 @@ function modifyInitiativeAssets(rActor, nDelta)
 
 	local _, nAssets = CharStatManager.getInitiative(rActor);
 	CharStatManager.setInitiativeAssets(rActor, nAssets + nDelta);
+end
+
+function setInitiativeTraining(rActor, nValue)
+	local nodeChar;
+	if type(rActor) == "databasenode" then
+		nodeChar = rActor;
+	else
+		nodeChar = ActorManager.getCreatureNode(rActor);
+	end
+	if not nodeChar or not ActorManager.isPC(rActor) then
+		return;
+	end
+
+	-- Lock the value to between 0 and 3
+	nValue = math.max(math.min(nValue, 3), 0);
+	DB.setValue(nodeChar, "initiative.training", "number", nValue);
+end
+-- vDelta can be a string or number
+function modifyInitiativeTraining(rActor, vDelta)
+	local nodeChar;
+	if type(rActor) == "databasenode" then
+		nodeChar = rActor;
+	else
+		nodeChar = ActorManager.getCreatureNode(rActor);
+	end
+	if not nodeChar or not ActorManager.isPC(rActor) then
+		return;
+	end
+
+	local nTraining = CharStatManager.getInitiative(rActor);
+	nTraining = TrainingManager.modifyTraining(nTraining, vDelta)
+	CharStatManager.setInitiativeAssets(rActor, nTraining);
 end
 
 ---------------------------------------------------------------
@@ -351,10 +383,10 @@ end
 function getCustomStatDefense(rActor, sStat)
 	local node = CharStatManager.getCustomStatPoolNode(rActor, sStat);
 	if not node then
-		return "", 0, 0;
+		return 1, 0, 0;
 	end
 
-	return DB.getValue(node, "training", ""), DB.getValue(node, "assets", 0), DB.getValue(node, "mod", 0)
+	return DB.getValue(node, "def.training", 1), DB.getValue(node, "def.asset", 0), DB.getValue(node, "def.misc", 0)
 end
 
 function getCustomStatPoolNode(rActor, sStat, bCreateIfDoesNotExist)
