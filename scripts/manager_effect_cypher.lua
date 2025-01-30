@@ -55,12 +55,17 @@ function onInit()
 	EffectManager.registerEffectVar("sTargeting", { sDBType = "string", bClearOnUntargetedDrop = true });
 
 	EffectManager.setCustomOnEffectAddStart(onEffectAddStart);
+	EffectManager.setCustomOnEffectAddEnd(onEffectAddEnd);
 	
 	EffectManager.setCustomOnEffectRollEncode(onEffectRollEncode);
 	EffectManager.setCustomOnEffectTextEncode(onEffectTextEncode);
 	EffectManager.setCustomOnEffectTextDecode(onEffectTextDecode);
 
 	EffectManager.setCustomOnEffectActorStartTurn(onEffectActorStartTurn);
+
+	if Session.IsHost then
+		DB.addHandler("combattracker.list.*.effects.*", "onDelete", onEffectNodeDeleted);
+	end
 
 	_dmgTypeEffects = {
 		"dmg",
@@ -93,6 +98,12 @@ function onInit()
 
 	EffectManagerCypher.addDefaultConditions();
 	EffectManagerCypher.updateConditions();
+end
+
+function onClose()
+	if Session.IsHost then
+		DB.removeHandler("combattracker.list.*.effects.*", "onDelete", onEffectNodeDeleted);
+	end
 end
 
 ---------------------------------
@@ -168,6 +179,24 @@ function onEffectAddStart(rEffect)
 		rEffect.nDuration = rEffect.nDuration * 14400
 	end
 	rEffect.sUnits = "";
+end
+
+function onEffectAddEnd(nodeEffect, rEffect)
+	local nodeCT = DB.getChild(nodeEffect, "...");
+	local _, sRecord = DB.getValue(nodeCT, "link", "", "");
+	local rActor = ActorManager.resolveActor(DB.findNode(sRecord));
+	local aEffectComps = EffectManager.parseEffect(rEffect.sName);
+
+	EffectManagerCypher.processPoolEffectsAdded(rActor, aEffectComps);
+end
+
+function onEffectNodeDeleted(nodeEffect)
+	local nodeCT = DB.getChild(nodeEffect, "...");
+	local _, sRecord = DB.getValue(nodeCT, "link", "", "");
+	local rActor = ActorManager.resolveActor(DB.findNode(sRecord));
+	local aEffectComps = EffectManager.parseEffect(DB.getValue(nodeEffect, "label", ""));
+
+	EffectManagerCypher.processPoolEffectsRemoved(rActor, aEffectComps);
 end
 
 function onEffectRollEncode(rRoll, rEffect)
@@ -294,7 +323,7 @@ function applyOngoingDamageAdjustment(nodeActor, nodeEffect, rEffectComp)
 				rAction.bNoOverflow = true;
 			else
 				if rAction.sHealStat ~= nil then
-					return; -- Multiple stats are not illegal. Bail.
+					return; -- Multiple stats are not legal. Bail.
 				end
 				rAction.sHealStat = sFilter;
 			end
@@ -371,6 +400,52 @@ function applyOngoingDamageAdjustment(nodeActor, nodeEffect, rEffectComp)
 			rRoll.bSecret = true;
 		end
 		ActionsManager.actionDirect(nil, "damage", { rRoll }, { { rTarget } });
+	end
+end
+
+function processPoolEffectsAdded(rActor, aEffectComps)
+	-- Only process this for PCs
+	if not rActor or not ActorManager.isPC(rActor) then
+		return;
+	end
+
+	local tStats = {}
+	for _,sEffectComp in ipairs(aEffectComps) do
+		local rEffectComp = EffectManagerCypher.parseEffectComp(sEffectComp);
+		-- POOL doesn't support conditionals. It simply adds stats when enabled
+		if rEffectComp.type == "pool" then
+			for _, sStat in ipairs(rEffectComp.filters) do
+				tStats[sStat] = (tStats[sStat] or 0) + rEffectComp.mod;
+			end	
+		end
+	end
+
+	-- Go through and adjust the max stats for each stat in the table
+	for sStat, nMod in pairs(tStats) do
+		CharStatManager.modifyStatMaxMod(rActor, sStat, nMod);
+	end
+end
+
+function processPoolEffectsRemoved(rActor, aEffectComps)
+	-- Only process this for PCs
+	if not rActor or not ActorManager.isPC(rActor) then
+		return;
+	end
+
+	local tStats = {}
+	for _,sEffectComp in ipairs(aEffectComps) do
+		local rEffectComp = EffectManagerCypher.parseEffectComp(sEffectComp);
+		-- POOL doesn't support conditionals. It simply adds stats when enabled
+		if rEffectComp.type == "pool" then
+			for _, sStat in ipairs(rEffectComp.filters) do
+				tStats[sStat] = (tStats[sStat] or 0) + rEffectComp.mod;
+			end	
+		end
+	end
+
+	-- Go through and adjust the max stats for each stat in the table
+	for sStat, nMod in pairs(tStats) do
+		CharStatManager.modifyStatMaxMod(rActor, sStat, -nMod);
 	end
 end
 

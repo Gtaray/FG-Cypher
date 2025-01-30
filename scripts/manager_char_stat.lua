@@ -191,6 +191,25 @@ function getStatPool(rActor, sStat)
 	return nCur, nMax;
 end
 
+function getStatMax(rActor, sStat)
+	local nodeActor;
+	if type(rActor) == "databasenode" then
+		nodeActor = rActor;
+	else
+		nodeActor = ActorManager.getCreatureNode(rActor);
+	end
+	if not nodeActor or (sStat or "") == "" then
+		return 0;
+	end
+
+	-- Look for a custom stat pool
+	if not StringManager.contains({ "might", "speed", "intellect" }, sStat) then
+		return CharStatManager.getCustomStatPoolMax(rActor, sStat, nValue);
+	end
+	
+	local sPath = string.format("stats.%s.maxbase", sStat:lower());
+	DB.getValue(nodeActor, sPath, 0);
+end
 function setStatMax(rActor, sStat, nValue)
 	local nodeActor;
 	if type(rActor) == "databasenode" then
@@ -198,8 +217,8 @@ function setStatMax(rActor, sStat, nValue)
 	else
 		nodeActor = ActorManager.getCreatureNode(rActor);
 	end
-	if not nodeActor or (sStat or "") == "" or nValue == 0 then
-		return 0;
+	if not nodeActor or (sStat or "") == "" then
+		return;
 	end
 
 	-- Look for a custom stat pool
@@ -219,18 +238,91 @@ function modifyStatMax(rActor, sStat, nValue)
 		nodeActor = ActorManager.getCreatureNode(rActor);
 	end
 	if not nodeActor or (sStat or "") == "" or nValue == 0 then
-		return 0;
+		return;
 	end
 
 	sStat = sStat:lower();
-	local _, nMax = CharStatManager.getStatPool(rActor, sStat)
+	-- New stat pool maximum
+	local nMax = CharStatManager.getStatMax(rActor, sStat) + nValue;
+
+	-- The order of operations here depends on the direction of the change.
+	-- If we're increasing, we need to up the max first so there's room to increase the current
+	-- If we're decreasing, we lower the current first so it doesn't get lowered automatically when the stat does
+	if nValue > 0 then
+		CharStatManager.setStatMax(rActor, sStat, nMax);
+		CharStatManager.addToStatPool(rActor, sStat, nValue);
+	elseif nValue < 0 then
+		CharStatManager.addToStatPool(rActor, sStat, nValue);
+		CharStatManager.setStatMax(rActor, sStat, nMax);
+	end
+end
+
+function getStatMaxMod(rActor, sStat)
+	local nodeActor;
+	if type(rActor) == "databasenode" then
+		nodeActor = rActor;
+	else
+		nodeActor = ActorManager.getCreatureNode(rActor);
+	end
+	if not nodeActor or (sStat or "") == "" then
+		return 0;
+	end
+
+	-- Look for a custom stat pool
+	if not StringManager.contains({ "might", "speed", "intellect" }, sStat) then
+		return CharStatManager.getCustomStatPoolMax(rActor, sStat);
+	end
+	
+	local sPath = string.format("stats.%s.maxmod", sStat:lower());
+	return DB.getValue(nodeActor, sPath, 0);
+end
+function setStatMaxMod(rActor, sStat, nValue)
+	local nodeActor;
+	if type(rActor) == "databasenode" then
+		nodeActor = rActor;
+	else
+		nodeActor = ActorManager.getCreatureNode(rActor);
+	end
+	if not nodeActor or (sStat or "") == "" then
+		return;
+	end
+
+	-- Look for a custom stat pool
+	-- Since custom stat pools don't have a "mod" or "base" field, this just sets the value raw
+	if not StringManager.contains({ "might", "speed", "intellect" }, sStat) then
+		CharStatManager.setCustomStatPoolMax(rActor, sStat, nValue);
+		return
+	end
+	
+	local sPath = string.format("stats.%s.maxmod", sStat:lower());
+	DB.setValue(nodeActor, sPath, "number", nValue);
+end
+function modifyStatMaxMod(rActor, sStat, nValue)
+	local nodeActor;
+	if type(rActor) == "databasenode" then
+		nodeActor = rActor;
+	else
+		nodeActor = ActorManager.getCreatureNode(rActor);
+	end
+	if not nodeActor or (sStat or "") == "" or nValue == 0 then
+		return;
+	end
+
+	sStat = sStat:lower();
 
 	-- New stat pool maximum
-	nMax = nMax + nValue;
-	CharStatManager.setStatMax(rActor, sStat, nMax);
+	local nMaxMod = CharStatManager.getStatMaxMod(rActor, sStat) + nValue;
 
-	-- Modify the current amount by the same amount
-	CharStatManager.addToStatPool(rActor, sStat, nValue);
+	-- The order of operations here depends on the direction of the change.
+	-- If we're increasing, we need to up the max first so there's room to increase the current
+	-- If we're decreasing, we lower the current first so it doesn't get lowered automatically when the stat does
+	if nValue > 0 then
+		CharStatManager.setStatMaxMod(rActor, sStat, nMaxMod);
+		CharStatManager.addToStatPool(rActor, sStat, nValue);
+	elseif nValue < 0 then
+		CharStatManager.addToStatPool(rActor, sStat, nValue);
+		CharStatManager.setStatMaxMod(rActor, sStat, nMaxMod);
+	end
 end
 
 function addToStatPool(rActor, sStat, nValue)
@@ -362,6 +454,14 @@ function setCustomStatPool(rActor, sStat, nValue)
 	DB.setValue(node, "current", "number", nValue);
 end
 
+function getCustomStatPoolMax(rActor, sStat)
+	local node = CharStatManager.getCustomStatPoolNode(rActor, sStat);
+	if not node then
+		return;
+	end
+	
+	return DB.getValue(node, "max", 0);
+end
 function setCustomStatPoolMax(rActor, sStat, nValue)
 	local node = CharStatManager.getCustomStatPoolNode(rActor, sStat);
 	if not node then
@@ -369,6 +469,15 @@ function setCustomStatPoolMax(rActor, sStat, nValue)
 	end
 	
 	DB.setValue(node, "max", "number", nValue);
+end
+function modifyCustomStatPoolMax(rActor, sStat, nValue)
+	local node = CharStatManager.getCustomStatPoolNode(rActor, sStat);
+	if not node then
+		return;
+	end
+	
+	local nMax = DB.getValue(node, "max", 0);
+	DB.setValue(node, "max", "number", nMax + nValue);
 end
 
 function setCustomStatPoolEdge(rActor, sStat, nValue)

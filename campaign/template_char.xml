@@ -97,17 +97,6 @@
 			<anchored position="belowleft" offset="10,20" width="60" height="50" />
 		</basicnumber>
 	</template>
-	<template name="number_charabilitymax">
-		<basicnumber>
-			<default>10</default>
-			<min>0</min>
-			<readonly />
-			<anchored width="30" height="20">
-				<top />
-				<left position="right" relation="relative" offset="12" />
-			</anchored>
-		</basicnumber>
-	</template>
 	<template name="number_charedge">
 		<basicnumber>
 			<anchored width="30" height="20">

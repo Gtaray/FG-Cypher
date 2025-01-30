@@ -30,7 +30,7 @@ function modifyDamageTrack(rActor, nIncrement)
 		return;
 	end
 	
-	local nCur = ActorHealthManager.getDamageTrack(rActor);
+	local nCur = CharHealthManager.getDamageTrack(rActor);
 	local nNewValue = math.max(math.min(nCur + nIncrement, 3), 0);
 
 	ActorHealthManager.setDamageTrack(rActor, nNewValue);
