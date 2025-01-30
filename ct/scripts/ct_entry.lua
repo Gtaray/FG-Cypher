@@ -59,17 +59,17 @@ function linkPCFields()
 
 	local nodeChar = link.getTargetDatabaseNode();
 	if nodeChar then
-		damagetrack.setLink(DB.createChild(nodeChar, "wounds", "number"));
+		damagetrack.setLink(DB.createChild(nodeChar, "health.damagetrack", "number"));
 
-		mightmax.setLink(DB.createChild(nodeChar, "abilities.might.max", "number"));
-		mightpool.setLink(DB.createChild(nodeChar, "abilities.might.current", "number"));
+		mightmax.setLink(DB.createChild(nodeChar, "stats.might.max", "number"));
+		mightpool.setLink(DB.createChild(nodeChar, "stats.might.current", "number"));
 
-		speedmax.setLink(DB.createChild(nodeChar, "abilities.speed.max", "number"));
-		speedpool.setLink(DB.createChild(nodeChar, "abilities.speed.current", "number"));
+		speedmax.setLink(DB.createChild(nodeChar, "stats.speed.max", "number"));
+		speedpool.setLink(DB.createChild(nodeChar, "stats.speed.current", "number"));
 
-		intellectmax.setLink(DB.createChild(nodeChar, "abilities.intellect.max", "number"));
-		intellectpool.setLink(DB.createChild(nodeChar, "abilities.intellect.current", "number"));
+		intellectmax.setLink(DB.createChild(nodeChar, "stats.intellect.max", "number"));
+		intellectpool.setLink(DB.createChild(nodeChar, "stats.intellect.current", "number"));
 
-		armor.setLink(DB.createChild(nodeChar, "armor", "number"));
+		armor.setLink(DB.createChild(nodeChar, "defenses.armor.total", "number"));
 	end
 end
