@@ -628,9 +628,9 @@
 				</anchored>
 				<icons>char_stats</icons>
 			</label_charframetop>
-			<button_advancement name="button_advancement">
+			<!-- <button_advancement name="button_advancement">
 				<anchored to="title" />
-			</button_advancement>
+			</button_advancement> -->
 
 			<basicnumber name="xp" source="advancement.xp">
 				<anchored to="columnanchor" width="40" height="30">

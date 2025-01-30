@@ -98,15 +98,6 @@
 				<static textres="char_label_weapon" />
 				<target>weapons</target>
 			</label_charframetop_collapsible>
-			
-			<!-- <button_details name="weapons_global_detail">
-				<anchored to="weapon_header" position="insidetopright" offset="5,0" />
-				<script>
-					function onButtonPress()
-						Interface.openWindow("char_weaponmeta", window.getDatabaseNode());
-					end
-				</script>
-			</button_details> -->
 
 			<list_content_noscroll_top name="weapons">
 				<datasource>.attacklist</datasource>
