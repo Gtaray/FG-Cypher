@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="record_featurelist">
+		<margins control="0,0,0,2" />
+		<script file="campaign/scripts/char_content_featurelist.lua" />
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+
+			<header_column name="features_header">
+				<static textres="header_features"/>
+				<center />
+			</header_column>
+			<list_char_mod name="features" />
+			<button_iedit name="features_iedit">
+				<anchored to="features_header" position="righthigh" offset="-15,0" />
+				<edittarget>features</edittarget>
+			</button_iedit>
+			<button_iadd name="features_iadd">
+				<anchored to="features_iedit" position="lefthigh" offset="3,0" />
+				<target>features</target>
+			</button_iadd>
+		</sheetdata>
+	</windowclass>
+</root>

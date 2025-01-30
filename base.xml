@@ -59,6 +59,9 @@
 	<includefile source="campaign/record_ancestry.xml" />
 	<includefile source="campaign/record_flavor.xml" />
 
+	<includefile source="campaign/record_abilitylist.xml" />
+	<includefile source="campaign/record_featurelist.xml" />
+
 	<includefile source="campaign/record_item.xml" />
 	<includefile source="campaign/record_parcel.xml" />
 	<includefile source="campaign/record_npc.xml" />

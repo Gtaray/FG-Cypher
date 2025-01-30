@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="record_abilitylist">
+		<margins control="0,0,0,2" />
+		<script file="campaign/scripts/char_content_abilitylist.lua" />
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+
+			<header_column name="header">
+				<static textres="header_abilities"/>
+				<center />
+			</header_column>
+			<list_ref_ability name="list">
+				<datasource>.abilities</datasource>
+			</list_ref_ability>
+		</sheetdata>
+	</windowclass>
+</root>

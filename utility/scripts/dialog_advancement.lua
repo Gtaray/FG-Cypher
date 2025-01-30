@@ -124,6 +124,7 @@ end
 function buildAbilityAdvancementList()
 	local nCharTier = CharAdvancementManager.getTier(rData.nodeChar);
 	local typenode = CharTypeManager.getTypeNode(rData.nodeChar);
+	local focusnode = CharFocusManager.getFocusNode(rData.nodeChar);
 	local flavornode = CharFlavorManager.getFlavorNode(rData.nodeChar);
 
 	-- If there's no type node found, then return an empty list
@@ -131,6 +132,7 @@ function buildAbilityAdvancementList()
 		return {}
 	end
 	
+	-- Get abilities the character has
 	local tAbilities = {};
 	for _, abilitynode in ipairs(DB.getChildList(rData.nodeChar, "abilitylist")) do
 		local _, sItemLink = DB.getValue(abilitynode, "itemlink");
@@ -161,7 +163,26 @@ function buildAbilityAdvancementList()
 
 			-- Add the ability to the overall tracker so that abilities
 			-- from a Flavor don't get added twice
-			local sName = DB.getValue(abilitynode, "name", "")
+			tAbilities[sName:lower()] = true;
+		end
+	end
+
+	-- Add type swap options from the focus
+	for _, abilitynode in ipairs(DB.getChildList(focusnode, "typeswap")) do
+		local nTier = DB.getValue(abilitynode, "tier", 1);
+		local sName = DB.getValue(abilitynode, "name", "");
+		local _, sRecord = DB.getValue(abilitynode, "link");
+		local recordnode = DB.findNode(sRecord);
+
+		-- Only add to the overall list if the player doesn't have an ability
+		-- with a matching name, and the ability is of equal or lower tier
+		if recordnode and nTier <= nCharTier and not tAbilities[sName:lower()] then
+			table.insert(aAbilities, {
+				nTier = nTier,
+				sRecord = DB.getPath(recordnode)
+			});
+
+			-- Add the ability to the overall tracker so that abilities don't get added twice
 			tAbilities[sName:lower()] = true;
 		end
 	end
@@ -188,8 +209,7 @@ end
 
 function buildFocusAdvancementList()
 	local nCharTier = CharAdvancementManager.getTier(rData.nodeChar);
-	local _, sFocusNode = DB.getValue(rData.nodeChar, "class.focuslink");
-	local focusnode = DB.findNode(sFocusNode or "");
+	local focusnode = CharFocusManager.getFocusNode(rData.nodeChar);
 
 	-- If there's no type node found, then return an empty list
 	if not focusnode then

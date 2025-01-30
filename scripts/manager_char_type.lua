@@ -26,6 +26,10 @@ function getTypeNode(nodeChar)
 	return DB.findNode(sRecord);
 end
 
+function getTypeName(nodeChar)
+	return DB.getValue(nodeChar, "class.type.name");
+end
+
 function characterHasType(nodeChar)
 	return CharTypeManager.getTypeNode(nodeChar) ~= nil;
 end
@@ -102,6 +106,10 @@ function buildAbilityPromptTable(nodeChar, nodeType, nTier, rData)
 
 	-- Add abilities from flavor (if it is present)
 	CharFlavorManager.buildAbilityPromptTable(nodeChar, nTier, rData);
+
+	-- Add abilities from a focus' type swap list
+	local focusnode = CharFocusManager.getFocusNode(nodeChar);
+	CharFocusManager.addTypeSwapAbilities(nodeChar, focusnode, nTier, rData);
 end
 
 function applyTier1(rData)

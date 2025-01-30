@@ -15,25 +15,32 @@
 			<embed />
 		</tab>
 		<tab merge="add">
-			<name>main</name>
-			<resource>tab_other</resource>
-			<class>focus_main</class>
+			<name>abilities</name>
+			<resource>tab_abilities</resource>
+			<class>record_abilitylist</class>
+			<embed />
+		</tab>
+		<tab merge="add">
+			<name>swap</name>
+			<resource>tab_typeswap</resource>
+			<class>focus_typeswap</class>
 			<embed />
 		</tab>
 	</windowclass>
 
-	<windowclass name="focus_main">
+	<windowclass name="focus_typeswap">
 		<margins control="0,0,0,2" />
-		<script file="campaign/scripts/char_content_focus_stats.lua" />
+		<script file="campaign/scripts/char_content_abilitylist.lua" />
 		<sheetdata>
 			<anchor_column name="columnanchor" />
 
-			<header_column name="abilities_header">
-				<static textres="focus_header_abilities"/>
+			<header_column name="header">
+				<static textres="focus_header_typeswap"/>
 				<center />
 			</header_column>
-			<list_ref_ability name="abilities">
-				<datasource>.abilities</datasource>
+			<list_ref_ability name="list">
+				<datasource>.typeswap</datasource>
+				<hidegiven />
 			</list_ref_ability>
 		</sheetdata>
 	</windowclass>

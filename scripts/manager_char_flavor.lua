@@ -29,6 +29,10 @@ function getFlavorNode(nodeChar)
 	end
 end
 
+function getFlavorName(nodeChar)
+	return DB.getValue(nodeChar, "class.flavor.name")
+end
+
 function characterHasFlavor(nodeChar)
 	return CharFlavorManager.getFlavorNode(nodeChar) ~= nil;
 end

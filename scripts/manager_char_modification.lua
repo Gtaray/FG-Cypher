@@ -152,7 +152,7 @@ function applyStatModification(rActor, rData)
 		end
 	end
 
-	ActorStatManager.modifyStatMax(rActor, rData.sStat, rData.nMod);
+	CharStatManager.modifyStatMax(rActor, rData.sStat, rData.nMod);
 
 	rData.sSummary = "Stats: " .. rData.sSummary;
 	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);

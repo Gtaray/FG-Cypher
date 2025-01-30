@@ -37,3 +37,14 @@ function addDescriptorDrop(nodeChar, sClass, sRecord)
 		w.setData(rAdd, CharModManager.applyFloatingStatsAndEdge);
 	end
 end
+
+function getDescriptorNode(nodeChar)
+	local _, sRecord = DB.getValue(nodeChar, "class.descriptor.link");
+	if sRecord then
+		return DB.findNode(sRecord);
+	end
+end
+
+function getDescriptorName(nodeChar)
+	return DB.getValue(nodeChar, "class.descriptor.name")
+end

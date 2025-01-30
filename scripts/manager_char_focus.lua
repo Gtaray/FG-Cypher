@@ -20,6 +20,15 @@ function addFocusDrop(nodeChar, sClass, sRecord)
 	CharFocusManager.applyTier1(rAdd)
 end
 
+function getFocusNode(nodeChar)
+	local _, sRecord = DB.getValue(nodeChar, "class.focus.link");
+	return DB.findNode(sRecord);
+end
+
+function getFocusName(nodeChar)
+	return DB.getValue(nodeChar, "class.focus.name")
+end
+
 function buildAbilityPromptTable(nodeChar, nodeFocus, nTier, rData)
 	rData.nAbilityChoices = 1;
 	rData.aAbilitiesGiven = {};
@@ -36,6 +45,22 @@ function buildAbilityPromptTable(nodeChar, nodeFocus, nTier, rData)
 					sRecord = sRecord
 				});
 			end
+		end
+	end
+end
+
+function addTypeSwapAbilities(nodeChar, nodeFocus, nTier, rData)
+	if not rData.aAbilityOptions then
+		rData.aAbilityOptions = {}
+	end
+
+	for _, nodeability in ipairs(DB.getChildList(nodeFocus, "typeswap")) do
+		if DB.getValue(nodeability, "tier", 0) <= nTier then
+			local _, sRecord = DB.getValue(nodeability, "link");
+			table.insert(rData.aAbilityOptions, {
+				nTier = nTier,
+				sRecord = sRecord
+			});
 		end
 	end
 end

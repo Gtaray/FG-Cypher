@@ -37,3 +37,14 @@ function addAncestryDrop(nodeChar, sClass, sRecord)
 		w.setData(rAdd, CharModManager.applyFloatingStatsAndEdge);
 	end
 end
+
+function getAncestryNode(nodeChar)
+	local _, sRecord = DB.getValue(nodeChar, "class.ancestry.link");
+	if sRecord then
+		return DB.findNode(sRecord);
+	end
+end
+
+function getAncestryName(nodeChar)
+	return DB.getValue(nodeChar, "class.ancestry.name")
+end

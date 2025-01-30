@@ -201,11 +201,10 @@ function increaseTier(nodeChar)
 end
 
 function promptAbilitiesForNextTier(nodeChar)
-	local nTier = DB.getValue(nodeChar, "advancement.tier", 0);
-	local _, sRecord = DB.getValue(nodeChar, "class.type.link", "");
-	local typenode = DB.findNode(sRecord);
+	local nTier = CharAdvancementManager.getTier(nodeChar);
+	local typenode = CharTypeManager.getTypeNode(nodeChar);
 
-	local rData = { nodeChar = nodeChar, sSourceName = DB.getValue(nodeChar, "class.type", ""), nTier = nTier };
+	local rData = { nodeChar = nodeChar, sSourceName = CharTypeManager.getTypeName(nodeChar), nTier = nTier };
 	CharTypeManager.buildAbilityPromptTable(nodeChar, typenode, nTier, rData);
 
 	if #(rData.aAbilityOptions) > 0 then
@@ -220,11 +219,10 @@ end
 function applyTypeAbilitiesAndPromptFocusAbilities(rData)
 	CharTypeManager.applyTier(rData);
 
-	local _, sRecord = DB.getValue(rData.nodeChar, "class.focus.link", "");
-	local focusnode = DB.findNode(sRecord);
+	local focusnode = CharFocusManager.getFocusNode(rData.nodeChar);
 
 	-- This re-initializes the ability lists for the focus
-	rData.sSourceName = DB.getValue(nodeChar, "class.focus", "");
+	rData.sSourceName = CharFocusManager.getFocusName(rData.nodeChar);
 	CharFocusManager.buildAbilityPromptTable(rData.nodeChar, focusnode, rData.nTier, rData);
 	if #(rData.aAbilityOptions) > 0 then
 		local w = Interface.openWindow("select_dialog_char", "");
