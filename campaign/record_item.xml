@@ -274,8 +274,8 @@
 				<static textres="item_label_armor" />
 			</label_column>
 			<number_column name="armor" />
-			<label_column name="shieldbonus_label">
-				<static textres="item_label_shieldbonus" />
+			<label_column name="speeddefbonus_label">
+				<static textres="item_label_speedbonus" />
 			</label_column>
 			<cycler_column name="shieldbonus">
 				<anchored width="120" />
@@ -285,6 +285,12 @@
 					<defaultlabelres>dash</defaultlabelres>
 				</parameters>
 			</cycler_column>
+			<label_column name="speedpenalty_label">
+				<static textres="item_label_speedpenalty" />
+			</label_column>
+			<number_column name="speedpenalty">
+				<tooltip textres="item_tooltip_speedpenalty" />
+			</number_column>
 
 			<!-- DESCRIPTION -->
 			<line_column name="divider3" />

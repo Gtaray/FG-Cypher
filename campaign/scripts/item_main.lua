@@ -79,6 +79,7 @@ function update()
 	updateControl("armortype", bReadOnly, not bArmor);
 	updateControl("shieldbonus", bReadOnly, not (bID and bArmor and bShield));
 	updateControl("armor", bReadOnly, not (bID and bArmor and not bShield));
+	updateControl("speedpenalty", bReadOnly, not bArmor);
 
 	-- CYPHER PROPERTIES
 	WindowManager.callSafeControlUpdate(self, "levelroll", bReadOnly, not (bCypher or bArtifact) or not Session.IsHost);
@@ -104,8 +105,22 @@ function updateArmorValue()
 	if not ItemManagerCypher.isItemArmor(node) then
 		return;
 	end
-	
+
 	local sType = ItemManagerCypher.getArmorType(node);
+
+	-- if speed penalty is set to 0 or the default value for its type
+	-- then we update the value
+	local nPenalty = speedpenalty.getValue();
+	if sType == "light" and (nPenalty == 0 or nPenalty == 3 or nPenalty == 4) then
+		speedpenalty.setValue(2);
+	elseif sType == "medium" and (nPenalty == 0 or nPenalty == 2 or nPenalty == 4) then
+		speedpenalty.setValue(3);
+	elseif sType == "heavy" and (nPenalty == 0 or nPenalty == 2 or nPenalty == 3) then
+		speedpenalty.setValue(4);
+	else
+		speedpenalty.setValue(0);
+	end
+
 	if sType == "shield" then
 		return;
 	end
@@ -122,7 +137,7 @@ function updateArmorValue()
 		armor.setValue(3);
 	elseif sType == "" and (nArmor == 1 or nArmor == 2 or nArmor == 3) then
 		armor.setValue(0);
-	end
+	end	
 end
 
 function updateDamageValue()

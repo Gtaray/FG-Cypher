@@ -319,9 +319,32 @@
 				<static textres="char_label_armor" />
 			</label_charfieldtop_expanded>
 
+			<hn name="effortpenalty_base" source="effort.armorpenalty.base">
+				<script>
+					function onInit()
+						local node = window.getDatabaseNode()
+						DB.addHandler(DB.getPath(node, "inventorylist.*.carried"), "onUpdate", onEquipmentChanged)
+						DB.addHandler(DB.getPath(node, "inventorylist.*.speedpenalty"), "onUpdate", onEquipmentChanged)
+						DB.addHandler(DB.getPath(node, "inventorylist.*.subtype"), "onUpdate", onEquipmentChanged)
+						onEquipmentChanged();
+					end
+					function onClose()
+						local node = window.getDatabaseNode()
+						DB.removeHandler(DB.getPath(node, "inventorylist.*.carried"), "onUpdate", onEquipmentChanged)
+						DB.removeHandler(DB.getPath(node, "inventorylist.*.speedpenalty"), "onUpdate", onEquipmentChanged)
+						DB.removeHandler(DB.getPath(node, "inventorylist.*.subtype"), "onUpdate", onEquipmentChanged)
+						onEquipmentChanged();
+					end
+					function onEquipmentChanged()
+						local nPenalty = CharInventoryManager.calculateEquippedSpeedEffortPenalties(window.getDatabaseNode())
+						setValue(nPenalty);
+					end
+				</script>
+			</hn>
 			<hnl name="effortpenalty_total" source="effort.armorpenalty.total">
 				<source><name>effort.armorpenalty.base</name><op>+</op></source>
 				<source><name>effort.armorpenalty.mod</name><op>+</op></source>
+				<min>0</min>
 			</hnl>
 			<hn name="effort_base" source="effort.base">
 				<default>1</default>

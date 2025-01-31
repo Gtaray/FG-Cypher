@@ -43,6 +43,21 @@
 		<sheetdata>
 			<anchor_content_top />
 
+			<sub_content_top name="skills">
+				<class>charsheet_skills_list</class>
+			</sub_content_top>
+
+			<sub_content_top name="armortraining">
+				<class>charsheet_armortraining_list</class>
+			</sub_content_top>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="charsheet_skills_list">
+		<margins control="0,0,0,2" />
+		<sheetdata>
+			<anchor_content_top />
+
 			<label_charframetop name="header">
 				<anchored to="contentanchor" height="20">
 					<top relation="relative" offset="8" postoffset="8" />
@@ -66,22 +81,11 @@
 				<datasource>.skilllist</datasource>
 				<class>char_skill_item</class>
 				<sortby><control>name</control></sortby>
-				<!-- <script>
-					function update()
-						local bEditMode = (window.skills_iedit.getValue() == 1);
-						if window.idelete_header then
-							window.idelete_header.setVisible(bEditMode);
-						end
-						for _,w in ipairs(getWindows()) do
-							w.idelete.setVisible(bEditMode);
-						end
-					end
-				</script> -->
 			</list_content_labeled_alternating_top>
 
 			<anchor_list_content_label_left />
 			<anchor_list_content_label_right />
-			<spacer_list_content_idelete_label_right name="idelete_header">
+			<spacer_list_content_idelete_label_right name="idelete_header_list">
 				<editmode>sheet_iedit</editmode>
 			</spacer_list_content_idelete_label_right>
 			<!-- If skill references get added, this can get re-enabled -->
@@ -106,6 +110,37 @@
 			</label_list_content_noframe>
 		</sheetdata>
 	</windowclass>
+
+	<!-- <windowclass name="charsheet_armortraining_list">
+		<margins control="0,0,0,2" />
+		<sheetdata>
+			<anchor_content_top />
+
+			<label_charframetop name="header_armortraining">
+				<anchored to="contentanchor" height="20">
+					<top relation="relative" offset="20" postoffset="20" />
+					<left offset="15" />
+					<right offset="-10" />
+				</anchored>
+				<icons>char_abilities</icons>
+				<static textres="char_label_armortraining" />
+			</label_charframetop>
+			<button_iadd name="list_iadd">
+				<anchored to="header_armortraining" position="insidetopright" offset="5,0" />
+				<target>armortraining</target>
+			</button_iadd>
+
+			<list_content_labeled_alternating_top name="armortraining">
+				<anchored>
+					<left offset="10" />
+					<right offset="-10" />
+				</anchored>
+				<datasource>.armortraining</datasource>
+				<class>char_armortraining_item</class>
+				<sortby><control>name</control></sortby>
+			</list_content_labeled_alternating_top>
+		</sheetdata>
+	</windowclass> -->
 
 	<windowclass name="char_skill_item">
 		<margins control="0,0,0,2" />

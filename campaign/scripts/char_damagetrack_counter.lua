@@ -11,7 +11,8 @@ local nSpacing = nDefaultSpacing;
 function onInit()
 	super.onInit();
 
-	DB.addHandler(DB.getPath(window.getDatabaseNode(), "health.damagetrack"), "onUpdate", onWoundsChanged);
+	local node = window.getDatabaseNode();
+	DB.addHandler(DB.getPath(node, "health.damagetrack"), "onUpdate", onWoundsChanged);
 	onWoundsChanged();
 end
 

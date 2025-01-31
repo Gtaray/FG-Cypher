@@ -163,6 +163,18 @@ function getArmorSpeedAsset(itemNode)
 	return tonumber(DB.getValue(itemNode, "shieldbonus", "0")) or 0;
 end
 
+function getSpeedEffortPenalty(itemNode)
+	if not itemNode then
+		return 0;
+	end
+
+	if not ItemManagerCypher.isItemArmor(itemNode) then
+		return 0;
+	end
+
+	return DB.getValue(itemNode, "speedpenalty", 0);
+end
+
 ----------------------------------------------------------------------
 -- WEAPON
 ----------------------------------------------------------------------

@@ -243,6 +243,11 @@
 	<string name="char_tooltip_skillspecialized">Specialized</string>
 	<string name="char_tooltip_stat">The Stat associated with this skill</string>
 
+	<string name="char_label_armortraining">Armor Training</string>
+	
+	<string name="char_label_weapontraining">Weapon Training</string>
+
+	<!-- Character - Advancements -->
 	<string name="char_message_not_enough_xp">You do not have enough XP for an advancement.</string>
 	<string name="char_message_advancement_taken">%s took an advancement to %s.</string>
 	<string name="char_message_tier_increase">%s advanced to tier %s.</string>
@@ -687,6 +692,8 @@
 	<string name="item_armortypemedium">Medium</string>
 	<string name="item_armortypeheavy">Heavy</string>
 	<string name="item_armortypeshield">Shield</string>
+	<string name="item_label_speedpenalty">Speed Penalty</string>
+	<string name="item_tooltip_speedpenalty">An extra cost added to every level of Speed effort that is applied while this armor is equipped.</string>
 	<string name="item_label_shieldbonus">Shield Bonus</string>
 	<string name="item_shieldbonus_1">+1 Speed Asset</string>
 	<string name="item_shieldbonus_2">+2 Speed Assets</string>

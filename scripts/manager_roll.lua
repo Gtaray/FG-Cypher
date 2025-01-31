@@ -270,7 +270,7 @@ function processTrainingEffects(rSource, rTarget, rRoll, aFilter)
 
 	-- This combines the total number values of each training level
 	-- Which can then be added to the base training value
-	rRoll.nTraining = TrainingManager.modifyTraining(rRoll.nTraining, nTrained + nTrained + (2 * nSpecialized) + (-1 * nInability))
+	rRoll.nTraining = TrainingManager.modifyTraining((rRoll.nTraining or 1), nTrained + nTrained + (2 * nSpecialized) + (-1 * nInability))
 
 	-- 0 = inability
 	-- 1 = practiced
@@ -694,7 +694,7 @@ function decodeTraining(rRoll, bPersist)
 		return 3;
 	end
 
-	return "";
+	return 1;
 end
 
 function encodeEdge(rAction, vRoll)

@@ -41,5 +41,5 @@ function modifyTraining(nTraining, vDelta)
 		vDelta = convertTrainingStringToDifficultyModifier(vDelta);
 	end
 
-	return math.max(math.min(nTraining + vDelta, 3), 0);
+	return math.max(math.min((nTraining or 1) + vDelta, 3), 0);
 end

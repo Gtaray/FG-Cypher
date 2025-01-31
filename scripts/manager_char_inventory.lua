@@ -79,10 +79,27 @@ function calculateEquippedArmor(rActor)
 	local nArmor = 0;
 	for _, node in ipairs(DB.getChildList(nodeActor, "inventorylist")) do
 		if ItemManagerCypher.isEquipped(node) and ItemManagerCypher.isItemArmor(node) and not ItemManagerCypher.isItemShield(node) then
-			nArmor = math.max(nArmor, ItemManagerCypher.getArmorBonus(node));
+			nArmor = nArmor + ItemManagerCypher.getArmorBonus(node);
 		end
 	end
 	return nArmor;
+end
+
+function calculateEquippedSpeedEffortPenalties(rActor)
+	local nodeActor;
+	if type(rActor) == "databasenode" then
+		nodeActor = rActor;
+	else
+		nodeActor = ActorManager.getCreatureNode(rActor);
+	end
+
+	local nSpeedPenalty = 0;
+	for _, node in ipairs(DB.getChildList(nodeActor, "inventorylist")) do
+		if ItemManagerCypher.isEquipped(node) and ItemManagerCypher.isItemArmor(node) then
+			nSpeedPenalty = nSpeedPenalty + ItemManagerCypher.getSpeedEffortPenalty(node);
+		end
+	end
+	return nSpeedPenalty;
 end
 
 -------------------------------------------------------------------------------
