@@ -9,14 +9,13 @@
 	<windowclass name="dialog_edge">
 		<script file="utility/scripts/dialog_edge.lua" />
 		<sheetdata>
-			<anchor_column name="columnanchor" />
+			<anchor_content_top />
 
-			<header_column name="header_edge">
+			<header_content_framed_headersimple name="header_edge">
 				<static textres="header_dialog_edge" />
-				<center />
-			</header_column>
+			</header_content_framed_headersimple>
 
-			<windowlist name="edge">
+			<list_content_noscroll_top name="edge">
 				<script>
 					function addEntry(aOptions)
 						local w = createWindow();
@@ -24,17 +23,12 @@
 					end
 				</script>
 				<class>dialog_edge_item</class>
-				<anchored>
-					<top parent="columnanchor" anchor="bottom" relation="relative" offset="5" />
-					<left offset="20" />
-					<right offset="-25" />
-				</anchored>
-				<noscroll />
-			</windowlist>
+			</list_content_noscroll_top>
 		</sheetdata>
 	</windowclass>
 
 	<windowclass name="dialog_edge_item">
+		<margins control="0,5,0,5" />
 		<script>
 			function setOptions(aOptions)
 				local sDash = Interface.getString("dash");

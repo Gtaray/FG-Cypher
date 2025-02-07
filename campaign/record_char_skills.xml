@@ -46,10 +46,6 @@
 			<sub_content_top name="skills">
 				<class>charsheet_skills_list</class>
 			</sub_content_top>
-
-			<sub_content_top name="armortraining">
-				<class>charsheet_armortraining_list</class>
-			</sub_content_top>
 		</sheetdata>
 	</windowclass>
 
@@ -110,37 +106,6 @@
 			</label_list_content_noframe>
 		</sheetdata>
 	</windowclass>
-
-	<!-- <windowclass name="charsheet_armortraining_list">
-		<margins control="0,0,0,2" />
-		<sheetdata>
-			<anchor_content_top />
-
-			<label_charframetop name="header_armortraining">
-				<anchored to="contentanchor" height="20">
-					<top relation="relative" offset="20" postoffset="20" />
-					<left offset="15" />
-					<right offset="-10" />
-				</anchored>
-				<icons>char_abilities</icons>
-				<static textres="char_label_armortraining" />
-			</label_charframetop>
-			<button_iadd name="list_iadd">
-				<anchored to="header_armortraining" position="insidetopright" offset="5,0" />
-				<target>armortraining</target>
-			</button_iadd>
-
-			<list_content_labeled_alternating_top name="armortraining">
-				<anchored>
-					<left offset="10" />
-					<right offset="-10" />
-				</anchored>
-				<datasource>.armortraining</datasource>
-				<class>char_armortraining_item</class>
-				<sortby><control>name</control></sortby>
-			</list_content_labeled_alternating_top>
-		</sheetdata>
-	</windowclass> -->
 
 	<windowclass name="char_skill_item">
 		<margins control="0,0,0,2" />

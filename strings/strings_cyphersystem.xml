@@ -802,14 +802,19 @@
 	<string name="label_dialog_armor">Penalty</string>
 	<string name="summary_dialog_armor">%s -&gt; %s</string>
 
+	<!-- Advancement Dialog -->
+	<string name="dialog_select_advancement_title">Advancement</string>
+	<string name="label_advancement_type">Advancement</string>
+	<string name="label_advancement_effect">Effect</string>
+	
 	<string name="label_advancement_stats">Increase Stat Pools by 4</string>
 	<string name="label_advancement_edge">Increase one Edge by one</string>
 	<string name="label_advancement_effort">Increase Effort by 1</string>
 	<string name="label_advancement_skill">Train in a skill or ability</string>
-	<string name="label_advancement_ability">Select another ability from your Type</string>
+	<string name="label_advancement_ability">Select an ability from your Type</string>
 	<string name="label_advancement_recovery">Increase Recovery by 2</string>
 	<string name="label_advancement_armor">Reduce armor's Speed Effort cost by 1</string>
-	<string name="label_advancement_focus">Select another Focus ability at tier 3</string>
+	<string name="label_advancement_focus">Select an ability from your Focus</string>
 
 	<!-- Effect Conditions -->
 	<string name="label_condition_name_empty">&#171; New Condition &#187;</string>

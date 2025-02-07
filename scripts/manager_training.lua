@@ -38,7 +38,9 @@ end
 
 function modifyTraining(nTraining, vDelta)
 	if type(vDelta) == "string" then
-		vDelta = convertTrainingStringToDifficultyModifier(vDelta);
+		-- Multiply by -1 so we flip the difficulty adjustment
+		-- Trained = +1, Specialized = +2, inability = -1
+		vDelta = -1 * convertTrainingStringToDifficultyModifier(vDelta);
 	end
 
 	return math.max(math.min((nTraining or 1) + vDelta, 3), 0);

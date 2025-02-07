@@ -109,7 +109,9 @@ function buildAbilityPromptTable(nodeChar, nodeType, nTier, rData)
 
 	-- Add abilities from a focus' type swap list
 	local focusnode = CharFocusManager.getFocusNode(nodeChar);
-	CharFocusManager.addTypeSwapAbilities(nodeChar, focusnode, nTier, rData);
+	if focusnode then
+		CharFocusManager.addTypeSwapAbilities(nodeChar, focusnode, nTier, rData);
+	end
 end
 
 function applyTier1(rData)
@@ -149,8 +151,10 @@ function applyTier1(rData)
 	-- Apply starting features
 	for _, modnode in ipairs(DB.getChildList(rData.nodeSource, "features")) do
 		local rMod = CharModManager.getModificationData(modnode)
-		rMod.sSource = string.format("%s (Type)", StringManager.capitalize(rData.sSourceName));
-		CharModManager.addModificationToChar(rData.nodeChar, rMod, rData);
+		if rMod then
+			rMod.sSource = string.format("%s (Type)", StringManager.capitalize(rData.sSourceName));
+			CharModManager.addModificationToChar(rData.nodeChar, rMod, rData);
+		end
 	end
 
 	if (rData.nFloatingStats or 0) > 0 or #(rData.aEdgeOptions or {}) > 0 then
@@ -231,8 +235,7 @@ function setStartingEdge(rData)
 	end
 
 	for sStat, nEdge in pairs(aEdge) do
-		local sPath = string.format("abilities.%s.edge", sStat);
-		DB.setValue(rData.nodeChar, sPath, "number", nEdge);
+		CharStatManager.setEdge(rData.nodeChar, sStat, nEdge);
 
 		if nEdge > 0 then
 			CharTrackerManager.addToTracker(

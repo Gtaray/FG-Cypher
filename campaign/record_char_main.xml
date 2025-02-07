@@ -28,6 +28,10 @@
 			<hn name="tier" source="advancement.tier">
 				<default>1</default>
 			</hn>
+			<!-- <hlink name="typelink" source="class.type.link" />
+			<hlink name="descriptorlink" source="class.descriptor.link" />
+			<hlink name="ancestrylink" source="class.ancestry.link" />
+			<hlink name="focuslink" source="class.focus.link" /> -->
 
 			<!-- STATS -->
 			<sub_char_statpool name="sub_speed">
@@ -651,14 +655,11 @@
 				</anchored>
 				<icons>char_stats</icons>
 			</label_charframetop>
-			<!-- <button_advancement name="button_advancement">
-				<anchored to="title" />
-			</button_advancement> -->
 
 			<basicnumber name="xp" source="advancement.xp">
 				<anchored to="columnanchor" width="40" height="30">
 					<top anchor="bottom" relation="relative" offset="10" />
-					<left parent="title" offset="20" />
+					<left parent="title" offset="10" />
 				</anchored>
 				<min>0</min>
 			</basicnumber>
@@ -668,48 +669,28 @@
 			</label_charfieldtop>
 
 			<button_checkbox_advancement name="adv_stats" source="advancement.stats">
-				<anchored offset="50,0"/>
-				<script>
-					function onButtonPress()
-						super.processAdvancement(CharAdvancementManager.takeAbilityAdvancement)
-					end
-				</script>
+				<anchored offset="45,0"/>
 			</button_checkbox_advancement>
 			<label_advancements>
 				<anchored to="adv_stats" />
 				<static textres="char_label_adv_stats" />
 			</label_advancements>
 			<button_checkbox_advancement name="adv_edge" source="advancement.edge">
-				<anchored offset="120,0" />
-				<script>
-					function onButtonPress()
-						super.processAdvancement(CharAdvancementManager.takeEdgeAdvancement)
-					end
-				</script>
+				<anchored offset="110,0" />
 			</button_checkbox_advancement>
 			<label_advancements name="edge_label">
 				<anchored to="adv_edge" />
 				<static textres="char_label_adv_edge" />
 			</label_advancements>
 			<button_checkbox_advancement name="adv_effort" source="advancement.effort">
-				<anchored offset="50,18"/>
-				<script>
-					function onButtonPress()
-						super.processAdvancement(CharAdvancementManager.takeEffortAdvancement)
-					end
-				</script>
+				<anchored offset="45,18"/>
 			</button_checkbox_advancement>
 			<label_advancements name="effort_label">
 				<anchored to="adv_effort" />
 				<static textres="char_label_adv_effort" />
 			</label_advancements>
 			<button_checkbox_advancement name="adv_skill" source="advancement.skill">
-				<anchored offset="120,18"/>
-				<script>
-					function onButtonPress()
-						super.processAdvancement(CharAdvancementManager.takeSkillAdvancement)
-					end
-				</script>
+				<anchored offset="110,18"/>
 			</button_checkbox_advancement>
 			<label_advancements>
 				<anchored to="adv_skill" />
@@ -719,6 +700,10 @@
 			<header_advancements>
 				<static textres="char_label_advancements" />
 			</header_advancements>
+
+			<button_advancement name="button_advancement">
+				<anchored to="title" />
+			</button_advancement>
 		</sheetdata>
 	</windowclass>
 

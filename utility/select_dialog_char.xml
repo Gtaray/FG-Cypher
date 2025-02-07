@@ -49,16 +49,25 @@
 
 			<subwindow_char_dialog name="stats">
 				<class>dialog_statpools</class>
+				<anchored to="contentframe" position="over">
+					<top relation="absolute" />
+				</anchored>
 				<noscroll />
 			</subwindow_char_dialog>
 
 			<subwindow_char_dialog name="edge">
 				<class>dialog_edge</class>
+				<anchored to="contentframe" position="over">
+					<top relation="absolute" />
+				</anchored>
 				<noscroll />
 			</subwindow_char_dialog>
 
 			<subwindow_char_dialog name="abilities">
 				<class>dialog_abilities</class>
+				<anchored to="contentframe" position="over">
+					<top relation="absolute" />
+				</anchored>
 			</subwindow_char_dialog>
 			<scrollbar>
 				<anchored to="abilities" />
@@ -77,7 +86,9 @@
 
 			<subwindow_char_dialog name="summary">
 				<class>dialog_summary</class>
-				<anchored to="summaryframe" position="over" />
+				<anchored to="summaryframe" position="over">
+					<top relation="absolute" />
+				</anchored>
 				<noscroll />
 				<activate />
 			</subwindow_char_dialog>

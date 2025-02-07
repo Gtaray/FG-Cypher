@@ -146,13 +146,13 @@ end
 
 function applyStatModification(rActor, rData)
 	-- If this is a custom stat, then create the pool if it doesn't exist.
-	if not StringManager.contains({ "might", "speed", "intellect" }, rData.sStat) then
+	if not StringManager.contains({ "might", "speed", "intellect" , "" }, rData.sStat or "") then
 		if not CharStatManager.hasCustomStatPool(rActor, rData.sStat) then
 			CharStatManager.createCustomStatPool(rActor, rData.sStat);
 		end
 	end
 
-	CharStatManager.modifyStatMax(rActor, rData.sStat, rData.nMod);
+	CharStatManager.modifyStatMaxBase(rActor, rData.sStat, rData.nMod);
 
 	rData.sSummary = "Stats: " .. rData.sSummary;
 	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
@@ -160,7 +160,7 @@ end
 
 function applySkillModification(rActor, rData)
 	-- If this is a custom stat, then create the pool if it doesn't exist.
-	if not StringManager.contains({ "might", "speed", "intellect" }, rData.sStat) then
+	if not StringManager.contains({ "might", "speed", "intellect", "" }, rData.sStat or "") then
 		if not CharStatManager.hasCustomStatPool(rActor, rData.sStat) then
 			CharStatManager.createCustomStatPool(rActor, rData.sStat);
 		end
@@ -203,7 +203,7 @@ function applySkillModification(rActor, rData)
 end
 
 function applyDefenseModification(rActor, rData)
-	if not StringManager.contains({ "might", "speed", "intellect" }, rData.sStat) then
+	if not StringManager.contains({ "might", "speed", "intellect", "" }, rData.sStat or "") then
 		-- If this is a custom stat, then create the pool if it doesn't exist.
 		local node = CharStatManager.getCustomStatPoolNode(rActor, rData.sStat, true);
 		
@@ -439,10 +439,7 @@ function applyModToTrainingNode(node, sPath, sTraining)
 		return;
 	end
 
-	local nCurTraining = DB.getValue(node, sPath, 1);
-	local nTraining = TrainingManager.convertTrainingStringToDifficultyModifier(sTraining)
-
-	DB.setValue(node, sPath, "number", TrainingManager.modifyTraining(nCurTraining, nTraining));
+	DB.setValue(node, sPath, "number", TrainingManager.modifyTraining(DB.getValue(node, sPath, 1), sTraining));
 end
 function applyModToAssetNode(node, sPath, nAsset)
 	if (nAsset or 0) == 0 then

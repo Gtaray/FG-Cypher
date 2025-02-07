@@ -26,15 +26,15 @@
 					end
 				</script>
 			</hnc>
-			<anchor_column name="columnanchor" />
+			<anchor_content_top />
 
-			<label_column name="label_abilities_remaining">
+			<label_content_column name="label_abilities_remaining">
 				<anchored width="150" />
 				<static textres="label_dialog_abilities_remaining" />
-			</label_column>
+			</label_content_column>
 			<basicnumberc name="abilities_remaining">
 				<anchored width="30" height="20">
-					<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+					<top parent="contentanchor" anchor="bottom" relation="relative" offset="7" />
 					<right offset="-15" />
 				</anchored>
 				<readonly />
@@ -78,7 +78,7 @@
 					end
 				</script>
 				<anchored>
-					<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+					<top parent="contentanchor" anchor="bottom" relation="relative" offset="7" />
 					<left />
 					<right offset="-15" />
 					<bottom parent="label_tier" anchor="top" offset="-5" />
@@ -126,19 +126,17 @@
 			end
 		</script>
 		<sheetdata>
-			<anchor_column name="columnanchor" />
-			<header_column name="header_type">
+			<anchor_content_top />
+			<header_content_framed_headersimple name="header_type">
 				<static textres="header_dialog_abilities_type" />
-				<center />
-			</header_column>
+			</header_content_framed_headersimple>
 
 			<list_abilities name="abilities_type" />
 
-			<header_column name="header_flavor">
+			<header_content_framed_headersimple name="header_flavor">
 				<static textres="header_dialog_abilities_flavor" />
-				<center />
 				<invisible />
-			</header_column>
+			</header_content_framed_headersimple>
 
 			<list_abilities name="abilities_flavor">
 				<invisible />
@@ -255,7 +253,7 @@
 	</windowclass>
 
 	<template name="list_abilities">
-		<windowlist>
+		<list_content_noscroll_top>
 			<script>
 				function addEntry(nodeRecord, nTier)
 					local w = createWindow();
@@ -296,12 +294,6 @@
 				end
 			</script>
 			<class>dialog_ability_item</class>
-			<anchored>
-				<top parent="columnanchor" anchor="bottom" relation="relative" offset="5" />
-				<left offset="0" />
-				<right offset="0" />
-			</anchored>
-			<noscroll />
-		</windowlist>
+		</list_content_noscroll_top>
 	</template>
 </root>

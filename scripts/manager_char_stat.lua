@@ -161,6 +161,43 @@ function getEdge(rActor, sStat)
 	return DB.getValue(nodeActor, "stats." .. sStat .. ".edge", 0);
 end
 
+function setEdge(rActor, sStat, nValue)
+	local nodeActor;
+	if type(rActor) == "databasenode" then
+		nodeActor = rActor;
+	else
+		nodeActor = ActorManager.getCreatureNode(rActor);
+	end
+	if not nodeActor or (sStat or "") == "" then
+		return;
+	end
+
+	sStat = sStat:lower();
+
+	-- Look for a custom stat pool
+	if not StringManager.contains({ "might", "speed", "intellect" }, sStat) then
+		CharStatManager.setCustomStatPoolEdge(rActor, sStat, nValue);
+		return;
+	end
+
+	DB.setValue(nodeActor, "stats." .. sStat .. ".edge", "number", nValue);
+end
+
+function modifyEdge(rActor, sStat, nDelta)
+	local nodeActor;
+	if type(rActor) == "databasenode" then
+		nodeActor = rActor;
+	else
+		nodeActor = ActorManager.getCreatureNode(rActor);
+	end
+	if not nodeActor or (sStat or "") == "" then
+		return;
+	end
+
+	sStat = sStat:lower();
+	CharStatManager.setEdge(rActor, sStat, CharStatManager.getEdge(rActor, sStat) + nDelta)
+end
+
 ---------------------------------------------------------------
 -- STAT POOL GETTERS AND SETTERS
 ---------------------------------------------------------------
@@ -191,7 +228,7 @@ function getStatPool(rActor, sStat)
 	return nCur, nMax;
 end
 
-function getStatMax(rActor, sStat)
+function getStatMaxBase(rActor, sStat)
 	local nodeActor;
 	if type(rActor) == "databasenode" then
 		nodeActor = rActor;
@@ -208,9 +245,9 @@ function getStatMax(rActor, sStat)
 	end
 	
 	local sPath = string.format("stats.%s.maxbase", sStat:lower());
-	DB.getValue(nodeActor, sPath, 0);
+	return DB.getValue(nodeActor, sPath, 0);
 end
-function setStatMax(rActor, sStat, nValue)
+function setStatMaxBase(rActor, sStat, nValue)
 	local nodeActor;
 	if type(rActor) == "databasenode" then
 		nodeActor = rActor;
@@ -230,7 +267,7 @@ function setStatMax(rActor, sStat, nValue)
 	local sPath = string.format("stats.%s.maxbase", sStat:lower());
 	DB.setValue(nodeActor, sPath, "number", nValue);
 end
-function modifyStatMax(rActor, sStat, nValue)
+function modifyStatMaxBase(rActor, sStat, nValue)
 	local nodeActor;
 	if type(rActor) == "databasenode" then
 		nodeActor = rActor;
@@ -243,17 +280,17 @@ function modifyStatMax(rActor, sStat, nValue)
 
 	sStat = sStat:lower();
 	-- New stat pool maximum
-	local nMax = CharStatManager.getStatMax(rActor, sStat) + nValue;
+	local nMax = CharStatManager.getStatMaxBase(rActor, sStat) + nValue;
 
 	-- The order of operations here depends on the direction of the change.
 	-- If we're increasing, we need to up the max first so there's room to increase the current
 	-- If we're decreasing, we lower the current first so it doesn't get lowered automatically when the stat does
 	if nValue > 0 then
-		CharStatManager.setStatMax(rActor, sStat, nMax);
+		CharStatManager.setStatMaxBase(rActor, sStat, nMax);
 		CharStatManager.addToStatPool(rActor, sStat, nValue);
 	elseif nValue < 0 then
 		CharStatManager.addToStatPool(rActor, sStat, nValue);
-		CharStatManager.setStatMax(rActor, sStat, nMax);
+		CharStatManager.setStatMaxBase(rActor, sStat, nMax);
 	end
 end
 

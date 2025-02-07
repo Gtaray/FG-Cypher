@@ -106,6 +106,20 @@ function modifyRecoveriesUsed(rActor, nDelta)
 	CharHealthManager.setRecoveriesUsed(nodeChar, nUsed);
 end
 
+function getRecoveryRollTotal(rActor)
+	local nodeChar;
+	if type(rActor) == "databasenode" then
+		nodeChar = rActor;
+	else
+		nodeChar = ActorManager.getCreatureNode(rActor);
+	end
+	if not nodeChar or not ActorManager.isPC(rActor) then
+		return;
+	end
+
+	return DB.getValue(nodeChar, "health.recovery.total", 0);
+end
+
 function setRecoveryRollMod(rActor, nValue)
 	local nodeChar;
 	if type(rActor) == "databasenode" then
@@ -130,7 +144,7 @@ function getRecoveryRollMod(rActor)
 		return 0;
 	end
 
-	return DB.getValue(nodeChar, "health.recovery.total", 0);
+	return DB.getValue(nodeChar, "health.recovery.mod", 0);
 end
 function modifyRecoveryRollMod(rActor, nDelta)
 	local nodeChar;

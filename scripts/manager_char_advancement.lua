@@ -1,59 +1,5 @@
 ADVANCEMENT_COST = 4
 
-function takeAbilityAdvancement(nodeChar)
-	if not nodeChar then
-		return false;
-	end
-
-	local rData = {
-		nodeChar = nodeChar,
-		sType = "stats",
-		nFloatingStats = 4,
-	};
-
-	return CharAdvancementManager.takeAdvancement(nodeChar, "increase their stat pools", rData);
-end
-
-function takeEdgeAdvancement(nodeChar)
-	if not nodeChar then
-		return false;
-	end
-
-	local rData = {
-		nodeChar = nodeChar,
-		sType = "edge",
-	};
-
-	return CharAdvancementManager.takeAdvancement(nodeChar, "increase their edge", rData);
-end
-
-function takeEffortAdvancement(nodeChar)
-	if not nodeChar then
-		return false;
-	end
-
-	local rData = {
-		nodeChar = nodeChar,
-		sType = "effort",
-	};
-
-	return CharAdvancementManager.takeAdvancement(nodeChar, "increase their effort", rData);
-end
-
-function takeSkillAdvancement(nodeChar)
-	if not nodeChar then
-		return false;
-	end
-
-	local rData = {
-		nodeChar = nodeChar,
-		sType = "skill",
-		bPlaceEmptySkill = true
-	};
-
-	return CharAdvancementManager.takeAdvancement(nodeChar, "gain training in a skill", rData);
-end
-
 function takeAdvancement(nodeChar, sMessage, rData)
 	if not nodeChar then
 		return false;
@@ -62,11 +8,6 @@ function takeAdvancement(nodeChar, sMessage, rData)
 	if not CharAdvancementManager.hasEnoughXpForAdvancement(nodeChar, ADVANCEMENT_COST) then
 		return false;
 	end
-
-	-- TODO: Do this later
-	-- if (sMessage or "") ~= "" then
-	-- 	CharManager.sendAdvancementMessage(nodeChar, "char_message_advancement_taken", sMessage);
-	-- end
 
 	local w = Interface.openWindow("select_dialog_advancement", "");
 	w.setData(rData, CharAdvancementManager.completeAdvancement);
@@ -150,10 +91,18 @@ function completeAdvancement(rData)
 		CharModManager.applyArmorEffortPenaltyModification(rActor, rData)
 	end
 
-	-- Check if all advancements have been taken, and if so, clear all the checkboxes
-	-- and increment tier
-	if CharAdvancementManager.checkForAllAdvancements(rData.nodeChar) then
-		CharAdvancementManager.increaseTier(rData.nodeChar);
+	if rData.sAdvancement == "stats" then
+		CharAdvancementManager.takeStatAdvancement(rData.nodeChar);
+	elseif rData.sAdvancement == "edge" then
+		CharAdvancementManager.takeEdgeAdvancement(rData.nodeChar);
+	elseif rData.sAdvancement == "effort" then
+		CharAdvancementManager.takeEffortAdvancement(rData.nodeChar);
+	elseif rData.sAdvancement == "skill" then
+		CharAdvancementManager.takeSkillAdvancement(rData.nodeChar);
+	end
+
+	if (rData.sMessage or "") ~= "" then
+		CharAdvancementManager.sendAdvancementMessage(rData.nodeChar, "char_message_advancement_taken", rData.sMessage);
 	end
 end
 
@@ -190,14 +139,14 @@ end
 function increaseTier(nodeChar)
 	local nTier = CharAdvancementManager.getTier(nodeChar);
 
+	CharAdvancementManager.modifyTier(nodeChar, 1);
+	CharAdvancementManager.resetAdvancements(nodeChar, 1);
+	CharAdvancementManager.promptAbilitiesForNextTier(nodeChar);
+
 	CharAdvancementManager.sendAdvancementMessage(
 		nodeChar, 
 		"char_message_tier_increase", 
 		tostring(nTier));
-
-	CharAdvancementManager.modifyTier(nodeChar, 1);
-	CharAdvancementManager.resetAdvancements(nodeChar, 1);
-	CharAdvancementManager.promptAbilitiesForNextTier(nodeChar)
 end
 
 function promptAbilitiesForNextTier(nodeChar)
@@ -337,6 +286,20 @@ function hasTakenStatAdvancement(rActor)
 
 	return DB.getValue(nodeChar, "advancement.stats", 0) == 1;
 end
+function takeStatAdvancement(rActor)
+	local nodeChar;
+	if type(rActor) == "databasenode" then
+		nodeChar = rActor;
+	else
+		nodeChar = ActorManager.getCreatureNode(rActor);
+	end
+	if not nodeChar or not ActorManager.isPC(rActor) then
+		return;
+	end
+
+	DB.setValue(nodeChar, "advancement.stats", "number", 1);
+end
+
 function hasTakenEdgeAdvancement(rActor)
 	local nodeChar;
 	if type(rActor) == "databasenode" then
@@ -350,6 +313,20 @@ function hasTakenEdgeAdvancement(rActor)
 
 	return DB.getValue(nodeChar, "advancement.edge", 0) == 1;
 end
+function takeEdgeAdvancement(rActor)
+	local nodeChar;
+	if type(rActor) == "databasenode" then
+		nodeChar = rActor;
+	else
+		nodeChar = ActorManager.getCreatureNode(rActor);
+	end
+	if not nodeChar or not ActorManager.isPC(rActor) then
+		return;
+	end
+
+	DB.setValue(nodeChar, "advancement.edge", "number", 1);
+end
+
 function hasTakenSkillAdvancement(rActor)
 	local nodeChar;
 	if type(rActor) == "databasenode" then
@@ -363,6 +340,20 @@ function hasTakenSkillAdvancement(rActor)
 
 	return DB.getValue(nodeChar, "advancement.skill", 0) == 1;
 end
+function takeSkillAdvancement(rActor)
+	local nodeChar;
+	if type(rActor) == "databasenode" then
+		nodeChar = rActor;
+	else
+		nodeChar = ActorManager.getCreatureNode(rActor);
+	end
+	if not nodeChar or not ActorManager.isPC(rActor) then
+		return;
+	end
+
+	DB.setValue(nodeChar, "advancement.skill", "number", 1);
+end
+
 function hasTakenEffortAdvancement(rActor)
 	local nodeChar;
 	if type(rActor) == "databasenode" then
@@ -376,6 +367,20 @@ function hasTakenEffortAdvancement(rActor)
 	
 	return DB.getValue(nodeChar, "advancement.effort", 0) == 1;
 end
+function takeEffortAdvancement(rActor)
+	local nodeChar;
+	if type(rActor) == "databasenode" then
+		nodeChar = rActor;
+	else
+		nodeChar = ActorManager.getCreatureNode(rActor);
+	end
+	if not nodeChar or not ActorManager.isPC(rActor) then
+		return;
+	end
+
+	DB.setValue(nodeChar, "advancement.effort", "number", 1);
+end
+
 function resetAdvancements(rActor)
 	local nodeChar;
 	if type(rActor) == "databasenode" then

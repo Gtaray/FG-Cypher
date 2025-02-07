@@ -453,33 +453,57 @@
 	</template>
 
 	<template name="button_advancement">
-		<button_iadd_base>
-			<anchored position="insidetopright" width="20" height="20" />
-			<!-- This will eventually move the character to the next tier -->
-			<!-- <script>	
+		<button_icon>
+			<anchored width="25" height="25">
+				<top anchor="bottom" offset="12" />
+				<right offset="0" />
+			</anchored>
+			<state icon="button_advancement" />
+			<tintable />
+			<script>	
 				function onInit()
+					super.onInit()
+
 					local nodeActor = window.getDatabaseNode()
-					DB.addHandler(DB.getPath(nodeActor, "advancement", "xp"), "onUpdate", onXpChanged)
-					self.onXpChanged()
+					DB.addHandler(DB.getPath(nodeActor, "advancement"), "onChildUpdate", onAdvancementsChanged)
+					self.onAdvancementsChanged()
 				end	
 				function onClose()
 					local nodeActor = window.getDatabaseNode()
-					DB.removeHandler(DB.getPath(nodeActor, "advancement", "xp"), "onUpdate", onXpChanged)
+					DB.removeHandler(DB.getPath(nodeActor, "advancement"), "onChildUpdate", onAdvancementsChanged)
 				end	
-				function onXpChanged()
+				function onAdvancementsChanged()
 					local nodeActor = window.getDatabaseNode()
-					local nXp = DB.getValue(nodeActor, "advancement.xp", 0)
-					setVisible(nXp &gt;= 4)
+					local nTier = CharAdvancementManager.getTier(nodeActor);
+					local nXp = CharAdvancementManager.getExperience(nodeActor)
+					local bAllAdvs = CharAdvancementManager.checkForAllAdvancements(nodeActor)
+
+					if nTier == 6 and bAllAdvs then
+						setVisible(false)
+					else
+						setVisible(nXp &gt;= 4 or bAllAdvs)
+					end
 				end
-				function onButtonPress()
+				function onButtonPress()					
+					if CharAdvancementManager.checkForAllAdvancements(window.getDatabaseNode()) then
+						self.advanceTier()
+					else
+						self.takeAdvancement()
+					end
+				end
+				function takeAdvancement()
 					local rData = {
 						nodeChar = window.getDatabaseNode()
 					}
 					CharAdvancementManager.takeAdvancement(rData.nodeChar, "", rData)
 				end
-			</script> -->
+				function advanceTier()
+					local nodeChar = window.getDatabaseNode()
+					CharAdvancementManager.increaseTier(nodeChar);
+				end
+			</script>
 			<tooltip textres="char_tooltip_advance_button" />
-		</button_iadd_base>
+		</button_icon>
 	</template>
 	<!-- END MAIN TAB -->
 
@@ -733,7 +757,13 @@
 
 					bProcessing = false
 				end
+				function onButtonPress()
+					if getValue() == 1 then
+						setValue(0);
+					end
+				end
 			</script>
+			<readonly />
 		</button_checkbox>
 	</template>
 
