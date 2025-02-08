@@ -47,9 +47,24 @@ end
 
 function onLinkUpdated()
 	subwindow.onLinkUpdated()
+	self.updateVisibility();
 end
 
 function onOptionChanged()
+	self.updateVisibility();
+end
+
+function updateVisibility()
+	-- First, we check if we have a value for this bit, and if we do
+	-- we force the control to be visible
+	local node = window.getDatabaseNode()
+	local sName = DB.getValue(node, "class." .. _sPath .. ".name", "");
+	local _, sLink = DB.getValue(node, "class." .. _sPath .. ".link", "", "");
+	if sLink ~= "" or sName ~= "" then
+		setVisible(true);
+		return;
+	end
+
 	if _sOption and _nThreshold then
 		local nValue = tonumber(OptionsManager.getOption(_sOption))
 

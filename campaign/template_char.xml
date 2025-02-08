@@ -444,6 +444,22 @@
 	</template>
 	<template name="stringu_charstatement_editor">
 		<stringu>
+			<script>
+				function onInit()
+					if super and super.onInit then
+						super.onInit()
+					end
+					registerMenuItem(Interface.getString("char_statement_menu_delete"), "delete", 6)
+					registerMenuItem(Interface.getString("list_menu_deleteconfirm"), "delete", 6, 7)
+				end
+				function onMenuSelection(selection, subselection)
+					if selection == 6 and subselection == 7 then
+						local node = window.getDatabaseNode()
+						DB.setValue(node, "name", "string", "")
+						DB.setValue(node, "link", "windowreference", "", "")
+					end
+				end
+			</script>
 			<anchored to="rightanchor">
 				<top />
 				<left parent="contentanchor" offset="5" />

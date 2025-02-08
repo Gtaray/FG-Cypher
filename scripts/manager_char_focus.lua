@@ -20,13 +20,26 @@ function addFocusDrop(nodeChar, sClass, sRecord)
 	CharFocusManager.applyTier1(rAdd)
 end
 
+function hasFocus(nodeChar)
+	return DB.getValue(nodeChar, "class.focus.name", "") ~= "";
+end
 function getFocusNode(nodeChar)
 	local _, sRecord = DB.getValue(nodeChar, "class.focus.link");
 	return DB.findNode(sRecord);
 end
-
 function getFocusName(nodeChar)
 	return DB.getValue(nodeChar, "class.focus.name")
+end
+
+function hasSecondFocus(nodeChar)
+	return DB.getValue(nodeChar, "class.focus2.name", "") ~= "";
+end
+function getSecondFocusNode(nodeChar)
+	local _, sRecord = DB.getValue(nodeChar, "class.focus2.link");
+	return DB.findNode(sRecord);
+end
+function getSecondFocusName(nodeChar)
+	return DB.getValue(nodeChar, "class.focus2.name")
 end
 
 function buildAbilityPromptTable(nodeChar, nodeFocus, nTier, rData)
@@ -74,9 +87,15 @@ function applyTier1(rData)
 		string.format("Focus: %s", StringManager.capitalize(rData.sSourceName)), 
 		"Manual");
 
-	-- Add the name and link to the character sheet
-	DB.setValue(rData.nodeChar, "class.focus.name", "string", rData.sSourceName);
-	DB.setValue(rData.nodeChar, "class.focus.link", "windowreference", rData.sSourceClass, DB.getPath(rData.nodeSource));
+	local sPath = "class.focus";
+	local nOption = tonumber(OptionsManager.getOption("FOCUS_COUNT"));
+
+	-- if we already have a first descriptor, and we're allowed 2, then pick the second
+	if CharFocusManager.hasFocus(rData.nodeChar) and nOption == 2 then
+		sPath = "class.focus2";
+	end
+	DB.setValue(rData.nodeChar, sPath .. ".name", "string", rData.sSourceName);
+	DB.setValue(rData.nodeChar, sPath .. ".link", "windowreference", rData.sSourceClass, DB.getPath(rData.nodeSource));
 
 	-- Give starting abilities
 	CharFocusManager.addAbilities(rData);

@@ -77,6 +77,8 @@
 	<string name="option_label_DESCRIPTOR_COUNT">Characters: How many Descriptors can a PC have?</string>
 	<string name="option_label_FOCUS_COUNT">Characters: How many Focuses can a PC have?</string>
 	<string name="option_label_ANCESTRY_COUNT">Characters: How many Ancestries can a PC have?</string>
+	
+	<string name="option_header_characterarcs">Characters Arcs</string>
 	<string name="option_label_ARCCOST">Character Arcs: XP Cost to gain new character arcs</string>
 	<string name="option_label_ARCXPSTEP">Character Arcs: How much XP is gained for each step of a character arc</string>
 	<string name="option_label_ARCXPCLIMAX_SUCCESS">Charater Arcs: How much XP is gained when successfully completing a character arc's climax</string>
@@ -127,9 +129,13 @@
 	<string name="char_label_tier">Tier</string>
 	<string name="char_label_type">Type</string>
 	<string name="char_label_descriptor">Descriptor</string>
+	<string name="char_label_descriptor_second">Second Descriptor</string>
 	<string name="char_label_focus">Focus</string>
+	<string name="char_label_focus_second">Second Focus</string>
 	<string name="char_label_ancestry">Ancetry</string>
+	<string name="char_label_ancestry_second">Second Ancestry</string>
 	<string name="char_label_flavor">Flavor</string>
+	<string name="char_statement_menu_delete">Clear this from the character.</string>
 
 	<string name="char_title_might">Might</string>
 	<string name="char_title_speed">Speed</string>
@@ -596,6 +602,7 @@
 	<string name="library_recordtype_label_ancestry">Ancestries</string>
 	<string name="library_recordtype_empty_ancestry">&#171; New Ancestry &#187;</string>
 	<string name="library_recordtype_ref_ancestry">Ancestry</string>
+	<string name="ancestry_header_features">Features</string>
 
 	<!-- Character Modifications -->
 	<string name="char_mod_empty_summary">&#171; New Modification &#187;</string>
@@ -775,7 +782,7 @@
 	<string name="header_dialog_edge">Select Edge</string>
 	<string name="label_dialog_select_edge">Select Option</string>
 
-	<string name="header_dialog_abilities_type">Select Abilities from Type</string>
+	<string name="header_dialog_abilities_type">Select Abilities</string>
 	<string name="header_dialog_abilities_flavor">Select Abilities from Flavor</string>
 	<string name="label_dialog_abilities_remaining">Abilities Remaining</string>
 	<string name="label_dialog_abilities_multiple">Take Multiple Times</string>

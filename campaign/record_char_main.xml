@@ -28,10 +28,6 @@
 			<hn name="tier" source="advancement.tier">
 				<default>1</default>
 			</hn>
-			<!-- <hlink name="typelink" source="class.type.link" />
-			<hlink name="descriptorlink" source="class.descriptor.link" />
-			<hlink name="ancestrylink" source="class.ancestry.link" />
-			<hlink name="focuslink" source="class.focus.link" /> -->
 
 			<!-- STATS -->
 			<sub_char_statpool name="sub_speed">
@@ -770,6 +766,14 @@
 				<valuethreshold>1</valuethreshold>
 			</sub_charhseet_statement_part>
 
+			<sub_charhseet_statement_part name="sub_descriptor">
+				<path>descriptor2</path>
+				<recordtype>descriptor</recordtype>
+				<header>char_label_descriptor_second</header>
+				<option>DESCRIPTOR_COUNT</option>
+				<valuethreshold>2</valuethreshold>
+			</sub_charhseet_statement_part>
+
 			<sub_charhseet_statement_part name="sub_ancestry">
 				<path>ancestry</path>
 				<recordtype>ancestry</recordtype>
@@ -778,12 +782,28 @@
 				<valuethreshold>1</valuethreshold>
 			</sub_charhseet_statement_part>
 
+			<sub_charhseet_statement_part name="sub_ancestry">
+				<path>ancestry2</path>
+				<recordtype>ancestry</recordtype>
+				<header>char_label_ancestry_second</header>
+				<option>ANCESTRY_COUNT</option>
+				<valuethreshold>2</valuethreshold>
+			</sub_charhseet_statement_part>
+
 			<sub_charhseet_statement_part name="sub_focus">
 				<path>focus</path>
 				<recordtype>focus</recordtype>
 				<header>char_label_focus</header>
 				<option>FOCUS_COUNT</option>
 				<valuethreshold>1</valuethreshold>
+			</sub_charhseet_statement_part>
+
+			<sub_charhseet_statement_part name="sub_focus">
+				<path>focus2</path>
+				<recordtype>focus</recordtype>
+				<header>char_label_focus_second</header>
+				<option>FOCUS_COUNT</option>
+				<valuethreshold>2</valuethreshold>
 			</sub_charhseet_statement_part>
 
 			<sub_charhseet_statement_part name="sub_flavor">
@@ -801,6 +821,9 @@
 	<windowclass name="charsheet_statement_part">
 		<script>
 			function onInit()
+				self.setHeader();
+			end
+			function setHeader()
 				title.setValue(Interface.getString(parentcontrol.header[1]))
 			end
 			function onLinkUpdated()

@@ -48,15 +48,16 @@ function registerOptions()
 		{ labels = "option_val_1|option_val_2", values = "1|2", baselabel = "option_val_0", baseval = "0", default = "1" });
 	OptionsManager.registerOption2("ANCESTRY_COUNT", false, "option_header_characters", "option_label_ANCESTRY_COUNT", "option_entry_cycler", 
 		{ labels = "option_val_1|option_val_2", values = "1|2", baselabel = "option_val_0", baseval = "0", default = "1" });
-	OptionsManager.registerOption2("ARCCOST", false, "option_header_characters", "option_label_ARCCOST", "option_entry_cycler", 
+		
+	OptionsManager.registerOption2("ARCCOST", false, "option_header_characterarcs", "option_label_ARCCOST", "option_entry_cycler", 
 		{ labels = "option_val_1|option_val_2|option_val_3|option_val_4|option_val_5", values = "1|2|3|4|5", baselabel = "option_val_0", baseval = "0", default = "1" });
-	OptionsManager.registerOption2("ARCXPSTEP", false, "option_header_characters", "option_label_ARCXPSTEP", "option_entry_cycler", 
+	OptionsManager.registerOption2("ARCXPSTEP", false, "option_header_characterarcs", "option_label_ARCXPSTEP", "option_entry_cycler", 
 		{ labels = "option_val_1|option_val_2|option_val_3|option_val_4|option_val_5", values = "1|2|3|4|5", baselabel = "option_val_0", baseval = "0", default = "2" });
-	OptionsManager.registerOption2("ARCXPCLIMAX_SUCCESS", false, "option_header_characters", "option_label_ARCXPCLIMAX_SUCCESS", "option_entry_cycler", 
+	OptionsManager.registerOption2("ARCXPCLIMAX_SUCCESS", false, "option_header_characterarcs", "option_label_ARCXPCLIMAX_SUCCESS", "option_entry_cycler", 
 		{ labels = "option_val_1|option_val_2|option_val_3|option_val_4|option_val_5", values = "1|2|3|4|5", baselabel = "option_val_0", baseval = "0", default = "4" });
-	OptionsManager.registerOption2("ARCXPCLIMAX_FAILURE", false, "option_header_characters", "option_label_ARCXPCLIMAX_FAILURE", "option_entry_cycler", 
+	OptionsManager.registerOption2("ARCXPCLIMAX_FAILURE", false, "option_header_characterarcs", "option_label_ARCXPCLIMAX_FAILURE", "option_entry_cycler", 
 		{ labels = "option_val_1|option_val_2|option_val_3|option_val_4|option_val_5", values = "1|2|3|4|5", baselabel = "option_val_0", baseval = "0", default = "2" });
-	OptionsManager.registerOption2("ARCXPRESOLVE", false, "option_header_characters", "option_label_ARCXPRESOLVE", "option_entry_cycler", 
+	OptionsManager.registerOption2("ARCXPRESOLVE", false, "option_header_characterarcs", "option_label_ARCXPRESOLVE", "option_entry_cycler", 
 		{ labels = "option_val_1|option_val_2|option_val_3|option_val_4|option_val_5", values = "1|2|3|4|5", baselabel = "option_val_0", baseval = "0", default = "1" });
 
 	OptionsManager.registerOption2("MAXTARGET", false, "option_header_houserule", "option_label_MAXTARGET", "option_entry_cycler",

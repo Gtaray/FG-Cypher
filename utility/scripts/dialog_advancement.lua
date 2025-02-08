@@ -274,12 +274,17 @@ function buildAbilityAdvancementList()
 end
 
 function buildFocusAdvancementList()
-	local nCharTier = CharAdvancementManager.getTier(rData.nodeChar);
-	local focusnode = CharFocusManager.getFocusNode(rData.nodeChar);
+	local aAbilities = {}
 
 	-- If there's no type node found, then return an empty list
-	if not focusnode then
-		return {}
+	local focusnode = CharFocusManager.getFocusNode(rData.nodeChar);
+	if focusnode then
+		self.getFocusAbilities(rData.nodeChar, focusnode, aAbilities);
+	end
+
+	local focusnode2 = CharFocusManager.getSecondFocusNode(rData.nodeChar);
+	if focusnode2 then
+		self.getFocusAbilities(rData.nodeChar, focusnode2, aAbilities);
 	end
 	
 	local tAbilities = {};
@@ -295,7 +300,24 @@ function buildFocusAdvancementList()
 		end
 	end
 
-	local aAbilities = {};
+	local aFinalAbilities = {}
+	for _, ability in ipairs(aAbilities) do
+		-- Only add to the overall list if the player doesn't have an ability
+		-- with a matching name
+		if not tAbilities[ability.sName:lower()] then
+			table.insert(aFinalAbilities, {
+				nTier = ability.nTier,
+				sRecord = ability.sRecord
+			});
+		end
+	end
+
+	return aFinalAbilities;
+end
+
+function getFocusAbilities(charnode, focusnode, aAbilities)
+	local nCharTier = CharAdvancementManager.getTier(charnode);
+
 	for _, abilitynode in ipairs(DB.getChildList(focusnode, "abilities")) do
 		local nTier = DB.getValue(abilitynode, "tier", 1);
 		local sName = DB.getValue(abilitynode, "name", "");
@@ -304,8 +326,9 @@ function buildFocusAdvancementList()
 
 		-- Only add to the overall list if the player doesn't have an ability
 		-- with a matching name
-		if recordnode and nTier <= nCharTier and not tAbilities[sName:lower()] then
+		if recordnode and nTier <= nCharTier then
 			table.insert(aAbilities, {
+				sName = sName,
 				nTier = nTier,
 				sRecord = DB.getPath(recordnode)
 			});
