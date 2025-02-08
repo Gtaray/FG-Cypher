@@ -266,7 +266,7 @@ function addItemAsWeapon(itemnode)
 		DB.setValue(attacknode, "pierceamount", "number", nPiercing);
 	end
 
-	ItemManagerCypher.linkWeaponAndAttack(itemnode, attacknode);
+	CharInventoryManager.linkAttackAndItem(itemnode, attacknode);
 
 	return attacknode;
 end
@@ -310,15 +310,67 @@ function addItemAsAbility(itemnode)
 
 	-- Save links between the item and ability
 	-- These are used so that if one is deleted, so is the other.
-	DB.setValue(abilitynode, "itemlink", "windowreference", "item", DB.getPath(itemnode));
-	DB.setValue(itemnode, "abilitylink", "windowreference", "ability", DB.getPath(abilitynode));
+	CharInventoryManager.linkAbilityAndItem(itemnode, abilitynode);
 
 	return abilitynode;
+end
+
+function linkAttackAndItem(nodeitem, nodeattack)
+	if not nodeitem then
+		return
+	end
+	if not nodeattack then
+		return
+	end
+	if not ItemManagerCypher.isItemWeapon(nodeitem) then
+		return;
+	end
+
+	-- Ensure that the attack and item are both on the same character sheet
+	-- Otherwise we could link to an item not owned by the player, which will break things
+	-- when we delete it
+	local s1 = DB.getName(DB.getChild(nodeitem, "..."));
+	local s2 = DB.getName(DB.getChild(nodeattack, "..."));
+	if s1 ~= s2 then
+		return
+	end
+
+	DB.setValue(nodeitem, "attacklink", "windowreference", "char_weapon", DB.getPath(nodeattack));
+	DB.setValue(nodeattack, "itemlink", "windowreference", "item", DB.getPath(nodeitem));
+end
+function linkAbilityAndItem(nodeitem, nodeability)
+	if not nodeitem then
+		return
+	end
+	if not nodeability then
+		return
+	end
+
+	-- Ensure that the attack and item are both on the same character sheet
+	-- Otherwise we could link to an item not owned by the player, which will break things
+	-- when we delete it
+	local s1 = DB.getName(DB.getChild(nodeitem, "..."));
+	local s2 = DB.getName(DB.getChild(nodeability, "..."));
+	if s1 ~= s2 then
+		return
+	end
+
+	DB.setValue(nodeitem, "abilitylink", "windowreference", "ability", DB.getPath(nodeability));
+	DB.setValue(nodeability, "itemlink", "windowreference", "item", DB.getPath(nodeitem));
 end
 
 function getAttackLinkedToRecord(noderecord)
 	local _, sRecord = DB.getValue(noderecord, "attacklink", "", "");
 	return DB.findNode(sRecord)
+end
+function clearAttackLinkedToRecord(noderecord)
+	if not noderecord then
+		return
+	end
+	if not ItemManagerCypher.isItemWeapon(noderecord) then
+		return;
+	end
+	DB.setValue(noderecord, "attacklink", "windowreference", "", "");
 end
 function removeAttackLinkedToRecord(noderecord)
 	CharInventoryManager.removeLinkedRecord(noderecord, "attacklink");
@@ -328,6 +380,12 @@ function getAbilityLinkedToRecord(noderecord)
 	local _, sRecord = DB.getValue(noderecord, "abilitylink", "", "");
 	return DB.findNode(sRecord)
 end
+function clearAbilityLinkedToRecord(noderecord)
+	if not noderecord then
+		return
+	end
+	DB.setValue(noderecord, "abilitylink", "windowreference", "", "");
+end
 function removeAbilityLinkedToRecord(noderecord)
 	CharInventoryManager.removeLinkedRecord(noderecord, "abilitylink");
 end
@@ -335,6 +393,12 @@ end
 function getItemLinkedToRecord(noderecord)
 	local _, sRecord = DB.getValue(noderecord, "itemlink", "", "");
 	return DB.findNode(sRecord)
+end
+function clearItemLinkedToRecord(noderecord)
+	if not noderecord then
+		return
+	end
+	DB.setValue(noderecord, "itemlink", "windowreference", "", "");
 end
 function removeItemLinkedToRecord(noderecord)
 	CharInventoryManager.removeLinkedRecord(noderecord, "itemlink");

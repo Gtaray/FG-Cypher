@@ -16,6 +16,8 @@ function onInit()
 	DB.addHandler(DB.getPath(node, "*.count"), "onUpdate", onCyphersChanged);
 	DB.addHandler(DB.getPath(node, "*.carried"), "onUpdate", onCyphersChanged);
 	DB.addHandler(node, "onChildDeleted", onCyphersChanged);
+
+	applyFilter();
 end
 
 function onClose()
@@ -67,9 +69,9 @@ function onFilter(w)
 	local sType = DB.getValue(node, "type", "");
 	local bEquipped = w.carried.getValue() == 2;
 
-	-- All non-cyphers are displayed
+	-- If this isn't the active cypher list, then all other items are displayed
 	if sType ~= "cypher" then
-		return true;
+		return activecyphers == nil;
 	end
 
 	-- If this list should show active cyphers, then return true if they're equipped

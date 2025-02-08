@@ -48,6 +48,7 @@
 						DB.addHandler(DB.getPath(node, "inventorylist.*.count"), "onUpdate", onCyphersChanged);
 						DB.addHandler(DB.getPath(node, "inventorylist.*.carried"), "onUpdate", onCyphersChanged);
 						DB.addHandler(DB.getPath(node, "inventorylist"), "onChildDeleted", onCyphersChanged);
+						self.onCyphersChanged();
 					end
 					function onClose()
 						local node = window.getDatabaseNode();

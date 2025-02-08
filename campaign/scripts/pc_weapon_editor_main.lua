@@ -39,13 +39,13 @@ function onDrop(x, y, draginfo)
 				-- And remove the links between that item and this attack
 				local oldItemNode = getLinkedItemNode()
 				if oldItemNode then
-					ItemManagerCypher.clearWeaponAttackNode(oldItemNode);
+					CharInventoryManager.clearAttackLinkedToRecord(oldItemNode);
 					removeItemLinkNameHandler()
 				end
 
 				-- Set the attack's item link to the item
 				-- and set the item's attack link to this attack
-				ItemManagerCypher.linkWeaponAndAttack(newItemNode, getDatabaseNode())
+				CharInventoryManager.linkAttackAndItem(newItemNode, getDatabaseNode())
 				onItemLinkNameChanged();
 			end			
 			return true;
