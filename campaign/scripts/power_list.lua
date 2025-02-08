@@ -9,11 +9,21 @@ function onInit()
 	local sPath = getDatabaseNode();
 	DB.addHandler(sPath, "onChildAdded", onChildListChanged);
 	DB.addHandler(sPath, "onChildDeleted", onChildListChanged);
+
+	local charnode = window.getDatabaseNode()
+	DB.addHandler(DB.getPath(charnode, "inventorylist.*.carried"), "onUpdate", onInventoryUpdated);
+	DB.addHandler(DB.getPath(charnode, "inventorylist.*.type"), "onUpdate", onInventoryUpdated);
+
+	applyFilter();
 end
 function onClose()
 	local sPath = getDatabaseNode();
 	DB.removeHandler(sPath, "onChildAdded", onChildListChanged);
 	DB.removeHandler(sPath, "onChildDeleted", onChildListChanged);
+
+	local charnode = window.getDatabaseNode()
+	DB.removeHandler(DB.getPath(charnode, "inventorylist.*.carried"), "onUpdate", onInventoryUpdated);
+	DB.removeHandler(DB.getPath(charnode, "inventorylist.*.type"), "onUpdate", onInventoryUpdated);
 end
 
 function addEntry(bFocus)
@@ -31,6 +41,9 @@ function onChildListChanged()
 end
 function onChildWindowAdded(w)
 	window.onPowerWindowAdded(w);
+end
+function onInventoryUpdated()
+	applyFilter();
 end
 
 function onEnter()
@@ -63,6 +76,15 @@ function onFilter(w)
 		return w.getFilter();
 	end
 
+	-- First check if the ability is from an item
+	-- If that item is a cypher and it's not equipped, then we hide this ability
+	local itemnode = getLinkedItemNode(w)
+	if itemnode and ItemManagerCypher.isItemCypher(itemnode) then
+		if not ItemManagerCypher.isEquipped(itemnode) then
+			return false;
+		end
+	end
+
 	-- Check to see if this category is hidden
 	local sGroup = window.getWindowSort(w);
 	if aFilters[sGroup] then
@@ -70,4 +92,9 @@ function onFilter(w)
 	end
 	
 	return w.getFilter();
+end
+
+function getLinkedItemNode(w)
+	local _, sRecord = w.shortcut.getValue()
+	return DB.findNode(sRecord);
 end

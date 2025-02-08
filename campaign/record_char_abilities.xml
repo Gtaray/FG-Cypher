@@ -421,6 +421,13 @@
 		<linkc_listitem_right>
 			<script>
 				function onInit()
+					DB.addHandler(DB.getPath(window.getDatabaseNode(), "itemlink"), "onUpdate", onLinkUpdated)
+					self.onLinkUpdated()
+				end
+				function onClose()
+					DB.removeHandler(DB.getPath(window.getDatabaseNode(), "itemlink"), "onUpdate", onLinkUpdated)
+				end
+				function onLinkUpdated()
 					local sClass, sRecord = DB.getValue(window.getDatabaseNode(), "itemlink", "", "")
 					if sClass ~= "" and sRecord ~= "" then
 						setValue(sClass, sRecord)

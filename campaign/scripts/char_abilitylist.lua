@@ -16,8 +16,10 @@ function onInit()
 		return;
 	end
 
-	local node = window.getDatabaseNode()
-	DB.addHandler(DB.getPath(node, "abilitylist.*.usetype"), "onUpdate", onUseTypeUpdated)
+	local node = window.getDatabaseNode();
+	DB.addHandler(DB.getPath(node, "abilitylist.*.usetype"), "onUpdate", onUseTypeUpdated);
+	DB.addHandler(DB.getPath(node, "inventorylist.*.carried"), "onUpdate", onInventoryUpdated);
+	DB.addHandler(DB.getPath(node, "inventorylist.*.type"), "onUpdate", onInventoryUpdated);
 
 	applyFilter();
 end
@@ -27,8 +29,10 @@ function onClose()
 		return;
 	end
 	
-	local node = window.getDatabaseNode()
-	DB.removeHandler(DB.getPath(node, "abilitylist.*.usetype"), "onUpdate", onUseTypeUpdated)
+	local node = window.getDatabaseNode();
+	DB.removeHandler(DB.getPath(node, "abilitylist.*.usetype"), "onUpdate", onUseTypeUpdated);
+	DB.removeHandler(DB.getPath(node, "inventorylist.*.carried"), "onUpdate", onInventoryUpdated);
+	DB.removeHandler(DB.getPath(node, "inventorylist.*.type"), "onUpdate", onInventoryUpdated);
 end
 
 function onListChanged()
@@ -39,7 +43,20 @@ function onUseTypeUpdated()
 	applyFilter();
 end
 
+function onInventoryUpdated()
+	applyFilter();
+end
+
 function onFilter(w)
+	-- First check if the ability is from an item
+	-- If that item is a cypher and it's not equipped, then we hide this ability
+	local itemnode = getLinkedItemNode(w)
+	if itemnode and ItemManagerCypher.isItemCypher(itemnode) then
+		if not ItemManagerCypher.isEquipped(itemnode) then
+			return false;
+		end
+	end
+
 	if not sFilterProperty then return true end;
 
 	local node = w.getDatabaseNode()
@@ -80,4 +97,9 @@ function addEntry()
 	if sFilterProperty then
 		DB.setValue(node, sFilterProperty, "string", sFilterValue)
 	end
+end
+
+function getLinkedItemNode(w)
+	local _, sRecord = w.shortcut.getValue()
+	return DB.findNode(sRecord);
 end

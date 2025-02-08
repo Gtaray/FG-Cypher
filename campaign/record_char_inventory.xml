@@ -181,6 +181,7 @@
 				<class>char_activecypher</class>
 				<script file="campaign/scripts/char_invlist.lua" />
 				<activecyphers />
+				<allowdelete />
 			</list_content_labeled_alternating_top>
 
 			<anchor_list_content_label_left />

@@ -280,7 +280,7 @@ function getWeaponAttackNode(itemNode)
 end
 
 function setWeaponAttackNode(itemNode, attackNode)
-	if not ItemNode then
+	if not itemNode then
 		return
 	end
 	if not attackNode then
@@ -290,11 +290,11 @@ function setWeaponAttackNode(itemNode, attackNode)
 		return;
 	end
 
-	DB.setValue(itemNode, "attacklink", "windowreference", "attack", DB.getPath(attackNode));
+	DB.setValue(itemNode, "attacklink", "windowreference", "char_weapon", DB.getPath(attackNode));
 end
 
 function clearWeaponAttackNode(itemNode)
-	if not ItemNode then
+	if not itemNode then
 		return
 	end
 	if not ItemManagerCypher.isItemWeapon(itemNode) then

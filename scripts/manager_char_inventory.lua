@@ -2,6 +2,82 @@ function onInit()
 	ItemManager.setCustomCharAdd(onCharItemAdd);
 	-- Overriding char_invitem.onDelete instead of this, because this throws errors
 	ItemManager.setCustomCharRemove(onCharItemRemoved);
+
+	if Session.IsHost then
+		DB.addHandler(DB.getPath("charsheet.*.inventorylist.*"), "onDelete", onItemDeleted);
+		DB.addHandler(DB.getPath("charsheet.*.abilitylist.*"), "onDelete", onAbilityDeleted);
+		DB.addHandler(DB.getPath("charsheet.*.attacklist.*"), "onDelete", onAttackDeleted);
+	end
+end
+
+function onClose()
+	if Session.IsHost then
+		if Session.IsHost then
+			DB.removeHandler(DB.getPath("charsheet.*.inventorylist.*"), "onDelete", onItemDeleted);
+			DB.removeHandler(DB.getPath("charsheet.*.abilitylist.*"), "onDelete", onAbilityDeleted);
+			DB.removeHandler(DB.getPath("charsheet.*.attacklist.*"), "onDelete", onAttackDeleted);
+		end
+	end
+end
+
+local _aDeleting = {}
+function onItemDeleted(node)
+	if not Session.IsHost then
+		return;
+	end
+
+	-- To prevent recursive events
+	local sCharNode = DB.getPath(DB.getChild(node, "..."));
+	if _aDeleting[sCharNode] then
+		return;
+	end
+
+	_aDeleting[sCharNode] = true;
+
+	CharInventoryManager.removeAttackLinkedToRecord(node);
+	CharInventoryManager.removeAbilityLinkedToRecord(node);
+
+	_aDeleting[sCharNode] = false;
+end
+
+function onAbilityDeleted(node)
+	if not Session.IsHost then
+		return;
+	end
+	
+	-- To prevent recursive events
+	local sCharNode = DB.getPath(DB.getChild(node, "..."));
+	if _aDeleting[sCharNode] then
+		return;
+	end
+
+	_aDeleting[sCharNode] = true;
+
+	local itemnode = CharInventoryManager.getItemLinkedToRecord(node)
+	CharInventoryManager.removeAttackLinkedToRecord(itemnode)
+	CharInventoryManager.removeItemLinkedToRecord(node);
+
+	_aDeleting[sCharNode] = false;
+end
+
+function onAttackDeleted(node)
+	if not Session.IsHost then
+		return;
+	end
+	
+	-- To prevent recursive events
+	local sCharNode = DB.getPath(DB.getChild(node, "..."));
+	if _aDeleting[sCharNode] then
+		return;
+	end
+
+	_aDeleting[sCharNode] = true;
+
+	local itemnode = CharInventoryManager.getItemLinkedToRecord(node)
+	CharInventoryManager.removeAbilityLinkedToRecord(itemnode)
+	CharInventoryManager.removeItemLinkedToRecord(node);
+
+	_aDeleting[sCharNode] = false;
 end
 
 function onCharItemAdd(nodeItem)
@@ -240,21 +316,33 @@ function addItemAsAbility(itemnode)
 	return abilitynode;
 end
 
+function getAttackLinkedToRecord(noderecord)
+	local _, sRecord = DB.getValue(noderecord, "attacklink", "", "");
+	return DB.findNode(sRecord)
+end
 function removeAttackLinkedToRecord(noderecord)
-	CharInventoryManager.getEquippedWeapon(noderecord, "attacklink");
+	CharInventoryManager.removeLinkedRecord(noderecord, "attacklink");
 end
 
+function getAbilityLinkedToRecord(noderecord)
+	local _, sRecord = DB.getValue(noderecord, "abilitylink", "", "");
+	return DB.findNode(sRecord)
+end
 function removeAbilityLinkedToRecord(noderecord)
-	CharInventoryManager.getEquippedWeapon(noderecord, "abilitylink");	
+	CharInventoryManager.removeLinkedRecord(noderecord, "abilitylink");
 end
 
+function getItemLinkedToRecord(noderecord)
+	local _, sRecord = DB.getValue(noderecord, "itemlink", "", "");
+	return DB.findNode(sRecord)
+end
 function removeItemLinkedToRecord(noderecord)
-	CharInventoryManager.getEquippedWeapon(noderecord, "itemlink");
+	CharInventoryManager.removeLinkedRecord(noderecord, "itemlink");
 end
 
 function removeLinkedRecord(sourcenode, sPath)
 	-- For some reason when an item is moved to the party sheet the onRemove event
-	-- fires twice, but by the time we get here the sourcnode is already deleted
+	-- fires twice, but by the time we get here the sourcenode is already deleted
 	-- (due to async processing I think), so we just need to check that sourcenode is
 	-- valid before running this.
 	if not sourcenode or type(sourcenode) ~= "databasenode" then

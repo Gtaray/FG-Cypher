@@ -4,13 +4,15 @@
 --
 
 function onInit()
-	DB.addHandler(getDatabaseNode(), "onChildAdded", onChildAdded);
+	local node = window.getDatabaseNode()
+	DB.addHandler(DB.getPath(node, "attacklist"), "onChildAdded", onChildAdded);
 	
 	onModeChanged();
 end
 
 function onClose()
-	DB.removeHandler(getDatabaseNode(), "onChildAdded", onChildAdded);
+	local node = window.getDatabaseNode()
+	DB.removeHandler(DB.getPath(node, "attacklist"), "onChildAdded", onChildAdded);
 end
 
 function onChildAdded()
@@ -25,7 +27,17 @@ function onModeChanged()
 end
 
 function onFilter(w)
-	-- In edit mode, display all weapons no matter what
+	-- First check if the ability is from an item
+	-- If that item is a cypher and it's not equipped, then we hide this ability
+	local itemnode = getLinkedItemNode(w)
+	if itemnode and ItemManagerCypher.isItemCypher(itemnode) then
+		if not ItemManagerCypher.isEquipped(itemnode) then
+			return false;
+		end
+	end
+
+
+	-- In edit mode, display all weapons (except unused cyphers)
 	local sEditMode = WindowManager.getEditMode(window, "actions_iedit");
 	if sEditMode then
 		return true;
@@ -45,4 +57,9 @@ function onFilter(w)
 	end
 
 	return true;
+end
+
+function getLinkedItemNode(w)
+	local _, sRecord = w.itemlink.getValue()
+	return DB.findNode(sRecord);
 end
