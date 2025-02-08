@@ -220,8 +220,12 @@ end
 function setEquippedWeapon(nodeActor, nodeWeapon)
 	local sWeaponNode = DB.getName(nodeWeapon)
 	for _, node in ipairs(DB.getChildList(nodeActor, "attacklist")) do
+		local itemnode = CharInventoryManager.getItemLinkedToRecord(node);
+		local nEquipped = DB.getValue(itemnode, "carried", 0);
+
 		-- Set every weapon other than the specified one to unequipped
-		if DB.getName(node) ~= sWeaponNode then
+		-- skipping any weapons that aren't equipped or carried
+		if nEquipped ~= 0 and DB.getName(node) ~= sWeaponNode then
 			DB.setValue(node, "equipped", "number", 0);
 		end
 	end

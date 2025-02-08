@@ -13,7 +13,13 @@
 			<anchor_listitem_left />
 			<anchor_listitem_right />
 
-			<hnx name="carried" />
+			<hnx name="carried">
+				<script>
+					function onValueChanged()
+						window.windowlist.applyFilter()
+					end
+				</script>
+			</hnx>
 			<button_charweaponequipped name="equipped" />
 			
 			<button_listitem_idelete name="idelete">
@@ -428,20 +434,4 @@
 			</label>
 		</sheetdata>
 	</windowclass>
-
-	<template name="button_charweaponequipped">
-		<button_listitem_left>
-			<state icon="button_char_inv_carried" tooltipres="char_tooltip_inv_carried" merge="add" />
-			<state icon="button_char_inv_equipped" tooltipres="char_tooltip_inv_equipped" merge="add" />
-			<default>0</default>
-			<script>
-				function onButtonPress()
-					window.onEquippedChanged()
-				end
-				function onValueChanged()
-					window.carried.setValue(getValue() + 1)
-				end
-			</script>
-		</button_listitem_left>
-	</template>
 </root>

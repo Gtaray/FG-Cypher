@@ -536,6 +536,22 @@
 	<!-- END SKILL TAB -->
 
 	<!-- POWERS AND ACTIONS TAB -->
+	<template name="button_charweaponequipped">
+		<button_listitem_left>
+			<state icon="button_char_inv_carried" tooltipres="char_tooltip_inv_carried" merge="add" />
+			<state icon="button_char_inv_equipped" tooltipres="char_tooltip_inv_equipped" merge="add" />
+			<default>0</default>
+			<script>
+				function onButtonPress()
+					window.onEquippedChanged()
+				end
+				function onValueChanged()
+					window.carried.setValue(getValue() + 1)
+				end
+			</script>
+		</button_listitem_left>
+	</template>
+
 	<template name="button_rolltraining">
 		<button_training_base>
 			<anchored to="modanchor" height="20" width="20">

@@ -36,7 +36,6 @@ function onFilter(w)
 		end
 	end
 
-
 	-- In edit mode, display all weapons (except unused cyphers)
 	local sEditMode = WindowManager.getEditMode(window, "actions_iedit");
 	if sEditMode then
@@ -44,8 +43,7 @@ function onFilter(w)
 	end
 
 	-- If an attack has no linked item, then always display it
-	local _, sRecord = DB.getValue(attacknode, "itemlink", "", "");
-	local itemnode = DB.findNode(sRecord);
+	local itemnode = CharInventoryManager.getItemLinkedToRecord(w.getDatabaseNode());
 	if not itemnode then
 		return true;
 	end
