@@ -307,6 +307,8 @@
 
 	<string name="char_label_money">TREASURE</string>
 
+	<string name="char_header_activecyphers">ACTIVE CYPHERS</string>
+
 	<!-- Character - Abilities -->
 	<string name="char_abilities_label_actions">ACTIONS</string>
 	<string name="char_abilities_label_enablers">ENABLERS</string>

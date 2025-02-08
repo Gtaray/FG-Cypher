@@ -39,6 +39,28 @@
 			<sub_content_top name="items">
 				<class>charsheet_inventory_items</class>
 			</sub_content_top>
+			<sub_content_top name="activecyphers">
+				<class>charsheet_inventory_activecyphers</class>
+				<script>
+					function onInit()
+						local node = window.getDatabaseNode();
+						DB.addHandler(DB.getPath(node, "inventorylist.*.type"), "onUpdate", onCyphersChanged);
+						DB.addHandler(DB.getPath(node, "inventorylist.*.count"), "onUpdate", onCyphersChanged);
+						DB.addHandler(DB.getPath(node, "inventorylist.*.carried"), "onUpdate", onCyphersChanged);
+						DB.addHandler(DB.getPath(node, "inventorylist"), "onChildDeleted", onCyphersChanged);
+					end
+					function onClose()
+						local node = window.getDatabaseNode();
+						DB.removeHandler(DB.getPath(node, "inventorylist.*.type"), "onUpdate", onCyphersChanged);
+						DB.removeHandler(DB.getPath(node, "inventorylist.*.count"), "onUpdate", onCyphersChanged);
+						DB.removeHandler(DB.getPath(node, "inventorylist.*.carried"), "onUpdate", onCyphersChanged);
+						DB.removeHandler(DB.getPath(node, "inventorylist"), "onChildDeleted", onCyphersChanged);
+					end
+					function onCyphersChanged()
+						setVisible(subwindow.list.getWindowCount(true) &gt; 0)
+					end
+				</script>
+			</sub_content_top>
 			<sub_content_top name="currencies">
 				<class>charsheet_inventory_currencies</class>
 			</sub_content_top>
@@ -64,7 +86,7 @@
 				local sUsage = string.format("%d / %d", nLoad, nLimit);
 
 				cypherlimit.setValue(sUsage);
-				if nLoad > nLimit then
+				if nLoad &gt; nLimit then
 					cypherlimit.setColor(ColorManager.getUIColor("field_error"))
 				else
 					cypherlimit.setColor(nil);
@@ -139,9 +161,56 @@
 		</sheetdata>
 	</windowclass>
 
-	<windowclass name="char_invitem">
+	<windowclass name="charsheet_inventory_activecyphers">
 		<margins control="0,0,0,2" />
-		<script file="campaign/scripts/char_invitem.lua" />
+		<sheetdata>
+			<anchor_content_top />
+
+			<label_charframetop name="header">
+				<anchored to="contentanchor" height="20">
+					<top relation="relative" offset="8" postoffset="8" />
+					<left offset="15" />
+					<right offset="-10" />
+				</anchored>
+				<icons>char_inventory</icons>
+				<static textres="char_header_activecyphers" />
+			</label_charframetop>
+
+			<list_content_labeled_alternating_top name="list">
+				<datasource>.inventorylist</datasource>
+				<class>char_activecypher</class>
+				<script file="campaign/scripts/char_invlist.lua" />
+				<activecyphers />
+			</list_content_labeled_alternating_top>
+
+			<anchor_list_content_label_left />
+			<anchor_list_content_label_right />
+			<label_list_content_number_left name="label_count">
+				<anchored width="20" />
+				<static>#</static>
+			</label_list_content_number_left>
+			<spacer_list_content_idelete_label_right name="idelete_header">
+				<editmode>sheet_iedit</editmode>
+			</spacer_list_content_idelete_label_right>
+			<spacer_list_content_link_label_right name="spacer_link" />
+			<icon_list_content_button_label_right name="label_carried">
+				<icon>char_inv_carried_header</icon>
+				<tooltip textres="char_tooltip_itemcarried" />
+			</icon_list_content_button_label_right>
+			<spacer_list_content_label_right name="spacer_type">
+				<anchored width="25" />
+			</spacer_list_content_label_right>
+			<label_list_content_string_noframe_right name="label_location">
+				<static textres="char_label_itemlocation" />
+			</label_list_content_string_noframe_right>
+			<label_list_content_noframe name="label_name">
+				<static textres="char_label_itemname" />
+			</label_list_content_noframe>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="char_invitem_base">
+		<margins control="0,0,0,2" />
 		<sheetdata>
 			<hidden_record_isidentified name="isidentified">
 				<class>item</class>
@@ -199,48 +268,13 @@
 		</sheetdata>
 	</windowclass>
 
-	<windowclass name="charsheet_invmeta">
-		<frame>charsheethelper</frame>
-		<sizelimits>
-			<minimum width="400" height="145" />
-			<dynamic />
-		</sizelimits>
-		<script>
-			function onInit()
-				DB.addHandler(DB.getPath(getDatabaseNode(), "cypherlimit"), "onUpdate", onCypherLimitChanged);
+	<windowclass name="char_invitem" copy="char_invitem_base">
+		<script file="campaign/scripts/char_invitem.lua" />
+	</windowclass>
 
-				self.onCypherLimitChanged();
-			end
-
-			function onClose()
-				DB.removeHandler(DB.getPath(getDatabaseNode(), "cypherlimit"), "onUpdate", onCypherLimitChanged);
-			end
-
-			function onCypherLimitChanged()
-				local rActor = ActorManager.resolveActor(getDatabaseNode())
-				local nLimit = CharInventoryManager.getCypherLimit(rActor);
-				cypherlimit.setValue(nLimit);
-			end
-		</script>
+	<windowclass name="char_activecypher" copy="char_invitem_base">
 		<sheetdata>
-			<windowtitlebar_charsheethelper name="title">
-				<prefix>char_invmeta_title</prefix>
-			</windowtitlebar_charsheethelper>
-			<anchor_title_charsheethelper name="contentanchor" />
-
-			<label name="label_cypherlimit">
-				<anchored width="100">
-					<top parent="contentanchor" anchor="bottom" relation="relative" offset="20" />
-					<left offset="30" />
-				</anchored>
-				<static textres="char_label_cypherlimit" />
-			</label>
-			<basicnumber name="cypherlimit" source="cypherlimit">
-				<anchored to="label_cypherlimit" position="right" offset="5,0" width="45" />
-			</basicnumber>
-
-			<resize_charsheethelper />
-			<close_charsheethelper />
+			<stringc_listitem_right_noframe_static name="type_na" merge="delete" />
 		</sheetdata>
 	</windowclass>
 
@@ -314,6 +348,51 @@
 			<string_listitem_center_text name="name">
 				<nodrag />
 			</string_listitem_center_text>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="charsheet_invmeta">
+		<frame>charsheethelper</frame>
+		<sizelimits>
+			<minimum width="400" height="145" />
+			<dynamic />
+		</sizelimits>
+		<script>
+			function onInit()
+				DB.addHandler(DB.getPath(getDatabaseNode(), "cypherlimit"), "onUpdate", onCypherLimitChanged);
+
+				self.onCypherLimitChanged();
+			end
+
+			function onClose()
+				DB.removeHandler(DB.getPath(getDatabaseNode(), "cypherlimit"), "onUpdate", onCypherLimitChanged);
+			end
+
+			function onCypherLimitChanged()
+				local rActor = ActorManager.resolveActor(getDatabaseNode())
+				local nLimit = CharInventoryManager.getCypherLimit(rActor);
+				cypherlimit.setValue(nLimit);
+			end
+		</script>
+		<sheetdata>
+			<windowtitlebar_charsheethelper name="title">
+				<prefix>char_invmeta_title</prefix>
+			</windowtitlebar_charsheethelper>
+			<anchor_title_charsheethelper name="contentanchor" />
+
+			<label name="label_cypherlimit">
+				<anchored width="100">
+					<top parent="contentanchor" anchor="bottom" relation="relative" offset="20" />
+					<left offset="30" />
+				</anchored>
+				<static textres="char_label_cypherlimit" />
+			</label>
+			<basicnumber name="cypherlimit" source="cypherlimit">
+				<anchored to="label_cypherlimit" position="right" offset="5,0" width="45" />
+			</basicnumber>
+
+			<resize_charsheethelper />
+			<close_charsheethelper />
 		</sheetdata>
 	</windowclass>
 

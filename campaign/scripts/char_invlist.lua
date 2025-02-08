@@ -59,4 +59,23 @@ end
 
 function onCyphersChanged()
 	CharInventoryManager.updateCyphers(window.getDatabaseNode());
+	applyFilter(false);
+end
+
+function onFilter(w)
+	local node = w.getDatabaseNode();
+	local sType = DB.getValue(node, "type", "");
+	local bEquipped = w.carried.getValue() == 2;
+
+	-- All non-cyphers are displayed
+	if sType ~= "cypher" then
+		return true;
+	end
+
+	-- If this list should show active cyphers, then return true if they're equipped
+	-- if this list should show inactive cyphers, then return true if they're NOT equipped
+	if activecyphers then
+		return bEquipped;
+	end
+	return not bEquipped
 end
