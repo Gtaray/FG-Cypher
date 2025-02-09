@@ -290,7 +290,7 @@ function onRoll(rSource, rTarget, rRoll)
 		local sNotEnoughStatsMsg = "";
 
 		if rRoll.sCostStat == "xp" then
-			bNotEnoughStats = CharAdvancementManager.getXP(rSource) < nTotal
+			bNotEnoughStats = CharAdvancementManager.getExperience(rSource) < nTotal
 			sNotEnoughStatsMsg = "[INSUFFICIENT XP]";
 		else
 			local nCurStat = CharStatManager.getStatPool(rSource, rRoll.sCostStat);

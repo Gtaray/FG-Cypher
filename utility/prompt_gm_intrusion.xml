@@ -136,7 +136,7 @@
 						if OptionsManagerCypher.areHeroPointsEnabled() then
 							return CharManager.getHeroPoints(charnode)
 						else
-							return CharAdvancementManager.getXP(nodeChar)
+							return CharAdvancementManager.getExperience(nodeChar)
 						end
 					end
 					function updateTooltip()

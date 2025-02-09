@@ -17,7 +17,7 @@ function getRoll(rActor, rAction)
 	local rRoll = {};
 	rRoll.sType = "recovery";
 	rRoll.aDice = DiceRollManager.getActorDice(rAction.aDice or { "d6" }, rActor);
-	rRoll.nMod = ActorManagerCypher.getRecoveryRollTotal(rActor) + (rAction.nModifer or 0);
+	rRoll.nMod = CharHealthManager.getRecoveryRollTotal(rActor) + (rAction.nModifer or 0);
 	rRoll.sDesc = "[RECOVERY]";
 	return rRoll;
 end

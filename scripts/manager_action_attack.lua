@@ -127,7 +127,7 @@ function modRoll(rSource, rTarget, rRoll)
 	if rRoll.sWeaponType == "light" then
 		rRoll.sDesc = string.format("%s [LIGHT]", rRoll.sDesc)
 	end
-	if rRoll.nConditionMod > 0 then
+	if (rRoll.nConditionMod or 0) > 0 then
 		rRoll.sDesc = string.format("%s [EFFECTS %s]", rRoll.sDesc, rRoll.nConditionMod)
 	end
 	RollManager.convertBooleansToNumbers(rRoll);

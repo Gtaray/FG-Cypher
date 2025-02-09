@@ -56,7 +56,7 @@ end
 
 function initiateCostRoll(draginfo)
 	local rActor = ActorManager.resolveActor(DB.getChild(getDatabaseNode(), "..."));
-	local sStat = coststat.getValue() or "";
+	local sStat = header.subwindow.coststat.getValue() or "";
 	local rAction = {
 		label = header.subwindow.name.getValue(),
 		nCost = header.subwindow.cost.getValue(),

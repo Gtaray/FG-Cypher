@@ -114,7 +114,7 @@ function modRoll(rSource, rTarget, rRoll)
 	-- is stored in the asset, ease, hinder, and effort tags
 	-- Might want to consider adding a basic "EFFECTS" tag if there were effects that 
 	-- modified assets, effort, ease, or hinder
-	if rRoll.nConditionMod > 0 then
+	if (rRoll.nConditionMod or 0) > 0 then
 		rRoll.sDesc = string.format("%s [EFFECTS %s]", rRoll.sDesc, rRoll.nConditionMod)
 	end
 	RollManager.convertBooleansToNumbers(rRoll);

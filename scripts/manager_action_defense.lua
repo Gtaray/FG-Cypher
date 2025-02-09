@@ -78,7 +78,7 @@ function modRoll(rSource, rTarget, rRoll)
 	-- Get the shield bonus of the defender
 	local nShieldBonus = 0;
 	if rRoll.sStat == "speed" then
-		nShieldBonus = CharStatManager.getShieldBonus(rSource);
+		nShieldBonus = CharArmorManager.getShieldBonus(rSource);
 	end
 	rRoll.nAssets = math.min(rRoll.nAssets + nShieldBonus, nMaxAssets);
 
@@ -109,7 +109,7 @@ function modRoll(rSource, rTarget, rRoll)
 	end
 	RollManager.calculateDifficultyForRoll(rSource, rTarget, rRoll);
 
-	if rRoll.nConditionMod > 0 then
+	if (rRoll.nConditionMod or 0) > 0 then
 		rRoll.sDesc = string.format("%s [EFFECTS %s]", rRoll.sDesc, rRoll.nConditionMod)
 	end
 	RollManager.convertBooleansToNumbers(rRoll);

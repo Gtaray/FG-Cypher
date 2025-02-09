@@ -16,13 +16,13 @@ function setData(node)
 	if OptionsManagerCypher.areHeroPointsEnabled() then
 		description.setValue(string.format(
 			Interface.getString("pci_prompt_description_heropoint"), 
-			CharAdvancementManager.getXP(nodeChar),
+			CharAdvancementManager.getExperience(nodeChar),
 			CharManager.getHeroPoints(nodeChar)
 		))
 	else
 		description.setValue(string.format(
 			Interface.getString("pci_prompt_description"), 
-			CharAdvancementManager.getXP(nodeChar)
+			CharAdvancementManager.getExperience(nodeChar)
 		))
 	end
 

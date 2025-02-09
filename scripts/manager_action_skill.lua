@@ -95,7 +95,7 @@ function modRoll(rSource, rTarget, rRoll)
 	end
 	RollManager.calculateDifficultyForRoll(rSource, rTarget, rRoll);
 
-	if rRoll.nConditionMod > 0 then
+	if (rRoll.nConditionMod or 0) > 0 then
 		rRoll.sDesc = string.format("%s [EFFECTS %s]", rRoll.sDesc, rRoll.nConditionMod)
 	end
 	RollManager.convertBooleansToNumbers(rRoll);
