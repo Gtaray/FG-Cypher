@@ -137,6 +137,7 @@
 	<script name="DeathMarkers" file="scripts/manager_deathmarkers.lua" />
 	<script name="TrainingManager" file="scripts/manager_training.lua" />
 
+	<script name="ActionsManagerCypher" file="scripts/manager_actions_cypher.lua" />
 	<script name="ActionStat" file="scripts/manager_action_stat.lua" />
 	<script name="ActionSkill" file="scripts/manager_action_skill.lua" />
 	<script name="ActionDefense" file="scripts/manager_action_defense.lua" />

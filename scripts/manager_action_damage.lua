@@ -98,7 +98,11 @@ function modRoll(rSource, rTarget, rRoll)
 	-- Adjust mod based on effort
 	rRoll.nEffort = (rRoll.nEffort or 0) + RollManager.processEffort(rSource, rTarget, aFilter, rRoll.nEffort);
 	if (rRoll.nEffort or 0) > 0 then
-		rRoll.nMod = rRoll.nMod + (rRoll.nEffort * 3);
+		local nEffortMulti = 3;
+		if RollManager.isMultiTarget(false) then
+			nEffortMulti = 2;
+		end
+		rRoll.nMod = rRoll.nMod + (rRoll.nEffort * nEffortMulti);
 	end
 
 	rRoll.bPiercing, rRoll.nPierceAmount = RollManager.processPiercing(rSource, rTarget, rRoll.bPiercing, rRoll.nPierceAmount, rRoll.sDamageType, aFilter);

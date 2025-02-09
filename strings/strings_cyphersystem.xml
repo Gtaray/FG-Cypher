@@ -849,6 +849,7 @@
 	<string name="diffadj_label_-6">-6</string>
 	<string name="diffadj_label_assets">Assets</string>
 	<string name="diffadj_label_ignore_cost">Skip Cost</string>
+	<string name="diffadj_label_multitarget">Multi-Target</string>
 	<string name="diffadj_label_misc">Misc</string>
 	<string name="modifier_label_EASE">Ease</string>
 	<string name="modifier_label_HINDER">Hinder</string>

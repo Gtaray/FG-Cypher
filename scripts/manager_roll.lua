@@ -97,6 +97,36 @@ function enableCost()
 	_panelWindow.ignorecost.setValue(0);
 end
 
+function isMultiTarget(bRetain)
+	if not _panelWindow then
+		return false;
+	end
+
+	local bMultiTarget = (_panelWindow.multitarget.getValue() == 1);
+
+	if not bRetain then
+		RollManager.disableMultiTarget()
+	end
+
+	return bMultiTarget;
+end
+
+function disableMultiTarget()
+	if not _panelWindow then
+		return;
+	end
+
+	_panelWindow.multitarget.setValue(0);
+end
+
+function enableMultiTarget()
+	if not _panelWindow then
+		return;
+	end
+
+	_panelWindow.multitarget.setValue(1);
+end
+
 function resetDifficultyPanel()
 	if not _panelWindow then
 		return;
@@ -105,6 +135,7 @@ function resetDifficultyPanel()
 	_panelWindow.assets.setValue(0);
 	_panelWindow.misc.setValue(0)
 	RollManager.enableCost()
+	RollManager.disableMultiTarget()
 end
 
 -----------------------------------------------------------------------
@@ -1117,7 +1148,7 @@ function decodeLevel(vRoll, bPersist)
 	end
 
 	local nLevel, sText = RollManager.decodeTextAsNumber(
-		rRoll.sDesc,
+		sDesc,
 		"%[LEVEL: %-?%d+%]",
 		"%[LEVEL: (%-?%d+)%]",
 		bPersist
@@ -1126,6 +1157,25 @@ function decodeLevel(vRoll, bPersist)
 	rRoll.sDesc = sText;
 
 	return nLevel;
+end
+
+function encodeMultiTarget(rRoll)
+	rRoll.sDesc = RollManager.addOrOverwriteText(
+		rRoll.sDesc,
+		"%[MULTI%]",
+		"[MULTI]");
+end
+
+function decodeMultiTarget(rRoll, bPersist)
+	local bMulti, sText = RollManager.decodeTextAsBoolean(
+		rRoll.sDesc, 
+		"%[MULTI%]",
+		"(%[MULTI%])",
+		bPersist
+	);
+
+	rRoll.sDesc = sText;
+	return bMulti;
 end
 
 -----------------------------------------------------------------------

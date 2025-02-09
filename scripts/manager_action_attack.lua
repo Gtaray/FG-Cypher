@@ -140,6 +140,7 @@ end
 function onRoll(rSource, rTarget, rRoll)
 	RollManager.convertNumbersToBooleans(rRoll);
 	RollManager.decodeAdvantage(rRoll);
+	local bMulti = RollManager.decodeMultiTarget(rRoll);
 
 	-- Hacky way to force the rebuilt flag to either be true or false, never an empty string
 	rRoll.bRebuilt = (rRoll.bRebuilt == true) or (rRoll.bRebuilt or "") ~= "";
@@ -180,6 +181,10 @@ function onRoll(rSource, rTarget, rRoll)
 	if rRoll.nDamageEffort > 0 then
 		RollManager.disableCost()
 		RollManager.setDifficultyPanelEffort(rRoll.nDamageEffort)
+
+		if bMulti then
+			RollManager.enableMultiTarget();
+		end
 	end
 end
 
