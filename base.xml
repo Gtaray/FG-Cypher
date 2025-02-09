@@ -52,6 +52,7 @@
 	<includefile source="campaign/record_power_roll_heal.xml" />
 	<includefile source="campaign/record_power_roll_effect.xml" />
 	<includefile source="campaign/record_power_roll_cypher.xml" />
+	<includefile source="campaign/record_power_editor.xml" />
 	<includefile source="campaign/record_ability.xml" />
 	<includefile source="campaign/record_type.xml" />
 	<includefile source="campaign/record_descriptor.xml" />

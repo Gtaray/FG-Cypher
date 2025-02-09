@@ -80,7 +80,7 @@
 				<left offset="15" />
 				<right offset="-15" />
 			</anchored>
-			<icons>char_class</icons>
+			<icons>char_stats</icons>
 		</label_charframetop>
 	</template>
 	<template name="number_charabilitypool">
@@ -409,7 +409,7 @@
 				<left offset="10" />
 				<right offset="-10" />
 			</anchored>
-			<icons>char_class</icons>
+			<icons>char_name</icons>
 		</label_charframetop>
 	</template>
 	<template name="charstatement_rightanchor">

@@ -77,7 +77,10 @@ function migrateCharacterToV3(charnode)
 		DB.deleteChild(charnode, "resistances");
 	end
 
-	MigrationManager.moveValue(charnode, "effort", "effort.base", "number", 1);
+	-- Because we're reusing the "effort" node, we need to cache the value then delete the existing node
+	local nEffort = DB.getValue(charnode, "effort", 1);
+	DB.deleteChild(charnode, "effort");
+	DB.setValue(charnode, "effort.base", "number", nEffort);
 
 	if DB.getChild(charnode, "ArmorSpeedPenalty") then
 		MigrationManager.moveValue(charnode, "ArmorSpeedPenalty.base", "effort.armorpenalty.base", "number", 0);

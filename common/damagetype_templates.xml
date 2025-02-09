@@ -79,9 +79,13 @@
 				<field>damagetype</field>
 			</windowtitlebar_charsheethelper>
 
-			<sub_content_framed_groupbox name="main">
+			<sub_content name="main">
 				<class>special_armor_editor_main</class>
-			</sub_content_framed_groupbox>
+				<anchored>
+					<left offset="10" />
+					<right offset="-15" />
+				</anchored>
+			</sub_content>
 			<scrollbar_content_main />
 		</sheetdata>
 	</windowclass>
@@ -89,13 +93,11 @@
 	<windowclass name="special_armor_editor_main">
 		<script file="common/scripts/special_armor_editor_main.lua" />
 		<sheetdata>
-			<anchor_column name="columnanchor" />
-
-			<!-- PROPERTIES -->
-			<header_column name="header_properties">
-				<static textres="special_armor_header_properties" />
-				<center />
-			</header_column>
+			<anchor_column name="columnanchor">
+				<anchored>
+					<top offset="10" />
+				</anchored>
+			</anchor_column>
 
 			<label_column name="damagetype_label">
 				<static textres="special_armor_label_damagetype" />
@@ -164,7 +166,6 @@
 					<defaultlabelres>no</defaultlabelres>
 				</parameters>
 			</cycler_column>
- q
 		</sheetdata>
 	</windowclass>
 </root>

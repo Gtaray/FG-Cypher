@@ -7,7 +7,10 @@
 
 <root>
 	<windowclass name="power_action_editor" merge="join">
-		<script>
+		<sizelimits>
+			<minimum width="550" height="400" />
+		</sizelimits>
+		<!-- <script>
 			local fOnTypeChanged;
 			function onInit()
 				fOnTypeChanged = super.onTypeChanged;
@@ -27,14 +30,14 @@
 				help_heal.setVisible(sType == "heal");
 				help_effect.setVisible(sType == "effect");
 			end
-		</script>
+		</script> -->
 		<sheetdata>
 			<!-- Dynamically show one of these based on type -->
-			<help_charsheet_action_stat name="help_stat" />
+			<!-- <help_charsheet_action_stat name="help_stat" />
 			<help_charsheet_action_attack name="help_attack" />
 			<help_charsheet_action_damage name="help_damage" />
 			<help_charsheet_action_heal name="help_heal" />
-			<help_charsheet_action_effect name="help_effect" />
+			<help_charsheet_action_effect name="help_effect" /> -->
 		</sheetdata>
 	</windowclass>
 </root>

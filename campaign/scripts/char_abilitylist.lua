@@ -65,8 +65,8 @@ function onFilter(w)
 end
 
 function onSortCompare(w1, w2)
-	local s1 = w1.type.getValue() or ""
-	local s2 = w2.type.getValue() or ""
+	local s1 = DB.getValue(w1.getDatabaseNode(), "type", "");
+	local s2 = DB.getValue(w2.getDatabaseNode(), "type", "");
 
 	-- Typed abilities show up first in the list, ordered alphabetically by type
 	-- Then untyped abilities show up, ordered alphabetically by name.
@@ -100,6 +100,9 @@ function addEntry()
 end
 
 function getLinkedItemNode(w)
+	if not w.shortcut then
+		return;
+	end
 	local _, sRecord = w.shortcut.getValue()
 	return DB.findNode(sRecord);
 end

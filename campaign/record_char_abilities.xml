@@ -140,7 +140,7 @@
 					<left offset="15" />
 					<right offset="-10" />
 				</anchored>
-				<icons>char_abilities</icons>
+				<icons>char_stats</icons>
 				<static textres="char_abilities_label_customstatpools" />
 			</label_charframetop>
 			<button_iadd name="list_iadd">
@@ -340,6 +340,7 @@
 
 			<label_charframetop name="header">
 				<static textres="char_abilities_label_languages" />
+				<icons>char_abilities_blue</icons>
 			</label_charframetop>
 
 			<list_content_noscroll_alternating_top name="list">

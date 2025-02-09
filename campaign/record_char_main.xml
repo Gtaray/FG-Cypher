@@ -12,9 +12,9 @@
 				<anchored height="20">
 					<top offset="10" />
 					<left offset="15" />
-					<right offset="-15" />
+					<right offset="-20" />
 				</anchored>
-				<icons>char_class</icons>
+				<icons>char_name</icons>
 				<static textres="char_label_statement" />
 			</label_charframetop>
 			<button_charclasslevel name="button_statement">
@@ -31,8 +31,8 @@
 
 			<!-- STATS -->
 			<sub_char_statpool name="sub_speed">
-				<anchored>
-					<top parent="statementtitle" anchor="bottom" relation="relative" offset="25" />
+				<anchored to="statementtitle">
+					<top anchor="bottom" relation="relative" offset="25" />
 					<left anchor="center" offset="-80" />
 				</anchored>
 				<stat>speed</stat>
@@ -40,7 +40,7 @@
 			<sub_char_statpool name="sub_might">
 				<anchored to="sub_speed">
 					<top />
-					<right anchor="left" offset="00" />
+					<right anchor="left" offset="0" />
 				</anchored>
 				<stat>might</stat>
 			</sub_char_statpool>
@@ -102,7 +102,7 @@
 
 	<!-- STAT POOLS -->
 	<windowclass name="charsheet_statpool">
-		<margins control="0,0,0,10" />
+		<margins control="0,2,0,10" />
 		<script file="campaign/scripts/char_sub_statpool.lua" />
 		<sheetdata>
 			<hn name="maxbase">
@@ -175,11 +175,9 @@
 				</script>
 			</windowtitlebar_charsheethelper>
 
-			<area_content_framed_groupbox name="area_content" />
-
 			<!-- Current stat pool -->
 			<label name="label_current">
-				<anchored to="area_content" position="insidetopleft" offset="0,10" width="70" />
+				<anchored position="insidetopleft" offset="20,50" width="70" />
 				<static textres="char_label_stat_current" />
 			</label>
 			<basicnumber name="current">
@@ -190,7 +188,7 @@
 			
 			<!-- Stat pool max -->
 			<label name="label_max">
-				<anchored to="area_content" position="insidetopleft" offset="0,50" width="70" />
+				<anchored position="insidetopleft" offset="20,90" width="70" />
 				<static textres="char_label_stat_maximum" />
 			</label>
 			<basicnumber name="maxbase">
@@ -218,7 +216,7 @@
 
 			<!-- Stat defense -->
 			<label name="label_defense">
-				<anchored to="area_content" position="insidetopleft" offset="0,90" width="70" />
+				<anchored position="insidetopleft" offset="20,130" width="70" />
 				<static textres="char_label_stat_defense" />
 			</label>
 			<button_training_base name="defense_training" source="def.training">
@@ -254,7 +252,7 @@
 
 	<!-- EFFORT, ARMOR, INITIATIVE -->
 	<windowclass name="charsheet_combat">
-		<margins control="0,0,0,10" />
+		<margins control="0,2,0,10" />
 		<sheetdata>
 			<anchor_column name="columnanchor" />
 
@@ -264,7 +262,7 @@
 					<left offset="15" />
 					<right offset="-10" />
 				</anchored>
-				<icons>char_init</icons>
+				<icons>char_class</icons>
 			</label_charframetop>
 			<button_charcombatcalc name="button_charcombatcalc">
 				<anchored to="combattitle" />
@@ -366,7 +364,7 @@
 					<left offset="15" />
 					<right offset="-10" />
 				</anchored>
-				<icons>char_stats</icons>
+				<icons>char_class</icons>
 				<static textres="char_title_special_defenses" />
 			</label_charframetop>
 			<list_char_resistances name="resistances" />
@@ -396,12 +394,10 @@
 				<prefix>char_title_combatcalc_editor</prefix>
 				<field>name</field>
 			</windowtitlebar_charsheethelper>
-
-			<area_content_framed_groupbox name="area_content" />
 			
 			<!-- Armor -->
 			<label name="label_armor">
-				<anchored to="area_content" position="insidetopleft" offset="0,10" width="100" />
+				<anchored position="insidetopleft" offset="20,50" width="100" />
 				<static textres="char_label_armor" />
 			</label>
 			<basicnumber name="armorbase" source="defenses.armor.base">
@@ -431,7 +427,7 @@
 
 			<!-- Super-Armor -->
 			<label name="label_superarmor">
-				<anchored to="area_content" position="insidetopleft" offset="0,40" width="100" />
+				<anchored position="insidetopleft" offset="20,90" width="100" />
 				<static textres="char_label_superarmor" />
 			</label>
 			<basicnumber name="superarmor" source="defenses.armor.superarmor">
@@ -442,7 +438,7 @@
 
 			<!-- Initiative -->
 			<label name="label_initiative">
-				<anchored to="area_content" position="insidetopleft" offset="0,90" width="100" />
+				<anchored position="insidetopleft" offset="20,140" width="100" />
 				<static textres="char_label_initiative_full" />
 			</label>
 			<button_training_base name="inittraining" source="initiative.training">
@@ -481,7 +477,7 @@
 
 			<!-- EFFORT -->
 			<label name="label_effort">
-				<anchored to="area_content" position="insidetopleft" offset="0,140" width="100" />
+				<anchored position="insidetopleft" offset="20,190" width="100" />
 				<static textres="char_label_effort" />
 			</label>
 			<basicnumber name="effortbase" source="effort.base">
@@ -516,7 +512,7 @@
 				<source><name>effort.armorpenalty.mod</name><op>+</op></source>
 			</hnl>
 			<label name="label_armorspeedcost">
-				<anchored to="area_content" position="insidetopleft" offset="0,180" width="100" />
+				<anchored position="insidetopleft" offset="20,230" width="100" />
 				<static textres="char_label_armorspeedcost" />
 			</label>
 			<basicnumber name="armorspeedcostbase" source="effort.armorpenalty.base">
@@ -547,7 +543,7 @@
 
 	<!-- DAMAGE TRACK -->
 	<windowclass name="charsheet_damagetrack">
-		<margins control="0,0,0,10" />
+		<margins control="0,2,0,10" />
 		<sheetdata>
 			<anchor_column name="columnanchor" />
 
@@ -555,7 +551,7 @@
 				<anchored height="20">
 					<top parent="columnanchor" anchor="bottom" relation="relative" offset="5" />
 					<left offset="15" />
-					<right offset="-10" />
+					<right offset="-15" />
 				</anchored>
 				<static textres="char_title_damagetrack" />
 				<icons>char_stats</icons>
@@ -576,7 +572,7 @@
 
 	<!-- RECOVERIES -->
 	<windowclass name="charsheet_recoveries">
-		<margins control="0,0,0,10" />
+		<margins control="0,2,0,10" />
 		<sheetdata>
 			<anchor_column name="columnanchor" />
 
@@ -584,7 +580,7 @@
 				<anchored height="20">
 					<top parent="columnanchor" anchor="bottom" relation="relative" offset="5" />
 					<left offset="15" />
-					<right offset="-10" />
+					<right offset="-15" />
 				</anchored>
 				<icons>char_stats</icons>
 			</label_charframetop>
@@ -621,12 +617,10 @@
 				<prefix>char_title_recovery_editor</prefix>
 				<field>name</field>
 			</windowtitlebar_charsheethelper>
-
-			<area_content_framed_groupbox name="area_content" />
 			
 			<!-- Recovery -->
 			<label name="label_recoverymod">
-				<anchored to="area_content" position="insidetopleft" offset="0,10" width="100" />
+				<anchored position="insidetopleft" offset="20,50" width="100" />
 				<static textres="char_label_recoverymod" />
 			</label>
 			<basicnumber name="recoverymod" source="health.recovery.mod">
@@ -639,7 +633,7 @@
 
 	<!-- ADVANCEMENTS -->
 	<windowclass name="charsheet_advancements">
-		<margins control="0,0,0,10" />
+		<margins control="0,2,0,10" />
 		<sheetdata>
 			<anchor_column name="columnanchor" />
 
@@ -649,7 +643,7 @@
 					<left offset="15" />
 					<right offset="-15" />
 				</anchored>
-				<icons>char_stats</icons>
+				<icons>char_init</icons>
 			</label_charframetop>
 
 			<basicnumber name="xp" source="advancement.xp">
@@ -732,7 +726,7 @@
 			<label_charframetop name="tiertitle">
 				<anchored to="contentanchor" position="belowleft" offset="10,5" height="20" width="80" />
 				<static textres="char_label_tier" />
-				<icons>char_class</icons>
+				<icons>char_name</icons>
 			</label_charframetop>
 			<number_static name="level" source="advancement.tier">
 				<anchored to="tiertitle" height="30" width="40">

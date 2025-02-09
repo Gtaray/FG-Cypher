@@ -229,8 +229,6 @@ power_item_header has all of the rest of the things you'd normally associate wit
 		</script>
 	</windowclass>
 
-	<windowclass name="power_action_editor" copy="power_action_editor_core" />
-
 	<template name="list_powers">
 		<windowlist>
 			<anchored>

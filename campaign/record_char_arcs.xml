@@ -68,7 +68,7 @@
 			</hs>
 
 			<label_charframetop_collapsible name="header">
-				<icons>char_abilities</icons>
+				<icons>char_abilities_green</icons>
 				<script>
 					function onInit()
 						super.onInit();
@@ -133,7 +133,7 @@
 			</sub_arc_indented>
 
 			<label_charframetop_collapsible name="header_progress">
-				<icons>char_abilities</icons>
+				<icons>char_abilities_green</icons>
 				<target>progress</target>
 				<static textres="char_subtitle_arc_progress" />
 			</label_charframetop_collapsible>
@@ -146,7 +146,7 @@
 			</sub_arc_indented>
 
 			<label_charframetop_collapsible name="header_climax">
-				<icons>char_abilities</icons>
+				<icons>char_abilities_green</icons>
 				<target>climax</target>
 				<static textres="char_subtitle_arc_climax" />
 			</label_charframetop_collapsible>
@@ -155,7 +155,7 @@
 			</sub_arc_indented>
 
 			<label_charframetop_collapsible name="header_resolution">
-				<icons>char_abilities</icons>
+				<icons>char_abilities_green</icons>
 				<target>resolution</target>
 				<static textres="char_subtitle_arc_resolution" />
 			</label_charframetop_collapsible>
