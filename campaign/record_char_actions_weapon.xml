@@ -13,13 +13,7 @@
 			<anchor_listitem_left />
 			<anchor_listitem_right />
 
-			<hnx name="carried">
-				<script>
-					function onValueChanged()
-						window.windowlist.applyFilter()
-					end
-				</script>
-			</hnx>
+			<hnx name="carried" />
 			<button_charweaponequipped name="equipped" />
 			
 			<button_listitem_idelete name="idelete">

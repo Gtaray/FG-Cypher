@@ -538,15 +538,12 @@
 	<!-- POWERS AND ACTIONS TAB -->
 	<template name="button_charweaponequipped">
 		<button_listitem_left>
-			<state icon="button_char_inv_carried" tooltipres="char_tooltip_inv_carried" merge="add" />
-			<state icon="button_char_inv_equipped" tooltipres="char_tooltip_inv_equipped" merge="add" />
+			<state icon="button_bigcheckoff" tooltipres="char_tooltip_inv_carried" merge="add" />
+			<state icon="button_bigcheckon" tooltipres="char_tooltip_inv_equipped" merge="add" />
 			<default>0</default>
 			<script>
 				function onButtonPress()
 					window.onEquippedChanged()
-				end
-				function onValueChanged()
-					window.carried.setValue(getValue() + 1)
 				end
 			</script>
 		</button_listitem_left>
@@ -771,31 +768,6 @@
 	<template name="button_checkbox_advancement">
 		<button_checkbox>
 			<anchored to="xp" position="righthigh" width="12" height="12" />
-			<script>
-				local bProcessing = false
-				function processAdvancement(fAdvFunc)
-					if bProcessing then return end
-
-					bProcessing = true
-
-					if getValue() == 0 then 
-						bProcessing = false
-						return
-					end
-
-					if not fAdvFunc(window.getDatabaseNode()) then
-						setValue(0)
-					end
-
-					bProcessing = false
-				end
-				function onButtonPress()
-					if getValue() == 1 then
-						setValue(0);
-					end
-				end
-			</script>
-			<readonly />
 		</button_checkbox>
 	</template>
 
