@@ -3,6 +3,7 @@
 -- attribution and copyright information.
 --
 local _sStat;
+local _sDefaultColor;
 
 function onInit()
 	if super and super.onInit then
@@ -10,26 +11,40 @@ function onInit()
 	end
 	
 	_sStat = self.getStat();
-
-	self.initWidgets();
-	self.updateWidgetDisplay();
+	_sDefaultColor = Interface.getFontColor(getFont());
 
 	local node = window.getDatabaseNode();
 	DB.addHandler(DB.getPath(node, "max"), "onUpdate", onMaxUpdated);
+	OptionsManager.registerCallback("COLORED_STATS", onColoredStatPoolsOptionChanged);
+
+	self.initWidgets();
+	self.updateWidgetDisplay();
 	self.onMaxUpdated();
-	self.onValueChanged();
+	self.updateColor();
 end
 
 function onClose()
 	local node = window.getDatabaseNode();
 	DB.removeHandler(DB.getPath(node, "max"), "onUpdate", onMaxUpdated);
+	OptionsManager.unregisterCallback("COLORED_STATS", onColoredStatPoolsOptionChanged);
 end
 
 function onValueChanged()
-	-- Update the text color based on value
-	local nodeActor = self.getActorNode()
-	local nCur, nMax = CharStatManager.getStatPool(nodeActor, _sStat)
-	setColor(ColorManager.getTokenHealthColor(1 - (nCur / nMax), false));
+	self.updateColor();
+end
+
+function onColoredStatPoolsOptionChanged()
+	self.updateColor();
+end
+
+function updateColor()
+	if OptionsManagerCypher.colorStatPools() then
+		local nodeActor = self.getActorNode()
+		local nCur, nMax = CharStatManager.getStatPool(nodeActor, _sStat)
+		setColor(ColorManager.getTokenHealthColor(1 - (nCur / nMax), false));
+	else
+		setColor(_sDefaultColor);
+	end	
 end
 
 function onMaxUpdated()

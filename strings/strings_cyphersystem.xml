@@ -61,6 +61,8 @@
 	<string name="button_dialog_no">No</string>
 
 	<!-- Options -->
+	<string name="option_label_COLORED_STATS">Character Sheet: The text for stat pools are colored according to their relative fullness.</string>
+
 	<string name="option_label_GDIFF">Enable global difficulty</string>
 	<string name="option_label_GMIT">Enable GM intrusion threshold</string>
 	<string name="option_lable_HITMISS">Use Hit/Miss when displaying attack and defense rolls in chat.</string>

@@ -20,6 +20,9 @@ function onClose()
 end
 
 function registerOptions()
+	OptionsManager.registerOption2("COLORED_STATS", true, "option_header_client", "option_label_COLORED_STATS", "option_entry_cycler", 
+		{ labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "on" });
+
 	OptionsManager.registerOption2("GDIFF", false, "option_header_game", "option_label_GDIFF", "option_entry_cycler", 
 		{ labels = "option_val_on", values = "on", baselabel = "option_val_off", baseval = "off", default = "on" });
 	OptionsManager.registerOption2("GMIT", false, "option_header_game", "option_label_GMIT", "option_entry_cycler", 
@@ -133,4 +136,8 @@ end
 
 function splitAttackAndDamageEffort()
 	return OptionsManager.getOption("SPLITATKEFFORT") == "yes"
+end
+
+function colorStatPools()
+	return OptionsManager.getOption("COLORED_STATS") == "on";
 end
