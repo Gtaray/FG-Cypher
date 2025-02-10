@@ -54,7 +54,7 @@ function getDescriptorNode(nodeChar)
 	end
 end
 function getDescriptorName(nodeChar)
-	return DB.getValue(nodeChar, "class.descriptor.name")
+	return DB.getValue(nodeChar, "class.descriptor.name", "")
 end
 
 function hasSecondDescriptor(nodeChar)
@@ -67,5 +67,5 @@ function getSecondDescriptorNode(nodeChar)
 	end
 end
 function getSecondDescriptorName(nodeChar)
-	return DB.getValue(nodeChar, "class.descriptor2.name")
+	return DB.getValue(nodeChar, "class.descriptor2.name", "")
 end

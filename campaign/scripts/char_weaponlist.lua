@@ -48,9 +48,9 @@ function onFilter(w)
 		return true;
 	end
 
-	-- If not in edit mode, then only display non-carried weapons if the display mode is set to preparation
+	-- If not in edit mode, then only display non-carried weapons if the display mode is set to standard
 	local sDisplayMode = DB.getValue(window.getDatabaseNode(), "powermode", "");
-	if sDisplayMode ~= "preparation" and w.carried.getValue() == 0 then
+	if sDisplayMode ~= "" and w.carried.getValue() == 0 then
 		return false;
 	end
 

@@ -28,7 +28,7 @@ function getFocusNode(nodeChar)
 	return DB.findNode(sRecord);
 end
 function getFocusName(nodeChar)
-	return DB.getValue(nodeChar, "class.focus.name")
+	return DB.getValue(nodeChar, "class.focus.name", "")
 end
 
 function hasSecondFocus(nodeChar)
@@ -39,7 +39,7 @@ function getSecondFocusNode(nodeChar)
 	return DB.findNode(sRecord);
 end
 function getSecondFocusName(nodeChar)
-	return DB.getValue(nodeChar, "class.focus2.name")
+	return DB.getValue(nodeChar, "class.focus2.name", "")
 end
 
 function buildAbilityPromptTable(nodeChar, nodeFocus, nTier, rData)

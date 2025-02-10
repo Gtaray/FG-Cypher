@@ -131,7 +131,8 @@ function updateAbilityFilters()
 			local bHasActions = DB.getChildCount(powernode, "actions") > 0
 
 			-- Preparation mode shows everything
-			local bShow = sMode == "preparation";
+			-- local bShow = sMode == "preparation";
+			local bShow = false;
 
 			-- Standard mode shows all abilities with costs, usage, or actions
 			if sMode == "" then

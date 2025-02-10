@@ -14,7 +14,7 @@
 				powermode_label.setVisible(not bEditMode);
 				powermode.setVisible(not bEditMode);
 				if bEditMode then
-					DB.setValue(getDatabaseNode(), "powermode", "string", "preparation");
+					DB.setValue(getDatabaseNode(), "powermode", "string", "");
 				end
 			end
 		</script>
@@ -36,7 +36,7 @@
 				<script>
 					function onButtonPress()
 						window.content.subwindow.actions.subwindow.addPower(true);
-						DB.setValue(window.getDatabaseNode(), "powermode", "string", "preparation");
+						DB.setValue(window.getDatabaseNode(), "powermode", "string", "");
 					end
 				</script>
 			</buttoncontrol>
@@ -58,8 +58,8 @@
 			<button_stringcycler name="powermode">
 				<anchored to="powermode_label" position="righthigh" offset="10,0" width="80" />
 				<parameters>
-					<labelsres>power_label_modeprep|power_label_modecombat</labelsres>
-					<values>preparation|combat</values>
+					<labelsres>power_label_modecombat</labelsres>
+					<values>combat</values>
 					<defaultlabelres>power_label_modestd</defaultlabelres>
 				</parameters>
 				<script>

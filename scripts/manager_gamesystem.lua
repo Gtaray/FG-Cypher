@@ -93,17 +93,15 @@ function onInit()
 end
 
 function getCharSelectDetailHost(nodeChar)
-	local sValue = DB.getValue(nodeChar, "class.descriptor", "") .. " " .. DB.getValue(nodeChar, "class.type", "") .. " who " .. DB.getValue(nodeChar, "class.focus", "");
-	sValue = sValue .. " (Tier " .. DB.getValue(nodeChar, "advancement.tier", 0) .. ")";
-	return sValue;
+	return CharManager.getCharacterStatement(nodeChar);
 end
 
 function requestCharSelectDetailClient()
-	return "name,class.descriptor,class.type,class.focus,#tier";
+	return "name,class.descriptor.name,class.descriptor2.name,class.ancestry.name,class.ancestry2.name,class.type.name,class.focus.name,class.focus2.name,#tier";
 end
 
 function receiveCharSelectDetailClient(vDetails)
-	return vDetails[1], vDetails[2] .. " " .. vDetails[3] .. " who " .. vDetails[4] .. " (Tier " .. vDetails[5] .. ")";
+	return CharManager.buildCharacterStatement(vDetails[1],vDetails[2],vDetails[3],vDetails[4],vDetails[5],vDetails[6],vDetails[7],vDetails[8],vDetails[9]);
 end
 
 function getDistanceUnitsPerGrid()

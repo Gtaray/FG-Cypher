@@ -30,7 +30,7 @@ function getFlavorNode(nodeChar)
 end
 
 function getFlavorName(nodeChar)
-	return DB.getValue(nodeChar, "class.flavor.name")
+	return DB.getValue(nodeChar, "class.flavor.name", "")
 end
 
 function characterHasFlavor(nodeChar)

@@ -10,23 +10,44 @@ function getCharacterStatement(nodeChar)
 		return "";
 	end
 
-	local sAncestry = DB.getValue(nodeChar, "class.ancestry.name", "");
-	local sDescriptor = DB.getValue(nodeChar, "class.descriptor.name", "");
-	local sDescText = "";
-	if sAncestry ~= "" and sDescriptor ~= "" then
-		sDescText = string.format("%s %s", sDescriptor, sAncestry)
-	elseif sAncestry ~= "" then
-		sDescText = sAncestry
-	elseif sDescriptor ~= "" then
-		sDescText = sDescriptor
-	end
+	return buildCharacterStatement(
+		DB.getValue(nodeChar, "name", ""),
+		CharDescriptorManager.getDescriptorName(nodeChar),
+		CharDescriptorManager.getSecondDescriptorName(nodeChar),
+		CharAncestryManager.getAncestryName(nodeChar),
+		CharAncestryManager.getSecondAncestryName(nodeChar),
+		CharTypeManager.getTypeName(nodeChar),
+		CharFocusManager.getFocusName(nodeChar),
+		CharFocusManager.getSecondFocusName(nodeChar),
+		CharAdvancementManager.getTier(nodeChar)
+	)
+end
+
+function buildCharacterStatement(sName, sDescriptor1, sDescriptor2, sAncestry1, sAncestry2, sType, sFocus1, sFocus2, nTier)
+	local sDescriptor = buildCharacterStatementPart(sDescriptor1, sDescriptor2, "%s, %s");
+	local sAncestry = buildCharacterStatementPart(sAncestry1, sAncestry2, "%s-%s");
+	local sDescriptorAndAncestry = buildCharacterStatementPart(sDescriptor, sAncestry, "%s %s");
+	local sFocus = buildCharacterStatementPart(sFocus1, sFocus2, Interface.getString("char_statement_focus"));
 
 	return string.format(
 		Interface.getString("char_statement"), 
-		DB.getValue(nodeChar, "name", ""),
-		sDescText,
-		DB.getValue(nodeChar, "class.type.name", ""),
-		DB.getValue(nodeChar, "class.focus.name", ""))
+		sName,
+		sDescriptorAndAncestry,
+		nTier,
+		sType,
+		sFocus)
+end
+
+function buildCharacterStatementPart(s1, s2, sFormat)
+	if s1 ~= "" and s2 ~= "" then
+		return string.format(sFormat, s1, s2);
+	elseif s1 ~= "" then
+		return s1;
+	elseif s2 ~= "" then
+		return s2;
+	end
+
+	return "";
 end
 
 -------------------------------------------------------------------------------
@@ -81,6 +102,10 @@ function helperBuildAddStructure(nodeChar, sClass, sRecord)
 	return rAdd;
 end
 
+-------------------------------------------------------------------------------
+-- MAX ASSETS AND EFFORT
+-------------------------------------------------------------------------------
+
 function getMaxAssets(rActor, aFilter)
 	local nodeActor = ActorManager.getCreatureNode(rActor);
 	if not nodeActor or not ActorManager.isPC(rActor) then
@@ -96,7 +121,7 @@ function getMaxEffort(rActor, aFilter)
 		return 0;
 	end
 
-	local nBase = DB.getValue(nodeActor, "effort", 1);
+	local nBase = DB.getValue(nodeActor, "effort.total", 1);
 	local nEffectMaxEffort = EffectManagerCypher.getMaxEffortEffectBonus(rActor, aFilter);
 	
 	-- clamp max effort to between 0 and 6

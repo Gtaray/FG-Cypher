@@ -122,7 +122,8 @@
 	<string name="char_tooltip_pc_intrusion">Click to invoke a Player Intrusion</string>
 
 	<string name="char_label_statement">Character Statement</string>
-	<string name="char_statement">%s is a %s %s who %s</string>
+	<string name="char_statement">%s is a %s tier %s %s who %s</string>
+	<string name="char_statement_focus">%s and %s</string>
 
 	<string name="char_title_statement">Character Statement</string>
 	<string name="char_title_character_editor">Character Editor</string>

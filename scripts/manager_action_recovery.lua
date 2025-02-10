@@ -44,7 +44,8 @@ function onRoll(rSource, rTarget, rRoll)
 
 	sFilter = nil;
 	if sNodeType == "pc" then
-		local c = DB.getValue(nodeActor, "recoveryused", 0);
+		local c = CharHealthManager.getRecoveriesUsed(rSource);
+
 		if c >= 4 then
 			rMessage.text = rMessage.text .. " [NO RECOVERIES REMAINING]";
 			sFilter= "day"
@@ -62,9 +63,7 @@ function onRoll(rSource, rTarget, rRoll)
 			sFilter = "action"
 		end
 		
-		if c < 4 then
-			DB.setValue(nodeActor, "health.recovery.used", "number", c + 1);
-		end
+		CharHealthManager.modifyRecoveriesUsed(rSource, 1)
 
 		if EffectManagerCypher.ignoreRecovery(rSource, sFilter) then
 			rMessage.text = rMessage.text .. " [NONE]";

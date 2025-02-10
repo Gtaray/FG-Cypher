@@ -27,7 +27,7 @@ function getTypeNode(nodeChar)
 end
 
 function getTypeName(nodeChar)
-	return DB.getValue(nodeChar, "class.type.name");
+	return DB.getValue(nodeChar, "class.type.name", "");
 end
 
 function characterHasType(nodeChar)

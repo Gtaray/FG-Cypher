@@ -55,7 +55,7 @@ function getAncestryNode(nodeChar)
 	end
 end
 function getAncestryName(nodeChar)
-	return DB.getValue(nodeChar, "class.ancestry.name");
+	return DB.getValue(nodeChar, "class.ancestry.name", "");
 end
 
 function hasSecondAncestry(nodeChar)
@@ -68,5 +68,5 @@ function getSecondAncestryNode(nodeChar)
 	end
 end
 function getSecondAncestryName(nodeChar)
-	return DB.getValue(nodeChar, "class.ancestry2.name");
+	return DB.getValue(nodeChar, "class.ancestry2.name", "");
 end

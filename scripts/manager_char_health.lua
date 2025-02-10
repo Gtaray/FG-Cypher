@@ -87,6 +87,10 @@ function setRecoveriesUsed(rActor, nValue)
 		return;
 	end
 
+	if nValue > 4 then
+		nValue = 4
+	end
+
 	return DB.setValue(nodeChar, "health.recovery.used", "number", nValue);
 end
 function modifyRecoveriesUsed(rActor, nDelta)
