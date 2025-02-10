@@ -679,6 +679,16 @@ function getDamageTypeConversionEffect(rActor, sDamageType, aFilter)
 	return sFinalDamageType
 end
 
+function getDamageStatConversionEffect(rActor, aFilter)
+	local aConversion = EffectManagerCypher.getConversionEffect(rActor, aFilter, { "dmg" })
+
+	-- If for some reason there's multiple effects, just return the first one
+	if #aConversion > 0 then
+		return aConversion[1];
+	end
+	return nil;
+end
+
 function getImmunityEffects(rActor, rTarget)
 	return EffectManagerCypher.getEffectsByType(rActor, "IMMUNE", {}, false, nil, false, rTarget, false);
 end

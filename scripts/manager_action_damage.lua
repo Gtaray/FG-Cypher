@@ -76,7 +76,7 @@ function getRollLabel(rActor, rAction, rRoll)
 end
 
 function getEffectFilter(rRoll)
-	return { "damage", "dmg", rRoll.sStat };
+	return { "damage", "dmg", rRoll.sStat, rRoll.sDamageType};
 end
 
 function modRoll(rSource, rTarget, rRoll)
@@ -85,14 +85,21 @@ function modRoll(rSource, rTarget, rRoll)
 		return;
 	end
 
-	local aFilter = ActionDamage.getEffectFilter(rRoll)
+	local aFilter = ActionDamage.getEffectFilter(rRoll);
 
 	rTarget = RollManager.decodeTarget(rRoll, rTarget, true);
 
+	-- Convert damage type
 	local sConvertedDmgType = EffectManagerCypher.getDamageTypeConversionEffect(rSource, rRoll.sDamageType, aFilter)
 	if (sConvertedDmgType or "") ~= "" then
-		rRoll.sDamageType = sConvertedDmgType
-		RollManager.encodeDamageType(rRoll)
+		rRoll.sDamageType = sConvertedDmgType;
+		RollManager.encodeDamageType(rRoll);
+	end
+
+	-- Convert damage stat
+	local sConvertedDmgStat = EffectManagerCypher.getDamageStatConversionEffect(rSource, aFilter)
+	if (sConvertedDmgStat or "") ~= "" then
+		rRoll.sDamageStat = sConvertedDmgStat;
 	end
 
 	-- Adjust mod based on effort
