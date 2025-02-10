@@ -761,7 +761,7 @@
 				<maximum>maxammo</maximum>
 				<current>ammo</current>
 			</sourcefields>
-			<maxslotperrow>30</maxslotperrow>
+			<maxslotperrow>24</maxslotperrow>
 		</buttongroup_counter>
 	</template>
 

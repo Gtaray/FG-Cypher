@@ -7,7 +7,7 @@
 
 <root>
 	<windowclass name="char_weapon">
-		<margins control="0,0,0,5" />
+		<margins control="0,0,0,10" />
 		<script file="campaign/scripts/char_weapon.lua" />
 		<sheetdata>
 			<anchor_listitem_left />
@@ -61,9 +61,22 @@
 
 			<string_listitem_center_underline name="name" />
 
+			<basicnumber name="ammoperattack">
+				<anchored width="30" height="20">
+					<top parent="damageview" anchor="bottom" relation="current" offset="8" />
+					<right parent="" offset="-10" />
+				</anchored>
+				<default>1</default>
+				<min>1</min>
+			</basicnumber>
+			<label name="label_ammoperattack">
+				<anchored to="ammoperattack" position="lefthigh" offset="5,0" width="90" />
+				<static textres="char_label_ammoperattack" />
+			</label>
+
 			<label name="label_ammo">
-				<anchored width="50">
-					<top parent="damageview" anchor="bottom" relation="relative" offset="5" />
+				<anchored width="37">
+					<top parent="damageview" anchor="bottom" relation="relative" offset="8" />
 					<left offset="15" />
 				</anchored>
 				<static textres="char_label_weaponammo" />

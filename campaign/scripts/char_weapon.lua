@@ -25,6 +25,8 @@ function onDataChanged()
 	label_ammo.setVisible(bUseAmmo);
 	maxammo.setVisible(bUseAmmo);
 	ammocounter.setVisible(bUseAmmo);
+	ammoperattack.setVisible(bUseAmmo);
+	label_ammoperattack.setVisible(bUseAmmo);
 end
 
 function onAttackTypeUpdated()
@@ -160,8 +162,9 @@ function getAmmo()
 	local nodeAction = getDatabaseNode();
 	local nCur = DB.getValue(nodeAction, "ammo", 0);
 	local nMax = DB.getValue(nodeAction, "maxammo", 0);
+	local nUsesPerAttack = DB.getValue(nodeAction, "ammoperattack", 1);
 
-	return nCur, nMax;
+	return nCur, nMax, nUsesPerAttack;
 end
 
 function hasAmmo()
@@ -169,8 +172,8 @@ function hasAmmo()
 		return true
 	end
 
-	local nCur, nMax = self.getAmmo();
-	return nCur < nMax;
+	local nCur, nMax, nPerAttack = self.getAmmo();
+	return nCur + nPerAttack <= nMax;
 end
 
 function usesAmmo()
@@ -183,7 +186,7 @@ function useAmmo()
 	end
 
 	local nodeAction = getDatabaseNode();
-	local nCur, nMax = self.getAmmo();
-	nCur = math.max(math.min(nCur + 1, nMax), 0);
+	local nCur, nMax, nPerAttack = self.getAmmo();
+	nCur = math.max(math.min(nCur + nPerAttack, nMax), 0);
 	DB.setValue(nodeAction, "ammo", "number", nCur)
 end

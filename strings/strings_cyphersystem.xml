@@ -267,6 +267,7 @@
 	<string name="char_label_weapon">Weapons</string>
 	<string name="char_title_attack_editor">Attack Editor</string>
 	<string name="char_label_weaponammo">Uses</string>
+	<string name="char_label_ammoperattack">Uses per Attack</string>
 	
 	<string name="char_label_itemlink">Item Link</string>
 	<string name="char_itemlink_empty">Drop an item link in this window to link</string>
