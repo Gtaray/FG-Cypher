@@ -35,6 +35,10 @@
 				<multilinespacing>20</multilinespacing>
 				<cursor hover="hand" />
 				<script>
+					function onInit()
+						addBitmapWidget({ icon = "field_rollable", position="bottomleft", x = -4, y = 2 });
+						setHoverCursor("hand");
+					end
 					function onDoubleClick(x,y)
 						return window.onDamageAction();
 					end			
@@ -45,11 +49,15 @@
 			</stringc_listitem_right_static>
 
 			<stringc_listitem_right_static name="attackview">
-				<anchored width="70" height="-1" />
+				<anchored width="80" height="-1" />
 				<frame name="fieldlight" offset="10,10,10,10" />
 				<multilinespacing>20</multilinespacing>
 				<cursor hover="hand" />
 				<script>
+					function onInit()
+						addBitmapWidget({ icon = "field_rollable", position="bottomleft", x = -4, y = 2 });
+						setHoverCursor("hand");
+					end
 					function onDoubleClick(x,y)
 						return window.onAttackAction();
 					end			

@@ -369,7 +369,7 @@ function calculateDifficultyForRoll(rSource, rTarget, rRoll)
 	nMod = nMod + (tonumber(rRoll.nHinder or "0"));
 	nMod = nMod + (tonumber(rRoll.nConditionMod or "0"));
 
-	if rRoll.bLightWeapon then
+	if rRoll.bLightWeapon or rRoll.sWeaponType == "light" then
 		nMod = nMod - 1;
 	end
 

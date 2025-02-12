@@ -161,21 +161,34 @@ function getPowerAttackActionText(nodeAction)
 	return sAttack;
 end
 
+function getPCActionAttackBase(rAction)
+	local sDice = StringManager.convertDiceToString({ "d20" }, rAction.nModifier);
+	local nDiffAdjust = (rAction.nHinder or 0) - (rAction.nAssets or 0) - (rAction.nEase or 0) - rAction.nLevel + TrainingManager.getDifficultyModifier(rAction.nTraining or 1);
+	if rAction.sWeaponType == "light" then
+		nDiffAdjust = nDiffAdjust - 1;
+	end
+
+	if (rAction.nDifficulty or 0) > 0 then
+		local nDifficulty = math.max(rAction.nDifficulty + nDiffAdjust, 0);
+		sDice = string.format("%s vs %s (%s)", sDice, nDifficulty, nDifficulty * 3);
+	else
+		if nDiffAdjust > 0 then
+			sDice = string.format("%s vs +%s", sDice, nDiffAdjust);
+		elseif nDiffAdjust < 0 then
+			sDice = string.format("%s vs %s", sDice, nDiffAdjust);
+		end
+	end
+	return sDice;
+end
+
 function getPCAttackText(rAction)
 	local sAttack = ""
-	local nFlatBonus = RollManager.convertToFlatBonus(rAction.nTraining, rAction.nAssets, rAction.nModifier, rAction.nEase, rAction.nHinder)
-	nFlatBonus = nFlatBonus + (rAction.nLevel * 3)
-
-	local sDice = StringManager.convertDiceToString({ "d20" }, nFlatBonus);
+	local sDice = PowerManager.getPCActionAttackBase(rAction);
 
 	if rAction.sAttackRange ~= "" then
 		sAttack = string.format("%s (%s): %s", StringManager.capitalize(rAction.sStat), rAction.sAttackRange, sDice)
 	else
 		sAttack = string.format("%s: %s", StringManager.capitalize(rAction.sStat), sDice)
-	end
-
-	if rAction.nDifficulty and rAction.nDifficulty > 0 then
-		sAttack = string.format("%s vs difficulty %s (%s)", sAttack, rAction.nDifficulty, rAction.nDifficulty * 3)
 	end
 
 	if rAction.nCost > 0 then
@@ -378,8 +391,8 @@ function getPowerAction(nodeAction)
 		end
 		
 	elseif rAction.type == "attack" then
-		rAction.sStat = RollManager.resolveStat(DB.getValue(nodeAction, "stat", ""));
-		rAction.sDefenseStat = RollManager.resolveStat(DB.getValue(nodeAction, "defensestat", ""), "speed");
+		rAction.sStat = DB.getValue(nodeAction, "stat", "");
+		rAction.sDefenseStat = DB.getValue(nodeAction, "defensestat", "");
 		rAction.sAttackRange = DB.getValue(nodeAction, "atkrange", "");
 
 		-- Don't add difficulty values less than 1
@@ -407,10 +420,13 @@ function getPowerAction(nodeAction)
 			rAction.sDefenseStat = resolveCustomStats(nodeAction, rAction.sDefenseStat, "defensestat_custom", "speed");
 		end
 
+		rAction.sStat = RollManager.resolveStat(rAction.sStat, "might");
+		rAction.sDefenseStat = RollManager.resolveStat(rAction.sDefenseStat, "speed");
+
 	elseif rAction.type == "damage" then
 		rAction.sStat = DB.getValue(nodeAction, "stat", "");
 		rAction.nDamage = DB.getValue(nodeAction, "damage", 0);
-		rAction.sDamageStat = RollManager.resolveStat(DB.getValue(nodeAction, "damagestat", ""));
+		rAction.sDamageStat = DB.getValue(nodeAction, "damagestat", "");
 		rAction.sDamageType = DB.getValue(nodeAction, "damagetype", "");
 
 		--rAction.sDamageType = DB.getValue(nodeAction, "damagetype", "");
@@ -431,6 +447,8 @@ function getPowerAction(nodeAction)
 			rAction.sStat = resolveCustomStats(nodeAction, rAction.sStat, "stat_custom", "might");
 			rAction.sDamageStat = resolveCustomStats(nodeAction, rAction.sDamageStat, "damagestat_custom", "might");
 		end
+
+		rAction.sDamageStat = RollManager.resolveStat(rAction.sDamageStat, "might");
 
 	elseif rAction.type == "heal" then
 		rAction.sStat = DB.getValue(nodeAction, "stat", "");

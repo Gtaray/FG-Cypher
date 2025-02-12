@@ -53,15 +53,7 @@ end
 
 function onAttackChanged()
 	local rAction = self.getAttackAction();
-	local nBonus = RollManager.convertToFlatBonus(rAction.nTraining, rAction.nAssets, rAction.nModifier)
-
-	local bWeapon = DB.getValue(nodeAction, "type", "") == ""
-	if bWeapon and rAction.sWeaponType == "light" then
-		nBonus = nBonus + 3	
-	end
-
-	-- Hardcode a little exception because convertDiceToString doesn't put a sign if the value is 0
-	local sAttack = StringManager.convertDiceToString({"d20"}, nBonus, true);
+	local sAttack = PowerManager.getPCActionAttackBase(rAction);
 	attackview.setValue(sAttack)
 end
 
