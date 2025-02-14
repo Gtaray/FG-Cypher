@@ -12,9 +12,10 @@ actions = {
 	["stat"] = { sIcon = "action_roll", sTargeting = "each", bUseModStack = "true" },
 	["skill"] = { sIcon = "action_roll", sTargeting = "each", bUseModStack = "true" },
 	["defense"] = { sIcon = "action_roll", sTargeting = "each", bUseModStack = "true" },
-	["defensevs"] = { sIcon = "action_attack", sTargeting = "all", bUseModStack = true },
+	["defensevs"] = { sIcon = "action_attack", sTargeting = "each", bUseModStack = true },
+	-- There's a little hack I do for attacks because the sTargeting is set to 'all' instead of 'each'
 	["attack"] = { sIcon = "action_attack", sTargeting = "all", bUseModStack = "true" },
-	["damage"] = { sIcon = "action_damage", sTargeting = "all", bUseModStack = "true" },
+	["damage"] = { sIcon = "action_damage", sTargeting = "each", bUseModStack = "true" },
 	["recovery"] = { sIcon = "action_heal" },
 	["heal"] = { sIcon = "action_heal", sTargeting = "each", bUseModStack = true },
 	["depletion"] = { },
@@ -97,7 +98,7 @@ function getCharSelectDetailHost(nodeChar)
 end
 
 function requestCharSelectDetailClient()
-	return "name,class.descriptor.name,class.descriptor2.name,class.ancestry.name,class.ancestry2.name,class.type.name,class.focus.name,class.focus2.name,#tier";
+	return "name,class.descriptor.name,class.descriptor2.name,class.ancestry.name,class.ancestry2.name,class.type.name,class.focus.name,class.focus2.name,#advancement.tier";
 end
 
 function receiveCharSelectDetailClient(vDetails)

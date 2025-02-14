@@ -775,6 +775,11 @@
 	<string name="effort_prompt_button_roll">Roll</string>
 	<string name="effort_prompt_button_close">Close</string>
 
+	<!-- Major/Minor Effects Prompt -->
+	<string name="attack_prompt_title">Add Extra Damage?</string>
+	<string name="attack_prompt_minoreffect">You rolled a 19!\nWould you like to apply +3 to the damage?</string>
+	<string name="attack_prompt_majoreffect">You rolled a 20!\nWould you like to apply +4 to the damage?</string>
+
 	<!-- Character Builder Dialog Boxes -->
 	<string name="dialog_nav_stats">Stat Pools</string>
 	<string name="dialog_nav_edge">Edge</string>

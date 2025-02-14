@@ -646,6 +646,10 @@
 				<icons>char_init</icons>
 			</label_charframetop>
 
+			<button_tracker name="button_tracker">
+				<anchored to="title" />
+			</button_tracker>
+
 			<basicnumber name="xp" source="advancement.xp">
 				<anchored to="columnanchor" width="40" height="30">
 					<top anchor="bottom" relation="relative" offset="10" />

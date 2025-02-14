@@ -4,7 +4,7 @@
 --
 
 function onInit()
-	ActionsManager.registerModHandler("attack", modRoll);
+	--ActionsManager.registerModHandler("attack", modRoll);
 	ActionsManager.registerResultHandler("attack", onRoll);
 end
 
@@ -138,9 +138,15 @@ function modRoll(rSource, rTarget, rRoll)
 end
 
 function onRoll(rSource, rTarget, rRoll)
+	-- modRoll is not called by the actions manager, and is instead called manually here
+	-- this is because when an action's sTargeting is set to 'all', modRoll doesn't have
+	-- rTarget populated yet. But it is populated here. So instead of having it be
+	-- done automatically, we just manually call the method here
+	ActionAttack.modRoll(rSource, rTarget, rRoll);
+
 	RollManager.convertNumbersToBooleans(rRoll);
 	RollManager.decodeAdvantage(rRoll);
-	local bMulti = RollManager.decodeMultiTarget(rRoll);
+	rRoll.bMulti = RollManager.decodeMultiTarget(rRoll);
 
 	-- Hacky way to force the rebuilt flag to either be true or false, never an empty string
 	rRoll.bRebuilt = (rRoll.bRebuilt == true) or (rRoll.bRebuilt or "") ~= "";
@@ -169,11 +175,15 @@ function onRoll(rSource, rTarget, rRoll)
 		RollHistoryManager.setAttackEffort(rSource, rTarget, rRoll)
 	end
 
-	if rRoll.bRolled17 then
-		ModifierStack.addSlot("", 1)
-	end
-	if rRoll.bRolled18 then
-		ModifierStack.addSlot("", 2)
+	-- Might be a better way to do this, but we only update the modifier stack if
+	-- it's empty. This way we don't add this value for every target.
+	if ModifierStack.isEmpty() then
+		if rRoll.bRolled17 then
+			ModifierStack.addSlot("", 1)
+		end
+		if rRoll.bRolled18 then
+			ModifierStack.addSlot("", 2)
+		end
 	end
 
 	-- If this attack had damage effort set for it, then update the desktop panel
@@ -182,7 +192,7 @@ function onRoll(rSource, rTarget, rRoll)
 		RollManager.disableCost()
 		RollManager.setDifficultyPanelEffort(rRoll.nDamageEffort)
 
-		if bMulti then
+		if rRoll.bMulti then
 			RollManager.enableMultiTarget();
 		end
 	end
@@ -268,8 +278,18 @@ function applyRoll(rSource, rTarget, rRoll)
 			end
 		end
 	end
+
+	if rRoll.bMinorEffect then
+		PromptManager.promptForMinorEffectOnAttack(rSource)
+	elseif rRoll.bMajorEffect then
+		PromptManager.promptForMajorEffectOnAttack(rSource)
+	end
 	
 	ActionsManager.outputResult(rRoll.bSecret, rSource, rTarget, msgLong, msgShort);
+
+	if not bSuccess and rRoll.bMulti then
+		TargetingManager.removeTarget(ActorManager.getCTNodeName(rSource), ActorManager.getCTNodeName(rTarget));
+	end
 
 	-- for PC vs PC rolls, prompt a defense roll
 	if bPvP then

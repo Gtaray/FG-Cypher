@@ -1,9 +1,11 @@
 OOB_MSG_TYPE_INITIATEDEFPRMOPT = "initiatedefprompt";
-OOB_MSGTYPE_PROMPTDEFENSE = "promptdefense";
+OOB_MSG_TYPE_ATKEXTRAEFFECT = "attackextraeffect";
+OOB_MSG_TYPE_PROMPTDEFENSE = "promptdefense";
 
 function onInit()
 	OOBManager.registerOOBMsgHandler(OOB_MSG_TYPE_INITIATEDEFPRMOPT, handleInitiateDefensePrompt);
-	OOBManager.registerOOBMsgHandler(OOB_MSGTYPE_PROMPTDEFENSE, handlePromptDefenseRoll);
+	OOBManager.registerOOBMsgHandler(OOB_MSG_TYPE_PROMPTDEFENSE, handlePromptDefenseRoll);
+	OOBManager.registerOOBMsgHandler(OOB_MSG_TYPE_ATKEXTRAEFFECT, handleExtraEffectOnAttack);
 end
 
 function getUser(rPlayer)
@@ -17,6 +19,62 @@ end
 
 function doesUserOwnIdentity(rPlayer)
 	return Session.UserName == getUser(rPlayer)
+end
+
+-------------------------------------------------------------------------------
+-- MAJOR AND MINOR EFFECTS ON ATTACKS
+-------------------------------------------------------------------------------
+function promptForMinorEffectOnAttack(rPlayer)
+	local msgOOB = {};
+	msgOOB.type = OOB_MSG_TYPE_ATKEXTRAEFFECT;
+	msgOOB.nValue = 3;
+
+	if not Session.IsHost then
+		PromptManager.handleExtraEffectOnAttack(msgOOB);
+		return;
+	end
+
+	local sUser = getUser(rPlayer);
+	Comm.deliverOOBMessage(msgOOB, sUser);
+end
+
+function promptForMajorEffectOnAttack(rPlayer)
+	local msgOOB = {};
+	msgOOB.type = OOB_MSG_TYPE_ATKEXTRAEFFECT;
+	msgOOB.nValue = 4;
+
+	if not Session.IsHost then
+		PromptManager.handleExtraEffectOnAttack(msgOOB);
+		return;
+	end
+
+	local sUser = getUser(rPlayer);
+	Comm.deliverOOBMessage(msgOOB, sUser);
+end
+
+function handleExtraEffectOnAttack(msgOOB)
+	local tData = {
+		sTitleRes = "attack_prompt_title",
+		fnCallback = PromptManager.applyExtraEffectToDamage,
+		nValue = tonumber(msgOOB.nValue)
+	};
+	if tData.nValue == 3 then
+		tData.sText = Interface.getString("attack_prompt_minoreffect");
+	elseif tData.nValue == 4 then
+		tData.sText = Interface.getString("attack_prompt_majoreffect");
+	end
+
+	DialogManager.openDialog("dialog_yesno", tData);
+end
+
+function applyExtraEffectToDamage(sResult, tData)
+	if sResult ~= "ok" then
+		return;
+	end
+
+	if ModifierStack.isEmpty() then
+		ModifierStack.addSlot("", tData.nValue);
+	end
 end
 
 -------------------------------------------------------------------------------
@@ -66,8 +124,8 @@ function handleInitiateDefensePrompt(msgOOB)
 	end
 
 	-- Change the type and forward the OOB msg
-	msgOOB.type = OOB_MSGTYPE_PROMPTDEFENSE;
-	Comm.deliverOOBMessage(msgOOB, sUser)
+	msgOOB.type = OOB_MSG_TYPE_PROMPTDEFENSE;
+	Comm.deliverOOBMessage(msgOOB, sUser);
 end
 
 function promptDefenseRoll(rSource, rPlayer, rResult)
@@ -75,7 +133,7 @@ function promptDefenseRoll(rSource, rPlayer, rResult)
 	local sUser = getUser(rPlayer);
 
 	local msgOOB = {};
-	msgOOB.type = OOB_MSGTYPE_PROMPTDEFENSE;
+	msgOOB.type = OOB_MSG_TYPE_PROMPTDEFENSE;
 	msgOOB.sAttackerNode = ActorManager.getCTNodeName(rSource);
 	msgOOB.sTargetNode = ActorManager.getCTNodeName(rPlayer);
 	msgOOB.nDifficulty = rResult.nDifficulty;
