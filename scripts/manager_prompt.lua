@@ -64,7 +64,9 @@ function handleExtraEffectOnAttack(msgOOB)
 		tData.sText = Interface.getString("attack_prompt_majoreffect");
 	end
 
-	DialogManager.openDialog("dialog_yesno", tData);
+	if #Interface.getWindows("dialog_yesno") == 0 then
+		DialogManager.openDialog("dialog_yesno", tData);
+	end
 end
 
 function applyExtraEffectToDamage(sResult, tData)
