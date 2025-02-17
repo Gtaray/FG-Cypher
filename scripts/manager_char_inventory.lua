@@ -109,11 +109,6 @@ function updateCyphers(nodeChar)
 	end
 
 	DB.setValue(nodeChar, "cypherload", "number", nCypherTotal);
-	CharInventoryManager.onCypherLoadChanged(nodeChar);
-end
-
-function onCypherLoadChanged(nodeChar)
-	WindowManager.callInnerWindowFunction(Interface.findWindow("charsheet", nodeChar), "onCypherLoadChanged");
 end
 
 -------------------------------------------------------------------------------

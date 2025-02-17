@@ -166,12 +166,12 @@
 			</label_fieldtop>
 
 			<buttoncontrol name="multitarget">
-				<bounds>180,9,40,20</bounds>
+				<bounds>180,9,50,20</bounds>
 				<state icon="button_checkoff" />
 				<state icon="button_checkon" />
 			</buttoncontrol>
 			<label_fieldtop>
-				<anchored to="multitarget" position="below" offset="7,1" />
+				<anchored to="multitarget" position="below" offset="8,1" />
 				<static textres="diffadj_label_multitarget" />
 			</label_fieldtop>
 		</sheetdata>

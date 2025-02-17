@@ -23,7 +23,9 @@ end
 
 function getTypeNode(nodeChar)
 	local _, sRecord = DB.getValue(nodeChar, "class.type.link");
-	return DB.findNode(sRecord);
+	if sRecord then
+		return DB.findNode(sRecord);
+	end
 end
 
 function getTypeName(nodeChar)
@@ -212,7 +214,7 @@ function setStartingPools(rData)
 end
 
 function setStartingStat(nodeChar, sStat, nValue, sSource)
-	CharStatManager.setStatMax(nodeChar, sStat, nValue);
+	CharStatManager.setStatMaxBase(nodeChar, sStat, nValue);
 
 	local sSummary = string.format(
 		"Stats: Set %s to %s", 

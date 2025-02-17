@@ -67,10 +67,10 @@ function onOptionSelected(sType, nCost, bSelected)
 	if (sType == "reroll" or sType == "shortterm") and OptionsManagerCypher.areHeroPointsEnabled() then
 		nResource = CharManager.getHeroPoints(nodeChar)
 	else
-		nResource = DB.getValue(nodeChar, "xp", 0);
+		nResource = CharAdvancementManager.getExperience(nodeChar);
 	end
 
-	accept.setVisible(bSelected and nResource >= nSelectedCost);
+	accept.setVisible(bSelected and nResource >= nCost);
 end
 
 function uncheckCheckbox(sType)

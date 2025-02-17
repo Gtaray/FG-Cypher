@@ -75,7 +75,15 @@
 		<margins control="0,0,0,2" />
 		<script>
 			function onInit()
+				local node = getDatabaseNode();
+				DB.addHandler(DB.getPath(node, "cypherlimit"), "onUpdate", updateCypherLimit);
+				DB.addHandler(DB.getPath(node, "cypherload"), "onUpdate", updateCypherLimit);
 				self.updateCypherLimit();
+			end
+			function onClose()
+				local node = getDatabaseNode();
+				DB.removeHandler(DB.getPath(node, "cypherlimit"), "onUpdate", updateCypherLimit);
+				DB.removeHandler(DB.getPath(node, "cypherload"), "onUpdate", updateCypherLimit);
 			end
 			function onCypherLoadChanged()
 				self.updateCypherLimit();
@@ -86,16 +94,19 @@
 				local nLoad = CharInventoryManager.getCypherLoad(node);
 				local sUsage = string.format("%d / %d", nLoad, nLimit);
 
-				cypherlimit.setValue(sUsage);
+				cypherlimit_label.setValue(sUsage);
 				if nLoad &gt; nLimit then
-					cypherlimit.setColor(ColorManager.getUIColor("field_error"))
+					cypherlimit_label.setColor(ColorManager.getUIColor("field_error"))
 				else
-					cypherlimit.setColor(nil);
+					cypherlimit_label.setColor(nil);
 				end
 			end
 		</script>
 		<sheetdata>
 			<anchor_content_top />
+
+			<hn name="cypherlimit" />
+			<hn name="cypherload" />
 
 			<label_charframetop name="header">
 				<anchored to="contentanchor" height="20">
@@ -124,7 +135,7 @@
 				<anchored to="button_invmeta" position="lefthigh" offset="55,0" width="20" height="20" />
 				<icon>cypher</icon>
 			</genericcontrol>
-			<string_charinv_cypherlimit name="cypherlimit">
+			<string_charinv_cypherlimit name="cypherlimit_label">
 				<anchored to="cyphericon" position="righthigh" offset="3,0" height="20" />
 			</string_charinv_cypherlimit>
 
@@ -359,23 +370,6 @@
 			<minimum width="400" height="145" />
 			<dynamic />
 		</sizelimits>
-		<script>
-			function onInit()
-				DB.addHandler(DB.getPath(getDatabaseNode(), "cypherlimit"), "onUpdate", onCypherLimitChanged);
-
-				self.onCypherLimitChanged();
-			end
-
-			function onClose()
-				DB.removeHandler(DB.getPath(getDatabaseNode(), "cypherlimit"), "onUpdate", onCypherLimitChanged);
-			end
-
-			function onCypherLimitChanged()
-				local rActor = ActorManager.resolveActor(getDatabaseNode())
-				local nLimit = CharInventoryManager.getCypherLimit(rActor);
-				cypherlimit.setValue(nLimit);
-			end
-		</script>
 		<sheetdata>
 			<windowtitlebar_charsheethelper name="title">
 				<prefix>char_invmeta_title</prefix>

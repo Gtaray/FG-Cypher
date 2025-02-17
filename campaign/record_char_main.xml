@@ -732,7 +732,7 @@
 				<static textres="char_label_tier" />
 				<icons>char_name</icons>
 			</label_charframetop>
-			<number_static name="level" source="advancement.tier">
+			<number_static name="tier" source="advancement.tier">
 				<anchored to="tiertitle" height="30" width="40">
 					<top anchor="bottom" offset="10" />
 					<left anchor="center" offset="-20" />

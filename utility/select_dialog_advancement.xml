@@ -10,8 +10,11 @@
 		<frame>utilitybox</frame>
 		<placement>
 			<size width="450" height="700" />
-			<nosave />
 		</placement>
+		<sizelimits>
+			<minimum width="400" height="500" />
+			<dynamic />
+		</sizelimits>
 		<!-- Scripts just act as a passthrough to the content subwindow -->
 		<script>
 			function setData(data, callback)
@@ -38,9 +41,11 @@
 				<class>dialog_buttons_okcancel</class>
 			</sub_content_bottom>
 
-			<sub_content_framed_groupbox name="content">
+			<sub_content name="content">
 				<class>select_dialog_advancement_main</class>
-			</sub_content_framed_groupbox>
+			</sub_content>
+
+			<resize_utilitybox />
 		</sheetdata>
 	</windowclass>
 
@@ -75,50 +80,38 @@
 
 			<subwindow_char_dialog name="stats">
 				<class>dialog_statpools</class>
-				<fastinit />
-				<noscroll />
 			</subwindow_char_dialog>
 
 			<subwindow_char_dialog name="edge">
 				<class>dialog_edge</class>
-				<fastinit />
-				<noscroll />
 			</subwindow_char_dialog>
 
 			<subwindow_char_dialog name="effort">
 				<class>dialog_effort</class>
-				<fastinit />
-				<noscroll />
 			</subwindow_char_dialog>
 
 			<subwindow_char_dialog name="skill">
 				<class>dialog_skill</class>
-				<fastinit />
-				<noscroll />
 			</subwindow_char_dialog>
+			<scrollbar_content>
+				<anchored to="skill" />
+				<target>skill</target>
+			</scrollbar_content>
 
 			<subwindow_char_dialog name="abilities">
 				<class>dialog_abilities</class>
-				<fastinit />
-				<noscroll />
 			</subwindow_char_dialog>
 
 			<subwindow_char_dialog name="focus">
 				<class>dialog_abilities</class>
-				<fastinit />
-				<noscroll />
 			</subwindow_char_dialog>
 
 			<subwindow_char_dialog name="recovery">
 				<class>dialog_recovery</class>
-				<fastinit />
-				<noscroll />
 			</subwindow_char_dialog>
 
 			<subwindow_char_dialog name="armor">
 				<class>dialog_armor</class>
-				<fastinit />
-				<noscroll />
 			</subwindow_char_dialog>
 		</sheetdata>
 	</windowclass>
@@ -228,7 +221,7 @@
 				<invisible />
 			</linkcontrol>
 			<basicstringc name="text">
-				<anchored position="insidetopleft" offset="20,5" height="18">
+				<anchored position="insidetopleft" offset="20,5" height="20">
 					<right parent="shortcut" anchor="left" offset="-5" />
 				</anchored>
 				<font>sheetlabel</font>

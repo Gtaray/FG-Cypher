@@ -135,7 +135,7 @@
 	<string name="char_label_descriptor_second">Second Descriptor</string>
 	<string name="char_label_focus">Focus</string>
 	<string name="char_label_focus_second">Second Focus</string>
-	<string name="char_label_ancestry">Ancetry</string>
+	<string name="char_label_ancestry">Ancestry</string>
 	<string name="char_label_ancestry_second">Second Ancestry</string>
 	<string name="char_label_flavor">Flavor</string>
 	<string name="char_statement_menu_delete">Clear this from the character.</string>

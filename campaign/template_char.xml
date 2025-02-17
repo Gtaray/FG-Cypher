@@ -31,11 +31,13 @@
 					local node = window.getDatabaseNode();
 					DB.addHandler(DB.getPath(node, "name"), "onUpdate", update);
 					DB.addHandler(DB.getPath(node, "class"), "onChildUpdate", update);
+					DB.addHandler(DB.getPath(node, "advancement.tier"), "onUpdate", update);
 				end
 				function onClose()
 					local node = window.getDatabaseNode();
 					DB.addHandler(DB.getPath(node, "name"), "onUpdate", update);
 					DB.removeHandler(DB.getPath(node, "class"), "onChildUpdate", update);
+					DB.removeHandler(DB.getPath(node, "advancement.tier"), "onUpdate", update);
 				end
 				function update()
 					setValue(CharManager.getCharacterStatement(window.getDatabaseNode()));

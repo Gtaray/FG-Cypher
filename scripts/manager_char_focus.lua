@@ -25,7 +25,9 @@ function hasFocus(nodeChar)
 end
 function getFocusNode(nodeChar)
 	local _, sRecord = DB.getValue(nodeChar, "class.focus.link");
-	return DB.findNode(sRecord);
+	if sRecord then
+		return DB.findNode(sRecord);
+	end
 end
 function getFocusName(nodeChar)
 	return DB.getValue(nodeChar, "class.focus.name", "")
@@ -36,7 +38,9 @@ function hasSecondFocus(nodeChar)
 end
 function getSecondFocusNode(nodeChar)
 	local _, sRecord = DB.getValue(nodeChar, "class.focus2.link");
-	return DB.findNode(sRecord);
+	if sRecord then
+		return DB.findNode(sRecord);
+	end
 end
 function getSecondFocusName(nodeChar)
 	return DB.getValue(nodeChar, "class.focus2.name", "")
