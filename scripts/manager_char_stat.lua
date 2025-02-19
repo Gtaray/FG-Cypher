@@ -63,7 +63,7 @@ function modifyInitiativeMod(rActor, nDelta)
 	end
 
 	local _, _, nMod = CharStatManager.getInitiative(rActor);
-	CharStatManager.setInitiative(rActor, nMod + nDelta);
+	CharStatManager.setInitiativeMod(rActor, nMod + nDelta);
 end
 
 function setInitiativeAssets(rActor, nValue)
@@ -125,7 +125,7 @@ function modifyInitiativeTraining(rActor, vDelta)
 
 	local nTraining = CharStatManager.getInitiative(rActor);
 	nTraining = TrainingManager.modifyTraining(nTraining, vDelta)
-	CharStatManager.setInitiativeAssets(rActor, nTraining);
+	CharStatManager.setInitiativeTraining(rActor, nTraining);
 end
 
 ---------------------------------------------------------------

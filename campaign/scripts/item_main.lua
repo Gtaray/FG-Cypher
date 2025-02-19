@@ -43,6 +43,8 @@ function update()
 	else
 		WindowManager.callSafeControlUpdate(self, "nonid_notes", bReadOnly, true);
 	end
+	updateControl("cost", bReadOnly, not bID);
+	updateControl("subtype", bReadOnly, false);
 	
 	type.setVisible(bID);
 	type.setReadOnly(bReadOnly);
