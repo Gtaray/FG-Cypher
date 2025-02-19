@@ -22,8 +22,14 @@ function addTypeDrop(nodeChar, sClass, sRecord)
 end
 
 function getTypeNode(nodeChar)
-	local _, sRecord = DB.getValue(nodeChar, "class.typelink");
-	return DB.findNode(sRecord);
+	local _, sRecord = DB.getValue(nodeChar, "class.type.link");
+	if sRecord then
+		return DB.findNode(sRecord);
+	end
+end
+
+function getTypeName(nodeChar)
+	return DB.getValue(nodeChar, "class.type.name", "");
 end
 
 function characterHasType(nodeChar)
@@ -102,6 +108,12 @@ function buildAbilityPromptTable(nodeChar, nodeType, nTier, rData)
 
 	-- Add abilities from flavor (if it is present)
 	CharFlavorManager.buildAbilityPromptTable(nodeChar, nTier, rData);
+
+	-- Add abilities from a focus' type swap list
+	local focusnode = CharFocusManager.getFocusNode(nodeChar);
+	if focusnode then
+		CharFocusManager.addTypeSwapAbilities(nodeChar, focusnode, nTier, rData);
+	end
 end
 
 function applyTier1(rData)
@@ -114,8 +126,8 @@ function applyTier1(rData)
 		"Manual");
 
 	-- Add the name and link to the character sheet
-	DB.setValue(rData.nodeChar, "class.type", "string", rData.sSourceName);
-	DB.setValue(rData.nodeChar, "class.typelink", "windowreference", rData.sSourceClass, DB.getPath(rData.nodeSource));
+	DB.setValue(rData.nodeChar, "class.type.name", "string", rData.sSourceName);
+	DB.setValue(rData.nodeChar, "class.type.link", "windowreference", rData.sSourceClass, DB.getPath(rData.nodeSource));
 
 	CharTypeManager.addStartingEffort(rData);
 	CharTypeManager.addStartingCypherLimit(rData);
@@ -141,8 +153,10 @@ function applyTier1(rData)
 	-- Apply starting features
 	for _, modnode in ipairs(DB.getChildList(rData.nodeSource, "features")) do
 		local rMod = CharModManager.getModificationData(modnode)
-		rMod.sSource = string.format("%s (Type)", StringManager.capitalize(rData.sSourceName));
-		CharModManager.addModificationToChar(rData.nodeChar, rMod, rData);
+		if rMod then
+			rMod.sSource = string.format("%s (Type)", StringManager.capitalize(rData.sSourceName));
+			CharModManager.addModificationToChar(rData.nodeChar, rMod, rData);
+		end
 	end
 
 	if (rData.nFloatingStats or 0) > 0 or #(rData.aEdgeOptions or {}) > 0 then
@@ -166,7 +180,7 @@ end
 --------------------------------------------------------------
 
 function addStartingEffort(rData)
-	DB.setValue(rData.nodeChar, "effort", "number", rData.nEffort or 1);
+	DB.setValue(rData.nodeChar, "effort.base", "number", rData.nEffort or 1);
 
 	local sSummary = string.format(
 		"Effort: Set to %s", 
@@ -200,7 +214,7 @@ function setStartingPools(rData)
 end
 
 function setStartingStat(nodeChar, sStat, nValue, sSource)
-	ActorManagerCypher.setStatMax(nodeChar, sStat, nValue);
+	CharStatManager.setStatMaxBase(nodeChar, sStat, nValue);
 
 	local sSummary = string.format(
 		"Stats: Set %s to %s", 
@@ -223,8 +237,7 @@ function setStartingEdge(rData)
 	end
 
 	for sStat, nEdge in pairs(aEdge) do
-		local sPath = string.format("abilities.%s.edge", sStat);
-		DB.setValue(rData.nodeChar, sPath, "number", nEdge);
+		CharStatManager.setEdge(rData.nodeChar, sStat, nEdge);
 
 		if nEdge > 0 then
 			CharTrackerManager.addToTracker(

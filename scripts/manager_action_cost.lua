@@ -147,7 +147,7 @@ function getRoll(rActor, rAction)
 	if rRoll.sCostStat == "might" 
 		or rRoll.sCostStat == "speed" 
 		or rRoll.sCostStat == "intellect" 
-		or ActorManagerCypher.hasCustomStatPool(rActor, rRoll.sCostStat) then
+		or CharStatManager.hasCustomStatPool(rActor, rRoll.sCostStat) then
 		rRoll.nEffort = (rAction.nEffort or 0) + RollManager.getEffortFromDifficultyPanel();
 	end
 
@@ -176,7 +176,7 @@ function modRoll(rSource, rTarget, rRoll)
 	-- it'll get used up here and not be available in the source roll
 	-- So we save it here and re-use it there.
 
-	rRoll.nMaxEffort = ActorManagerCypher.getMaxEffort(rSource, rRoll.sCostStat, aFilter);
+	rRoll.nMaxEffort = CharManager.getMaxEffort(rSource, rRoll.sCostStat, aFilter);
 
 	-- Some wierd bug where this gets turned into a string when the roll is dragged
 	rRoll.nAttackEffort = tonumber(rRoll.nAttackEffort)
@@ -198,7 +198,7 @@ function modRoll(rSource, rTarget, rRoll)
 	end
 
 	-- Handle cost increase for being wounded
-	if CharManager.isImpaired(rSource) then
+	if CharHealthManager.isImpaired(rSource) then
 		-- If the user is wounded, then add 1 for every level of
 		-- effort spent
 		rRoll.nMod = rRoll.nMod + rRoll.nEffort; 
@@ -207,12 +207,12 @@ function modRoll(rSource, rTarget, rRoll)
 
 	-- Add effort penalty based on armor
 	if rRoll.sCostStat == "speed" then
-		rRoll.nMod = rRoll.nMod + ActorManagerCypher.getArmorSpeedCost(rSource);
+		rRoll.nMod = rRoll.nMod + CharArmorManager.getEffortPenalty(rSource);
 	end
 
 	-- Reduce cost by Edge (if it's enabled)
 	if not rRoll.bDisableEdge then
-		rRoll.nEdge = ActorManagerCypher.getEdge(rSource, rRoll.sCostStat, aFilter);
+		rRoll.nEdge = CharStatManager.getEdgeWithEffects(rSource, rRoll.sCostStat, aFilter);
 		rRoll.nMod = rRoll.nMod - (rRoll.nEdge or 0);
 	end
 
@@ -290,10 +290,10 @@ function onRoll(rSource, rTarget, rRoll)
 		local sNotEnoughStatsMsg = "";
 
 		if rRoll.sCostStat == "xp" then
-			bNotEnoughStats = ActorManagerCypher.getXP(rSource) < nTotal
+			bNotEnoughStats = CharAdvancementManager.getExperience(rSource) < nTotal
 			sNotEnoughStatsMsg = "[INSUFFICIENT XP]";
 		else
-			local nCurStat = ActorManagerCypher.getStatPool(rSource, rRoll.sCostStat);
+			local nCurStat = CharStatManager.getStatPool(rSource, rRoll.sCostStat);
 			bNotEnoughStats = nCurStat < nTotal;
 			sNotEnoughStatsMsg = "[INSUFFICIENT STATS]";
 		end
@@ -315,7 +315,7 @@ function onRoll(rSource, rTarget, rRoll)
 		if rRoll.sCostStat == "xp" then
 			ActorManagerCypher.deductXP(rSource, nTotal);
 		else
-			ActorManagerCypher.addToStatPool(rSource, rRoll.sCostStat, -nTotal)
+			CharStatManager.addToStatPool(rSource, rRoll.sCostStat, -nTotal)
 		end
 	end
 

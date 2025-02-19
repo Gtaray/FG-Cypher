@@ -7,10 +7,6 @@ function onInit()
 	initActorHealth();
 end
 
----------------------------------------------------------------
--- CHARACTER STAT ACCESSORS AND SETTERS
----------------------------------------------------------------
-
 function getCreatureType(rActor)
 	local nodeActor = ActorManager.getCreatureNode(rActor);
 	if not nodeActor then
@@ -19,7 +15,7 @@ function getCreatureType(rActor)
 
 	local sField;
 	if ActorManager.isPC(rActor) then
-		sField = "class.ancestry";
+		sField = "class.ancestry.name";
 	else
 		sField = "type";
 	end
@@ -72,12 +68,11 @@ end
 
 function getPCWoundPercent(rActor)
 	-- Wound percentage is tracked with the overall loss of stats from all 3 pools
-	local nMightCur, nMightMax = ActorManagerCypher.getStatPool(rActor, "might");
-	local nSpeedCur, nSpeedMax = ActorManagerCypher.getStatPool(rActor, "speed");
-	local nIntCur, nIntMax = ActorManagerCypher.getStatPool(rActor, "intellect");
+	local nMightCur, nMightMax = CharStatManager.getStatPool(rActor, "might");
+	local nSpeedCur, nSpeedMax = CharStatManager.getStatPool(rActor, "speed");
+	local nIntCur, nIntMax = CharStatManager.getStatPool(rActor, "intellect");
 	local nCur = nMightCur + nSpeedCur + nIntCur;
 	local nMax = nMightMax + nSpeedMax + nIntMax;
-	local nodePC = ActorManager.getCreatureNode(rActor);
 
 	local nPercentWounded = 0;
 	if nMax > 0 then
@@ -85,7 +80,7 @@ function getPCWoundPercent(rActor)
 	end
 	
 	-- Track status based on the number of wounds the PC has
-	local nWounds = DB.getValue(nodePC, "wounds", 0);
+	local nWounds = CharHealthManager.getDamageTrack(rActor);
 	local sStatus;
 	if nWounds <= 0 then
 		sStatus = STATUS_HALE;
@@ -102,7 +97,7 @@ end
 
 function isHale(rActor)
 	if ActorManager.isPC(rActor) then
-		return ActorManagerCypher.getDamageTrack(rActor) == 0;
+		return CharHealthManager.getDamageTrack(rActor) == 0;
 	end
 
 	return ActorManagerCypher.getWoundPercent(rActor) < 0.33
@@ -114,7 +109,8 @@ end
 
 function isImpaired(rActor)
 	if ActorManager.isPC(rActor) then
-		return ActorManagerCypher.getDamageTrack(rActor) >= 1;
+		local charNode = ActorManager.getCreatureNode(rActor)
+		return CharHealthManager.getDamageTrack(charNode) >= 1;
 	end
 
 	local nPercentWounded = ActorManagerCypher.getWoundPercent(rActor)
@@ -123,527 +119,15 @@ end
 
 function isDebilitated(rActor)
 	if ActorManager.isPC(rActor) then
-		return ActorManagerCypher.getDamageTrack(rActor) >= 2;
+		local charNode = ActorManager.getCreatureNode(rActor)
+		return CharHealthManager.getDamageTrack(charNode) >= 2;
 	end
 
 	return ActorManagerCypher.getWoundPercent(rActor) >= 0.66
 end
 
 ---------------------------------------------------------------
--- CHARACTER STAT ACCESSORS AND SETTERS
----------------------------------------------------------------
-function getTier(rActor)
-	local nodeActor;
-	if type(rActor) == "databasenode" then
-		nodeActor = rActor;
-	else
-		nodeActor = ActorManager.getCreatureNode(rActor);
-	end
-	if not nodeActor or not ActorManager.isPC(rActor) then
-		return;
-	end
-
-	return DB.getValue(nodeActor, "tier", 1);
-end
-
-function moveDamageTrack(rActor, nIncrement)
-	local nodeActor;
-	if type(rActor) == "databasenode" then
-		nodeActor = rActor;
-	else
-		nodeActor = ActorManager.getCreatureNode(rActor);
-	end
-	if not nodeActor or not ActorManager.isPC(rActor) then
-		return;
-	end
-	
-	local nCur = ActorManagerCypher.getDamageTrack(rActor);
-	local nNewValue = math.max(math.min(nCur + nIncrement, 3), 0);
-
-	ActorManagerCypher.setDamageTrack(rActor, nNewValue);
-end
-function setDamageTrack(rActor, nValue)
-	local nodeActor;
-	if type(rActor) == "databasenode" then
-		nodeActor = rActor;
-	else
-		nodeActor = ActorManager.getCreatureNode(rActor);
-	end
-	if not nodeActor or not ActorManager.isPC(rActor) then
-		return;
-	end
-
-	nValue = math.max(math.min(nValue, 3), 0);
-
-	DB.setValue(nodeActor, "wounds", "number", nValue);
-end
-function getDamageTrack(rActor)
-	local nodeActor;
-	if type(rActor) == "databasenode" then
-		nodeActor = rActor;
-	else
-		nodeActor = ActorManager.getCreatureNode(rActor);
-	end
-	if not nodeActor or not ActorManager.isPC(rActor) then
-		return 0;
-	end
-
-	return DB.getValue(nodeActor, "wounds", 0);
-end
-
-function setStatMax(rActor, sStat, nValue)
-	local nodeActor;
-	if type(rActor) == "databasenode" then
-		nodeActor = rActor;
-	else
-		nodeActor = ActorManager.getCreatureNode(rActor);
-	end
-	if not nodeActor or (sStat or "") == "" or nValue == 0 then
-		return 0;
-	end
-
-	-- Look for a custom stat pool
-	if not StringManager.contains({ "might", "speed", "intellect" }, sStat) then
-		ActorManagerCypher.setCustomStatPoolMax(rActor, sStat, nValue);
-		return
-	end
-	
-	local sPath = string.format("abilities.%s.max", sStat:lower());
-	DB.setValue(nodeActor, sPath, "number", nValue);
-
-	--ActorManagerCypher.setStatPool(rActor, sStat, nValue);
-end
-
-function addToStatMax(rActor, sStat, nValue)
-	local nodeActor;
-	if type(rActor) == "databasenode" then
-		nodeActor = rActor;
-	else
-		nodeActor = ActorManager.getCreatureNode(rActor);
-	end
-	if not nodeActor or (sStat or "") == "" or nValue == 0 then
-		return 0;
-	end
-
-	sStat = sStat:lower();
-	local _, nMax = ActorManagerCypher.getStatPool(rActor, sStat)
-
-	-- New stat pool maximum
-	nMax = nMax + nValue;
-	ActorManagerCypher.setStatMax(rActor, sStat, nMax);
-
-	-- Modify the current amount by the same amount
-	ActorManagerCypher.addToStatPool(rActor, sStat, nValue);
-end
-
-function addToStatPool(rActor, sStat, nValue)
-	local nodeActor;
-	if type(rActor) == "databasenode" then
-		nodeActor = rActor;
-	else
-		nodeActor = ActorManager.getCreatureNode(rActor);
-	end
-	if not nodeActor or (sStat or "") == "" or nValue == 0 then
-		return 0;
-	end
-
-	sStat = sStat:lower();
-
-	local nCur, nMax = ActorManagerCypher.getStatPool(rActor, sStat);
-
-	-- Shortcut. If the stat pool is already capped out, then we just return
-	-- the entire value as overflow
-	if (nCur == nMax and nValue > 0) or (nCur == 0 and nValue < 0) then
-		return math.abs(nValue);
-	end
-
-	local nNewValue = nCur + nValue;
-	local nOverflow = 0;
-	-- Return overflow healing
-	if nNewValue > nMax then
-		nOverflow = nNewValue - nMax;
-
-	-- Return overflow damage
-	elseif nNewValue < 0 then
-		nOverflow = math.abs(nNewValue);
-	end
-
-	-- Clamp nNewValue between 0 and the pool's max
-	nNewValue = math.max(math.min(nNewValue, nMax), 0);
-	ActorManagerCypher.setStatPool(rActor, sStat, nNewValue);
-	return nOverflow;
-end
-
-function setStatPool(rActor, sStat, nValue)
-	local nodeActor;
-	if type(rActor) == "databasenode" then
-		nodeActor = rActor;
-	else
-		nodeActor = ActorManager.getCreatureNode(rActor);
-	end
-	if not nodeActor or (sStat or "") == "" then
-		return 0;
-	end
-
-	sStat = sStat:lower();
-
-	local nCur, nMax = ActorManagerCypher.getStatPool(rActor, sStat)
-
-	-- Look for a custom stat pool
-	if not StringManager.contains({ "might", "speed", "intellect" }, sStat) then
-		nValue = math.max(math.min(nValue, nMax), 0);
-		ActorManagerCypher.setCustomStatPool(rActor, sStat, nValue);
-		return
-	end
-
-	local sPath = "abilities." .. sStat;
-	nValue = math.max(math.min(nValue, nMax), 0);
-	DB.setValue(nodeActor, sPath .. ".current", "number", nValue);
-
-	-- If the character was above 0 in the stat pool and is now at 0, 
-	-- we need to increment the damage track
-	if nCur > 0 and nValue == 0 then
-		ActorManagerCypher.moveDamageTrack(rActor, 1);
-	
-	-- Or if the character was at 0 in the pool, but is now above 0,
-	-- decrement the damage track
-	elseif nCur == 0 and nValue > 0 then
-		ActorManagerCypher.moveDamageTrack(rActor, -1);
-	end
-end
-
-function getStatPool(rActor, sStat)
-	local nodeActor;
-	if type(rActor) == "databasenode" then
-		nodeActor = rActor;
-	else
-		nodeActor = ActorManager.getCreatureNode(rActor);
-	end
-	if not nodeActor or (sStat or "") == "" then
-		return 0, 0;
-	end
-
-	sStat = sStat:lower();
-	local nCur = 0;
-	local nMax = 0;
-
-	-- Look for a custom stat pool
-	if not StringManager.contains({ "might", "speed", "intellect" }, sStat) then
-		nCur, nMax = ActorManagerCypher.getCustomStatPool(rActor, sStat);
-	else 
-		local sPath = "abilities." .. sStat;
-		nCur = DB.getValue(nodeActor, sPath .. ".current", 0);
-		nMax = DB.getValue(nodeActor, sPath .. ".max", 10);
-	end
-
-	--local nMaxEffect = EffectManagerCypher.getPoolEffectBonus(rActor, sStat)
-	--return nCur, nMax + nMaxEffect;	
-	return nCur, nMax;	
-end
-
-function getMaxAssets(rActor, aFilter)
-	local nodeActor = ActorManager.getCreatureNode(rActor);
-	if not nodeActor or not ActorManager.isPC(rActor) then
-		return 2;
-	end
-
-	return 2 + EffectManagerCypher.getMaxAssetsEffectBonus(rActor, aFilter);
-end
-
-function getMaxEffort(rActor, aFilter)
-	local nodeActor = ActorManager.getCreatureNode(rActor);
-	if not nodeActor or not ActorManager.isPC(rActor) then
-		return 0;
-	end
-
-	local nBase = DB.getValue(nodeActor, "effort", 1);
-	local nEffectMaxEffort = EffectManagerCypher.getMaxEffortEffectBonus(rActor, aFilter);
-	
-	-- clamp max effort to between 0 and 6
-	return math.max(math.min(nBase + nEffectMaxEffort, 6), 1);
-end
-
-function getEdge(rActor, sStat, aFilter)
-	local nodeActor = ActorManager.getCreatureNode(rActor);
-	if not nodeActor or not ActorManager.isPC(rActor) or (sStat or "") == "" then
-		return 0;
-	end
-
-	sStat = sStat:lower();
-	local nBase = 0;
-
-	-- Look for a custom stat pool
-	if not StringManager.contains({ "might", "speed", "intellect" }, sStat) then
-		local _, _, nCustomEdge = ActorManagerCypher.getCustomStatPool(rActor, sStat);
-		nBase = nCustomEdge;
-	else
-		nBase = DB.getValue(nodeActor, "abilities." .. sStat .. ".edge", 0);
-	end
-
-	local nBonus = EffectManagerCypher.getEdgeEffectBonus(rActor, aFilter);
-
-	return nBase + nBonus;
-end
-
-function getShieldBonus(rActor)
-	local items = ActorManagerCypher.getArmorInInventory(rActor);
-	local nMax = 0;
-	for _, item in ipairs(items) do
-		local nShieldBonus = ItemManagerCypher.getArmorSpeedAsset(item);
-		if nShieldBonus > nMax then
-			nMax = nShieldBonus;
-		end
-	end
-	return nMax;
-end
-
-function getArmorSpeedCost(rActor)
-	local nodeActor = ActorManager.getCreatureNode(rActor);
-	if not nodeActor then
-		return 0;
-	end
-
-	local nBase = DB.getValue(nodeActor, "ArmorSpeedPenalty.total", 0);
-	local nBonus = EffectManagerCypher.getCostEffectBonus(rActor, { "armor" });
-
-	-- This value can never be lower than 0, because 0 means there's no penalty
-	return math.max(nBase + nBonus, 0);
-end
-
-function getDefense(rActor, sStat)
-	local nodeActor = ActorManager.getCreatureNode(rActor);
-	if not nodeActor or (sStat or "") == "" then
-		return;
-	end
-
-	sStat = sStat:lower();
-
-	if not StringManager.contains({ "might", "speed", "intellect" }, sStat) then
-		return getCustomStatDefense(rActor, sStat)
-	end
-
-	local sTraining = RollManager.resolveTraining(DB.getValue(nodeActor, "abilities." .. sStat .. ".def.training", 1));
-	local nAssets = DB.getValue(nodeActor, "abilities." .. sStat .. ".def.asset", 0);
-	local nModifier = DB.getValue(nodeActor, "abilities." .. sStat .. ".def.misc", 0);
-
-	return sTraining, nAssets, nModifier
-end
-
-function getInitiative(rActor)
-	local nodeActor = ActorManager.getCreatureNode(rActor);
-	if not nodeActor then
-		return;
-	end
-
-	local sTraining = RollManager.resolveTraining(DB.getValue(nodeActor, "inittraining", 1))
-	local nAssets = DB.getValue(nodeActor, "initasset", 0);
-	local nModifier = DB.getValue(nodeActor, "initmod", 0);
-
-	return sTraining, nAssets, nModifier;
-end
-
-function getRecoveryRollMod(rActor)
-	local nodeActor;
-	if type(rActor) == "databasenode" then
-		nodeActor = rActor;
-	else
-		nodeActor = ActorManager.getCreatureNode(rActor);
-	end
-	if not nodeActor or not ActorManager.isPC(rActor) then
-		return;
-	end
-
-	return DB.getValue(nodeActor, "recoveryrollmod", 0);
-end
-
----------------------------------------------------------------
--- CUSTOM STAT POOLS
----------------------------------------------------------------
-function getCustomStatPools(rActor)
-	local nodeActor;
-	if type(rActor) == "databasenode" then
-		nodeActor = rActor;
-	else
-		nodeActor = ActorManager.getCreatureNode(rActor);
-	end
-
-	if not nodeActor then
-		return {}
-	end
-	
-	local aPools = {}
-	for _, node in ipairs(DB.getChildList(nodeActor, "custom_pools")) do
-		local tPool = {
-			sName = DB.getValue(node, "name", ""),
-			nCurrent = DB.getValue(node, "current", 0),
-			nMax = DB.getValue(node, "max", 0),
-			nEdge = DB.getValue(node, "edge", 0),
-		}
-		
-		table.insert(aPools, tPool)
-	end
-
-	return aPools
-end
-
-function hasCustomStatPool(rActor, sStat)
-	local node = ActorManagerCypher.getCustomStatPoolNode(rActor, sStat);
-	return node ~= nil;
-end
-
-function getCustomStatPool(rActor, sStat)
-	local node = ActorManagerCypher.getCustomStatPoolNode(rActor, sStat);
-	if not node then
-		return 0, 0, 0;
-	end
-	
-	return DB.getValue(node, "current", 0), DB.getValue(node, "max", 0), DB.getValue(node, "edge", 0);
-end
-
-function setCustomStatPool(rActor, sStat, nValue)
-	local node = ActorManagerCypher.getCustomStatPoolNode(rActor, sStat);
-	if not node then
-		return;
-	end
-	
-	DB.setValue(node, "current", "number", nValue);
-end
-
-function setCustomStatPoolMax(rActor, sStat, nValue)
-	local node = ActorManagerCypher.getCustomStatPoolNode(rActor, sStat);
-	if not node then
-		return;
-	end
-	
-	DB.setValue(node, "max", "number", nValue);
-end
-
-function setCustomStatPoolEdge(rActor, sStat, nValue)
-	local node = ActorManagerCypher.getCustomStatPoolNode(rActor, sStat);
-	if not node then
-		return;
-	end
-	
-	DB.setValue(node, "edge", "number", nValue);
-end
-
-function getCustomStatDefense(rActor, sStat)
-	local node = ActorManagerCypher.getCustomStatPoolNode(rActor, sStat);
-	if not node then
-		return "", 0, 0;
-	end
-
-	return DB.getValue(node, "training", ""), DB.getValue(node, "assets", 0), DB.getValue(node, "mod", 0)
-end
-
-function getCustomStatPoolNode(rActor, sStat, bCreateIfDoesNotExist)
-	local nodeActor;
-	if type(rActor) == "databasenode" then
-		nodeActor = rActor;
-	else
-		nodeActor = ActorManager.getCreatureNode(rActor);
-	end
-	
-	for _, node in ipairs(DB.getChildList(nodeActor, "custom_pools")) do
-		local sName = DB.getValue(node, "name", "");
-		if sStat:lower() == sName:lower() then
-			return node;
-		end
-	end
-
-	if not bCreateIfDoesNotExist then
-		return;
-	end
-
-	-- Create the node then return it.
-	return ActorManagerCypher.createCustomStatPool(rActor, sStat)
-end
-
-function createCustomStatPool(rActor, sStat, nCur, nMax, nEdge)
-	if not nCur then nCur = 0 end;
-	if not nMax then nMax = 0 end;
-	if not nEdge then nEdge = 0 end;
-
-	local nodeActor;
-	if type(rActor) == "databasenode" then
-		nodeActor = rActor;
-	else
-		nodeActor = ActorManager.getCreatureNode(rActor);
-	end
-
-	if not nodeActor then
-		return;
-	end
-
-	local listnode = DB.createChild(nodeActor, "custom_pools");
-	if not listnode then
-		return;
-	end
-
-	local poolnode = DB.createChild(listnode);
-	if not poolnode then
-		return;
-	end
-
-	DB.setValue(poolnode, "name", "string", StringManager.capitalize(sStat))
-	DB.setValue(poolnode, "current", "number", nCur);
-	DB.setValue(poolnode, "max", "number", nMax);
-	DB.setValue(poolnode, "edge", "number", nEdge);
-	return poolnode;
-end
-
--------------------------------------------------------------------------------
--- XP
--------------------------------------------------------------------------------
-function getXP(rActor)
-	local nodeActor;
-	if type(rActor) == "databasenode" then
-		nodeActor = rActor;
-	else
-		nodeActor = ActorManager.getCreatureNode(rActor);
-	end
-	return DB.getValue(nodeActor, "xp", 0);
-end
-
-function deductXP(rActor, nDelta)
-	local nodeActor;
-	if type(rActor) == "databasenode" then
-		nodeActor = rActor;
-	else
-		nodeActor = ActorManager.getCreatureNode(rActor);
-	end
-
-	local nXP = ActorManagerCypher.getXP(nodeActor);
-	DB.setValue(nodeActor, "xp", "number", math.max(nXP - nDelta, 0));
-end
-
----------------------------------------------------------------
--- INVENTORY
----------------------------------------------------------------
-function getItemsOfTypeInInventory(rActor, sType)
-	local nodeActor;
-	if type(rActor) == "databasenode" then
-		nodeActor = rActor;
-	else
-		nodeActor = ActorManager.getCreatureNode(rActor);
-	end
-
-	local nodes = {};
-	for _,vNode in ipairs(DB.getChildList(nodeActor, "inventorylist")) do
-		if ItemManagerCypher.getItemType(vNode) == sType then
-			table.insert(nodes, vNode);
-		end
-	end
-
-	return nodes;
-end
-
-function getArmorInInventory(rActor)
-	return ActorManagerCypher.getItemsOfTypeInInventory(rActor, "armor");
-end
-
----------------------------------------------------------------
--- ARMOR
+-- ARMOR HELPERS
 ---------------------------------------------------------------
 -- Returns data objects for every armor that matches stat and damage type
 function getArmorData(rActor, sStat, aDamageTypes)
@@ -682,8 +166,7 @@ function getArmorData(rActor, sStat, aDamageTypes)
 			}
 
 			if ActorManager.isPC(rActor) then
-				tDefault.nArmor = DB.getValue(node, "Armor.total", 0);
-				tDefault.nSuperArmor = DB.getValue(node, "Armor.superarmor", 0);
+				tDefault.nArmor, tDefault.nSuperArmor = CharArmorManager.getDefaultArmor(rActor);
 			else
 				tDefault.nArmor = DB.getValue(node, "armor", 0);
 			end
@@ -695,7 +178,7 @@ function getArmorData(rActor, sStat, aDamageTypes)
 		end
 
 		-- Start by getting special armor values from the creature node
-		for _, resist in ipairs(DB.getChildList(node, "resistances")) do
+		for _, resist in ipairs(DB.getChildList(node, "defenses.resistances")) do
 			local sBehavior = DB.getValue(resist, "behavior", ""):lower();
 			local sType = DB.getValue(resist, "damagetype", ""):lower();
 			local bInverted = DB.getValue(resist, "invert", "") == "yes";
@@ -1018,58 +501,6 @@ function matchDamageTypes(aDamageTypes, sMatchedType)
 	return false;
 end
 
----------------------------------------------------------------
--- EQUIPPED WEAPONS
----------------------------------------------------------------
-function getEquippedWeaponNode(nodeActor)
-	for _, node in ipairs(DB.getChildList(nodeActor, "attacklist")) do
-		if DB.getValue(node, "equipped", 0) == 1 then
-			return node;
-		end
-	end
-end
-
-function getEquippedWeapon(nodeActor)
-	local node = ActorManagerCypher.getEquippedWeaponNode(nodeActor);
-	if not node then
-		return {};
-	end
-
-	local rWeapon = {};
-	rWeapon.sLabel = DB.getValue(node, "name", "");
-	rWeapon.sStat = RollManager.resolveStat(DB.getValue(node, "stat", ""));
-	rWeapon.sDefenseStat = RollManager.resolveStat(DB.getValue(node, "defensestat", ""), "speed");
-	rWeapon.sAttackRange = DB.getValue(node, "atkrange", "");
-	rWeapon.sTraining = DB.getValue(node, "training", "");
-	rWeapon.nAssets = DB.getValue(node, "asset", 0);
-	rWeapon.nModifier = DB.getValue(node, "modifier", 0);
-
-	rWeapon.nDamage = DB.getValue(node, "damage", 0);
-	rWeapon.sDamageStat = RollManager.resolveStat(DB.getValue(node, "damagestat", ""));
-	--rWeapon.sDamageType = DB.getValue(node, "damagetype", "");
-	rWeapon.bPierce = DB.getValue(node, "pierce", "") == "yes";
-	rWeapon.sWeaponType = DB.getValue(node, "weapontype", "");
-
-	if rWeapon.bPierce then
-		rWeapon.nPierceAmount = DB.getValue(node, "pierceamount", 0);	
-	end
-
-	return rWeapon;
-end
-
-function setEquippedWeapon(nodeActor, nodeWeapon)
-	local sWeaponNode = DB.getName(nodeWeapon)
-	for _, node in ipairs(DB.getChildList(nodeActor, "attacklist")) do
-		-- Set every weapon other than the specified one to unequipped
-		if DB.getName(node) ~= sWeaponNode then
-			DB.setValue(node, "equipped", "number", 0);
-		end
-	end
-end
-
----------------------------------------------------------------
--- NPCs
----------------------------------------------------------------
 function getCreatureLevel(rCreature, rAttacker, aFilter, aIgnore)
 	if not aFilter then
 		aFilter = {};

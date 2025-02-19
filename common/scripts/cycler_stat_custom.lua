@@ -50,7 +50,7 @@ function initialize(sLabels, sValues, sEmptyLabel, sInitialValue)
 	end
 
 	if _actorNode then
-		for _, pool in ipairs(ActorManagerCypher.getCustomStatPools(_actorNode)) do
+		for _, pool in ipairs(CharStatManager.getCustomStatPools(_actorNode)) do
 			sLabels = string.format("%s|%s", sLabels, pool.sName);
 			sValues = string.format("%s|%s", sValues, pool.sName:lower());
 		end

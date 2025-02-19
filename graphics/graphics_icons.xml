@@ -9,6 +9,18 @@
 	<!-- Buttons -->
 	<icon name="button_bigcheckon" file="graphics/icons/button_bigcheckon.png" />
 	<icon name="button_bigcheckoff" file="graphics/icons/button_bigcheckoff.png" />
+	<icon name="button_bigcheckcross" file="graphics/icons/button_bigcheckcross.png" />
+
+	<icon name="cypher" file="graphics/icons/cypher.png" />
+	<icon name="oddity" file="graphics/icons/oddity.png" />
+	<icon name="artifact" file="graphics/icons/artifact.png" />
+
+	<!-- Arcs -->
+	<icon name="arc_notstarted" file="graphics/icons/arc_1.png" />
+	<icon name="arc_progress" file="graphics/icons/arc_2.png" />
+	<icon name="arc_climax" file="graphics/icons/arc_3.png" />
+	<icon name="arc_resolution" file="graphics/icons/arc_4.png" />
+	<icon name="arc_complete" file="graphics/icons/arc_5.png" />
 
 	<!-- Rolls -->
 	<icon name="roll1" file="graphics/icons/roll1.png" />
@@ -55,6 +67,7 @@
 	<icon name="gmi20" file="graphics/icons/gmi20.png" />
 
 	<icon name="playerintrusion" file="graphics/icons/player_intrusion.png" />
+	<icon name="armor_icon" file="graphics/icons/armor_icon.png" />
 
 	<!-- Radial -->
 	<icon name="radial_power_action_stat" file="graphics/radial/icon_dice_custom.png" />
@@ -65,22 +78,4 @@
 	<icon name="sidebar_icon_recordtype_descriptor" file="graphics/sidebar/sidebar_icon_background.png" />
 	<icon name="sidebar_icon_recordtype_focus" file="graphics/sidebar/sidebar_icon_feat.png" />
 	<icon name="sidebar_icon_recordtype_flavor" file="graphics/sidebar/sidebar_icon_potion.png" />
-
-	<icon name="arc_opening" file="graphics/arcs/opening.png" />
-	<icon name="arc_opening_highlight" file="graphics/arcs/opening_highlight.png" />
-	<icon name="arc_opening_next" file="graphics/arcs/opening_advance.png" />
-
-	<icon name="arc_inprogress" file="graphics/arcs/inprogress.png" />
-	<icon name="arc_inprogress_previous" file="graphics/arcs/inprogress_previous.png" />
-	<icon name="arc_inprogress_highlight" file="graphics/arcs/inprogress_highlight.png" />
-	<icon name="arc_inprogress_next" file="graphics/arcs/inprogress_advance.png" />
-
-	<icon name="arc_climax" file="graphics/arcs/climax.png" />
-	<icon name="arc_climax_previous" file="graphics/arcs/climax_previous.png" />
-	<icon name="arc_climax_highlight" file="graphics/arcs/climax_highlight.png" />
-	<icon name="arc_climax_next" file="graphics/arcs/climax_advance.png" />
-
-	<icon name="arc_resolution" file="graphics/arcs/resolution.png" />
-	<icon name="arc_resolution_previous" file="graphics/arcs/resolution_previous.png" />
-	<icon name="arc_resolution_highlight" file="graphics/arcs/resolution_highlight.png" />
 </root>

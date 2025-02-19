@@ -12,8 +12,9 @@ actions = {
 	["stat"] = { sIcon = "action_roll", sTargeting = "each", bUseModStack = "true" },
 	["skill"] = { sIcon = "action_roll", sTargeting = "each", bUseModStack = "true" },
 	["defense"] = { sIcon = "action_roll", sTargeting = "each", bUseModStack = "true" },
-	["defensevs"] = { sIcon = "action_attack", sTargeting = "all", bUseModStack = true },
-	["attack"] = { sIcon = "action_attack", sTargeting = "each", bUseModStack = "true" },
+	["defensevs"] = { sIcon = "action_attack", sTargeting = "each", bUseModStack = true },
+	-- There's a little hack I do for attacks because the sTargeting is set to 'all' instead of 'each'
+	["attack"] = { sIcon = "action_attack", sTargeting = "all", bUseModStack = "true" },
 	["damage"] = { sIcon = "action_damage", sTargeting = "each", bUseModStack = "true" },
 	["recovery"] = { sIcon = "action_heal" },
 	["heal"] = { sIcon = "action_heal", sTargeting = "each", bUseModStack = true },
@@ -93,17 +94,15 @@ function onInit()
 end
 
 function getCharSelectDetailHost(nodeChar)
-	local sValue = DB.getValue(nodeChar, "class.descriptor", "") .. " " .. DB.getValue(nodeChar, "class.type", "") .. " who " .. DB.getValue(nodeChar, "class.focus", "");
-	sValue = sValue .. " (Tier " .. DB.getValue(nodeChar, "tier", 0) .. ")";
-	return sValue;
+	return CharManager.getCharacterStatement(nodeChar);
 end
 
 function requestCharSelectDetailClient()
-	return "name,class.descriptor,class.type,class.focus,#tier";
+	return "name,class.descriptor.name,class.descriptor2.name,class.ancestry.name,class.ancestry2.name,class.type.name,class.focus.name,class.focus2.name,#advancement.tier";
 end
 
 function receiveCharSelectDetailClient(vDetails)
-	return vDetails[1], vDetails[2] .. " " .. vDetails[3] .. " who " .. vDetails[4] .. " (Tier " .. vDetails[5] .. ")";
+	return CharManager.buildCharacterStatement(vDetails[1],vDetails[2],vDetails[3],vDetails[4],vDetails[5],vDetails[6],vDetails[7],vDetails[8],vDetails[9]);
 end
 
 function getDistanceUnitsPerGrid()

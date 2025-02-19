@@ -18,15 +18,19 @@ function addFlavorDrop(nodeChar, sClass, sRecord)
 		"Manual");
 
 	-- Add the name and link to the character sheet
-	DB.setValue(rAdd.nodeChar, "class.flavor", "string", rAdd.sSourceName);
-	DB.setValue(rAdd.nodeChar, "class.flavorlink", "windowreference", rAdd.sSourceClass, DB.getPath(rAdd.nodeSource));
+	DB.setValue(rAdd.nodeChar, "class.flavor.name", "string", rAdd.sSourceName);
+	DB.setValue(rAdd.nodeChar, "class.flavor.link", "windowreference", rAdd.sSourceClass, DB.getPath(rAdd.nodeSource));
 end
 
 function getFlavorNode(nodeChar)
-	local _, sRecord = DB.getValue(nodeChar, "class.flavorlink");
+	local _, sRecord = DB.getValue(nodeChar, "class.flavor.link");
 	if sRecord then
 		return DB.findNode(sRecord);
 	end
+end
+
+function getFlavorName(nodeChar)
+	return DB.getValue(nodeChar, "class.flavor.name", "")
 end
 
 function characterHasFlavor(nodeChar)

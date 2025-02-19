@@ -8,7 +8,12 @@
 <root>
 	<template name="subwindow_char_dialog">
 		<subwindow name="abilities">
-			<anchored to="contentframe" position="over" />
+			<anchored to="contentanchor">
+				<top relation="relative" offset="15" postoffset="15" />
+				<left />
+				<right />
+				<bottom parent="" />
+			</anchored>
 			<fastinit />
 		</subwindow>
 	</template>

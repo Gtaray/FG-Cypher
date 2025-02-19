@@ -16,11 +16,14 @@
 				<static textres="char_header_tracker" />
 			</windowtitlebar_charsheethelper>
 
-			<list_content_framed_groupbox name="tracker">
+			<anchor_content_top />
+			<anchor_content_bottom />
+
+			<list_content_framed_groupbox_alternating name="tracker">
 				<datasource>.tracker</datasource>
 				<class>charsheet_tracker_item</class>
 				<sortby mergerule="replace"><control desc="true">order</control></sortby>
-			</list_content_framed_groupbox>
+			</list_content_framed_groupbox_alternating>
 			<scrollbar_content_base>
 				<anchored to="tracker" />
 				<target>tracker</target>
@@ -29,6 +32,7 @@
 	</windowclass>
 
 	<windowclass name="charsheet_tracker_item">
+		<margins control="0,5,0,5" />
 		<sheetdata>
 			<hn name="order" />
 
@@ -43,7 +47,7 @@
 			<label name="source_label">
 				<anchored height="20" width="60">
 					<top parent="summary" anchor="bottom" />
-					<left />
+					<left offset="20" />
 				</anchored>
 				<static textres="char_tracker_label_source" />
 			</label>

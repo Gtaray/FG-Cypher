@@ -9,235 +9,107 @@
 	<windowclass name="charsheet_actions">
 		<script>
 			function onEditModeChanged()
-				abilitylist.update();
+				local bEditMode = WindowManager.getEditMode(self, "actions_iedit");
+
+				powermode_label.setVisible(not bEditMode);
+				powermode.setVisible(not bEditMode);
+				if bEditMode then
+					DB.setValue(getDatabaseNode(), "powermode", "string", "");
+				end
 			end
 		</script>
 		<sheetdata>
-			<!-- INITIATIVE -->
-			<frame_char name="initframe">
-				<anchored position="insidetopleft" width="135" height="70" />
-			</frame_char>
-			<label_frametop name="initlabel">
-				<anchored to="initframe" />
-				<static textres="initiative" />
-			</label_frametop>
-			<button_roll name="initroll">
-				<anchored to="initframe" position="insidetopleft" offset="25,35" width="20" height="20" />
-				<script>
-					function action(draginfo)
-						local rActor = ActorManager.resolveActor(window.getDatabaseNode());
-						local rAction = {};
-						rAction.sStat = "speed";
-						rAction.sTraining, rAction.nAssets, rAction.nModifier = ActorManagerCypher.getInitiative(rActor);
-						ActionInit.payCostAndRoll(draginfo, rActor, rAction);
-					end
+			<anchor_content_top />
+			<anchor_content_bottom />
 
-					function onButtonPress(x, y)
-						action();
-						return true;
-					end
-
-					function onDragStart(button, x, y, draginfo)
-						action(draginfo);
-						return true;
-					end
-				</script>
-			</button_roll>
-			<button_skill name="inittraining">
-				<anchored to="initroll" position="right" offset="7,0" width="15" />
-				<default>1</default>
-			</button_skill>
-			<basicnumber name="initasset">
-				<anchored to="inittraining" position="right" offset="7,0" width="15" />
-				<tooltip textres="assets" />
-				<min>0</min>
-				<max>2</max>
-			</basicnumber>
-			<basicnumber name="initmod">
-				<anchored to="initasset" position="right" offset="7,0" width="15" />
-				<tooltip textres="modifier" />
-			</basicnumber>
-
-			<!-- STATS -->
-			<frame_char name="statsframe">
-				<anchored position="insidetopright" height="70">
-					<left offset="135" />
-				</anchored>
-			</frame_char>
-
-			<number_charabilitypool name="mightpool" source="abilities.might.current">
-				<anchored to="statsframe" position="insidetopleft" offset="25,25" width="50" height="30" merge="replace" />
-				<stat>might</stat>
-			</number_charabilitypool>
-			<label_fieldtop>
-				<anchored to="mightpool" />
-				<static textres="char_label_might" />
-			</label_fieldtop>
-			<button_defenseroll name="mightdefroll">
-				<anchored to="mightpool" height="25" width="25" merge="replace">
-					<bottom />
-					<left anchor="right" offset="5" />
-				</anchored>
-				<stat>might</stat>
-				<tooltip textres="char_tooltip_mightdef" />
-			</button_defenseroll>
-			<label_fieldtop>
-				<anchored to="mightdefroll" />
-				<static textres="char_label_statdef" />
-			</label_fieldtop>
-
-			<number_charabilitypool name="speedpool" source="abilities.speed.current">
-				<anchored to="mightdefroll" width="50" height="30" merge="replace">
-					<bottom />
-					<left anchor="right" offset="30" />
-				</anchored>
-				<stat>speed</stat>
-			</number_charabilitypool>
-			<label_fieldtop>
-				<anchored to="speedpool" />
-				<static textres="char_label_speed" />
-			</label_fieldtop>
-			<button_defenseroll name="speeddefroll">
-				<anchored to="speedpool" height="25" width="25" merge="replace">
-					<bottom />
-					<left anchor="right" offset="5" />
-				</anchored>
-				<stat>speed</stat>
-				<tooltip textres="char_tooltip_speeddef" />
-			</button_defenseroll>
-			<label_fieldtop>
-				<anchored to="speeddefroll" />
-				<static textres="char_label_statdef" />
-			</label_fieldtop>
-
-			<number_charabilitypool name="intellectpool" source="abilities.intellect.current">
-				<anchored to="speeddefroll" width="50" height="30" merge="replace">
-					<bottom />
-					<left anchor="right" offset="30" />
-				</anchored>
-				<stat>intellect</stat>
-			</number_charabilitypool>
-			<label_fieldtop>
-				<anchored to="intellectpool" />
-				<static textres="char_label_intellect" />
-			</label_fieldtop>
-			<button_defenseroll name="intellectdefroll">
-				<anchored to="intellectpool" height="25" width="25" merge="replace">
-					<bottom />
-					<left anchor="right" offset="5" />
-				</anchored>
-				<stat>intellect</stat>
-				<tooltip textres="char_tooltip_intellectdef" />
-			</button_defenseroll>
-			<label_fieldtop>
-				<anchored to="intellectdefroll" />
-				<static textres="char_label_statdef" />
-			</label_fieldtop>
-
-			<!-- ATTACKS -->
-			<frame_char name="attackframe">
-				<anchored position="insidetop" offset="0,60">
-					<bottom anchor="center" />
-				</anchored>
-			</frame_char>
-			<label_frametop>
-				<anchored to="attackframe" />
-				<static textres="char_label_attacks" />
-			</label_frametop>
-			<list_text name="attacklist">
-				<anchored to="attackframe">
-					<top offset="30" />
-					<left offset="10" />
-					<right offset="-20" />
-					<bottom offset="-15" />
-				</anchored>
-				<datasource>.attacklist</datasource>
-				<class>char_attack</class>
-				<allowcreate />
-				<allowdelete />
-				<sortby><control>name</control></sortby>
-				<script>
-					function onInit()
-						local charnode = UtilityManager.getTopWindow(window).getDatabaseNode();
-						DB.addHandler(DB.getPath(charnode, "inventorylist.*.isidentified"), "onUpdate", onItemIdUpdated)
-					end
-
-					function onClose()
-						local charnode = UtilityManager.getTopWindow(window).getDatabaseNode();
-						DB.removeHandler(DB.getPath(charnode, "inventorylist.*.isidentified"), "onUpdate", onItemIdUpdated)
-					end
-					function onItemIdUpdated()
-						applyFilter()
-					end
-					function onFilter(w)
-						local attacknode = w.getDatabaseNode();
-						local _, sRecord = DB.getValue(attacknode, "itemlink");
-						local itemnode = DB.findNode(sRecord or "");
-
-						-- if this ability is tied to an item, and that item is unidentified, then do not display this.
-						if itemnode and DB.getValue(itemnode, "isidentified", 1) ~= 1 then
-							DB.setValue(attacknode, "equipped", "number", 0);
-							return false;
-						end
-
-						return true;
-					end
-				</script>
-			</list_text>
-			<scrollbar>
-				<anchored to="attacklist" />
-				<target>attacklist</target>
-			</scrollbar>
-			<genericcontrol name="rightanchor">
-				<anchored to="attackframe" position="insidetopright" offset="20,10" width="0" height="20" />
-			</genericcontrol>
-			<button_iedit name="attacklist_iedit">
-				<anchored to="attacklist" position="aboveleft" offset="0,0" />
-				<target>attacklist</target>
+			<area_content_framed_groupbox_bottom name="area_controls">
+				<anchored height="20" />
+			</area_content_framed_groupbox_bottom>
+			<button_iedit name="actions_iedit">
+				<anchored to="area_controls" position="insidetopright" offset="0,0" />
+				<tooltip textres="char_tooltip_actionedit" />
 			</button_iedit>
-			<button_iadd name="attacklist_iadd">
-				<anchored to="attacklist_iedit" position="righthigh" offset="0,0" />
-				<target>attacklist</target>
-			</button_iadd>
-
-			<!-- POWERS -->
-			<frame_char name="abilityframe">
-				<anchored position="insidebottom">
-					<top anchor="center" />
-				</anchored>
-			</frame_char>
-			<label name="ability_name_label">
-				<anchored to="abilityframe" position="insidetopleft" offset="17,10">
-					<right offset="-42" />
-				</anchored>
-				<center />
-				<static textres="char_label_abilityname" />
+			<buttoncontrol name="powers_iadd">
+				<anchored to="actions_iedit" position="lefthigh" offset="5,0" width="20" height="20" />
+				<icon normal="button_star" pressed="button_star_down" />
+				<tooltip textres="char_tooltip_actionaddpower" />
+				<script>
+					function onButtonPress()
+						window.content.subwindow.actions.subwindow.addPower(true);
+						DB.setValue(window.getDatabaseNode(), "powermode", "string", "");
+					end
+				</script>
+			</buttoncontrol>
+			<buttoncontrol name="weapons_iadd">
+				<anchored to="powers_iadd" position="lefthigh" offset="5,0" width="20" height="20" />
+				<icon normal="button_weapon" pressed="button_weapon_down" />
+				<tooltip textres="char_tooltip_actionaddweapon" />
+				<script>
+					function onButtonPress()
+						local w = window.content.subwindow.weapons.createWindow(nil, true);
+						w.carried.setValue(1);
+					end
+				</script>
+			</buttoncontrol>
+			<label name="powermode_label">
+				<anchored to="area_controls" position="insidetopleft" offset="0,0" />
+				<static textres="power_label_mode" />
 			</label>
-			<list_text name="abilitylist">
-				<anchored to="abilityframe">
-					<top offset="30" />
-					<left offset="10" />
-					<right offset="-20" />
-					<bottom offset="-15" />
-				</anchored>
-				<datasource>.abilitylist</datasource>
-				<class>power_item</class>
-				<allowcreate />
-				<allowdelete />
+			<button_stringcycler name="powermode">
+				<anchored to="powermode_label" position="righthigh" offset="10,0" width="80" />
+				<parameters>
+					<labelsres>power_label_modecombat</labelsres>
+					<values>combat</values>
+					<defaultlabelres>power_label_modestd</defaultlabelres>
+				</parameters>
+				<script>
+					function onValueChanged()
+						window.content.subwindow.onModeChanged();
+					end
+				</script>
+			</button_stringcycler>
+
+			<sub_content_scroll name="content">
+				<class>charsheet_actions_contents</class>
+			</sub_content_scroll>
+			<scrollbar_content />
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="charsheet_actions_contents">
+		<margins control="0,0,0,2" />
+		<script>
+			function onInit()
+				self.onEditModeChanged();
+				self.onModeChanged();
+			end
+			function onEditModeChanged()
+			end
+			function onModeChanged()
+				weapons.onModeChanged();
+				actions.subwindow.onModeChanged();
+			end
+		</script>
+		<sheetdata>
+			<anchor_content_top />
+
+			<label_charframetop_collapsible name="weapon_header">
+				<icons>char_attacks</icons>
+				<static textres="char_label_weapon" />
+				<target>weapons</target>
+			</label_charframetop_collapsible>
+
+			<list_content_noscroll_top name="weapons">
+				<datasource>.attacklist</datasource>
+				<class>char_weapon</class>
 				<sortby><control>name</control></sortby>
-				<script file="campaign/scripts/list_abilityactions.lua" />
-			</list_text>
-			<scrollbar>
-				<anchored to="abilitylist" />
-				<target>abilitylist</target>
-			</scrollbar>
-			<button_iedit name="abilitylist_iedit">
-				<anchored to="abilitylist" position="aboveleft" offset="0,0" />
-			</button_iedit>
-			<button_iadd name="abilitylist_iadd">
-				<anchored to="abilitylist_iedit" position="righthigh" offset="0,0" />
-				<target>abilitylist</target>
-			</button_iadd>
+				<allowdelete />
+				<script file="campaign/scripts/char_weaponlist.lua" />
+			</list_content_noscroll_top>
+			
+			<sub_content_top name="actions">
+				<class>power_page</class>
+			</sub_content_top>
 		</sheetdata>
 	</windowclass>
 </root>

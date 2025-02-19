@@ -156,13 +156,23 @@
 				<static textres="diffadj_label_misc" />
 			</label_fieldtop>
 			<buttoncontrol name="ignorecost">
-				<bounds>135,9,40,20</bounds>
+				<bounds>125,9,40,20</bounds>
 				<state icon="button_checkoff" />
 				<state icon="button_checkon" />
 			</buttoncontrol>
 			<label_fieldtop>
 				<anchored to="ignorecost" position="below" offset="7,1" />
 				<static textres="diffadj_label_ignore_cost" />
+			</label_fieldtop>
+
+			<buttoncontrol name="multitarget">
+				<bounds>180,9,50,20</bounds>
+				<state icon="button_checkoff" />
+				<state icon="button_checkon" />
+			</buttoncontrol>
+			<label_fieldtop>
+				<anchored to="multitarget" position="below" offset="8,1" />
+				<static textres="diffadj_label_multitarget" />
 			</label_fieldtop>
 		</sheetdata>
 	</windowclass>
@@ -221,7 +231,7 @@
 
 			<subwindow name="adjustments">
 				<class>difficultyadjust</class>
-				<anchored to="leftanchor" width="190" height="52">
+				<anchored to="leftanchor" width="240" height="52">
 					<left anchor="right" relation="relative" offset="3" />
 					<top offset="5" />
 				</anchored>

@@ -6,41 +6,87 @@
 -->
 
 <root>
-	<template name="sub_tab_maincharsheet">
-		<subwindow>
-			<anchored to="subwindowframe">
-				<left offset="0" />
-				<top offset="0" />
-				<right offset="0" />
-				<bottom offset="0" />
+	<!-- TEMPLATES FOR MAIN TAB -->
+	<template name="button_charclasslevel">
+		<button_details>
+			<script>
+				function onButtonPress()
+					Interface.openWindow("charsheet_statement_editor", window.getDatabaseNode());
+				end
+			</script>
+		</button_details>
+	</template>
+	<template name="stringc_charstatement">
+		<stringcu>
+			<anchored >
+				<top anchor="bottom" relation="relative" offset="5" />
+				<left offset="5" postoffset="5" />
+				<right offset="-5" postoffset="-5" />
 			</anchored>
+			<readonly />
+			<multilinespacing>20</multilinespacing>
+			<script>
+				function onInit()
+					update();
+					local node = window.getDatabaseNode();
+					DB.addHandler(DB.getPath(node, "name"), "onUpdate", update);
+					DB.addHandler(DB.getPath(node, "class"), "onChildUpdate", update);
+					DB.addHandler(DB.getPath(node, "advancement.tier"), "onUpdate", update);
+				end
+				function onClose()
+					local node = window.getDatabaseNode();
+					DB.addHandler(DB.getPath(node, "name"), "onUpdate", update);
+					DB.removeHandler(DB.getPath(node, "class"), "onChildUpdate", update);
+					DB.removeHandler(DB.getPath(node, "advancement.tier"), "onUpdate", update);
+				end
+				function update()
+					setValue(CharManager.getCharacterStatement(window.getDatabaseNode()));
+				end
+				function onClickDown(button, x, y)
+					return true;
+				end
+				function onClickRelease(button, x, y)
+					Interface.openWindow("charsheet_statement_editor", window.getDatabaseNode());
+				end
+			</script>
+		</stringcu>
+	</template>
+
+	<template name="sub_char_statpool">
+		<subwindow>
+			<script>
+				function onInit()
+					local sStat;
+					if stat and stat[1] then
+						sStat = stat[1]
+					end
+
+					local nodeActor = window.getDatabaseNode();
+					if sStat and nodeActor then
+						local sNodePath = DB.getPath(nodeActor, "stats", sStat)
+						DB.createNode(sNodePath)
+						setValue("charsheet_statpool", sNodePath)
+					end
+				end
+			</script>
+			<anchored width="160" />
+			<activate />
+			<class>charsheet_statpool</class>
 		</subwindow>
 	</template>
 
-	<template name="number_charabilitymax">
-		<basicnumber>
-			<default>10</default>
-			<min>0</min>
-			<script>
-				local nLast;
-				function onInit()
-					nLast = getValue();
-					window[target[1]].setMaxValue(nLast);
-				end
-				function onValueChanged()
-					local nNewMax = getValue();
-					window[target[1]].setMaxValue(nNewMax);
-					if window[target[1]].getValue() == nLast then
-						window[target[1]].setValue(getValue());
-					end
-					nLast = nNewMax;
-				end
-			</script>
-			<anchored position="insidetopright" offset="20,25" width="30" height="20" />
-		</basicnumber>
+	<template name="title_stat">
+		<label_charframetop>
+			<anchored height="20">
+				<top />
+				<left offset="15" />
+				<right offset="-15" />
+			</anchored>
+			<icons>char_stats</icons>
+		</label_charframetop>
 	</template>
 	<template name="number_charabilitypool">
-		<number_dropadd>
+		<basicnumber>
 			<font>char_pool</font>
 			<default>10</default>
 			<min>0</min>
@@ -48,103 +94,535 @@
 				<type>number</type>
 				<type>recovery</type>
 			</droptypes>
-			<!-- <rollable /> -->
-			<script file="campaign/scripts/number_char_ability_pool.lua" />
-			<anchored position="insidetopleft" offset="20,40" width="60" height="45" />
-		</number_dropadd>
-	</template>
-	<template name="label_charabilitypool">
-		<stringcontrol>
-			<anchored position="above" offset="3,6" />
-			<font>sheetlabel</font>
-			<center />
-		</stringcontrol>
+			<rollable />
+			<script file="campaign/scripts/char_ability_pool.lua" />
+			<anchored position="belowleft" offset="10,20" width="60" height="50" />
+		</basicnumber>
 	</template>
 	<template name="number_charedge">
 		<basicnumber>
-			<anchored position="belowleft" offset="0,20" width="30" height="20" />
+			<anchored width="30" height="20">
+				<top />
+				<left position="right" relation="relative" offset="20" />
+			</anchored>
 			<min>0</min>
 			<max>6</max>
 		</basicnumber>
 	</template>
-
-	<template name="button_statroll">
-		<button_roll>
-			<anchored width="25" height="25">
-				<top offset="-8" />
-				<left offset="-10" />
-			</anchored>
-			<script>
-				function action(draginfo)
-					local sStat = stat[1];
-					if (sStat or "") == "" then
-						return;
-					end
-
-					local rAction = {
-						label = StringManager.capitalize(sStat),
-						sStat = sStat
-					}
-					
-					local rActor = ActorManager.resolveActor(window.getDatabaseNode())
-					ActionStat.payCostAndRoll(draginfo, rActor, rAction);
-				end
-
-				function onButtonPress(x, y)
-					action();
-					return true;
-				end
-				function onDragStart(button, x, y, draginfo)
-					action(draginfo);
-					return true;
+	<template name="button_statdetails">
+		<button_details name="details">
+			<anchored position="insidetopright" />
+			<script>					
+				function onButtonPress()
+					Interface.openWindow("charsheet_statpool_editor", window.getDatabaseNode());
 				end
 			</script>
-		</button_roll>
+		</button_details>
 	</template>
-
-	<template name="button_defenseroll">
-		<button_roll>
-			<anchored position="belowleft" offset="-10,10" width="25" height="25" />
+	<template name="button_statpool_defenseroll">
+		<button_defenseroll>
 			<script file="campaign/scripts/button_defenseroll.lua" />
-		</button_roll>
+		</button_defenseroll>
 	</template>
 	<template name="label_defenseroll">
 		<label>
-			<anchored position="righthigh" offset="3,2" />
+			<anchored position="lefthigh" offset="5,2" />
 			<static textres="char_label_statdef" />
 		</label>
 	</template>
 	<template name="button_defensetraining">
-		<button_skill>
-			<anchored position="righthigh" offset="7,0" width="15" height="20" />
-			<default>1</default>
-		</button_skill>
-	</template>
-	<template name="number_defenseasset">
-		<basicnumber>
-			<anchored position="righthigh" offset="7,0" width="15" height="20" />
-			<tooltip textres="assets" />
-			<min>0</min>
-			<max>2</max>
-		</basicnumber>
-	</template>
-	<template name="number_defensemod">
-		<basicnumber>
-			<anchored position="righthigh" offset="7,0" width="15" height="20" />
-			<tooltip textres="modifier" />
-		</basicnumber>
+		<button_training_base>
+			<anchored position="righthigh" offset="7,0" />
+		</button_training_base>
 	</template>
 
+	<template name="number_chartotalarmor">
+		<number_linked_framed>
+			<tooltip textres="char_tooltip_armor" />
+			<font>reference-b-large</font>
+			<source><name>defenses.armor.base</name><op>+</op></source>
+			<source><name>defenses.armor.mod</name><op>+</op></source>
+		</number_linked_framed>
+	</template>
+	<template name="number_charinit">
+		<number_linked_framed>
+			<tooltip textres="char_tooltip_initiative" />
+			<font>reference-b-large</font>
+			<rollable />
+			<displaysign />
+			<source><name>initiative.assets</name><op>+</op></source>
+			<source><name>initiative.mod</name><op>+</op></source>
+			<source><name>initiative.training</name><op>+</op></source>
+			<script>
+				function onSourceUpdate()
+					local rActor = ActorManager.resolveActor(window.getDatabaseNode());
+					local nTraining, nAssets, nModifier = CharStatManager.getInitiative(rActor);
+					setValue(RollManager.convertToFlatBonus(nTraining, nAssets, nModifier));
+				end
+				function action(draginfo)
+					local rActor = ActorManager.resolveActor(window.getDatabaseNode());
+					local rAction = {};
+					rAction.sStat = "speed";
+					rAction.nTraining, rAction.nAssets, rAction.nModifier = CharStatManager.getInitiative(rActor);
+					ActionInit.payCostAndRoll(draginfo, rActor, rAction);
+				end
+				function onDragStart(button, x, y, draginfo)
+					return action(draginfo);
+				end
+				function onDoubleClick(x,y)
+					return action();
+				end
+			</script>
+		</number_linked_framed>
+	</template>
+	<template name="button_inittraining">
+		<button_training_base>
+			<anchored position="insidebottomright" offset="-10,-10" height="20" width="20" />
+			<readonly />
+		</button_training_base>
+	</template>
+	<template name="number_chareffort">
+		<number_linked_framed>
+			<tooltip textres="char_tooltip_effort" />
+			<font>reference-b-large</font>
+			<source><name>effort.base</name><op>+</op></source>
+			<source><name>effort.mod</name><op>+</op></source>
+		</number_linked_framed>
+	</template>
+	<template name="icon_armorpenalty">
+		<genericcontrol>
+			<script>
+				function onInit()
+					setColor(ColorManager.getUIColor("usage_full"))
+					local node = window.getDatabaseNode();
+					DB.addHandler(DB.getPath(node, "effort.armorpenalty.total"), "onUpdate", update);
+					DB.addHandler(DB.getPath(node, "health.damagetrack"), "onUpdate", update);
+					update();
+				end
+				function onClose()
+					local node = window.getDatabaseNode();
+					DB.removeHandler(DB.getPath(node, "effort.armorpenalty.total"), "onUpdate", update);
+					DB.removeHandler(DB.getPath(node, "health.damagetrack"), "onUpdate", update);
+				end
+				function update()
+					local node = window.getDatabaseNode();
+					local nCost = CharArmorManager.getEffortPenalty(node);
+					local bImpaired = CharHealthManager.isImpaired(node);
+					setVisible(nCost > 0 or bImpaired);
+				end
+			</script>
+			<anchored position="insidebottomright" offset="-10,-10" width="20" height="20" />
+			<disabled />
+			<icon>armor_icon</icon>
+		</genericcontrol>
+	</template>
+	<template name="button_charcombatcalc">
+		<button_details>
+			<anchored position="insidetopright" />
+			<script>
+				function onButtonPress()
+					Interface.openWindow("charsheet_combat_editor", window.getDatabaseNode());
+				end
+			</script>
+		</button_details>
+	</template>
+	<template name="label_charfieldtop_expanded">
+		<label_charfieldtop>
+			<anchored>
+				<bottom anchor="top" offset="-10" />
+				<left offset="-8" />
+				<right offset="8" />
+			</anchored>
+			<static textres="char_label_effort" />
+		</label_charfieldtop>
+	</template>
+
+	<template name="list_char_resistances">
+		<list_damagemods>
+			<script>
+				function update()
+					local bEditMode = (window.resistances_iedit.getValue() == 1);
+					if window.idelete_header then
+						window.idelete_header.setVisible(bEditMode);
+					end
+					for _,w in ipairs(getWindows()) do
+						w.idelete.setVisible(bEditMode);
+					end
+				end
+			</script>
+			<anchored>
+				<top parent="specialdefensestitle" anchor="bottom" relation="relative" offset="5" />
+				<left offset="10" />
+				<right offset="-5" />
+				<bottom offset="-10" />
+			</anchored>
+			<noscroll merge="delete" />
+			<datasource>.defenses.resistances</datasource>
+		</list_damagemods>
+	</template>
+
+	<template name="button_damagetrack">
+		<buttongroup_counter>
+			<anchored height="20">
+				<top to="columnanchor" anchor="bottom" relation="relative" offset="10" />
+				<left offset="0" />
+			</anchored>
+			<allowsinglespacing />
+			<spacing>34</spacing>
+			<maxslotperrow>3</maxslotperrow>
+			<values>
+				<maximum>3</maximum>
+			</values>
+			<sourcefields>
+				<current>health.damagetrack</current>
+			</sourcefields>
+			<stateicons merge="replaceandadd">
+				<on>button_bigcheckon</on>
+				<off>button_bigcheckoff</off>
+			</stateicons>
+			<script file="campaign/scripts/char_damagetrack_counter.lua" />
+		</buttongroup_counter>
+	</template>
+	<template name="label_damagetrackstatus">
+		<label>
+			<anchored position="righthigh" offset="10,0" width="80" height="20" />
+			<frame name="fieldlight" offset="7,5,7,5" />
+			<static textres="status_hale" />
+			<center />
+		</label>
+	</template>
+	<template name="button_damagetrackdetails">
+		<button_details name="details">
+			<anchored position="insidetopright" />
+			<script>					
+				function onButtonPress()
+					Interface.openWindow("charsheet_damagetrack_editor", window.getDatabaseNode());
+				end
+			</script>
+		</button_details>
+	</template>
+
+	<template name="button_recoveries">
+		<buttongroup_counter>
+			<anchored height="20">
+				<top to="columnanchor" anchor="bottom" relation="relative" offset="10" />
+				<left offset="0" />
+			</anchored>
+			<allowsinglespacing />
+			<spacing>34</spacing>
+			<maxslotperrow>4</maxslotperrow>
+			<values>
+				<maximum>4</maximum>
+			</values>
+			<sourcefields>
+				<current>health.recovery.used</current>
+			</sourcefields>
+			<stateicons merge="replaceandadd">
+				<on>button_bigcheckon</on>
+				<off>button_bigcheckoff</off>
+			</stateicons>
+			<script file="campaign/scripts/char_recovery_counter.lua" />
+		</buttongroup_counter>
+	</template>
+	<template name="label_recoverystatus">
+		<label>
+			<anchored position="below" offset="0,5" height="20" />
+			<frame name="fieldlight" offset="7,5,7,5" />
+			<static textres="char_label_recovery1action" />
+			<center />
+		</label>
+	</template>
+	<template name="number_charrecovery">
+		<number_linked_framed>
+			<tooltip textres="char_tooltip_recoverytotal" />
+			<font>reference-b-large</font>
+			<rollable />
+			<displaysign />
+			<source><name>advancement.tier</name><op>+</op></source>
+			<source><name>health.recovery.mod</name><op>+</op></source>
+			<script>
+				function action(draginfo)
+					local rActor = ActorManager.resolveActor(window.getDatabaseNode());
+					ActionRecovery.performRoll(draginfo, rActor, {});
+				end
+				function onDragStart(button, x, y, draginfo)
+					return action(draginfo);
+				end
+				function onDoubleClick(x,y)
+					return action();
+				end
+			</script>
+		</number_linked_framed>
+	</template>
+	<template name="button_recoverydetails">
+		<button_details name="details">
+			<anchored position="insidetopright" />
+			<script>					
+				function onButtonPress()
+					Interface.openWindow("charsheet_recovery_editor", window.getDatabaseNode());
+				end
+			</script>
+		</button_details>
+	</template>
+
+	<template name="button_tracker">
+		<button_details name="details">
+			<anchored position="insidetopright" />
+			<script>					
+				function onButtonPress()
+					Interface.openWindow("charsheet_tracker", window.getDatabaseNode());
+				end
+			</script>
+		</button_details>
+	</template>
+	<template name="label_advancements">
+		<stringcontrol>
+			<anchored position="lefthigh" offset="2,0" />
+			<font>sheetlabelmini</font>
+		</stringcontrol>
+	</template>
+	<template name="header_advancements">
+		<label_charfieldtop>
+			<anchored merge="delete" />
+			<anchored>
+				<top parent="xp_label" offset="2" />
+				<left parent="effort_label" />
+				<right parent="adv_edge"/>
+			</anchored>
+		</label_charfieldtop>
+	</template>
+
+	<template name="sub_charhseet_statement_part">
+		<subwindow>
+			<script file="campaign/scripts/char_statement_part.lua" />
+			<anchored to="contentanchor">
+				<top anchor="bottom" relation="relative" offset="15" />
+				<left />
+				<right />
+			</anchored>
+			<class>charsheet_statement_part</class>
+			<activate />
+		</subwindow>
+	</template>
+	<template name="title_charstatement_editor">
+		<label_charframetop>
+			<anchored to="contentanchor" height="20">
+				<top anchor="bottom" relation="relative" />
+				<left offset="10" />
+				<right offset="-10" />
+			</anchored>
+			<icons>char_name</icons>
+		</label_charframetop>
+	</template>
+	<template name="charstatement_rightanchor">
+		<genericcontrol to="title">
+			<anchored>
+				<top parent="contentanchor" anchor="bottom" relation="relative" offset="8" />
+				<right />
+			</anchored>
+			<disabled />
+		</genericcontrol>
+	</template>
+	<template name="charstatement_link">
+		<linkfield_statich>
+			<anchored to="rightanchor" width="20" height="20">
+				<top offset="-2" />
+				<right relation="relative" offset="-2" postoffset="-2" />
+			</anchored>
+		</linkfield_statich>
+	</template>
+	<template name="button_charstatement_iadd">
+		<button_iadd_recordtype>
+			<script>
+				function onButtonPress()
+					window.openRecordList();
+				end
+			</script>
+			<anchored to="rightanchor">
+				<top offset="-2" />
+				<right relation="relative" offset="-2" postoffset="-2" />
+			</anchored>
+		</button_iadd_recordtype>
+	</template>
+	<template name="stringu_charstatement_editor">
+		<stringu>
+			<script>
+				function onInit()
+					if super and super.onInit then
+						super.onInit()
+					end
+					registerMenuItem(Interface.getString("char_statement_menu_delete"), "delete", 6)
+					registerMenuItem(Interface.getString("list_menu_deleteconfirm"), "delete", 6, 7)
+				end
+				function onMenuSelection(selection, subselection)
+					if selection == 6 and subselection == 7 then
+						local node = window.getDatabaseNode()
+						DB.setValue(node, "name", "string", "")
+						DB.setValue(node, "link", "windowreference", "", "")
+					end
+				end
+			</script>
+			<anchored to="rightanchor">
+				<top />
+				<left parent="contentanchor" offset="5" />
+				<right anchor="left" relation="relative" offset="-5" />
+			</anchored>
+		</stringu>
+	</template>
+
+	<template name="button_advancement">
+		<button_icon>
+			<anchored width="25" height="25">
+				<top anchor="bottom" offset="12" />
+				<right offset="0" />
+			</anchored>
+			<state icon="button_advancement" />
+			<tintable />
+			<script>	
+				function onInit()
+					super.onInit()
+
+					local nodeActor = window.getDatabaseNode()
+					DB.addHandler(DB.getPath(nodeActor, "advancement"), "onChildUpdate", onAdvancementsChanged)
+					self.onAdvancementsChanged()
+				end	
+				function onClose()
+					local nodeActor = window.getDatabaseNode()
+					DB.removeHandler(DB.getPath(nodeActor, "advancement"), "onChildUpdate", onAdvancementsChanged)
+				end	
+				function onAdvancementsChanged()
+					local nodeActor = window.getDatabaseNode()
+					local nTier = CharAdvancementManager.getTier(nodeActor);
+					local nXp = CharAdvancementManager.getExperience(nodeActor)
+					local bAllAdvs = CharAdvancementManager.checkForAllAdvancements(nodeActor)
+
+					if nTier == 6 and bAllAdvs then
+						setVisible(false)
+					else
+						setVisible(nXp &gt;= 4 or bAllAdvs)
+					end
+				end
+				function onButtonPress()					
+					if CharAdvancementManager.checkForAllAdvancements(window.getDatabaseNode()) then
+						self.advanceTier()
+					else
+						self.takeAdvancement()
+					end
+				end
+				function takeAdvancement()
+					local rData = {
+						nodeChar = window.getDatabaseNode()
+					}
+					CharAdvancementManager.takeAdvancement(rData.nodeChar, "", rData)
+				end
+				function advanceTier()
+					local nodeChar = window.getDatabaseNode()
+					CharAdvancementManager.increaseTier(nodeChar);
+				end
+			</script>
+			<tooltip textres="char_tooltip_advance_button" />
+		</button_icon>
+	</template>
+	<!-- END MAIN TAB -->
+
+	<!-- SKILL TAB-->
 	<template name="button_skill">
+		<button_listitem_left>
+			<state icon="button_prof" tooltipres="char_tooltip_skillinability" merge="add" />
+			<state icon="button_prof_half" tooltipres="char_tooltip_skilluntrained" merge="add" />
+			<state icon="button_prof_down" tooltipres="char_tooltip_skilltrained" merge="add" />
+			<state icon="button_prof_double" tooltipres="char_tooltip_skillspecialized" merge="add" />
+			<default>2</default>
+		</button_listitem_left>
+	</template>
+	<!-- END SKILL TAB -->
+
+	<!-- POWERS AND ACTIONS TAB -->
+	<template name="button_charweaponequipped">
+		<button_listitem_left>
+			<state icon="button_bigcheckoff" tooltipres="char_tooltip_inv_carried" merge="add" />
+			<state icon="button_bigcheckon" tooltipres="char_tooltip_inv_equipped" merge="add" />
+			<default>0</default>
+			<script>
+				function onButtonPress()
+					window.onEquippedChanged()
+				end
+			</script>
+		</button_listitem_left>
+	</template>
+
+	<template name="button_rolltraining">
+		<button_training_base>
+			<anchored to="modanchor" height="20" width="20">
+				<top />
+				<left offset="15" relation="relative" />
+			</anchored>
+		</button_training_base>
+	</template>
+	<template name="number_rollassets">
+		<basicnumber>
+			<anchored to="modanchor" width="40" height="20">
+				<top />
+				<left anchor="right" offset="30" relation="relative" />
+			</anchored>
+		</basicnumber>
+	</template>
+	<template name="number_rollmod">
+		<basicnumber>
+			<anchored to="modanchor" width="40" height="20">
+				<top />
+				<left anchor="right" offset="10" relation="relative" />
+			</anchored>
+		</basicnumber>
+	</template>
+	<template name="number_rollease">
+		<basicnumber>
+			<anchored to="modanchor" width="40" height="20">
+				<top />
+				<left anchor="right" relation="relative" offset="10" />
+			</anchored>
+			<min>0</min>
+		</basicnumber>
+	</template>
+	<template name="number_rollhinder">
+		<basicnumber>
+			<anchored to="modanchor" width="40" height="20">
+				<top />
+				<left anchor="right" relation="relative" offset="10" />
+			</anchored>
+			<min>0</min>
+		</basicnumber>
+	</template>
+	<template name="number_rolldifficulty">
+		<basicnumber>
+			<anchored to="modanchor" width="40" height="20">
+				<top />
+				<left anchor="right" relation="relative" offset="10" />
+			</anchored>
+			<min>0</min>
+			<hideonvalue value="0" />
+			<tooltip textres="power_tooltip_difficulty" />
+		</basicnumber>
+	</template>
+	<template name="number_rolllevel">
+		<basicnumber>
+			<anchored to="modanchor" width="40" height="20">
+				<top />
+				<left anchor="right" relation="relative" offset="10" />
+			</anchored>
+			<tooltip textres="power_tooltip_level" />
+		</basicnumber>
+	</template>
+	<!-- END POWERS AND ACTION TAB -->
+
+	<template name="button_training_base">
 		<buttonfield>
-			<frame name="fielddark" offset="7,5,7,5" hidereadonly="true" />
-			<stateframe>
-				<hover name="fieldfocus" offset="7,5,7,5" />
-			</stateframe>
-			<state textres="char_label_skillinability" tooltipres="char_tooltip_skillinability" />
-			<state textres="char_label_skilluntrained" tooltipres="char_tooltip_skilluntrained" />
-			<state textres="char_label_skilltrained" tooltipres="char_tooltip_skilltrained" />
-			<state textres="char_label_skillspecialized" tooltipres="char_tooltip_skillspecialized" />
+			<anchored width="20" height="20" />
+			<state icon="button_prof" tooltipres="char_tooltip_skillinability" merge="add" />
+			<state icon="button_prof_half" tooltipres="char_tooltip_skilluntrained" merge="add" />
+			<state icon="button_prof_down" tooltipres="char_tooltip_skilltrained" merge="add" />
+			<state icon="button_prof_double" tooltipres="char_tooltip_skillspecialized" merge="add" />
+			<default>1</default>
 		</buttonfield>
 	</template>
 
@@ -268,7 +746,7 @@
 		<genericcontrol>
 			<anchored to="leftanchor">
 				<top offset="0" />
-				<left anchor="right" relation="relative" />
+				<left anchor="right" relation="relative" offset="10" />
 			</anchored>
 			<stateicons>
 				<on>button_checkon</on>
@@ -279,197 +757,19 @@
 		</genericcontrol>
 	</template>
 
-	<template name="list_poweraction">
-		<windowlist>
-			<anchored>
-				<top parent="name" anchor="bottom" relation="relative" offset="5" />
-				<left offset="20" />
-				<right offset="-20" />
-			</anchored>
-			<datasource>.actions</datasource>
-			<class>power_action_item</class>
-			<noscroll />
-			<sortby><field>order</field></sortby>
-			<script>
-				function reset()
-					DB.deleteChildren(getDatabaseNode());
-				end
-			</script>
-		</windowlist>
-	</template>
-
-	<!-- TEMPLATES FOR CHARACTER TYPE, FOCUS, DESRIPTION, FLAVOR, ANCESTRY -->
-	<template name="string_labeled_character">
-		<string_labeled>
-			<script file="campaign/scripts/string_labeled_character.lua" />
-			<anchored height="20">
-				<top />
-				<left anchor="right" offset="10" />
-			</anchored>
-		</string_labeled>
-	</template>
-	<template name="string_labeled_character_newline">
-		<string_labeled_character>
-			<anchored to="charanchor">
-				<top anchor="bottom" relation="relative" offset="10" />
-				<left />
-			</anchored>
-		</string_labeled_character>
-	</template>
-	<template name="label_character_overview">
-		<label>
-			<anchored height="20">
-				<top />
-				<left anchor="right" relation="relative" offset="5" />
-			</anchored>
-		</label>
-	</template>
-
-	<template name="stringu_descriptor">
-		<string_labeled_character_newline>
-			<anchored width="104" />
-			<labelres>char_label_descriptor</labelres>
-		</string_labeled_character_newline>
-	</template>
-	<template name="stringu_ancestry">
-		<string_labeled_character>
-			<anchored to="descriptorlink" width="146" />
-			<labelres>char_label_ancestry</labelres>
-			<hidewhenempty />
-			<script>
-				function onValueChanged()
-					super.onValueChanged();
-					window.type.updateAnchor();
-				end
-			</script>
-		</string_labeled_character>
-	</template>
-	<template name="stringu_flavor">
-		<string_labeled_character_newline>
-			<anchored width="102" />
-			<labelres>char_label_flavor</labelres>
-			<hidewhenempty />
-			<label>label_flavor</label>
-			<script>
-				function onValueChanged()
-					super.onValueChanged();
-					window.type.updateAnchor();
-				end
-			</script>
-		</string_labeled_character_newline>
-	</template>
-	<template name="stringu_type">
-		<string_labeled_character>
-			<script>
-				function onInit()
-					super.onInit();
-					updateAnchor();
-				end
-				function updateAnchor()
-					resetAnchor("top");
-					resetAnchor("left");
-					if window.label_flavor.isVisible() then
-						setAnchor("top", "label_flavor", "top", "absolute", 0);
-						setAnchor("left", "label_flavor", "right", "absolute", 0);
-						return;
-					end
-
-					if window.ancestry.isVisible() then
-						setAnchor("top", "charanchor", "bottom", "relative", 10);
-						setAnchor("left", "charanchor", "left", "absolute", 10);
-						return;
-					end
-
-					setAnchor("top", "descriptorlink", "top", "absolute", 0);
-					setAnchor("left", "descriptorlink", "right", "absolute", 10);
-				end
-			</script>
-			<anchored to="descriptorlink" width="115" />
-			<labelres>char_label_type</labelres>
-		</string_labeled_character>
-	</template>
-	<template name="stringu_focus">
-		<string_labeled_character_newline>
-			<anchored width="265" />
-			<labelres>char_label_focus</labelres>
-		</string_labeled_character_newline>
-	</template>
-
-	<template name="linkfield_char_detail">
-		<linkfield_statich>
-			<!-- This bit of script is a little janky, but I do this because the 
-			character fields can be re-ordered and this is the simplest way to handle
-			dynamically adding a link without throwing off the alignment -->
-			<script>
-				local nWidth;
-				function onInit()
-					if target and target[1] and window[target[1]] then
-						nWidth = window[target[1]].getSize();
-					end
-					registerMenuItem(Interface.getString("char_menu_clear"), "delete", 5)
-					super.onInit();
-				end
-				function onValueChanged()
-					super.onValueChanged();
-					if target and target[1] and window[target[1]] and nWidth then
-						if isVisible() then
-							window[target[1]].setAnchoredWidth(nWidth - 20);
-						else
-							window[target[1]].setAnchoredWidth(nWidth);
-						end
-					end
-				end
-				function onMenuSelection(selection)
-					if selection == 5 then
-
-						if target and target[1] and window[target[1]] then
-							window[target[1]].setValue("");
-							setValue("", "");
-							window[target[1]].onValueChanged();
-						end
-					end
-				end
-			</script>
-			<anchored width="20" height="20">
-				<top />
-				<left anchor="right" relation="relative" offset="5" />
-			</anchored>
-			<closetoggle />
-		</linkfield_statich>
-	</template>
-
 	<template name="state_charammocounter">
 		<buttongroup_counter>
 			<sourcefields>
 				<maximum>maxammo</maximum>
 				<current>ammo</current>
 			</sourcefields>
-			<maxslotperrow>30</maxslotperrow>
+			<maxslotperrow>24</maxslotperrow>
 		</buttongroup_counter>
 	</template>
 
 	<template name="button_checkbox_advancement">
 		<button_checkbox>
 			<anchored to="xp" position="righthigh" width="12" height="12" />
-			<script>
-				local bProcessing = false
-				function processAdvancement(fAdvFunc)
-					if bProcessing then return end
-
-					bProcessing = true
-
-					if getValue() == 0 then 
-						bProcessing = false
-						return
-					end
-
-					if not fAdvFunc(window.getDatabaseNode()) then
-						setValue(0)
-					end
-
-					bProcessing = false
-				end
-			</script>
 		</button_checkbox>
 	</template>
 
@@ -480,27 +780,6 @@
 	</template>
 
 	<!-- Custom Stat Pools -->
-	<template name="list_customstatpools">
-		<list_column>
-			<script>
-				function update(bReadOnly, bForceHide)
-					local nodeRecord = window.getDatabaseNode();
-					local bReadOnly = WindowManager.getReadOnlyState(nodeRecord);
-					local bShow = getWindowCount() ~= 0;
-
-					bForceHide = bForceHide or (bReadOnly and not bShow)
-					bReadOnly = bForceHide or bReadOnly;
-
-					super.update(bReadOnly, bForceHide);
-				end
-			</script>
-			<datasource>.custom_pools</datasource>
-			<class>custom_stat_pool</class>
-			<child merge="delete" />
-			<sortby merge="delete" />
-		</list_column>
-	</template>
-
 	<template name="number_custom_stat_pool">
 		<basicnumber>
 			<anchored to="rightanchor" width="30" height="20">
@@ -541,6 +820,62 @@
 					ActionStat.payCostAndRoll(draginfo, rActor, rAction);
 				end
 			</script>
+		</button_roll>
+	</template>
+
+	<template name="button_custom_stat_pool_defroll">
+		<button_defenseroll>
+			<anchored to="rightanchor" height="20" width="20">
+				<top />
+				<right anchor="left" relation="relative" offset="-5" />
+			</anchored>
+			<script>
+				function onDragStart(button, x, y, draginfo)
+					action(draginfo)
+					return true;
+				end
+				function onButtonPress()
+					action()
+				end
+				function action(draginfo)
+					local sStat = window.name.getValue()
+					if (sStat or "") == "" then
+						return;
+					end
+
+					local nodeChar = DB.getChild(window.getDatabaseNode(), "...")
+					local nTraining, nAssets, nMod = CharStatManager.getDefense(nodeChar, sStat);
+
+					local rAction = {
+						label = StringManager.capitalize(sStat),
+						sStat = sStat,
+						nTraining = nTraining,
+						nAssets = nAssets,
+						nModifier = nMod
+					}
+					
+					local w = UtilityManager.getTopWindow(window);
+					local rActor = ActorManager.resolveActor(nodeChar)
+					ActionDefense.payCostAndRoll(draginfo, rActor, rAction);
+				end
+			</script>
+		</button_defenseroll>
+	</template>
+
+	<template name="button_iadd_recordtype">
+		<button_iadd_base>
+			<script>
+				function onButtonPress()
+					RecordManager.openRecordIndex(recordtype[1])
+				end
+			</script>
+		</button_iadd_base>
+	</template>
+
+	<template name="button_defenseroll">
+		<button_roll>
+			<anchored width="25" height="25" />
+			<icon normal="button_action_defend" pressed="button_action_defend_down" />
 		</button_roll>
 	</template>
 </root>

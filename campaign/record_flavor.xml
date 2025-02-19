@@ -15,27 +15,10 @@
 			<embed />
 		</tab>
 		<tab merge="add">
-			<name>main</name>
-			<resource>tab_other</resource>
-			<class>flavor_main</class>
+			<name>abilities</name>
+			<resource>tab_abilities</resource>
+			<class>record_abilitylist</class>
 			<embed />
 		</tab>
-	</windowclass>
-
-	<windowclass name="flavor_main">
-		<margins control="0,0,0,2" />
-		<script file="campaign/scripts/char_content_flavor_stats.lua" />
-		<sheetdata>
-			<anchor_column name="columnanchor" />
-
-			<header_column name="abilities_header">
-				<static textres="focus_header_abilities"/>
-				<center />
-			</header_column>
-			<list_ref_ability name="abilities">
-				<datasource>.abilities</datasource>
-				<hidegiven /> 
-			</list_ref_ability>
-		</sheetdata>
 	</windowclass>
 </root>

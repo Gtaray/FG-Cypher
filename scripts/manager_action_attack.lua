@@ -4,7 +4,7 @@
 --
 
 function onInit()
-	ActionsManager.registerModHandler("attack", modRoll);
+	--ActionsManager.registerModHandler("attack", modRoll);
 	ActionsManager.registerResultHandler("attack", onRoll);
 end
 
@@ -39,7 +39,7 @@ function getRoll(rActor, rAction)
 	rRoll.sDesc = ActionAttack.getRollLabel(rActor, rAction, rRoll)
 
 	rRoll.nDifficulty = rAction.nDifficulty or 0;
-	rRoll.sTraining = rAction.sTraining;
+	rRoll.nTraining = rAction.nTraining;
 	rRoll.nAssets = rAction.nAssets or 0;
 	rRoll.nEffort = rAction.nEffort or 0;
 	rRoll.nEase = rAction.nEase or 0;
@@ -109,14 +109,11 @@ function modRoll(rSource, rTarget, rRoll)
 	elseif nMiscAdjust < 0 then
 		rRoll.nHinder = rRoll.nHinder + nMiscAdjust
 	end
-	
-	-- Process conditions
-	rRoll.nConditionMod = RollManager.processStandardConditionsForActor(rSource);
 
 	-- Process Lucky (advantage / disadvantage)
 	local bAdv, bDis = RollManager.processAdvantage(rSource, rTarget, rRoll, aFilter)
 
-	RollManager.encodeTraining(rRoll.sTraining, rRoll);
+	RollManager.encodeTraining(rRoll.nTraining, rRoll);
 	RollManager.encodeEffort(rRoll.nEffort, rRoll);
 	RollManager.encodeAssets(rRoll.nAssets, rRoll);
 	RollManager.encodeEaseHindrance(rRoll, rRoll.nEase, rRoll.nHinder);
@@ -130,7 +127,7 @@ function modRoll(rSource, rTarget, rRoll)
 	if rRoll.sWeaponType == "light" then
 		rRoll.sDesc = string.format("%s [LIGHT]", rRoll.sDesc)
 	end
-	if rRoll.nConditionMod > 0 then
+	if (rRoll.nConditionMod or 0) > 0 then
 		rRoll.sDesc = string.format("%s [EFFECTS %s]", rRoll.sDesc, rRoll.nConditionMod)
 	end
 	RollManager.convertBooleansToNumbers(rRoll);
@@ -141,8 +138,15 @@ function modRoll(rSource, rTarget, rRoll)
 end
 
 function onRoll(rSource, rTarget, rRoll)
+	-- modRoll is not called by the actions manager, and is instead called manually here
+	-- this is because when an action's sTargeting is set to 'all', modRoll doesn't have
+	-- rTarget populated yet. But it is populated here. So instead of having it be
+	-- done automatically, we just manually call the method here
+	ActionAttack.modRoll(rSource, rTarget, rRoll);
+
 	RollManager.convertNumbersToBooleans(rRoll);
 	RollManager.decodeAdvantage(rRoll);
+	rRoll.bMulti = RollManager.decodeMultiTarget(rRoll);
 
 	-- Hacky way to force the rebuilt flag to either be true or false, never an empty string
 	rRoll.bRebuilt = (rRoll.bRebuilt == true) or (rRoll.bRebuilt or "") ~= "";
@@ -171,11 +175,15 @@ function onRoll(rSource, rTarget, rRoll)
 		RollHistoryManager.setAttackEffort(rSource, rTarget, rRoll)
 	end
 
-	if rRoll.bRolled17 then
-		ModifierStack.addSlot("", 1)
-	end
-	if rRoll.bRolled18 then
-		ModifierStack.addSlot("", 2)
+	-- Might be a better way to do this, but we only update the modifier stack if
+	-- it's empty. This way we don't add this value for every target.
+	if ModifierStack.isEmpty() then
+		if rRoll.bRolled17 then
+			ModifierStack.addSlot("", 1)
+		end
+		if rRoll.bRolled18 then
+			ModifierStack.addSlot("", 2)
+		end
 	end
 
 	-- If this attack had damage effort set for it, then update the desktop panel
@@ -183,6 +191,10 @@ function onRoll(rSource, rTarget, rRoll)
 	if rRoll.nDamageEffort > 0 then
 		RollManager.disableCost()
 		RollManager.setDifficultyPanelEffort(rRoll.nDamageEffort)
+
+		if rRoll.bMulti then
+			RollManager.enableMultiTarget();
+		end
 	end
 end
 
@@ -266,8 +278,18 @@ function applyRoll(rSource, rTarget, rRoll)
 			end
 		end
 	end
+
+	if rRoll.bMinorEffect then
+		PromptManager.promptForMinorEffectOnAttack(rSource)
+	elseif rRoll.bMajorEffect then
+		PromptManager.promptForMajorEffectOnAttack(rSource)
+	end
 	
 	ActionsManager.outputResult(rRoll.bSecret, rSource, rTarget, msgLong, msgShort);
+
+	if not bSuccess and rRoll.bMulti then
+		TargetingManager.removeTarget(ActorManager.getCTNodeName(rSource), ActorManager.getCTNodeName(rTarget));
+	end
 
 	-- for PC vs PC rolls, prompt a defense roll
 	if bPvP then
@@ -319,8 +341,8 @@ function rebuildRoll(rSource, rTarget, rRoll)
 	if not rRoll.nConditionMod then
 		rRoll.nConditionMod = RollManager.decodeConditionMod(rRoll, true);
 	end
-	if not rRoll.sTraining then
-		rRoll.sTraining = RollManager.decodeTraining(rRoll, true);
+	if not rRoll.nTraining then
+		rRoll.nTraining = RollManager.decodeTraining(rRoll, true);
 	end
 	if rRoll.sWeaponType == nil and rRoll.sDesc:match("%[LIGHT%]") ~= nil then
 		rRoll.sWeaponType = "light";

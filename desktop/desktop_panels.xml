@@ -10,7 +10,7 @@
 
 	<panel name="control_panel">
 		<class>desktop_control_panel</class>
-		<anchored height="62" width="300">
+		<anchored height="62" width="320">
 			<left offset="8" />
 			<top anchor="bottom" offset="-100" />
 		</anchored>
@@ -21,7 +21,7 @@
 	<panel name="dicepanel" merge="join">
 		<anchored width="50" height="50">
 			<top anchor="bottom" offset="-105" />
-			<left offset="400" />
+			<left offset="450" />
 		</anchored>
 	</panel>
 </root>

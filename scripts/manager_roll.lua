@@ -97,6 +97,36 @@ function enableCost()
 	_panelWindow.ignorecost.setValue(0);
 end
 
+function isMultiTarget(bRetain)
+	if not _panelWindow then
+		return false;
+	end
+
+	local bMultiTarget = (_panelWindow.multitarget.getValue() == 1);
+
+	if not bRetain then
+		RollManager.disableMultiTarget()
+	end
+
+	return bMultiTarget;
+end
+
+function disableMultiTarget()
+	if not _panelWindow then
+		return;
+	end
+
+	_panelWindow.multitarget.setValue(0);
+end
+
+function enableMultiTarget()
+	if not _panelWindow then
+		return;
+	end
+
+	_panelWindow.multitarget.setValue(1);
+end
+
 function resetDifficultyPanel()
 	if not _panelWindow then
 		return;
@@ -105,6 +135,7 @@ function resetDifficultyPanel()
 	_panelWindow.assets.setValue(0);
 	_panelWindow.misc.setValue(0)
 	RollManager.enableCost()
+	RollManager.disableMultiTarget()
 end
 
 -----------------------------------------------------------------------
@@ -113,7 +144,7 @@ end
 	-- label = string (name of the roll. Displayed after the [ROLLTYPE] tag at the beginning of the roll's message text)
 	-- nModifier = number (flat modifier to apply to the roll)
 	-- sStat = string (might|speed|intellect. Defaults to might)
-	-- sTraining = string (flag for the roll's level of training. trained|specialized|inability. Defaults to nil)
+	-- nTraining = number (flag for the roll's level of training. 0|1|2|3 for inability|practiced|trained|specialized. Defaults to nil)
 	-- nAssets = number (number of Assets applied to this roll. Defaults to 0)
 	-- nMaxAssets = numbert (maximum number of assets that can be applied to this roll. Defaults to 2)
 	-- nEdge = number (amount of edge applied to the roll. defaults to 0)
@@ -167,7 +198,7 @@ function addMaxAssetsToAction(rActor, rAction, aFilter)
 		return;
 	end
 
-	rAction.nMaxAssets = ActorManagerCypher.getMaxAssets(rActor, aFilter);
+	rAction.nMaxAssets = CharManager.getMaxAssets(rActor, aFilter);
 end
 
 -----------------------------------------------------------------------
@@ -186,24 +217,15 @@ function resolveStat(sStat, sDefault)
 	return sStat;
 end
 
--- Returns a number representing of how the difficulty of an NPC is modified
--- based on training, assets, and modifier
-function resolveDifficultyModifier(sTraining, nAssets, nLevel, nMod)
-	local nDifficulty = nLevel or 0;
-
-	sTraining = (sTraining or ""):lower();
-	if sTraining == "trained" then
-		nDifficulty = -1;
-	elseif sTraining == "specialized" then
-		nDifficulty = -2;
-	elseif sTraining == "inability" then
-		nDifficulty = 1;
-	end
+-- Returns a number representing how the difficulty of a roll is modified
+-- based on training, assets, modifier, and (for NPCs) level
+function resolveDifficultyModifier(nTraining, nAssets, nLevel, nMod)
+	nLevel = -1 * (nLevel or 0)
 
 	local nDiffMod = math.floor(nMod / 3);
 	local nFinalMod = nMod % 3;
 
-	nDifficulty = nDifficulty - nDiffMod - nAssets;
+	local nDifficulty = TrainingManager.getDifficultyModifier(nTraining) - nLevel - nDiffMod - nAssets;
 
 	return nDifficulty, nFinalMod;
 end
@@ -221,29 +243,6 @@ function resolveStatUsedForCost(rAction)
 	end
 
 	return false;
-end
-
--- Converts a training cycler's value (a number) to a string that's used by the action rollers
-function resolveTraining(nTraining)
-	if nTraining == 2 then
-		return "trained";
-	elseif nTraining >= 3 then
-		return "specialized";
-	elseif nTraining <= 0 then
-		return "inability";
-	end
-	return "";
-end
-
-function convertTrainingStringToNumber(sTraining)
-	if sTraining == "trained" then
-		return 2;
-	elseif sTraining == "specialized" then
-		return 3;
-	elseif sTraining == "inability" then
-		return 0;
-	end
-	return 1;
 end
 
 -----------------------------------------------------------------------
@@ -280,7 +279,7 @@ end
 
 function processAssets(rSource, rTarget, aFilter, nAssets)
 	local nAssetEffect = EffectManagerCypher.getAssetEffectBonus(rSource, aFilter, rTarget)
-	local nMaxAssets = ActorManagerCypher.getMaxAssets(rSource, aFilter);
+	local nMaxAssets = CharManager.getMaxAssets(rSource, aFilter);
 
 	return math.min(nAssetEffect, nMaxAssets - nAssets), nMaxAssets;
 end
@@ -289,23 +288,10 @@ function processEffort(rSource, rTarget, aFilter, nEffort, nMaxEffort)
 	local nEffortEffect = EffectManagerCypher.getEffortEffectBonus(rSource, aFilter, rTarget)
 
 	if not nMaxEffort then
-		nMaxEffort = ActorManagerCypher.getMaxEffort(rSource, aFilter);
+		nMaxEffort = CharManager.getMaxEffort(rSource, aFilter);
 	end
 
 	return math.min(nEffortEffect, nMaxEffort - nEffort);
-end
-
-function processTraining(bInability, bTrained, bSpecialized)
-	-- negative for the inability and positive for the training
-	-- because it makes modifying rRoll.nDifficulty read better
-	if bInability then return -1
-	elseif bTrained then return 1
-	elseif bSpecialized then return 2
-	else return 0 end
-end
-
-function processTrainingFromString(sTraining)
-	return RollManager.processTraining(sTraining == "inability", sTraining == "trained", sTraining == "specialized")
 end
 
 function processTrainingEffects(rSource, rTarget, rRoll, aFilter)
@@ -315,28 +301,13 @@ function processTrainingEffects(rSource, rTarget, rRoll, aFilter)
 
 	-- This combines the total number values of each training level
 	-- Which can then be added to the base training value
-	local nTraining = RollManager.convertTrainingStringToNumber(rRoll.sTraining);
-	nTraining = nTraining + nTrained + (2 * nSpecialized) + (-1 * nInability)
-	nTraining = math.min(3, math.max(0, nTraining));
+	rRoll.nTraining = TrainingManager.modifyTraining((rRoll.nTraining or 1), nTrained + nTrained + (2 * nSpecialized) + (-1 * nInability))
 
 	-- 0 = inability
 	-- 1 = practiced
 	-- 2 = trained
 	-- 3 = specialized
-	rRoll.sTraining = RollManager.resolveTraining(nTraining);
-	return rRoll.sTraining;
-end
-
-function processStandardConditionsForActor(rActor)
-	-- Dazed and Stunned don't stack with the other conditions
-	if EffectManagerCypher.hasEffect(rActor, "Dazed") or 
-	EffectManagerCypher.hasEffect(rActor, "Stunned") or
-	   (sStat == "might" and EffectManagerCypher.hasEffect(rActor, "Staggered")) or
-	   (sStat == "speed" and (EffectManagerCypher.hasEffect(rActor, "Frostbitten") or EffectManagerCypher.hasEffect(rActor, "Slowed"))) or
-	   (sStat == "intellect" and EffectManagerCypher.hasEffect(rActor, "Confused")) then
-		return 1;
-	end
-	return 0;
+	return rRoll.nTraining;
 end
 
 function processPiercing(rSource, rTarget, bPiercing, nPierceAmount, sDamageType, aFilter)
@@ -390,23 +361,15 @@ function calculateDifficultyForRoll(rSource, rTarget, rRoll)
 	end
 	
 	local nMod = 0;
-
-	-- Start by modifying the difficulty based on the PC's properties
-	if rRoll.sTraining == "trained" then
-		nMod = nMod - 1;
-	elseif rRoll.sTraining == "specialized" then
-		nMod = nMod - 2;
-	elseif rRoll.sTraining == "inability" then
-		nMod = nMod + 1;
-	end
-
+	-- getDifficultyModifier returns negative values for positive training values, so we add instead of subtract
+	nMod = nMod + TrainingManager.getDifficultyModifier(tonumber(rRoll.nTraining or "1"));
 	nMod = nMod - (tonumber(rRoll.nEffort or "0"));
 	nMod = nMod - (tonumber(rRoll.nAssets or "0"));
 	nMod = nMod - (tonumber(rRoll.nEase or "0"));
 	nMod = nMod + (tonumber(rRoll.nHinder or "0"));
 	nMod = nMod + (tonumber(rRoll.nConditionMod or "0"));
 
-	if rRoll.bLightWeapon then
+	if rRoll.bLightWeapon or rRoll.sWeaponType == "light" then
 		nMod = nMod - 1;
 	end
 
@@ -530,6 +493,28 @@ end
 -- e.g. minus 1 difficulty = +3 to the roll; plus 1 difficulty = -3 to the roll
 function convertDifficultyAdjustmentToFlatBonus(nDifficulty)
 	return (nDifficulty or 0) * -3;
+end
+
+function convertToFlatBonus(nTraining, nAssets, nModifier, nEase, nHinder)
+	local nTotal = 0;
+
+	if nAssets then
+		nTotal = nTotal + (nAssets * 3)
+	end
+	if nEase then
+		nTotal = nTotal + (nEase * 3)
+	end
+	if nHinder then
+		nTotal = nTotal - (nHinder * 3)
+	end
+	if nModifier then
+		nTotal = nTotal + nModifier
+	end
+	if nTraining then
+		nTotal = nTotal + TrainingManager.getTrainingModifier(nTraining);
+	end
+
+	return nTotal;
 end
 
 -----------------------------------------------------------------------
@@ -686,22 +671,22 @@ function decodeDefenseStat(rRoll, bPersist)
 end
 
 function encodeTraining(vAction, rRoll)
-	local sTraining = vAction;
+	local nTraining = vAction;
 	
 	if type(vAction) == "table" then
-		sTraining = vAction.sTraining;
+		nTraining = vAction.nTraining;
 	end
 
 	local sText, sMatch;
-	if sTraining == "trained" then
+	if nTraining == 2 then
 		sText = "[TRAINED]";
 		sMatch = "(%[TRAINED%])"
-	elseif sTraining == "specialized" then
+	elseif nTraining == 3 then
 		sText = "[SPECIALIZED]";
 		sMatch = "(%[SPECIALIZED%])"
-	elseif sTraining == "inability" then
+	elseif nTraining == 0 then
 		sText = "[INABILITY]";
-		sMatch = "(%[SPECIALIZED%])"
+		sMatch = "(%[INABILITY%])"
 	end
 
 	if (sText or "") ~= "" then
@@ -733,14 +718,14 @@ function decodeTraining(rRoll, bPersist)
 	);
 
 	if bInability then
-		return "inability";
+		return 0;
 	elseif bTrained then
-		return "trained";
+		return 2;
 	elseif bSpecialized then
-		return "specialized";
+		return 3;
 	end
 
-	return "";
+	return 1;
 end
 
 function encodeEdge(rAction, vRoll)
@@ -1163,7 +1148,7 @@ function decodeLevel(vRoll, bPersist)
 	end
 
 	local nLevel, sText = RollManager.decodeTextAsNumber(
-		rRoll.sDesc,
+		sDesc,
 		"%[LEVEL: %-?%d+%]",
 		"%[LEVEL: (%-?%d+)%]",
 		bPersist
@@ -1172,6 +1157,25 @@ function decodeLevel(vRoll, bPersist)
 	rRoll.sDesc = sText;
 
 	return nLevel;
+end
+
+function encodeMultiTarget(rRoll)
+	rRoll.sDesc = RollManager.addOrOverwriteText(
+		rRoll.sDesc,
+		"%[MULTI%]",
+		"[MULTI]");
+end
+
+function decodeMultiTarget(rRoll, bPersist)
+	local bMulti, sText = RollManager.decodeTextAsBoolean(
+		rRoll.sDesc, 
+		"%[MULTI%]",
+		"(%[MULTI%])",
+		bPersist
+	);
+
+	rRoll.sDesc = sText;
+	return bMulti;
 end
 
 -----------------------------------------------------------------------

@@ -2,11 +2,52 @@
 -- Please see the license.html file included with this distribution for 
 -- attribution and copyright information.
 --
+-------------------------------------------------------------------------------
+-- Character class and statement functions
+-------------------------------------------------------------------------------
+function getCharacterStatement(nodeChar)
+	if not nodeChar then
+		return "";
+	end
 
-function onInit()
-	ItemManager.setCustomCharAdd(onCharItemAdd);
-	-- Overriding char_invitem.onDelete instead of this, because this throws errors
-	 ItemManager.setCustomCharRemove(onCharItemRemoved);
+	return buildCharacterStatement(
+		DB.getValue(nodeChar, "name", ""),
+		CharDescriptorManager.getDescriptorName(nodeChar),
+		CharDescriptorManager.getSecondDescriptorName(nodeChar),
+		CharAncestryManager.getAncestryName(nodeChar),
+		CharAncestryManager.getSecondAncestryName(nodeChar),
+		CharTypeManager.getTypeName(nodeChar),
+		CharFocusManager.getFocusName(nodeChar),
+		CharFocusManager.getSecondFocusName(nodeChar),
+		CharAdvancementManager.getTier(nodeChar)
+	)
+end
+
+function buildCharacterStatement(sName, sDescriptor1, sDescriptor2, sAncestry1, sAncestry2, sType, sFocus1, sFocus2, nTier)
+	local sDescriptor = buildCharacterStatementPart(sDescriptor1, sDescriptor2, "%s, %s");
+	local sAncestry = buildCharacterStatementPart(sAncestry1, sAncestry2, "%s-%s");
+	local sDescriptorAndAncestry = buildCharacterStatementPart(sDescriptor, sAncestry, "%s %s");
+	local sFocus = buildCharacterStatementPart(sFocus1, sFocus2, Interface.getString("char_statement_focus"));
+
+	return string.format(
+		Interface.getString("char_statement"), 
+		sName,
+		sDescriptorAndAncestry,
+		nTier,
+		sType,
+		sFocus)
+end
+
+function buildCharacterStatementPart(s1, s2, sFormat)
+	if s1 ~= "" and s2 ~= "" then
+		return string.format(sFormat, s1, s2);
+	elseif s1 ~= "" then
+		return s1;
+	elseif s2 ~= "" then
+		return s2;
+	end
+
+	return "";
 end
 
 -------------------------------------------------------------------------------
@@ -62,267 +103,29 @@ function helperBuildAddStructure(nodeChar, sClass, sRecord)
 end
 
 -------------------------------------------------------------------------------
--- ADVANCEMENTS
+-- MAX ASSETS AND EFFORT
 -------------------------------------------------------------------------------
-ADVANCEMENT_COST = 4
 
-function takeAbilityAdvancement(nodeChar)
-	if not nodeChar then
-		return false;
+function getMaxAssets(rActor, aFilter)
+	local nodeActor = ActorManager.getCreatureNode(rActor);
+	if not nodeActor or not ActorManager.isPC(rActor) then
+		return 2;
 	end
 
-	local rData = {
-		nodeChar = nodeChar,
-		sType = "stats",
-		nFloatingStats = 4,
-	};
-
-	return CharManager.takeAdvancement(nodeChar, "increase their stat pools", rData);
+	return 2 + EffectManagerCypher.getMaxAssetsEffectBonus(rActor, aFilter);
 end
 
-function takeEdgeAdvancement(nodeChar)
-	if not nodeChar then
-		return false;
+function getMaxEffort(rActor, aFilter)
+	local nodeActor = ActorManager.getCreatureNode(rActor);
+	if not nodeActor or not ActorManager.isPC(rActor) then
+		return 0;
 	end
 
-	local rData = {
-		nodeChar = nodeChar,
-		sType = "edge",
-	};
-
-	return CharManager.takeAdvancement(nodeChar, "increase their edge", rData);
-end
-
-function takeEffortAdvancement(nodeChar)
-	if not nodeChar then
-		return false;
-	end
-
-	local rData = {
-		nodeChar = nodeChar,
-		sType = "effort",
-	};
-
-	return CharManager.takeAdvancement(nodeChar, "increase their effort", rData);
-end
-
-function takeSkillAdvancement(nodeChar)
-	if not nodeChar then
-		return false;
-	end
-
-	local rData = {
-		nodeChar = nodeChar,
-		sType = "skill",
-		bPlaceEmptySkill = true
-	};
-
-	return CharManager.takeAdvancement(nodeChar, "gain training in a skill", rData);
-end
-
-function takeAdvancement(nodeChar, sMessage, rData)
-	if bProcessing then
-		return false;
-	end
-	if not nodeChar then
-		return false;
-	end
-
-	if not CharManager.hasEnoughXpForAdvancement(nodeChar, ADVANCEMENT_COST) then
-		return false;
-	end
-
-	if (sMessage or "") ~= "" then
-		CharManager.sendAdvancementMessage(nodeChar, "char_message_advancement_taken", sMessage);
-	end
-
-	local w = Interface.openWindow("select_dialog_advancement", "");
-	w.setData(rData, CharManager.completeAdvancement);
-
-	return true;
-end
-
-function hasEnoughXpForAdvancement(nodeChar, nCost)
-	local nXP = DB.getValue(nodeChar, "xp", 0);
-
-	if nXP < nCost then
-		local rMessage = {
-			text = Interface.getString("char_message_not_enough_xp"),
-			font = "msgfont"
-		};
-		Comm.addChatMessage(rMessage);
-		return false;
-	end
-	return true;
-end
-
-function deductXpForAdvancement(nodeChar, nCost)
-	local nXP = DB.getValue(nodeChar, "xp", 0);
-
-	if nXP < nCost then
-		return false;
-	end
-
-	DB.setValue(nodeChar, "xp", "number", math.max(nXP - nCost, 0));
-	return true;
-end
-
-function completeAdvancement(rData)
-	-- This should not be possible, but if for some reason we get here and the char doesn't have the XP for the advancement, bail
-	if not CharManager.deductXpForAdvancement(rData.nodeChar, ADVANCEMENT_COST) then
-		return
-	end
+	local nBase = DB.getValue(nodeActor, "effort.total", 1);
+	local nEffectMaxEffort = EffectManagerCypher.getMaxEffortEffectBonus(rActor, aFilter);
 	
-	local rActor = ActorManager.resolveActor(rData.nodeChar);
-	rData.sSource = "Advancement"
-
-	if rData.sType == "stats" then
-		CharModManager.applyFloatingStatsAndEdge(rData);
-		
-	elseif rData.sType == "edge" then
-		for sStat, nEdge in pairs(rData.aEdgeGiven) do
-			if nEdge > 0 then
-				local rEdge = { sStat = sStat, nMod = nEdge, sSource = rData.sSource };
-				rEdge.sSummary = CharModManager.getEdgeModSummary(rEdge);
-				CharModManager.applyEdgeModification(rActor, rEdge)
-			end
-		end
-
-	elseif rData.sType == "effort" then
-		rData.sSummary = CharModManager.getEffortModSummary(rData)
-		CharModManager.applyEffortModification(rActor, rData);
-
-	elseif rData.sType == "skill" then
-		if rData.sSkill then
-			rData.sSummary = CharModManager.getSkillModSummary(rData)
-			CharModManager.applySkillModification(rActor, rData)
-		elseif rData.sAbility then
-			CharAbilityManager.addTrainingToAbility(rData.nodeChar, rData.abilitynode)
-		end
-
-	elseif rData.sType == "ability" or rData.sType == "focus" then
-		for _, rAbility in ipairs(rData.aAbilitiesGiven) do
-			CharAbilityManager.addAbility(
-				rData.nodeChar, 
-				rAbility.sRecord, 
-				"Advancement",
-				rAbility.sSourceType)
-		end
-
-	elseif rData.sType == "recovery" then
-		rData.sSummary = CharModManager.getRecoveryModSummary(rData);
-		CharModManager.applyRecoveryModification(rActor, rData)
-
-	elseif rData.sType == "armor" then
-		rData.sSummary = CharModManager.getArmorEffortPenaltySummary(rData);
-		CharModManager.applyArmorEffortPenaltyModification(rActor, rData)
-	end
-
-	-- Check if all advancements have been taken, and if so, clear all the checkboxes
-	-- and increment tier
-	if CharManager.checkForAllAdvancements(rData.nodeChar) then
-		CharManager.increaseTier(rData.nodeChar);
-	end
-end
-
-function sendAdvancementMessage(nodeChar, sMessageResource, sMessage)
-	local sName = DB.getValue(nodeChar, "name", "");
-	if sName == "" then
-		return;
-	end
-
-	local sSender = "";
-	if not Session.IsHost then
-		sSender = User.getCurrentIdentity();
-	end
-
-	local rMessage = {
-		text = string.format(
-			Interface.getString(
-				sMessageResource), 
-				sName, 
-				sMessage),
-		font = "msgfont"
-	};
-
-	Comm.deliverChatMessage(rMessage);
-end
-
-function checkForAllAdvancements(nodeChar)
-	local bAbilities = DB.getValue(nodeChar, "advancement.abilities", 0) == 1;
-	local bEdge = DB.getValue(nodeChar, "advancement.edge", 0) == 1;
-	local bEffort = DB.getValue(nodeChar, "advancement.effort", 0) == 1;
-	local bSkill = DB.getValue(nodeChar, "advancement.skill", 0) == 1;
-
-	return bAbilities and bEdge and bEffort and bSkill;
-end
-
-function increaseTier(nodeChar)
-	local nTier = DB.getValue(nodeChar, "tier", 0);
-	nTier = nTier + 1;
-
-	CharManager.sendAdvancementMessage(
-		nodeChar, 
-		"char_message_tier_increase", 
-		tostring(nTier));
-
-	DB.setValue(nodeChar, "tier", "number", nTier);
-	DB.setValue(nodeChar, "advancement.abilities", "number", 0);
-	DB.setValue(nodeChar, "advancement.edge", "number", 0);
-	DB.setValue(nodeChar, "advancement.effort", "number", 0);
-	DB.setValue(nodeChar, "advancement.skill", "number", 0);
-
-	CharManager.promptAbilitiesForNextTier(nodeChar)
-end
-
-function promptAbilitiesForNextTier(nodeChar)
-	local nTier = DB.getValue(nodeChar, "tier", 0);
-	local _, sRecord = DB.getValue(nodeChar, "class.typelink", "");
-	local typenode = DB.findNode(sRecord);
-
-	local rData = { nodeChar = nodeChar, sSourceName = DB.getValue(nodeChar, "class.type", ""), nTier = nTier };
-	CharTypeManager.buildAbilityPromptTable(nodeChar, typenode, nTier, rData);
-
-	if #(rData.aAbilityOptions) > 0 then
-		local w = Interface.openWindow("select_dialog_char", "");
-		w.setData(rData, CharManager.applyTypeAbilitiesAndPromptFocusAbilities);
-		return;
-	end
-
-	CharManager.applyTypeAbilitiesAndPromptFocusAbilities(rData);
-end
-
-function applyTypeAbilitiesAndPromptFocusAbilities(rData)
-	CharTypeManager.applyTier(rData);
-
-	local _, sRecord = DB.getValue(rData.nodeChar, "class.focuslink", "");
-	local focusnode = DB.findNode(sRecord);
-
-	-- This re-initializes the ability lists for the focus
-	rData.sSourceName = DB.getValue(nodeChar, "class.focus", "");
-	CharFocusManager.buildAbilityPromptTable(rData.nodeChar, focusnode, rData.nTier, rData);
-	if #(rData.aAbilityOptions) > 0 then
-		local w = Interface.openWindow("select_dialog_char", "");
-		w.setData(rData, CharManager.applyFocusAbilities);
-		return true; -- Return true to keep the window open
-	end
-
-	CharManager.applyFocusAbilities(rData);
-end
-
-function applyFocusAbilities(rData)
-	CharFocusManager.addAbilities(rData);
-end
-
-function getExperience(nodeChar)
-	local nTier = DB.getValue(nodeChar, "tier", 1)
-	local nExp = DB.getValue(nodeChar, "xp", 0)
-	local nStats = DB.getValue(nodeChar, "adv_stats", 0)
-	local nEdge = DB.getValue(nodeChar, "adv_edge", 0)
-	local nEffort = DB.getValue(nodeChar, "adv_effort", 0)
-	local nSkill = DB.getValue(nodeChar, "adv_skill", 0)
-
-	return ((nTier - 1) * 16) + (nStats * 4) + (nEdge * 4) + (nEffort * 4) + (nSkill * 4) + nExp
+	-- clamp max effort to between 0 and 6
+	return math.max(math.min(nBase + nEffectMaxEffort, 6), 1);
 end
 
 -------------------------------------------------------------------------------
@@ -334,267 +137,4 @@ end
 
 function setHeroPoints(nodeChar, nVal)
 	DB.setValue(nodeChar, "hero", "number", nVal)
-end
-
--------------------------------------------------------------------------------
--- ITEM MANAGEMENT
--------------------------------------------------------------------------------
-function onCharItemAdd(nodeItem)
-	if ItemManagerCypher.isItemWeapon(nodeItem) then
-		CharManager.addItemAsWeapon(nodeItem);
-	end
-
-	-- If the item being added to the PC's inventory has actions, create
-	-- an entry in the ability list for it
-	if DB.getChildCount(nodeItem, "actions") > 0 then
-		CharManager.addItemAsAbility(nodeItem)
-	end
-end
-
-function onCharItemRemoved(nodeItem)
-	CharManager.removeAbilityLinkedToRecord(nodeItem);
-	CharManager.removeAttackLinkedToRecord(nodeItem);
-end
-
--- Adds a item (that is a weapon) to the character's attacklist
-function addItemAsWeapon(itemnode)
-	-- Parameter validation
-	if not ItemManagerCypher.isItemWeapon(itemnode) then
-		return;
-	end
-	
-	-- Get the weapon list we are going to add to
-	local nodeChar = DB.getChild(itemnode, "...");
-	local nodeAttacks = DB.createChild(nodeChar, "attacklist");
-	if not nodeAttacks then
-		return;
-	end
-
-	local attacknode = DB.createChild(nodeAttacks);
-	if not attacknode then
-		return;
-	end
-
-	DB.setValue(attacknode, "name", "string", ItemManagerCypher.getItemName(itemnode));
-	DB.setValue(attacknode, "weapontype", "string", ItemManagerCypher.getWeaponType(itemnode));
-	DB.setValue(attacknode, "stat", "string", ItemManagerCypher.getWeaponAttackStat(itemnode));
-	DB.setValue(attacknode, "defensestat", "string", ItemManagerCypher.getWeaponDefenseStat(itemnode));
-	DB.setValue(attacknode, "atkrange", "string", ItemManagerCypher.getWeaponAttackRange(itemnode));
-	DB.setValue(attacknode, "asset", "number", ItemManagerCypher.getWeaponAsset(itemnode));
-	DB.setValue(attacknode, "modifier", "number", ItemManagerCypher.getWeaponModifier(itemnode));
-	DB.setValue(attacknode, "damage", "number", ItemManagerCypher.getWeaponDamage(itemnode));
-	DB.setValue(attacknode, "damagestat", "string", ItemManagerCypher.getWeaponDamageStat(itemnode));
-	DB.setValue(attacknode, "damagetype", "string", ItemManagerCypher.getWeaponDamageType(itemnode));
-
-	local nPiercing = ItemManagerCypher.getWeaponPiercing(itemnode);
-	if nPiercing >= 0 then
-		DB.setValue(attacknode, "pierce", "string", "yes");
-		DB.setValue(attacknode, "pierceamount", "number", nPiercing);
-	end
-
-	ItemManagerCypher.linkWeaponAndAttack(itemnode, attacknode);
-
-	return attacknode;
-end
-
-function addItemAsAbility(itemnode)
-	-- Get the weapon list we are going to add to
-	local nodeChar = DB.getChild(itemnode, "...");
-	local nodeAbilities = DB.createChild(nodeChar, "abilitylist");
-	if not nodeAbilities then
-		return;
-	end
-
-	local abilitynode = DB.createChild(nodeAbilities);
-	if not abilitynode then
-		return;
-	end
-
-	local sItemType = StringManager.capitalize(ItemManagerCypher.getItemType(itemnode) or "");
-	local sName = ItemManagerCypher.getItemName(itemnode);
-	if sItemType ~= "" then
-		sName = string.format("%s: %s", sItemType, sName);
-		DB.setValue(abilitynode, "type", "string", sItemType);
-	end
-
-	DB.setValue(abilitynode, "name", "string", sName);
-	if ItemManagerCypher.isItemWeapon(itemnode) then
-		DB.setValue(abilitynode, "useequipped", "string", "yes");
-	end
-
-	local actions = DB.getChild(itemnode, "actions");
-	if actions then
-		DB.copyNode(actions, DB.createChild(abilitynode, "actions"));
-	end
-
-	local sDesc = DB.getValue(itemnode, "notes", "")
-	if sDesc ~= "" then
-		DB.setValue(abilitynode, "ftdesc", "formattedtext", sDesc)
-	end
-
-	-- Save links between the item and ability
-	-- These are used so that if one is deleted, so is the other.
-	DB.setValue(abilitynode, "itemlink", "windowreference", "item", DB.getPath(itemnode));
-	DB.setValue(itemnode, "abilitylink", "windowreference", "ability", DB.getPath(abilitynode));
-
-	return abilitynode;
-end
-
-function removeAttackLinkedToRecord(noderecord)
-	CharManager.removeLinkedRecord(noderecord, "attacklink");
-end
-
-function removeAbilityLinkedToRecord(noderecord)
-	CharManager.removeLinkedRecord(noderecord, "abilitylink");	
-end
-
-function removeItemLinkedToRecord(noderecord)
-	CharManager.removeLinkedRecord(noderecord, "itemlink");
-end
-
-function removeLinkedRecord(sourcenode, sPath)
-	-- For some reason when an item is moved to the party sheet the onRemove event
-	-- fires twice, but by the time we get here the sourcnode is already deleted
-	-- (due to async processing I think), so we just need to check that sourcenode is
-	-- valid before running this.
-	if not sourcenode or type(sourcenode) ~= "databasenode" then
-		return;
-	end
-
-	local _, sRecord = DB.getValue(sourcenode, sPath);
-	if (sRecord or "") == "" then
-		return;
-	end
-
-	local linkednode = DB.findNode(sRecord);
-	if linkednode then
-		DB.deleteNode(linkednode);
-	end
-end
-
-function updateCyphers(nodeChar)
-	local nCypherTotal = 0;
-
-	for _,vNode in ipairs(DB.getChildList(nodeChar, "inventorylist")) do
-		if DB.getValue(vNode, "type", "") == "cypher" then
-			nCypherTotal = nCypherTotal + 1;
-		end
-	end
-
-	DB.setValue(nodeChar, "cypherload", "number", nCypherTotal);
-end
-
--------------------------------------------------------------------------------
--- RESTING
--------------------------------------------------------------------------------
-
-function rest(nodeChar)
-	DB.setValue(nodeChar, "recoveryused", "number", 0);
-end
-
--------------------------------------------------------------------------------
--- CHARACTER ARCS
--------------------------------------------------------------------------------
-
-function getCostToBuyNewCharacterArc(nodeChar)
-	local nCost = 0;
-	-- Only the first character arc is free
-	if DB.getChildCount(nodeChar, "characterarcs") > 0 then
-		nCost = OptionsManagerCypher.getXpCostToAddArc();
-	end
-	return nCost;
-end
-
-function buyNewCharacterArc(nodeChar)
-	local nCost = CharManager.getCostToBuyNewCharacterArc(nodeChar);
-
-	-- Check to see if character has enough XP
-	local nXP = DB.getValue(nodeChar, "xp", 0);
-	if nXP < nCost then
-		local rMessage = {
-			text = Interface.getString("char_message_not_enough_xp_for_arc"),
-			font = "msgfont"
-		};
-		Comm.addChatMessage(rMessage);
-		return false;
-	end
-
-	DB.setValue(nodeChar, "xp", "number", math.max(nXP - nCost, 0));
-	
-	-- Notify chat
-	CharManager.sendCharacterArcMessage(nodeChar, "char_message_add_arc", nCost)
-	return true;
-end
-
-function completeCharacterArcStep(nodeChar)
-	local nReward = OptionsManagerCypher.getArcStepXpReward();
-	CharManager.sendCharacterArcMessage(nodeChar, "char_message_arc_complete_step", nReward)
-
-	local nXP = DB.getValue(nodeChar, "xp", 0);
-	DB.setValue(nodeChar, "xp", "number", math.max(nXP + nReward, 0));
-end
-
-function completeCharacterArcClimax(nodeChar, nodeArc, bSuccess)
-	local nReward = 0;
-	if bSuccess then
-		nReward = OptionsManagerCypher.getArcClimaxSuccessXpReward();
-		CharManager.sendCharacterArcMessage(nodeChar, "char_message_arc_climax_success", nReward)
-		DB.setValue(nodeArc, "success", "string", "Yes");
-	else
-		nReward = OptionsManagerCypher.getArcClimaxFailureXpReward();
-		CharManager.sendCharacterArcMessage(nodeChar, "char_message_arc_climax_failure", nReward)
-		DB.setValue(nodeArc, "success", "string", "No");
-	end
-
-	local nXP = DB.getValue(nodeChar, "xp", 0);
-	DB.setValue(nodeChar, "xp", "number", math.max(nXP + nReward, 0));
-end
-
-function completeCharacterArcResolution(nodeChar, nodeArc, bSuccess)
-	local nReward = 0;
-	if bSuccess then
-		nReward = OptionsManagerCypher.getArcResolutionXpReward();
-		CharManager.sendCharacterArcMessage(nodeChar, "char_message_arc_resolution_success", nReward)
-		DB.setValue(nodeArc, "resolved", "string", "Yes");
-	else
-		CharManager.sendCharacterArcMessage(nodeChar, "char_message_arc_resolution_failure", nReward)
-		DB.setValue(nodeArc, "resolved", "string", "No");
-	end
-	
-	local nXP = DB.getValue(nodeChar, "xp", 0);
-	DB.setValue(nodeChar, "xp", "number", math.max(nXP + nReward, 0));
-end
-
-function sendCharacterArcMessage(nodeChar, sMessageResource, nXp)
-	local sName = DB.getValue(nodeChar, "name", "");
-	if sName == "" then
-		return;
-	end
-
-	local rMessage = {
-		text = string.format(
-			Interface.getString(sMessageResource), 
-			sName, 
-			nXp),
-		font = "msgfont"
-	};
-
-	Comm.deliverChatMessage(rMessage);
-end
-
--------------------------------------------------------------------------------
--- HEALTH
--------------------------------------------------------------------------------
-function isImpaired(rActor)
-	rActor = ActorManager.resolveActor(rActor);
-	if not ActorManager.isPC(rActor) then
-		return false;
-	end	
-
-	local nWounds = ActorManagerCypher.getDamageTrack(rActor);
-	if EffectManagerCypher.hasEffect(rActor, "IGNOREIMPAIRED", nil, false, true) then
-		nWounds = nWounds - 1;
-	end
-
-	return nWounds >= 1;
 end

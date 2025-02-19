@@ -76,7 +76,7 @@ function getRollLabel(rActor, rAction, rRoll)
 end
 
 function getEffectFilter(rRoll)
-	return { "damage", "dmg", rRoll.sStat };
+	return { "damage", "dmg", rRoll.sStat, rRoll.sDamageType};
 end
 
 function modRoll(rSource, rTarget, rRoll)
@@ -85,20 +85,31 @@ function modRoll(rSource, rTarget, rRoll)
 		return;
 	end
 
-	local aFilter = ActionDamage.getEffectFilter(rRoll)
+	local aFilter = ActionDamage.getEffectFilter(rRoll);
 
 	rTarget = RollManager.decodeTarget(rRoll, rTarget, true);
 
+	-- Convert damage type
 	local sConvertedDmgType = EffectManagerCypher.getDamageTypeConversionEffect(rSource, rRoll.sDamageType, aFilter)
 	if (sConvertedDmgType or "") ~= "" then
-		rRoll.sDamageType = sConvertedDmgType
-		RollManager.encodeDamageType(rRoll)
+		rRoll.sDamageType = sConvertedDmgType;
+		RollManager.encodeDamageType(rRoll);
+	end
+
+	-- Convert damage stat
+	local sConvertedDmgStat = EffectManagerCypher.getDamageStatConversionEffect(rSource, aFilter)
+	if (sConvertedDmgStat or "") ~= "" then
+		rRoll.sDamageStat = sConvertedDmgStat;
 	end
 
 	-- Adjust mod based on effort
 	rRoll.nEffort = (rRoll.nEffort or 0) + RollManager.processEffort(rSource, rTarget, aFilter, rRoll.nEffort);
 	if (rRoll.nEffort or 0) > 0 then
-		rRoll.nMod = rRoll.nMod + (rRoll.nEffort * 3);
+		local nEffortMulti = 3;
+		if RollManager.isMultiTarget(false) then
+			nEffortMulti = 2;
+		end
+		rRoll.nMod = rRoll.nMod + (rRoll.nEffort * nEffortMulti);
 	end
 
 	rRoll.bPiercing, rRoll.nPierceAmount = RollManager.processPiercing(rSource, rTarget, rRoll.bPiercing, rRoll.nPierceAmount, rRoll.sDamageType, aFilter);
@@ -558,7 +569,7 @@ function applyDamageToPc(rSource, rTarget, nDamage, sStat, bNoOverflow, aNotific
 	-- and Negative damage (healing) causes a positive change of health
 	-- Which is why we invert nDamage here.
 	-- Start by applying damage to the stat specified
-	local nOverflow = ActorManagerCypher.addToStatPool(rTarget, sStat, -nDamage);
+	local nOverflow = CharStatManager.addToStatPool(rTarget, sStat, -nDamage);
 
 	-- if there's overflow to the damage, then that means a stat was reduced to 0
 	-- in which case we want to drop a blood marker.
@@ -576,13 +587,13 @@ function applyDamageToPc(rSource, rTarget, nDamage, sStat, bNoOverflow, aNotific
 	-- which means we need to apply an inversion depending on if we're healing or damaging
 	-- Overflow will follow the normal might -> speed -> intellect damage
 	if sStat ~= "might" then
-		nOverflow = ActorManagerCypher.addToStatPool(rTarget, "might", nOverflow * nNegativeIfDamage);
+		nOverflow = CharStatManager.addToStatPool(rTarget, "might", nOverflow * nNegativeIfDamage);
 	end
 	if sStat ~= "speed" then
-		nOverflow = ActorManagerCypher.addToStatPool(rTarget, "speed", nOverflow * nNegativeIfDamage);
+		nOverflow = CharStatManager.addToStatPool(rTarget, "speed", nOverflow * nNegativeIfDamage);
 	end
 	if sStat ~= "intellect" then
-		nOverflow = ActorManagerCypher.addToStatPool(rTarget, "intellect", nOverflow * nNegativeIfDamage);
+		nOverflow = CharStatManager.addToStatPool(rTarget, "intellect", nOverflow * nNegativeIfDamage);
 	end
 
 	-- Lastly, the addToStatPool function handles updating the character damage track

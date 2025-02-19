@@ -17,17 +17,6 @@
 		</button_stringcycler>
 	</template>
 
-	<template name="button_itemtype_short">
-		<button_stringcycler name="type">
-			<anchored width="20" />
-			<parameters>
-				<defaultlabel>-</defaultlabel>
-				<labelsres>char_label_invtypecypher_short|char_label_invtypeartifact_short|char_label_invtypeoddity_short</labelsres>
-				<values>cypher|artifact|oddity</values>
-			</parameters>
-		</button_stringcycler>
-	</template>
-
 	<template name="button_itemsubtype">
 		<button_stringcycler name="type">
 			<anchored width="80" />
@@ -285,8 +274,8 @@
 				<static textres="item_label_armor" />
 			</label_column>
 			<number_column name="armor" />
-			<label_column name="shieldbonus_label">
-				<static textres="item_label_shieldbonus" />
+			<label_column name="speeddefbonus_label">
+				<static textres="item_label_speedbonus" />
 			</label_column>
 			<cycler_column name="shieldbonus">
 				<anchored width="120" />
@@ -296,6 +285,12 @@
 					<defaultlabelres>dash</defaultlabelres>
 				</parameters>
 			</cycler_column>
+			<label_column name="speedpenalty_label">
+				<static textres="item_label_speedpenalty" />
+			</label_column>
+			<number_column name="speedpenalty">
+				<tooltip textres="item_tooltip_speedpenalty" />
+			</number_column>
 
 			<!-- DESCRIPTION -->
 			<line_column name="divider3" />

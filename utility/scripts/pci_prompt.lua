@@ -16,13 +16,13 @@ function setData(node)
 	if OptionsManagerCypher.areHeroPointsEnabled() then
 		description.setValue(string.format(
 			Interface.getString("pci_prompt_description_heropoint"), 
-			ActorManagerCypher.getXP(nodeChar),
+			CharAdvancementManager.getExperience(nodeChar),
 			CharManager.getHeroPoints(nodeChar)
 		))
 	else
 		description.setValue(string.format(
 			Interface.getString("pci_prompt_description"), 
-			ActorManagerCypher.getXP(nodeChar)
+			CharAdvancementManager.getExperience(nodeChar)
 		))
 	end
 
@@ -67,10 +67,10 @@ function onOptionSelected(sType, nCost, bSelected)
 	if (sType == "reroll" or sType == "shortterm") and OptionsManagerCypher.areHeroPointsEnabled() then
 		nResource = CharManager.getHeroPoints(nodeChar)
 	else
-		nResource = DB.getValue(nodeChar, "xp", 0);
+		nResource = CharAdvancementManager.getExperience(nodeChar);
 	end
 
-	accept.setVisible(bSelected and nResource >= nSelectedCost);
+	accept.setVisible(bSelected and nResource >= nCost);
 end
 
 function uncheckCheckbox(sType)

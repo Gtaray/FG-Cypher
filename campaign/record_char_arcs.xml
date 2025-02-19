@@ -8,569 +8,392 @@
 <root>
 	<windowclass name="charsheet_arcs">
 		<sheetdata>
-			<frame_char name="arcframe">
-				<anchored position="over" />
-			</frame_char>
-			<label_frametop name="header_arcs">
-				<anchored to="arcframe" />
-				<static textres="char_label_arcs" />
-			</label_frametop>
+			<anchor_content_top />
+			<anchor_content_bottom />
 
-			<windowlist name="arcs">
-				<anchored to="arcframe">
-					<left offset="15" />
-					<top offset="35" />
-					<right offset="-20" />
-					<bottom offset="-20" />
-				</anchored>
-				<class>char_arc</class>
-				<datasource>.characterarcs</datasource>
-				<script>
-					function addEntry()
-						local w = createWindow();
-
-						local record = Interface.openWindow("record_arc", w.getDatabaseNode());
-						record.focusName();
-
-						window.arcs_iadd.onCostUpdated();
-						return w;
-					end
-				</script>
-			</windowlist>
-			<scrollbar_list>
-				<anchored to="arcs" />
-				<target>arcs</target>
-			</scrollbar_list>
-
-			<button_iedit name="arcs_iedit">
-				<anchored to="arcs" position="aboveright" offset="-13,5" />
-				<edittarget>arcs</edittarget>
+			<area_content_framed_groupbox_bottom name="area_controls">
+				<anchored height="20" />
+			</area_content_framed_groupbox_bottom>
+			<button_iedit name="sheet_iedit">
+				<anchored to="area_controls" position="insidetopright" offset="0,0" />
+				<edittarget>content</edittarget>
 			</button_iedit>
 			<button_iadd name="arcs_iadd">
-				<anchored to="arcs_iedit" position="lefthigh" offset="3,0" />
-				<target>arcs</target>
-				<script>
-					function onInit()
-						OptionsManager.registerCallback("ARCCOST", onCostUpdated)
-						onCostUpdated();
-					end
-					function onClose()
-						OptionsManager.unregisterCallback("ARCCOST", onCostUpdated)
-					end
-					function onCostUpdated()
-						local nCost = CharManager.getCostToBuyNewCharacterArc(window.getDatabaseNode());
-						setTooltipText(string.format(Interface.getString("char_tooltip_arc_add"), nCost));
-					end
-					function onButtonPress()
-						if CharManager.buyNewCharacterArc(window.getDatabaseNode()) then
-							super.onButtonPress()
-						end
-					end
-				</script>
+				<anchored to="sheet_iedit" position="lefthigh" offset="5,0" />
+				<edittarget>content</edittarget>
 			</button_iadd>
+
+			<sub_content_scroll name="content">
+				<class>charsheet_arcs_contents</class>
+			</sub_content_scroll>
+			<scrollbar_content />
 		</sheetdata>
 	</windowclass>
 
-	<windowclass name="char_arc">
-		<script file="campaign/scripts/char_arc.lua" />
+	<windowclass name="charsheet_arcs_contents">
 		<sheetdata>
-			<hn name="currentStage">
+			<anchor_content_top />
+
+			<list_content_labeled_alternating_top name="characterarcs">
 				<script>
-					function onValueChanged()
-						window.updateTitle()
-						window.updateStageTooltips()
+					function addEntry()
+						local wNew = createWindow(nil, true);
 					end
 				</script>
+				<datasource>.characterarcs</datasource>
+				<class>character_arc</class>
+				<sortby><control>name</control></sortby>
+			</list_content_labeled_alternating_top>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="character_arc">
+		<script file="campaign/scripts/char_arc.lua" />
+		<margin>0,0,0,2</margin>
+		<sheetdata>
+			<anchor_content_top />
+
+			<hn name="stage">
 				<default>1</default>
 				<min>1</min>
-				<max>4</max>
+				<max>5</max>
 			</hn>
 			<hs name="name">
 				<script>
 					function onValueChanged()
-						window.updateTitle()
+						window.header.update();
 					end
 				</script>
 				<empty textres="char_empty_arc" />
 			</hs>
 
-			<label name="title">
-				<anchored>
-					<top />
-					<left />
-					<right />
-				</anchored>
-				<center />				
-			</label>
+			<label_charframetop_collapsible name="header">
+				<icons>char_abilities_green</icons>
+				<script>
+					function onInit()
+						super.onInit();
+						update();						
+					end
+					function update()
+						local sText = window.name.getValue();
+						if (sText or "") == "" then
+							sText = window.name.getEmptyText();
+						end
+						setValue(sText);
+					end
+				</script>
+				<target>content</target>
+			</label_charframetop_collapsible>
 
 			<genericcontrol name="rightanchor">
-				<anchored width="0" height="0">
-					<top offset="2" />
-					<right offset="-5" />
-				</anchored>
+				<anchored to="header" position="insidetopright" offset="-5,0" height="0" width="0" />
 			</genericcontrol>
 			<button_idelete name="idelete">
-				<anchored to="rightanchor" width="20" height="20">
-					<top />
-					<right relation="relative" anchor="left" />
-				</anchored>
-				<editmode>arcs_iedit</editmode>
-			</button_idelete>
-			<button_details name="button_editor">
 				<anchored to="rightanchor">
 					<top />
-					<right relation="relative" anchor="left" offset="-5" />
+					<right anchor="left" relation="relative" offset="-5" />
 				</anchored>
-				<tooltip textres="char_tooltip_arc_editor" />
-				<script>
+				<editmode>sheet_iedit</editmode>
+			</button_idelete>
+			
+			<button_details name="details">
+				<anchored to="rightanchor">
+					<top />
+					<right anchor="left" relation="relative" offset="-5,0" />
+				</anchored>
+				<script>					
 					function onButtonPress()
-						Interface.openWindow("record_arc", window.getDatabaseNode());
+						Interface.openWindow("char_arc_details", window.getDatabaseNode());
 					end
 				</script>
 			</button_details>
 
-			<genericcontrol name="icon">
-				<anchored height="65" width="423">
-					<top parent="title" anchor="bottom" offset="5" />
-					<left/>
-				</anchored>
-				<icon>arc_opening</icon>
-			</genericcontrol>
-			<column_left name="left">
-				<anchored to="icon" />
-			</column_left>
-			<column_right name="right">
-				<anchored to="icon" />
-			</column_right>
+			<subwindow name="tracker">
+				<anchored to="header" position="insidetopleft" offset="18,3" width="88" height="14" />
+				<class>character_arc_tracker</class>
+				<activate />
+				<fastinit />
+			</subwindow>
 
-			<arc_stage_left name="opening">
-				<anchored to="left" />
-			</arc_stage_left>
-			<arc_stage_right name="inprogress">
-				<anchored to="left" />
-			</arc_stage_right>
-			<arc_stage_left name="climax">
-				<anchored to="right" />
-			</arc_stage_left>
-			<arc_stage_right name="resolution">
-				<anchored to="right" />
-			</arc_stage_right>
+			<!-- Content of Arc -->
+			<sub_arc_indented name="content">
+				<class>character_arc_content</class>
+			</sub_arc_indented>
 		</sheetdata>
 	</windowclass>
-	
-	<windowclass name="record_arc" copy="record_window_tabbed">
-		<tab>
-			<name>opening</name>
-			<resource>tab_opening</resource>
-			<class>record_arc_opening</class>
-			<embed />
-		</tab>
-		<tab merge="add">
-			<name>inprogress</name>
-			<resource>tab_inprogress</resource>
-			<class>record_arc_inprogress</class>
-			<embed />
-		</tab>
-		<tab merge="add">
-			<name>climax</name>
-			<resource>tab_climax</resource>
-			<class>record_arc_climax</class>
-			<embed />
-		</tab>
-		<tab merge="add">
-			<name>resolution</name>
-			<resource>tab_resolution</resource>
-			<class>record_arc_resolution</class>
-			<embed />
-		</tab>
-		<script>
-			function focusName()
-				if header and header.subwindow and header.subwindow.name then
-					header.subwindow.name.setFocus();
-				end
-			end
-			function setTab(nIndex)
-				tabs.activateTab(nIndex);
-			end
-			function addStep()
-				inprogress.subwindow.addStep();
-			end
-		</script>
+
+	<windowclass name="character_arc_content">
+		<script file="campaign/scripts/char_arc_content.lua" />
+		<sheetdata>
+			<anchor_content_top />
+			<anchor_content_bottom />
+
+			<sub_arc_indented name="notstarted">
+				<class>character_arc_notstarted</class>
+			</sub_arc_indented>
+
+			<label_charframetop_collapsible name="header_progress">
+				<icons>char_abilities_green</icons>
+				<target>progress</target>
+				<static textres="char_subtitle_arc_progress" />
+			</label_charframetop_collapsible>
+			<button_iadd name="progress_iadd">
+				<anchored to="header_progress" position="insidetopright" offset="5,0" />
+				<edittarget>progress</edittarget>
+			</button_iadd>
+			<sub_arc_indented name="progress">
+				<class>character_arc_progress</class>
+			</sub_arc_indented>
+
+			<label_charframetop_collapsible name="header_climax">
+				<icons>char_abilities_green</icons>
+				<target>climax</target>
+				<static textres="char_subtitle_arc_climax" />
+			</label_charframetop_collapsible>
+			<sub_arc_indented name="climax">
+				<class>character_arc_climax</class>
+			</sub_arc_indented>
+
+			<label_charframetop_collapsible name="header_resolution">
+				<icons>char_abilities_green</icons>
+				<target>resolution</target>
+				<static textres="char_subtitle_arc_resolution" />
+			</label_charframetop_collapsible>
+			<sub_arc_indented name="resolution">
+				<class>character_arc_resolution</class>
+			</sub_arc_indented>
+
+			<spacer_content_bottom />
+			<line_content_bottom />
+		</sheetdata>
 	</windowclass>
 
-	<windowclass name="record_arc_opening">
-		<script>
-			function focus()
-				opening.setFocus();
-			end
-		</script>
+	<windowclass name="character_arc_stage_base">
+		<margins control="0,0,0,7"/>
 		<sheetdata>
-			<anchor_column name="columnanchor" />
+			<anchor_content_top />
+			<anchor_content_bottom />
+		</sheetdata>
+	</windowclass>
 
-			<header_column name="header">
-				<static textres="char_label_opening" />
-				<center />
-			</header_column>
-
-			<ft_columnh name="opening">
+	<windowclass name="character_arc_notstarted" copy="character_arc_stage_base">
+		<sheetdata>
+			<stringu_content_noframe_noscroll_top name="description">
 				<anchored>
-					<bottom offset="-5" />
-					<right offset="-10" />
+					<left offset="10" />
+					<right offset="-15" />
 				</anchored>
-			</ft_columnh>
-			<scrollbar>
-				<anchored to="opening" />
-				<target>opening</target>
-			</scrollbar>
+				<multilinespacing>20</multilinespacing>
+			</stringu_content_noframe_noscroll_top>
+
+			<button_next_arc_phase name="complete">
+				<state textres="char_button_start_arc" />
+			</button_next_arc_phase>			
 		</sheetdata>
 	</windowclass>
 
-	<windowclass name="record_arc_inprogress">
-		<script>
-			function onInit()
-				local node = getDatabaseNode();
-				DB.addHandler(DB.getPath(node, "success"), "onUpdate", update);
-
-				update();
-			end
-			function onClose()
-				local node = getDatabaseNode();
-				DB.removeHandler(DB.getPath(node, "success"), "onUpdate", update);
-			end
-			function update()
-				local node = getDatabaseNode();
-				local bIsComplete = DB.getValue(node, "success", "") ~= "";
-
-				steps_iedit.setVisible(not bIsComplete);
-				steps_iadd.setVisible(not bIsComplete);
-			end
-			function addStep()
-				local w = steps.addEntry();
-			end
-		</script>
+	<windowclass name="character_arc_progress" copy="character_arc_stage_base">
 		<sheetdata>
-			<anchor_column name="columnanchor" />
-
-			<header_column name="header">
-				<static textres="char_label_inprogress" />
-				<center />
-			</header_column>
-
-			<list_column name="steps">
-				<class>record_arc_step</class>
-				<datasource>.steps</datasource>
-				<sortby><control>order</control></sortby>
+			<list_content_noscroll_alternating_top name="steps">
 				<script>
 					function addEntry()
-						local nOrder = getHighestOrder() + 1;
-						local w = createWindow();
-						w.order.setValue(nOrder);
-						w.step.setFocus();
-						return w;
-					end
-					function getHighestOrder()
-						local nHighest = 0;
-						for _, w in pairs(getWindows()) do
-							if w.order.getValue() &gt; nHighest then
-								nHighest = w.order.getValue();
-							end
-						end
-						return nHighest;
+						local wNew = createWindow(nil, true);
 					end
 				</script>
-				<anchored>
-					<bottom offset="-10" />
-					<right offset="-10" />
-				</anchored>
-				<noscroll merge="delete" />
-			</list_column>
+				<datasource>.progress</datasource>
+				<class>character_arc_progress_item</class>
+				<sortby><field>order</field></sortby>
+			</list_content_noscroll_alternating_top>
 
-			<scrollbar_list>
-				<anchored to="steps" />
-				<target>steps</target>
-			</scrollbar_list>
-
-			<button_iedit name="steps_iedit">
-				<anchored to="header">
-					<right offset="0"/>
-					<top />
-				</anchored>
-				<edittarget>steps</edittarget>
-			</button_iedit>
-			<button_iadd name="steps_iadd">
-				<anchored to="steps_iedit" position="lefthigh" offset="3,0" />
-				<target>steps</target>
-			</button_iadd>
+			<button_next_arc_phase name="complete">
+				<state textres="char_button_move_to_climax" />
+			</button_next_arc_phase>
 		</sheetdata>
 	</windowclass>
-
-	<windowclass name="record_arc_climax">
-		<script>
-			function onInit()
-				local node = getDatabaseNode();
-				DB.addHandler(DB.getPath(node, "steps"), "onChildUpdate", update);
-				DB.addHandler(DB.getPath(node, "success"), "onUpdate", update);
-
-				update();
-			end
-			function onClose()
-				local node = getDatabaseNode();
-				DB.removeHandler(DB.getPath(node, "steps"), "onChildUpdate", update);
-				DB.removeHandler(DB.getPath(node, "success"), "onUpdate", update);
-			end
-			function update()
-				local bIsComplete = DB.getValue(getDatabaseNode(), "success", "") ~= "";
-
-				button_complete.setVisible(allStepsAreComplete() and not bIsComplete);
-				WindowManager.callSafeControlUpdate(self, "success", true, not bIsComplete)
-			end
-			function allStepsAreComplete()
-				local node = getDatabaseNode();
-				local bComplete = DB.getChildCount(node, "steps") &gt; 0;
-				for _, step in ipairs(DB.getChildList(node, "steps")) do
-					if DB.getValue(step, "complete", "") ~= "yes" then
-						bComplete = false;
-						break;
-					end
-				end
-
-				return bComplete;
-			end
-			function focus()
-				climax.setFocus();
-			end
-		</script>
+	<windowclass name="character_arc_progress_item">
+		<script file="campaign/scripts/char_arc_progress_item.lua" />
+		<margin>0,0,0,2</margin>
 		<sheetdata>
-			<anchor_column name="columnanchor" />
+			<anchor_content_top />
+			<anchor_listitem_left />
+			<anchor_listitem_right>
+				<anchored offset="10,5" />
+			</anchor_listitem_right>
 
-			<header_column name="header">
-				<static textres="char_label_climax" />
-				<center />
-			</header_column>
-
-			<label_column name="success_label">
-				<static textres="char_label_climax_success" />
-			</label_column>
-			<string_columnh name="success" />
-
-			<genericcontrol name="bottomanchor">
-				<anchored height="0" width="0">
-					<left />
-					<bottom />
-				</anchored>
-				<invisible />
-			</genericcontrol>
-
-			<button_text name="button_complete">
-				<anchored height="22">
-					<left offset="5" />
-					<right offset="-5" />
-					<bottom parent="bottomanchor" anchor="top" relation="relative" offset="-5" />
-				</anchored>
-				<state textres="char_label_arc_complete" />
+			<button_listitem_bigcheckbox_left name="done">
 				<script>
-					function onButtonPress()
-						PromptManager.promptCharacterArcClimax(window.getDatabaseNode());
+					function onClickDown()
+						return true;
 					end
-				</script>
-			</button_text>
-
-			<ft_columnh name="climax">
-				<anchored>
-					<bottom parent="bottomanchor" anchor="top" relation="relative" offset="-10" /> 
-					<right offset="-10" />
-				</anchored>
-			</ft_columnh>
-			<scrollbar>
-				<anchored to="climax" />
-				<target>climax</target>
-			</scrollbar>
-		</sheetdata>
-	</windowclass>
-
-	<windowclass name="record_arc_resolution">
-		<script>
-			function onInit()
-				local node = getDatabaseNode();
-				DB.addHandler(DB.getPath(node, "success"), "onUpdate", update);
-				DB.addHandler(DB.getPath(node, "resolved"), "onUpdate", update);
-
-				update();
-			end
-			function onClose()
-				local node = getDatabaseNode();
-				DB.removeHandler(DB.getPath(node, "success"), "onUpdate", update);
-				DB.removeHandler(DB.getPath(node, "resolved"), "onUpdate", update);
-			end
-			function update()
-				local bIsComplete = DB.getValue(getDatabaseNode(), "success", "") ~= "";
-				local bIsResolved = DB.getValue(getDatabaseNode(), "resolved", "") ~= "";
-
-				button_complete.setVisible(bIsComplete and not bIsResolved);
-				WindowManager.callSafeControlUpdate(self, "resolved", true, not bIsResolved)
-			end
-			function focus()
-				resolution.setFocus();
-			end
-		</script>
-		<sheetdata>
-			<anchor_column name="columnanchor" />
-
-			<header_column name="header">
-				<static textres="char_label_resolution" />
-				<center />
-			</header_column>
-
-			<label_column name="resolved_label">
-				<static textres="char_label_resolution_resolved" />
-			</label_column>
-			<string_columnh name="resolved" />
-
-			<genericcontrol name="bottomanchor">
-				<anchored height="0" width="0">
-					<left />
-					<bottom />
-				</anchored>
-				<invisible />
-			</genericcontrol>
-
-			<button_text name="button_complete">
-				<anchored height="22">
-					<left offset="5" />
-					<right offset="-5" />
-					<bottom parent="bottomanchor" anchor="top" relation="relative" offset="-5" />
-				</anchored>
-				<state textres="char_label_arc_resolved" />
-				<script>
-					function onButtonPress()
-						local nodeArc = window.getDatabaseNode();
-						if DB.getValue(nodeArc, "success", "") == "Yes" then
-							local nodeChar = DB.getChild(nodeArc, "...");
-							CharManager.completeCharacterArcResolution(nodeChar, nodeArc, true);
-							return
+					function onClickRelease()
+						if getValue() == 1 then
+							return;
 						end
-
-						PromptManager.promptCharacterArcResolution(window.getDatabaseNode());
+						return window.promptStepForCompletion();
 					end
 				</script>
-			</button_text>
+			</button_listitem_bigcheckbox_left>
+			<button_listitem_idelete>
+				<editmode>sheet_iedit</editmode>
+			</button_listitem_idelete>
 
-			<ft_columnh name="resolution">
-				<anchored>
-					<bottom parent="bottomanchor" anchor="top" relation="relative" offset="-10" /> 
-					<right offset="-10" />
-				</anchored>
-			</ft_columnh>
-			<scrollbar>
-				<anchored to="resolution" />
-				<target>resolution</target>
-			</scrollbar>
+			<string_listitem_center_underline_multiline name="description">
+			</string_listitem_center_underline_multiline>
 		</sheetdata>
 	</windowclass>
 
-	<windowclass name="record_arc_step">
-		<margins control="0,0,0,5" />
-		<script>
-			function onInit()
-				local node = getDatabaseNode();
-				local nodeArc = DB.getChild(node, "...");
-				DB.addHandler(DB.getPath(nodeArc, "success"), "onUpdate", update);
-
-				update();
-			end
-			function onClose()
-				local node = getDatabaseNode();
-				local nodeArc = DB.getChild(node, "...");
-				DB.removeHandler(DB.getPath(nodeArc, "success"), "onUpdate", update);
-			end
-			function update()
-				local node = getDatabaseNode();
-				local nodeArc = DB.getChild(node, "...");
-				local bIsComplete = DB.getValue(nodeArc, "success", "") ~= "";
-
-				complete.setReadOnly(bIsComplete);
-			end
-		</script>
+	<windowclass name="character_arc_climax" copy="character_arc_stage_base">
 		<sheetdata>
-			<hn name="order" />
-			<anchor_column name="columnanchor" />
+			<button_bigcheckbox_withcross name="done" source="climax.done">
+				<anchored to="contentanchor" height="20" width="20">
+					<top relation="current" />
+					<left offset="-2" postoffset="-2" />
+				</anchored>
+			</button_bigcheckbox_withcross>
 
-			<label_column name="complete_label">
-				<static textres="char_label_step_complete" />
+			<stringu_content_noframe_noscroll_top name="description" source="climax.description">
+				<anchored>
+					<left parent="done" anchor="right" offset="5" />
+					<right offset="-15" />
+				</anchored>
+			</stringu_content_noframe_noscroll_top>
+
+			<button_next_arc_phase name="complete">
+				<state textres="char_button_move_to_resolution" />
+			</button_next_arc_phase>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="character_arc_resolution" copy="character_arc_stage_base">
+		<sheetdata>
+			<button_bigcheckbox_withcross name="done" source="resolution.done">
+				<anchored to="contentanchor" height="20" width="20">
+					<top relation="current" />
+					<left offset="-2" postoffset="-2" />
+				</anchored>
+			</button_bigcheckbox_withcross>
+
+			<stringu_content_noframe_noscroll_top name="description" source="resolution.description">
+				<anchored>
+					<left parent="done" anchor="right" offset="5" />
+					<right offset="-15" />
+				</anchored>
+			</stringu_content_noframe_noscroll_top>
+
+			<button_next_arc_phase name="complete">
+				<state textres="char_button_complete_arc" />
+			</button_next_arc_phase>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="character_arc_tracker">
+		<sheetdata>
+			<genericcontrol name="icon">
+				<script>
+					local aStages = {
+						"arc_notstarted",
+						"arc_progress",
+						"arc_climax",
+						"arc_resolution",
+						"arc_complete"
+					}
+					function onInit()
+						local node = window.getDatabaseNode();
+						DB.addHandler(DB.getPath(node, "stage"), "onUpdate", update)
+						update();
+					end
+					function onClose()
+						local node = window.getDatabaseNode();
+						DB.removeHandler(DB.getPath(node, "stage"), "onUpdate", update)
+					end
+					function update()
+						local node = window.getDatabaseNode();
+						local nStage = DB.getValue(node, "stage", 1)
+						setIcon(aStages[nStage])
+					end
+				</script>
+				<anchored width="88" height="14" position="insidetopright" />
+			</genericcontrol>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="char_arc_details">
+		<margins control="30,0,0,0" />
+		<frame>charsheethelper</frame>
+		<sizelimits>
+			<minimum width="430" height="290" />
+			<dynamic />
+		</sizelimits>
+		<script file="campaign/scripts/char_arc_editor.lua" />
+		<sheetdata>
+			<windowtitlebar_charsheethelper name="title">
+				<prefix>char_title_arc_editor</prefix>
+			</windowtitlebar_charsheethelper>
+			<anchor_title_charsheethelper name="contentanchor" />
+
+			<anchor_column name="columnanchor">
+				<anchored to="contentanchor" position="below" offset="0,-5" />
+			</anchor_column>
+			
+			<label_column name="name_label">
+				<static textres="char_arc_editor_label_name" />
 			</label_column>
-			<cycler_column name="complete">
-				<anchored width="80" />
-				<parameters>
-					<labelsres>option_val_yes</labelsres>
-					<values>yes</values>
-					<defaultlabelres>option_val_no</defaultlabelres>
-				</parameters>
+			<string_column name="name">
+				<anchored>
+					<right offset="-35" />
+				</anchored>
+			</string_column>
+
+			<label_column name="stage_label">
+				<static textres="char_arc_editor_label_stage" />
+			</label_column>
+			<comboboxc_column name="stage">
+				<listdirection>down</listdirection>
+				<unsorted />
+				<anchored>
+					<right offset="-35" />
+				</anchored>
 				<script>
 					function onValueChanged()
-						if getStringValue() ~= "yes" then 
-							return
-						end
-
-						local nodeStep = window.getDatabaseNode();
-						local nodeChar = DB.getChild(nodeStep, ".....");
-						CharManager.completeCharacterArcStep(nodeChar)
+						window.onStageSelected();
 					end
 				</script>
-			</cycler_column>
+			</comboboxc_column>
 
-			<button_idelete name="idelete">
-				<anchored to="complete_label" width="20" height="20">
-					<top />
-					<right parent="" anchor="right" />
-				</anchored>
-				<editmode>steps_iedit</editmode>
-			</button_idelete>
-
-			<ft_column name="step" />
-
-			<line_column name="divider" />
+			<resize_charsheethelper />
+			<close_charsheethelper />
 		</sheetdata>
 	</windowclass>
 
 	<!-- TEMPLATES -->
-	<template name="arc_stage">
-		<genericcontrol>
-			<script>
-				function onHover(state)
-					window.onStageHover(getName(), state)
-				end
-				function onClickDown(button, x, y)
-					return button == 1;
-				end
-				function onClickRelease(button, x, y)
-					if button == 1 then
-						window.onStageClicked(getName())
-					end
-				end
-			</script>
-			<!-- <cursor >
-				<hover>hand</hover>
-			</cursor> -->
+	<template name="sub_arc_indented">
+		<sub_content_top>
+			<anchored>
+				<left offset="10" />
+			</anchored>
+		</sub_content_top>
+	</template>
+	<template name="anchor_content_right">
+		<genericcontrol name="contentanchor">
+			<anchored height="0">
+				<top offset="0" />
+				<left offset="0" />
+				<right offset="0" />
+			</anchored>
+			<disabled />
 		</genericcontrol>
 	</template>
-	<template name="arc_stage_left">
-		<arc_stage>
+	<template name="button_next_arc_phase">
+		<button_text_content_right_top>
+			<script>
+				function onButtonPress()
+					window.parentcontrol.window.nextPhase();
+				end
+			</script>
 			<anchored>
-				<top />
-				<left />
-				<right anchor="center" />
-				<bottom parent="icon" />
+				<top offset="5" />
+				<right offset="-15" />
 			</anchored>
-		</arc_stage>
-	</template>
-	<template name="arc_stage_right">
-		<arc_stage>
-			<anchored>
-				<top />
-				<left anchor="center" />
-				<right />
-				<bottom parent="icon" />
-			</anchored>
-		</arc_stage>
+		</button_text_content_right_top>
 	</template>
 </root>

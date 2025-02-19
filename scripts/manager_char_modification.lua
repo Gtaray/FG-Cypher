@@ -84,9 +84,9 @@ end
 
 function applyFloatingStatsAndEdge(rData)
 	local rActor = ActorManager.resolveActor(rData.nodeChar);
-	local nCurMight, nMaxMight = ActorManagerCypher.getStatPool(rActor, "might");
-	local nCurSpeed, nMaxSpeed = ActorManagerCypher.getStatPool(rActor, "speed");
-	local nCurIntellect, nMaxIntellect = ActorManagerCypher.getStatPool(rActor, "intellect");
+	local nCurMight, nMaxMight = CharStatManager.getStatPool(rActor, "might");
+	local nCurSpeed, nMaxSpeed = CharStatManager.getStatPool(rActor, "speed");
+	local nCurIntellect, nMaxIntellect = CharStatManager.getStatPool(rActor, "intellect");
 
 	if nMaxMight ~= rData.nMight then
 		local nMod = rData.nMight - nMaxMight;
@@ -146,13 +146,13 @@ end
 
 function applyStatModification(rActor, rData)
 	-- If this is a custom stat, then create the pool if it doesn't exist.
-	if not StringManager.contains({ "might", "speed", "intellect" }, rData.sStat) then
-		if not ActorManagerCypher.hasCustomStatPool(rActor, rData.sStat) then
-			ActorManagerCypher.createCustomStatPool(rActor, rData.sStat);
+	if not StringManager.contains({ "might", "speed", "intellect" , "" }, rData.sStat or "") then
+		if not CharStatManager.hasCustomStatPool(rActor, rData.sStat) then
+			CharStatManager.createCustomStatPool(rActor, rData.sStat);
 		end
 	end
 
-	ActorManagerCypher.addToStatMax(rActor, rData.sStat, rData.nMod);
+	CharStatManager.modifyStatMaxBase(rActor, rData.sStat, rData.nMod);
 
 	rData.sSummary = "Stats: " .. rData.sSummary;
 	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
@@ -160,9 +160,9 @@ end
 
 function applySkillModification(rActor, rData)
 	-- If this is a custom stat, then create the pool if it doesn't exist.
-	if not StringManager.contains({ "might", "speed", "intellect" }, rData.sStat) then
-		if not ActorManagerCypher.hasCustomStatPool(rActor, rData.sStat) then
-			ActorManagerCypher.createCustomStatPool(rActor, rData.sStat);
+	if not StringManager.contains({ "might", "speed", "intellect", "" }, rData.sStat or "") then
+		if not CharStatManager.hasCustomStatPool(rActor, rData.sStat) then
+			CharStatManager.createCustomStatPool(rActor, rData.sStat);
 		end
 	end
 
@@ -203,22 +203,18 @@ function applySkillModification(rActor, rData)
 end
 
 function applyDefenseModification(rActor, rData)
-	-- If this is a custom stat, then create the pool if it doesn't exist.
-	if not StringManager.contains({ "might", "speed", "intellect" }, rData.sStat) then
-		local node = ActorManagerCypher.getCustomStatPoolNode(rActor, rData.sStat, true);
-	
-		local nTraining = RollManager.convertTrainingStringToNumber(DB.getValue(node, "training", ""));
-		nTraining = nTraining + RollManager.processTrainingFromString(rData.sTraining)
-
-		-- Can't use the applyModToTrainingNode method because it saves the value as a number
-		-- not a string
-		DB.setValue(node, "training", "string", RollManager.resolveTraining(nTraining))
+	if not StringManager.contains({ "might", "speed", "intellect", "" }, rData.sStat or "") then
+		-- If this is a custom stat, then create the pool if it doesn't exist.
+		local node = CharStatManager.getCustomStatPoolNode(rActor, rData.sStat, true);
+		
+		CharModManager.applyModToTrainingNode(node, "training", rData.sTraining)
 		CharModManager.applyModToAssetNode(node, "assets", rData.nAsset);
 		CharModManager.applyModToModifierNode(node, "mod", rData.nMod);
+		return;
 	end
 
 	local charnode = ActorManager.getCreatureNode(rActor);
-	local sPath = "abilities." .. rData.sStat;
+	local sPath = "stats." .. rData.sStat;
 	local statnode = DB.getChild(charnode, sPath)
 	if not statnode then
 		return;
@@ -247,12 +243,10 @@ function applyArmorModification(rActor, rData)
 	-- First we handle the case where the damage type is empty
 	-- thus we place the armor in the character's Armor node
 	if (sDmgType or "") == "" then
-		nCurArmor = DB.getValue(charnode, "Armor.mod", 0);
-		DB.setValue(charnode, "Armor.mod", "number", nCurArmor + rData.nMod);
+		CharArmorManager.modifyArmorMod(rActor, rData.nMod)
 
 		if rData.bSuperArmor then
-			local nSuperArmor = DB.getValue(charnode, "Armor.superarmor", 0);
-			DB.setValue(charnode, "Armor.superarmor", "number", nSuperArmor + rData.nMod);
+			CharArmorManager.modifySuperArmor(rActor, rData.nMod);
 		end
 
 		CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
@@ -312,9 +306,9 @@ end
 function applyInitiativeModification(rActor, rData)
 	local charnode = ActorManager.getCreatureNode(rActor);
 
-	CharModManager.applyModToTrainingNode(charnode, "inittraining", rData.sTraining);
-	CharModManager.applyModToAssetNode(charnode, "initasset", rData.nAsset);
-	CharModManager.applyModToModifierNode(charnode, "initmod", rData.nMod);
+	CharStatManager.modifyInitiativeTraining(charnode, rData.sTraining)
+	CharStatManager.modifyInitiativeMod(charnode, rData.nMod);
+	CharStatManager.modifyInitiativeAssets(charnode, rData.nAsset);
 
 	rData.sSummary = "Initiative: " .. rData.sSummary;
 	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
@@ -375,7 +369,7 @@ end
 function applyRecoveryModification(rActor, rData)
 	local charnode = ActorManager.getCreatureNode(rActor);
 
-	CharModManager.applyModToModifierNode(charnode, "recoveryrollmod", rData.nMod);
+	CharHealthManager.modifyRecoveryRollMod(rActor, rData.nMod);
 
 	rData.sSummary = "Recovery: " .. rData.sSummary;
 	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
@@ -386,9 +380,9 @@ function applyEdgeModification(rActor, rData)
 
 	local statnode;
 	if not StringManager.contains({ "might", "speed", "intellect" }, rData.sStat) then
-		statnode = ActorManagerCypher.getCustomStatPoolNode(rActor, rData.sStat, true);
+		statnode = CharStatManager.getCustomStatPoolNode(rActor, rData.sStat, true);
 	else 
-		statnode = DB.getChild(charnode, "abilities." .. rData.sStat);
+		statnode = DB.getChild(charnode, "stats." .. rData.sStat);
 	end
 
 	if not statnode then
@@ -404,7 +398,7 @@ end
 function applyEffortModification(rActor, rData)
 	local charnode = ActorManager.getCreatureNode(rActor);
 
-	CharModManager.applyModToModifierNode(charnode, "effort", rData.nMod);
+	CharModManager.applyModToModifierNode(charnode, "effort.base", rData.nMod);
 
 	rData.sSummary = "Effort: " .. rData.sSummary;
 	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
@@ -426,18 +420,14 @@ function applyItemModification(rActor, rData)
 end
 
 function applyCypherLimitModification(rActor, rData)
-	local charnode = ActorManager.getCreatureNode(rActor);
-
-	CharModManager.applyModToModifierNode(charnode, "cypherlimit", rData.nMod);
+	CharInventoryManager.modifyCypherLimit(rActor, rData.nMod)
 
 	rData.sSummary = "Cypher Limit: " .. rData.sSummary;
 	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
 end
 
 function applyArmorEffortPenaltyModification(rActor, rData)
-	local charnode = ActorManager.getCreatureNode(rActor);
-
-	CharModManager.applyModToModifierNode(charnode, "ArmorSpeedPenalty.mod", rData.nMod);
+	CharArmorManager.modifyEffortPenaltyMod(rActor, rData.nMod);
 
 	rData.sSummary = "Armor: " .. rData.sSummary;
 	CharTrackerManager.addToTracker(rActor, rData.sSummary, rData.sSource);
@@ -449,16 +439,7 @@ function applyModToTrainingNode(node, sPath, sTraining)
 		return;
 	end
 
-	local nCurTraining = DB.getValue(node, sPath, 1);
-	nCurTraining = nCurTraining + RollManager.processTraining(
-		sTraining == "inability",
-		sTraining == "trained",
-		sTraining == "specialized"
-	)
-
-	-- Clamp training between 0 and 3
-	nCurTraining = math.min(math.max(nCurTraining, 0), 3);
-	DB.setValue(node, sPath, "number", nCurTraining);
+	DB.setValue(node, sPath, "number", TrainingManager.modifyTraining(DB.getValue(node, sPath, 1), sTraining));
 end
 function applyModToAssetNode(node, sPath, nAsset)
 	if (nAsset or 0) == 0 then

@@ -1,9 +1,11 @@
 OOB_MSG_TYPE_INITIATEDEFPRMOPT = "initiatedefprompt";
-OOB_MSGTYPE_PROMPTDEFENSE = "promptdefense";
+OOB_MSG_TYPE_ATKEXTRAEFFECT = "attackextraeffect";
+OOB_MSG_TYPE_PROMPTDEFENSE = "promptdefense";
 
 function onInit()
 	OOBManager.registerOOBMsgHandler(OOB_MSG_TYPE_INITIATEDEFPRMOPT, handleInitiateDefensePrompt);
-	OOBManager.registerOOBMsgHandler(OOB_MSGTYPE_PROMPTDEFENSE, handlePromptDefenseRoll);
+	OOBManager.registerOOBMsgHandler(OOB_MSG_TYPE_PROMPTDEFENSE, handlePromptDefenseRoll);
+	OOBManager.registerOOBMsgHandler(OOB_MSG_TYPE_ATKEXTRAEFFECT, handleExtraEffectOnAttack);
 end
 
 function getUser(rPlayer)
@@ -17,6 +19,64 @@ end
 
 function doesUserOwnIdentity(rPlayer)
 	return Session.UserName == getUser(rPlayer)
+end
+
+-------------------------------------------------------------------------------
+-- MAJOR AND MINOR EFFECTS ON ATTACKS
+-------------------------------------------------------------------------------
+function promptForMinorEffectOnAttack(rPlayer)
+	local msgOOB = {};
+	msgOOB.type = OOB_MSG_TYPE_ATKEXTRAEFFECT;
+	msgOOB.nValue = 3;
+
+	if not Session.IsHost then
+		PromptManager.handleExtraEffectOnAttack(msgOOB);
+		return;
+	end
+
+	local sUser = getUser(rPlayer);
+	Comm.deliverOOBMessage(msgOOB, sUser);
+end
+
+function promptForMajorEffectOnAttack(rPlayer)
+	local msgOOB = {};
+	msgOOB.type = OOB_MSG_TYPE_ATKEXTRAEFFECT;
+	msgOOB.nValue = 4;
+
+	if not Session.IsHost then
+		PromptManager.handleExtraEffectOnAttack(msgOOB);
+		return;
+	end
+
+	local sUser = getUser(rPlayer);
+	Comm.deliverOOBMessage(msgOOB, sUser);
+end
+
+function handleExtraEffectOnAttack(msgOOB)
+	local tData = {
+		sTitleRes = "attack_prompt_title",
+		fnCallback = PromptManager.applyExtraEffectToDamage,
+		nValue = tonumber(msgOOB.nValue)
+	};
+	if tData.nValue == 3 then
+		tData.sText = Interface.getString("attack_prompt_minoreffect");
+	elseif tData.nValue == 4 then
+		tData.sText = Interface.getString("attack_prompt_majoreffect");
+	end
+
+	if #Interface.getWindows("dialog_yesno") == 0 then
+		DialogManager.openDialog("dialog_yesno", tData);
+	end
+end
+
+function applyExtraEffectToDamage(sResult, tData)
+	if sResult ~= "ok" then
+		return;
+	end
+
+	if ModifierStack.isEmpty() then
+		ModifierStack.addSlot("", tData.nValue);
+	end
 end
 
 -------------------------------------------------------------------------------
@@ -66,8 +126,8 @@ function handleInitiateDefensePrompt(msgOOB)
 	end
 
 	-- Change the type and forward the OOB msg
-	msgOOB.type = OOB_MSGTYPE_PROMPTDEFENSE;
-	Comm.deliverOOBMessage(msgOOB, sUser)
+	msgOOB.type = OOB_MSG_TYPE_PROMPTDEFENSE;
+	Comm.deliverOOBMessage(msgOOB, sUser);
 end
 
 function promptDefenseRoll(rSource, rPlayer, rResult)
@@ -75,7 +135,7 @@ function promptDefenseRoll(rSource, rPlayer, rResult)
 	local sUser = getUser(rPlayer);
 
 	local msgOOB = {};
-	msgOOB.type = OOB_MSGTYPE_PROMPTDEFENSE;
+	msgOOB.type = OOB_MSG_TYPE_PROMPTDEFENSE;
 	msgOOB.sAttackerNode = ActorManager.getCTNodeName(rSource);
 	msgOOB.sTargetNode = ActorManager.getCTNodeName(rPlayer);
 	msgOOB.nDifficulty = rResult.nDifficulty;
@@ -114,7 +174,7 @@ function getActionFromOobMsg(rSource, rTarget, msgOOB)
 	rAction.nDifficulty = tonumber(msgOOB.nDifficulty) or 0;
 	rAction.sStat = msgOOB.sStat;
 	rAction.rTarget = rTarget
-	rAction.sTraining, rAction.nAssets, rAction.nModifier = ActorManagerCypher.getDefense(rSource, rAction.sStat)
+	rAction.nTraining, rAction.nAssets, rAction.nModifier = CharStatManager.getDefense(rSource, rAction.sStat)
 	rAction.label = StringManager.capitalize(rAction.sStat);
 	rAction.sAttackRange = msgOOB.sAttackRange or "";
 
@@ -134,10 +194,147 @@ end
 -------------------------------------------------------------------------------
 -- CHARACTER ARCS
 -------------------------------------------------------------------------------
+function promptCharacterArcStart(nodeArc)
+	local nodeChar = DB.getChild(nodeArc, "...");
+	local nCost = CharArcManager.getCostToBuyNewCharacterArc(nodeChar);
+
+	-- If the arc is free, just add it
+	if nCost == 0 then
+		return true;
+	end
+
+	local data = {
+		nodeChar = nodeChar,
+		nodeArc = nodeArc,
+		sTitleRes = "arc_start_prompt_window_title",
+		sText = string.format(Interface.getString("arc_start_prompt_text"), nCost),
+		fnCallback = PromptManager.handleStartCharacterArcPromptResult
+	}
+
+	local window = Interface.openWindow("dialog_yesno", nodeArc);
+	if window then
+		window.setData(data)
+
+		-- Don't want to progress any further, so we terminate the stack here
+		return false;
+	end
+
+	-- Failed to prompt somehow? Just give them the arc
+	return true;
+end
+function handleStartCharacterArcPromptResult(sResult, tData)
+	if sResult == "ok" then
+		CharArcManager.buyNewCharacterArc(tData.nodeChar, tData.nodeArc);
+	end
+end
+
+function promptCharacterArcStep(nodeStep)
+	local nXp = OptionsManagerCypher.getArcStepXpReward();
+
+	-- If the reward is nothing, then just give it to them.
+	if nXp == 0 then
+		return true;
+	end
+	
+	local nodeArc = DB.getChild(nodeStep, "...");
+	local nodeChar = DB.getChild(nodeArc, "...");
+	local data = {
+		nodeChar = nodeChar,
+		nodeArc = nodeArc,
+		nodeStep = nodeStep,
+		sTitleRes = "arc_step_prompt_window_title",
+		sText = string.format(Interface.getString("arc_step_prompt_text"), nXp),
+		fnCallback = PromptManager.handleCharacterArcStepPromptResult
+	}
+
+	local window = Interface.openWindow("dialog_yesno", nodeArc);
+	if window then
+		window.setData(data)
+		return false;
+	end
+	return true;
+end
+function handleCharacterArcStepPromptResult(sResult, tData)
+	if sResult == "ok" then
+		CharArcManager.completeCharacterArcStep(tData.nodeChar, tData.nodeStep);
+	end
+end
+
+function promptCharacterArcProgress(nodeArc)
+	local nodeChar = DB.getChild(nodeArc, "...");
+	local data = {
+		nodeChar = nodeChar,
+		nodeArc = nodeArc,
+		sTitleRes = "arc_progress_prompt_window_title",
+		sTextRes = "arc_progress_prompt_text",
+		fnCallback = PromptManager.handleProgressCharacterArcPromptResult
+	}
+
+	local window = Interface.openWindow("dialog_yesno", nodeArc);
+	if window then
+		window.setData(data)
+
+		-- Don't want to progress any further, so we terminate the stack here
+		return false;
+	end
+	return true;
+end
+function handleProgressCharacterArcPromptResult(sResult, tData)
+	if sResult == "ok" then
+		CharArcManager.completeCharacterArcProgress(tData.nodeChar, tData.nodeArc);
+	end
+end
+
 function promptCharacterArcClimax(nodeArc)
-	local window = Interface.openWindow("prompt_arc_climax", nodeArc);
+	local nodeChar = DB.getChild(nodeArc, "...");
+	local data = {
+		nodeChar = nodeChar,
+		nodeArc = nodeArc,
+		sTitleRes = "arc_climax_prompt_window_title",
+		sTextRes = "arc_climax_prompt_text",
+		fnCallback = PromptManager.handleCharacterArcClimaxPromptResult
+	}
+
+	local window = Interface.openWindow("dialog_yesno", nodeArc);
+	if window then
+		window.setData(data)
+
+		-- Don't want to progress any further, so we terminate the stack here
+		return false;
+	end
+	return true;
+end
+function handleCharacterArcClimaxPromptResult(sResult, tData)
+	if sResult == "cancel" then
+		CharArcManager.completeCharacterArcClimax(tData.nodeChar, tData.nodeArc, false);
+	elseif sResult == "ok" then
+		CharArcManager.completeCharacterArcClimax(tData.nodeChar, tData.nodeArc, true);
+	end
 end
 
 function promptCharacterArcResolution(nodeArc)
-	local window = Interface.openWindow("prompt_arc_resolution", nodeArc);
+	local nodeChar = DB.getChild(nodeArc, "...");
+	local data = {
+		nodeChar = nodeChar,
+		nodeArc = nodeArc,
+		sTitleRes = "arc_resolution_prompt_window_title",
+		sTextRes = "arc_resolution_prompt_text",
+		fnCallback = PromptManager.handleCharacterArcResolutionPromptResult
+	}
+
+	local window = Interface.openWindow("dialog_yesno", nodeArc);
+	if window then
+		window.setData(data)
+
+		-- Don't want to progress any further, so we terminate the stack here
+		return false;
+	end
+	return true;
+end
+function handleCharacterArcResolutionPromptResult(sResult, tData)
+	if sResult == "cancel" then
+		CharArcManager.completeCharacterArcResolution(tData.nodeChar, tData.nodeArc, false);
+	elseif sResult == "ok" then
+		CharArcManager.completeCharacterArcResolution(tData.nodeChar, tData.nodeArc, true);
+	end
 end

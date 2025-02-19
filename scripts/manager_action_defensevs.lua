@@ -131,7 +131,7 @@ function applyRoll(rSource, rTarget, rRoll)
 	rAction.nDifficulty = rRoll.nDifficulty;
 	rAction.sStat = rRoll.sDefenseStat;
 	rAction.rTarget = rSource;
-	rAction.sTraining, rAction.nAssets, rAction.nModifier = ActorManagerCypher.getDefense(rTarget, rRoll.sDefenseStat);
+	rAction.nTraining, rAction.nAssets, rAction.nModifier = CharStatManager.getDefense(rTarget, rRoll.sDefenseStat);
 	rAction.sAttackRange = rRoll.sAttackRange;
 	rAction.sAttackStat = rRoll.sStat
 

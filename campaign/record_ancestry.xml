@@ -16,7 +16,7 @@
 		</tab>
 		<tab merge="add">
 			<name>main</name>
-			<resource>tab_other</resource>
+			<resource>tab_features</resource>
 			<class>ancestry_main</class>
 			<embed />
 		</tab>

@@ -29,7 +29,7 @@ function getRoll(rActor, rAction)
 	rRoll.sDesc = ActionSkill.getRollLabel(rActor, rAction, rRoll)
 
 	rRoll.nDifficulty = rAction.nDifficulty or 0;
-	rRoll.sTraining = rAction.sTraining;
+	rRoll.nTraining = rAction.nTraining;
 	rRoll.nAssets = rAction.nAssets or 0;
 	rRoll.nEffort = rAction.nEffort or 0;
 	rRoll.nEase = rAction.nEase or 0;
@@ -84,7 +84,7 @@ function modRoll(rSource, rTarget, rRoll)
 	-- Process Lucky (advantage / disadvantage)
 	local bAdv, bDis = RollManager.processAdvantage(rSource, rTarget, rRoll, aFilter)
 
-	RollManager.encodeTraining(rRoll.sTraining, rRoll);
+	RollManager.encodeTraining(rRoll.nTraining, rRoll);
 	RollManager.encodeEffort(rRoll.nEffort, rRoll);
 	RollManager.encodeAssets(rRoll.nAssets, rRoll);
 	RollManager.encodeEaseHindrance(rRoll, rRoll.nEase, rRoll.nHinder);
@@ -95,7 +95,7 @@ function modRoll(rSource, rTarget, rRoll)
 	end
 	RollManager.calculateDifficultyForRoll(rSource, rTarget, rRoll);
 
-	if rRoll.nConditionMod > 0 then
+	if (rRoll.nConditionMod or 0) > 0 then
 		rRoll.sDesc = string.format("%s [EFFECTS %s]", rRoll.sDesc, rRoll.nConditionMod)
 	end
 	RollManager.convertBooleansToNumbers(rRoll);
@@ -215,8 +215,8 @@ function rebuildRoll(rSource, rTarget, rRoll)
 	if not rRoll.nConditionMod then
 		rRoll.nConditionMod = RollManager.decodeConditionMod(rRoll, true);
 	end
-	if not rRoll.sTraining then
-		rRoll.sTraining = RollManager.decodeTraining(rRoll, true);
+	if not rRoll.nTraining then
+		rRoll.nTraining = RollManager.decodeTraining(rRoll, true);
 	end
 	if rRoll.bMajorEffect == nil then
 		rRoll.bMajorEffect = rRoll.sDesc:match("%[MAJOR EFFECT%]") ~= nil;

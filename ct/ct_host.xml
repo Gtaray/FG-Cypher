@@ -107,6 +107,11 @@
 					<right anchor="left" relation="relative" offset="-10" />
 				</anchored>
 				<min>0</min>
+				<script>
+					function update()
+						window.onHealthChanged();
+					end
+				</script>
 			</number_ct_crosslink>
 			<number_ct_crosslink name="speedpool" insertbefore="initresult">
 				<anchored to="rightanchor" width="22" height="20">
@@ -114,6 +119,11 @@
 					<right anchor="left" relation="relative" offset="-10" />
 				</anchored>
 				<min>0</min>
+				<script>
+					function update()
+						window.onHealthChanged();
+					end
+				</script>
 			</number_ct_crosslink>
 			<number_ct_crosslink name="mightpool" insertbefore="initresult">
 				<anchored to="rightanchor" width="22" height="20">
@@ -121,6 +131,11 @@
 					<right anchor="left" relation="relative" offset="-10" />
 				</anchored>
 				<min>0</min>
+				<script>
+					function update()
+						window.onHealthChanged();
+					end
+				</script>
 			</number_ct_crosslink>
 			<button_ct_damagetrack name="damagetrack" source="wounds" insertbefore="initresult">
 				<anchored to="rightanchor" width="22" height="20">

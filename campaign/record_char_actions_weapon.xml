@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- 
+  Please see the license.html file included with this distribution for 
+  attribution and copyright information.
+-->
+
+<root>
+	<windowclass name="char_weapon">
+		<margins control="0,0,0,10" />
+		<script file="campaign/scripts/char_weapon.lua" />
+		<sheetdata>
+			<anchor_listitem_left />
+			<anchor_listitem_right />
+
+			<hnx name="carried" />
+			<button_charweaponequipped name="equipped" />
+			
+			<button_listitem_idelete name="idelete">
+				<editmode>actions_iedit</editmode>
+			</button_listitem_idelete>
+			<link_listitem_right name="itemlink" />
+			<buttonc_listitem_right name="activatedetail">
+				<icon normal="button_details" pressed="button_details_down" />
+				<script>
+					function onButtonPress()
+						Interface.openWindow("char_weapon_editor", window.getDatabaseNode());
+					end
+				</script>
+			</buttonc_listitem_right>
+
+			<stringc_listitem_right_static name="damageview">
+				<anchored width="90" height="-1" />
+				<frame name="fieldlight" offset="10,10,10,10" />
+				<multilinespacing>20</multilinespacing>
+				<cursor hover="hand" />
+				<script>
+					function onInit()
+						addBitmapWidget({ icon = "field_rollable", position="bottomleft", x = -4, y = 2 });
+						setHoverCursor("hand");
+					end
+					function onDoubleClick(x,y)
+						return window.onDamageAction();
+					end			
+					function onDragStart(button, x, y, draginfo)
+						return window.onDamageAction(draginfo);
+					end
+				</script>
+			</stringc_listitem_right_static>
+
+			<stringc_listitem_right_static name="attackview">
+				<anchored width="80" height="-1" />
+				<frame name="fieldlight" offset="10,10,10,10" />
+				<multilinespacing>20</multilinespacing>
+				<cursor hover="hand" />
+				<script>
+					function onInit()
+						addBitmapWidget({ icon = "field_rollable", position="bottomleft", x = -4, y = 2 });
+						setHoverCursor("hand");
+					end
+					function onDoubleClick(x,y)
+						return window.onAttackAction();
+					end			
+					function onDragStart(button, x, y, draginfo)
+						return window.onAttackAction(draginfo);
+					end
+				</script>
+			</stringc_listitem_right_static>
+
+			<string_listitem_center_underline name="name" />
+
+			<basicnumber name="ammoperattack">
+				<anchored width="30" height="20">
+					<top parent="damageview" anchor="bottom" relation="current" offset="8" />
+					<right parent="" offset="-10" />
+				</anchored>
+				<default>1</default>
+				<min>1</min>
+			</basicnumber>
+			<label name="label_ammoperattack">
+				<anchored to="ammoperattack" position="lefthigh" offset="5,0" width="90" />
+				<static textres="char_label_ammoperattack" />
+			</label>
+
+			<label name="label_ammo">
+				<anchored width="37">
+					<top parent="damageview" anchor="bottom" relation="relative" offset="8" />
+					<left offset="15" />
+				</anchored>
+				<static textres="char_label_weaponammo" />
+			</label>
+			<basicnumber name="maxammo">
+				<anchored to="label_ammo" position="righthigh" width="30" height="20" />
+				<min>0</min>
+				<max>100</max>
+			</basicnumber>
+			<state_charammocounter name="ammocounter">
+				<anchored to="maxammo" position="righthigh" offset="8,0" />
+			</state_charammocounter>
+		</sheetdata>
+	</windowclass>
+
+	<windowclass name="char_weapon_editor" copy="charsheethelper_base">
+		<sizelimits>
+			<minimum width="500" height="450" />
+		</sizelimits>
+		<helplinkres>help_charsheet_weapon</helplinkres>
+		<sheetdata>
+			<windowtitlebar_charsheethelper name="title">
+				<prefix>char_title_attack_editor</prefix>
+			</windowtitlebar_charsheethelper>
+
+			<sub_content_framed_groupbox name="main">
+				<class>char_weapon_editor_main</class>
+			</sub_content_framed_groupbox>
+			<scrollbar_content_main />
+		</sheetdata>
+	</windowclass>
+	
+	<windowclass name="char_weapon_editor_main">
+		<script file="campaign/scripts/pc_weapon_editor_main.lua" />
+		<sheetdata>
+			<anchor_column name="columnanchor" />
+
+			<!-- PROPERTIES -->
+			<header_column name="header_properties">
+				<static textres="power_header_properties" />
+				<center />
+			</header_column>
+
+			<label_column name="itemlink_label">
+				<static textres="char_label_itemlink" />
+			</label_column>
+			<string_column name="itemname">
+				<anchored>
+					<top parent="columnanchor" anchor="bottom" relation="current" offset="7" />
+					<right parent="" offset="-35" />
+				</anchored>
+				<empty textres="char_itemlink_empty" />
+				<readonly />
+			</string_column>
+			<linkfield_column name="itemlink" />
+
+			<label_column name="type_label">
+				<static textres="char_label_attacktype" />
+			</label_column>
+			<cycler_column name="type">
+				<script>
+					function onValueChanged()
+						if super and super.onValueChanged then
+							super.onValueChanged();
+						end
+						window.onAttackTypeChanged();
+					end
+				</script>
+				<anchored width="80" />
+				<parameters>
+					<labelsres>char_label_attacktype_magic</labelsres>
+					<values>magic</values>
+					<defaultlabelres>char_label_attacktype_weapon</defaultlabelres>
+				</parameters>
+			</cycler_column>
+
+			<label_column name="weapontype_label">
+				<static textres="char_label_weapontype" />
+			</label_column>
+			<cycler_column name="weapontype">
+				<script>
+					function onValueChanged()
+						if super and super.onValueChanged then
+							super.onValueChanged();
+						end
+						local node = window.getDatabaseNode();
+						local sWeaponType = DB.getValue(getDatabaseNode());
+						local nDmg = DB.getValue(node, "damage", 0);
+						if sWeaponType == "light" and (nDmg == 0 or nDmg == 4 or nDmg == 6) then
+							DB.setValue(node, "damage", "number", 2);
+						elseif sWeaponType == "medium" and (nDmg == 0 or nDmg == 2 or nDmg == 6) then
+							DB.setValue(node, "damage", "number", 4);
+						elseif sWeaponType == "heavy" and (nDmg == 0 or nDmg == 2 or nDmg == 4) then
+							DB.setValue(node, "damage", "number", 6);
+						end
+					end
+				</script>
+				<anchored width="80" />
+				<parameters>
+					<labelsres>char_label_weapontype_light|char_label_weapontype_medium|char_label_weapontype_heavy</labelsres>
+					<values>light|medium|heavy</values>
+					<defaultlabelres>dash</defaultlabelres>
+				</parameters>
+			</cycler_column>
+
+			<label_column name="useammo_label">
+				<static textres="char_label_useammo" />
+			</label_column>
+			<cycler_column name="useammo">
+				<anchored width="80" />
+				<parameters>
+					<labelsres>option_val_yes</labelsres>
+					<values>yes</values>
+					<defaultlabelres>option_val_no</defaultlabelres>
+				</parameters>
+			</cycler_column>
+
+			<!-- ATTACK -->
+			<header_column name="header_attack">
+				<static textres="power_header_attack" />
+				<center />
+			</header_column>
+
+			<!-- Stat line -->
+			<label_column name="attacktext1">
+				<anchored width="45">
+					<top offset="20" />
+				</anchored>
+				<static textres="power_label_attack_text_1" />
+			</label_column>
+			<column_stat_custom name="stat">
+				<anchored to="attacktext1" width="70" height="20">
+					<top offset="20"/>
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<tooltip textres="power_tooltip_attackstat" />
+			</column_stat_custom>
+			<label_fieldtop>
+				<anchored to="stat" />
+				<static textres="power_label_attackstat" />
+			</label_fieldtop>
+			<label name="attacktext2">
+				<anchored to="stat" width="125">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_attack_text_2" />
+			</label>
+			<cycler_stat_custom name="defensestat">
+				<anchored to="stat" width="70" height="20">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<tooltip textres="power_tooltip_defensestat" />
+			</cycler_stat_custom>
+			<label_fieldtop>
+				<anchored to="defensestat" />
+				<static textres="power_label_defensestat" />
+			</label_fieldtop>
+			<label name="attacktext3">
+				<anchored to="stat" width="100">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_attack_text_3" />
+			</label>
+
+			<!-- Modifiers line -->
+			<label_column name="label_modifiers">
+				<anchored>
+					<top offset="20" />
+				</anchored>
+				<static textres="power_label_modifiers" />
+			</label_column>
+			<genericcontrol name="modanchor">
+				<anchored height="30" width="0">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="25" />
+					<left offset="97" />
+				</anchored> 
+				<disabled />
+			</genericcontrol>
+			<button_rolltraining name="training" />
+			<label_fieldtop name="label_training">
+				<anchored to="training">
+					<left offset="-20" />
+					<right offset="20" />
+				</anchored>
+				<static textres="power_label_training" />
+			</label_fieldtop>
+			<label_fieldtop>
+				<anchored to="training">
+					<left offset="-20" />
+					<right offset="20" />
+				</anchored>
+				<static textres="power_label_training" />
+			</label_fieldtop>
+			<number_rollassets name="asset">
+				<anchored to="training">
+					<left offset="30" />
+				</anchored>
+			</number_rollassets>
+			<label_fieldtop>
+				<anchored to="asset" />
+				<static textres="power_label_asset" />
+			</label_fieldtop>
+			<number_rollmod name="modifier">
+				<anchored to="training" />
+			</number_rollmod>
+			<label_fieldtop>
+				<anchored to="modifier" />
+				<static textres="power_label_modifier" />
+			</label_fieldtop>
+
+			<label_column name="atkrange_label">
+				<static textres="power_label_attackrange" />
+			</label_column>
+			<column_range name="atkrange">
+				<anchored width="80" />
+			</column_range>
+
+			<!-- DAMAGE -->
+			<header_column name="header_damage">
+				<static textres="power_header_damage" />
+				<center />
+			</header_column>
+
+			<label_column name="damagetext1">
+				<anchored width="21">
+					<top offset="20" />
+				</anchored>
+				<static textres="power_label_damage_text_1" />
+			</label_column>
+			<!-- Stat2 is only used for display purposes, and is edited in the attack section -->
+			<column_stat_custom name="stat2">
+				<script>
+					function onInit()
+						super.onInit();
+						DB.addHandler(DB.getPath(window.getDatabaseNode(), "stat"), "onUpdate", updateValue)
+						updateValue();
+					end
+					function onClose()
+						super.onClose();
+						DB.removeHandler(DB.getPath(window.getDatabaseNode(), "stat"), "onUpdate", updateValue)
+					end
+					function updateValue()
+						node = window.getDatabaseNode();
+						local sVal = DB.getValue(node, "stat", "");
+						DB.setValue(node, "stat2", "string", sVal);
+					end
+				</script>
+				<anchored width="65">
+					<top offset="20" />
+					<left parent="damagetext1" anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<tooltip textres="power_tooltip_damagestat" />
+				<readonly />
+			</column_stat_custom>
+			<label_fieldtop name="stat_label">
+				<anchored to="stat2" />
+				<static textres="power_label_statpool" />
+			</label_fieldtop>
+			<label name="damagetext2">
+				<anchored to="stat2" width="42">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_damage_text_2" />
+			</label>
+			<basicnumber name="damage">
+				<anchored to="stat2" width="25" height="20">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+			</basicnumber>
+			<label_fieldtop name="damage_label">
+				<anchored to="damage" />
+				<static textres="power_label_damage" />
+			</label_fieldtop>
+			<label name="damagetext3">
+				<anchored to="stat2" width="138">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_damage_text_3" />
+			</label>
+			<cycler_stat_custom name="damagestat">
+				<anchored to="stat2" width="65" height="20">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<tooltip textres="power_tooltip_damagestat" />
+			</cycler_stat_custom>
+			<label_fieldtop name="damagestat_label">
+				<anchored to="damagestat" />
+				<static textres="power_label_damagestat" />
+			</label_fieldtop>
+			<label_column name="damagetype_label">
+				<static textres="power_label_damagetype" />
+			</label_column>
+			<stringu_damagetype_autocomplete name="damagetype">
+				<anchored height="20">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
+					<left offset="97" />
+					<right offset="-10" />
+				</anchored>
+			</stringu_damagetype_autocomplete>
+			<label_column name="pierce_label">
+				<static textres="power_label_pierce_armor" />
+			</label_column>
+			<cycler_column_pierce name="pierce">
+			</cycler_column_pierce>
+			<number_pierce_amount name="pierceamount">
+			</number_pierce_amount>
+
+			<!-- COST -->
+			<header_column name="header_cost">
+				<static textres="power_header_cost" />
+				<center />
+			</header_column>
+
+			<label_column name="costtext1">
+				<anchored>
+					<top offset="20" />
+				</anchored>
+				<static textres="power_label_cost_texft_1" />
+			</label_column>
+			<number_column name="cost">
+				<anchored to="costtext1" width="25" height="20">
+					<top offset="20" />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<min>0</min>
+			</number_column>
+			<label_fieldtop>
+				<anchored to="cost" />
+				<static textres="power_label_cost" />
+			</label_fieldtop>
+			<label name="costtext2">
+				<anchored to="cost" width="93">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_cost_texft_2" />
+			</label>
+			<button_coststat name="coststat">
+				<anchored to="cost" width="70" height="20">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<tooltip textres="power_tooltip_coststat" />
+			</button_coststat>
+			<label_fieldtop name="coststat_label">
+				<anchored to="coststat" />
+				<static textres="power_label_coststat" />
+			</label_fieldtop>
+			<label name="costtext3">
+				<anchored to="cost" width="40">
+					<top />
+					<left anchor="right" relation="relative" offset="10" />
+				</anchored>
+				<static textres="power_label_cost_texft_3" />
+			</label>
+		</sheetdata>
+	</windowclass>
+</root>

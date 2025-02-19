@@ -13,8 +13,6 @@ function onInit()
 	DB.addHandler(DB.getPath(getDatabaseNode(), "abilitylist.*"), "onDelete", onAbilityDeleted)
 	DB.addHandler(DB.getPath(getDatabaseNode(), "attacklist.*"), "onDelete", onAttackDeleted)
 
-	self.migrateAttackTraining();
-
 	WindowTabManager.populate(self);
 end
 
@@ -28,7 +26,7 @@ function onMenuSelection(selection, subselection)
 		if subselection == 6 then
 			local nodeChar = getDatabaseNode();
 			ChatManager.Message(Interface.getString("message_restovernight"), true, ActorManager.resolveActor(nodeChar));
-			CharManager.rest(nodeChar);
+			CharHealthManager.rest(nodeChar);
 		end
 	end
 end
@@ -45,26 +43,9 @@ function onDrop(x, y, draginfo)
 end
 
 function onAbilityDeleted(abilitynode)
-	CharManager.removeItemLinkedToRecord(abilitynode);
+	CharInventoryManager.getEquippedWeapon(abilitynode);
 end
 
 function onAttackDeleted(attacknode)
-	CharManager.removeItemLinkedToRecord(attacknode);
-end
-
-function migrateAttackTraining()
-	for _, attacknode in ipairs(DB.getChildList(getDatabaseNode(), "attacklist")) do
-		local vTraining = DB.getValue(attacknode, "training");
-		if type(vTraining) == "number" then
-			DB.deleteChild(attacknode, "training");
-
-			if vTraining == 2 then
-				DB.setValue(attacknode, "training", "string", "trained");
-			elseif vTraining == 3 then
-				DB.setValue(attacknode, "training", "string", "specialized");
-			elseif vTraining == 0 then
-				DB.setValue(attacknode, "training", "string", "inability");
-			end
-		end
-	end
+	CharInventoryManager.getEquippedWeapon(attacknode);
 end

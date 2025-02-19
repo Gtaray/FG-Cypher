@@ -37,22 +37,31 @@
 
 	<windowclass name="power_action_editor_stat">
 		<script>
-			function updateCostType()
+			function onInit()
 				local sSource = PowerManager.getActionNodeSource(getDatabaseNode());
 				local bNPC = sSource == "npc";
 
-				easetext1.setVisible(not bNPC);
+				training.setVisible(not bNPC);
+				label_training.setVisible(not bNPC);
+				asset.setVisible(not bNPC);
+				label_asset.setVisible(not bNPC);
+				modifier.setVisible(not bNPC);
+				label_modifier.setVisible(not bNPC);
 				ease.setVisible(not bNPC);
 				label_ease.setVisible(not bNPC);
-				easetext2.setVisible(not bNPC);
-				hindertext1.setVisible(not bNPC);
 				hinder.setVisible(not bNPC);
 				label_hinder.setVisible(not bNPC);
-				hindertext2.setVisible(not bNPC);
-				difficulty.setVisible(not bNPC);
-				difficulty_label.setVisible(not bNPC);
 
+				level.setVisible(bNPC);
+				label_level.setVisible(bNPC);
+
+				updateCostType();
+			end
+			function updateCostType()
 				local bFixed = DB.getValue(getDatabaseNode(), "costtype", "") == "fixed";
+				local sSource = PowerManager.getActionNodeSource(getDatabaseNode());
+				local bNPC = sSource == "npc";
+
 				header_cost.setVisible(not bNPC);
 				costtype_label.setVisible(not bNPC);
 				costtype.setVisible(not bNPC);
@@ -87,6 +96,7 @@
 				<center />
 			</header_column>
 
+			<!-- Roll Info -->
 			<cycler_stat_custom name="stat">
 				<anchored width="80" height="20">
 					<top parent="columnanchor" anchor="bottom" relation="relative" offset="20" />
@@ -107,33 +117,7 @@
 				<tooltip textres="power_tooltip_skill_description" />
 			</label_fieldtop>
 
-			<cycler_training name="training">
-				<anchored to="skill" position="righthigh" offset="10,0" width="80" height="20" />
-			</cycler_training>
-			<label_fieldtop>
-				<anchored to="training" />
-				<static textres="power_label_training" />
-			</label_fieldtop>
-
-			<basicnumber name="asset">
-				<anchored to="training" position="righthigh" offset="10,0" width="25" height="20" />
-				<hideonvalue value="0" />
-			</basicnumber>
-			<label_fieldtop>
-				<anchored to="asset" />
-				<static textres="power_label_asset" />
-			</label_fieldtop>
-
-			<basicnumber name="modifier">
-				<anchored to="asset" position="righthigh" offset="10,0" width="25" height="20" />
-				<tooltip textres="power_tooltip_modifier" />
-				<hideonvalue value="0" />
-			</basicnumber>
-			<label_fieldtop>
-				<anchored to="modifier" />
-				<static textres="power_label_modifier" />
-			</label_fieldtop>
-
+			<!-- Custom stat -->
 			<label_column name="stat_custom_label">
 				<static textres="power_label_roll_customstat" />
 			</label_column>
@@ -142,74 +126,72 @@
 				<tooltip textres="power_tooltip_roll_customstat" />
 			</column_custom_stat_field>
 
-			<label_column name="easetext1">
-				<script>
-					function onInit()
-						setValue(string.format(Interface.getString("power_label_leveladjust_text_1"), "Ease"))
-					end
-				</script>
+			<!-- Modifiers -->
+			<label_column name="label_modifiers">
 				<anchored>
-					<top offset="20" relation="relative" />
+					<top offset="20" />
 				</anchored>
-				<static textres="power_label_leveladjust_text_1" />
+				<static textres="power_label_modifiers" />
 			</label_column>
-			<number_column name="ease">
-				<anchored width="30" height="20">
-					<top offset="-20" />
-					<left parent="easetext1" anchor="right" relation="relative" offset="10" />
+			<genericcontrol name="modanchor">
+				<anchored height="30" width="0">
+					<top parent="columnanchor" anchor="bottom" relation="relative" offset="25" />
+					<left offset="97" />
+				</anchored> 
+				<disabled />
+			</genericcontrol>
+			<button_rolltraining name="training" />
+			<label_fieldtop name="label_training">
+				<anchored to="training">
+					<left offset="-20" />
+					<right offset="20" />
 				</anchored>
-				<min>0</min>
-			</number_column>
+				<static textres="power_label_training" />
+			</label_fieldtop>
+
+			<number_rollassets name="asset" />
+			<label_fieldtop name="label_asset">
+				<anchored to="asset" />
+				<static textres="power_label_asset" />
+			</label_fieldtop>
+
+			<number_rollmod name="modifier" />
+			<label_fieldtop name="label_modifier">
+				<anchored to="modifier" />
+				<static textres="power_label_modifier" />
+			</label_fieldtop>
+
+			<number_rollease name="ease" />
 			<label_fieldtop name="label_ease">
 				<anchored to="ease" />
 				<static textres="modifier_label_EASE" />
 			</label_fieldtop>
-			<label name="easetext2">
-				<anchored to="ease" width="125">
-					<top />
-					<left anchor="right" relation="relative" offset="10" />
-				</anchored>
-				<static textres="power_label_leveladjust_text_2" />
-			</label>
 
-			<label_column name="hindertext1">
-				<script>
-					function onInit()
-						setValue(string.format(Interface.getString("power_label_leveladjust_text_1"), "Hinder"))
-					end
-				</script>
-				<anchored>
-					<top offset="20" relation="relative" />
-				</anchored>
-				<static textres="power_label_leveladjust_text_1" />
-			</label_column>
-			<number_column name="hinder">
-				<anchored width="30" height="20">
-					<top offset="-20" />
-					<left parent="hindertext1" anchor="right" relation="relative" offset="10" />
-				</anchored>
-				<min>0</min>
-			</number_column>
+			<number_rollhinder name="hinder" />
 			<label_fieldtop name="label_hinder">
 				<anchored to="hinder" />
 				<static textres="modifier_label_HINDER" />
 			</label_fieldtop>
-			<label name="hindertext2">
-				<anchored to="hinder" width="125">
+
+			<number_rolllevel name="level" />
+			<label_fieldtop name="label_level">
+				<anchored to="level" />
+				<static textres="power_label_level" />
+			</label_fieldtop>
+
+			<label name="vs">
+				<anchored to="modanchor" width="15">
 					<top />
-					<left anchor="right" relation="relative" offset="10" />
+					<left anchor="right" offset="10" relation="relative" />
 				</anchored>
-				<static textres="power_label_leveladjust_text_2" />
+				<center />
+				<static>vs</static>
 			</label>
-			
-			<label_column name="difficulty_label">
+			<number_rolldifficulty name="difficulty" />
+			<label_fieldtop name="label_difficulty">
+				<anchored to="difficulty" />
 				<static textres="power_label_difficulty" />
-			</label_column>
-			<number_column name="difficulty">
-				<min>0</min>
-				<hideonvalue value="0" />
-				<tooltip textres="power_tooltip_difficulty" />
-			</number_column>
+			</label_fieldtop>
 
 			<header_column name="header_cost">
 				<static textres="power_header_cost" />

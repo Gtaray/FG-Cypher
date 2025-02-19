@@ -9,10 +9,25 @@
 	<windowclass name="select_dialog_advancement">
 		<frame>utilitybox</frame>
 		<placement>
-			<size width="380" height="700" />
-			<nosave />
+			<size width="450" height="700" />
 		</placement>
-		<script file="utility/scripts/dialog_advancement.lua" />
+		<sizelimits>
+			<minimum width="400" height="500" />
+			<dynamic />
+		</sizelimits>
+		<!-- Scripts just act as a passthrough to the content subwindow -->
+		<script>
+			function setData(data, callback)
+				content.subwindow.setData(data, callback)
+			end
+			function processOK()
+				content.subwindow.processOK()
+				close();
+			end
+			function processCancel()
+				close();
+			end
+		</script>
 		<sheetdata>
 			<windowtitlebar_utilitybox name="title">
 				<resource>dialog_select_char_title</resource>
@@ -20,164 +35,101 @@
 			<windowmenubar_utilitybox name="menubar" />
 
 			<anchor_content_utilitybox_top />
+			<anchor_content_utilitybox_bottom />
 
-			<genericcontrol name="advancementframe">
-				<anchored to="contentanchor" height="120">
-					<top anchor="bottom" offset="20" relation="relative" />
-					<left offset="20" />
-					<right parent="" offset="-40" />
-				</anchored>
-				<frame name="groupbox" offset="15,10,15,10" />
-			</genericcontrol>
-			<anchor_column name="columnanchor">
-				<anchored to="advancementframe">
-					<top offset="5" />
-					<left />
-				</anchored>
-			</anchor_column>
+			<sub_content_bottom name="sub_buttons">
+				<class>dialog_buttons_okcancel</class>
+			</sub_content_bottom>
 
-			<checkbox_advancement_type name="stats_checkbox">
-				<target>stats</target>
-			</checkbox_advancement_type>
-			<label_advancement_type name="stats_label">
-				<anchored to="stats_checkbox" />
-				<static textres="label_advancement_stats" />
-			</label_advancement_type>
+			<sub_content name="content">
+				<class>select_dialog_advancement_main</class>
+			</sub_content>
 
-			<checkbox_advancement_type name="edge_checkbox">
-				<target>edge</target>
-			</checkbox_advancement_type>
-			<label_advancement_type name="edge_label">
-				<anchored to="edge_checkbox" />
-				<static textres="label_advancement_edge" />
-			</label_advancement_type>
+			<resize_utilitybox />
+		</sheetdata>
+	</windowclass>
 
-			<checkbox_advancement_type name="effort_checkbox">
-				<target>effort</target>
-			</checkbox_advancement_type>
-			<label_advancement_type name="effort_label">
-				<anchored to="effort_checkbox" />
-				<static textres="label_advancement_effort" />
-			</label_advancement_type>
+	<windowclass name="select_dialog_advancement_main">
+		<script file="utility/scripts/dialog_advancement.lua" />
+		<sheetdata>
+			<anchor_content_utilitybox_top />
 
-			<checkbox_advancement_type name="skill_checkbox">
-				<target>skill</target>
-			</checkbox_advancement_type>
-			<label_advancement_type name="skill_label">
-				<anchored to="skill_checkbox" />
-				<static textres="label_advancement_skill" />
-			</label_advancement_type>
+			<label_content_column name="label_type">
+				<static textres="label_advancement_type" />
+			</label_content_column>
+			<combobox_content_column name="type">
+				<script>
+					function onValueChanged()
+						window.rebuildAdvancementEffects()
+					end
+				</script>
+				<unsorted />
+			</combobox_content_column>
 
-			<checkbox_advancement_type name="ability_checkbox">
-				<target>ability</target>
-			</checkbox_advancement_type>
-			<label_advancement_type name="ability_label">
-				<anchored to="ability_checkbox" />
-				<static textres="label_advancement_ability" />
-			</label_advancement_type>
-
-			<checkbox_advancement_type name="focus_checkbox">
-				<target>focus</target>
-			</checkbox_advancement_type>
-			<label_advancement_type name="focus_label">
-				<anchored to="focus_checkbox" />
-				<static textres="label_advancement_focus" />
-			</label_advancement_type>
-
-			<checkbox_advancement_type name="recovery_checkbox">
-				<target>recovery</target>
-			</checkbox_advancement_type>
-			<label_advancement_type name="recovery_label">
-				<anchored to="recovery_checkbox" />
-				<static textres="label_advancement_recovery" />
-			</label_advancement_type>
-
-			<checkbox_advancement_type name="armor_checkbox">
-				<target>armor</target>
-			</checkbox_advancement_type>
-			<label_advancement_type name="armor_label">
-				<anchored to="armor_checkbox" />
-				<static textres="label_advancement_armor" />
-			</label_advancement_type>
-
-			<genericcontrol name="contentframe">
-				<anchored to="contentanchor">
-					<top anchor="bottom" relation="relative" offset="20" />
-					<left offset="20" />
-					<right parent="" offset="-40" />
-					<bottom parent="" offset="-80" />
-				</anchored>
-				<frame name="groupbox" offset="15,10,15,10" />
-			</genericcontrol>
+			<label_content_column name="label_effect">
+				<static textres="label_advancement_effect" />
+			</label_content_column>
+			<combobox_content_column name="effect">
+				<script>
+					function onValueChanged()
+						window.onAdvancementSelected()
+					end
+				</script>
+				<unsorted />
+			</combobox_content_column>
 
 			<subwindow_char_dialog name="stats">
 				<class>dialog_statpools</class>
-				<fastinit />
-				<noscroll />
 			</subwindow_char_dialog>
 
 			<subwindow_char_dialog name="edge">
 				<class>dialog_edge</class>
-				<fastinit />
-				<noscroll />
 			</subwindow_char_dialog>
 
 			<subwindow_char_dialog name="effort">
 				<class>dialog_effort</class>
-				<fastinit />
-				<noscroll />
 			</subwindow_char_dialog>
 
 			<subwindow_char_dialog name="skill">
 				<class>dialog_skill</class>
-				<fastinit />
-				<noscroll />
 			</subwindow_char_dialog>
+			<scrollbar_content>
+				<anchored to="skill" />
+				<target>skill</target>
+			</scrollbar_content>
 
 			<subwindow_char_dialog name="abilities">
 				<class>dialog_abilities</class>
-				<fastinit />
-				<noscroll />
 			</subwindow_char_dialog>
 
 			<subwindow_char_dialog name="focus">
 				<class>dialog_abilities</class>
-				<fastinit />
-				<noscroll />
 			</subwindow_char_dialog>
 
 			<subwindow_char_dialog name="recovery">
 				<class>dialog_recovery</class>
-				<fastinit />
-				<noscroll />
 			</subwindow_char_dialog>
 
 			<subwindow_char_dialog name="armor">
 				<class>dialog_armor</class>
-				<fastinit />
-				<noscroll />
 			</subwindow_char_dialog>
-			
-			<anchor_content_utilitybox_bottom />
-			<sub_content_bottom name="sub_buttons">
-				<class>dialog_buttons_okcancel</class>
-			</sub_content_bottom>
 		</sheetdata>
 	</windowclass>
 
 	<windowclass name="dialog_effort">
 		<sheetdata>
-			<anchor_column name="columnanchor" />
+			<anchor_content_top />
 
-			<header_column name="header_effort">
+			<header_content_framed_headersimple name="header_effort">
 				<static textres="header_dialog_effort" />
-				<center />
-			</header_column>
+			</header_content_framed_headersimple>
 
-			<label_column name="label_effort">
+			<label_content_column name="label_effort">
 				<static textres="label_dialog_effort" />
-			</label_column>
-			<stringc_column name="effort" />
+			</label_content_column>
+			<stringc_content_column_noframe_static name="effort">
+				<readonly />
+			</stringc_content_column_noframe_static>
 		</sheetdata>
 	</windowclass>
 
@@ -222,25 +174,24 @@
 			end
 		</script>
 		<sheetdata>
-			<anchor_column name="columnanchor" />
+			<anchor_content_top />
 
-			<header_column name="header_skills">
+			<header_content_framed_headersimple name="header_skills">
 				<static textres="header_dialog_skill" />
-				<center />
 				<invisible />
-			</header_column>
+			</header_content_framed_headersimple>
 			<list_skill name="skills" />
 
-			<header_column name="header_abilities">
+			<header_content_framed_headersimple name="header_abilities">
 				<static textres="header_dialog_ability" />
-				<center />
 				<invisible />
-			</header_column>
+			</header_content_framed_headersimple>
 			<list_skill name="abilities" />
 		</sheetdata>
 	</windowclass>
 
 	<windowclass name="dialog_skill_item">
+		<margins control="0,0,0,5" />
 		<script>
 			function setRecord(aSkill)
 				if aSkill.node then
@@ -270,7 +221,7 @@
 				<invisible />
 			</linkcontrol>
 			<basicstringc name="text">
-				<anchored position="insidetopleft" offset="20,5" height="18">
+				<anchored position="insidetopleft" offset="20,5" height="20">
 					<right parent="shortcut" anchor="left" offset="-5" />
 				</anchored>
 				<font>sheetlabel</font>
@@ -283,60 +234,36 @@
 
 	<windowclass name="dialog_recovery">
 		<sheetdata>
-			<anchor_column name="columnanchor" />
+			<anchor_content_top />
 
-			<header_column name="header_recovery">
+			<header_content_framed_headersimple name="header_recovery">
 				<static textres="header_dialog_recovery" />
-				<center />
-			</header_column>
+			</header_content_framed_headersimple>
 
-			<label_column name="label_recovery">
+			<label_content_column name="label_recovery">
 				<static textres="label_dialog_recovery" />
-			</label_column>
-			<stringc_column name="recovery" />
+			</label_content_column>
+			<stringc_content_column_noframe_static name="recovery" />
 		</sheetdata>
 	</windowclass>
 
 	<windowclass name="dialog_armor">
 		<sheetdata>
-			<anchor_column name="columnanchor" />
+			<anchor_content_top />
 
-			<header_column name="header_armor">
+			<header_content_framed_headersimple name="header_armor">
 				<static textres="header_dialog_armor" />
-				<center />
-			</header_column>
+			</header_content_framed_headersimple>
 
-			<label_column name="label_armor">
+			<label_content_column name="label_armor">
 				<static textres="label_dialog_armor" />
-			</label_column>
-			<stringc_column name="armor" />
+			</label_content_column>
+			<stringc_content_column_noframe_static name="armor" />
 		</sheetdata>
 	</windowclass>
 
-	<template name="checkbox_advancement_type">
-		<button_checkbox>
-			<script>
-				function onButtonPress()
-					window.onAdvancementSelected(target[1], getValue() == 1);
-				end
-			</script>
-			<anchored to="columnanchor" height="20" width="20">
-				<top anchor="bottom" relation="relative" offset="0" />
-				<left />
-			</anchored>
-		</button_checkbox>
-	</template>
-	<template name="label_advancement_type">
-		<label>
-			<anchored>
-				<left anchor="right" offset="2" />
-				<top />
-				<right parent="advancementframe" offset="0" />
-			</anchored>
-		</label>
-	</template>
 	<template name="list_skill">
-		<windowlist>
+		<list_content_noscroll_top>
 			<script>
 				function addEntry(aSkill)
 					local w = createWindow();
@@ -364,11 +291,6 @@
 			</script>
 			<sourceless />
 			<class>dialog_skill_item</class>
-			<anchored>
-				<top parent="columnanchor" anchor="bottom" relation="relative" offset="5" />
-				<left offset="0" />
-				<right offset="0" />
-			</anchored>
-		</windowlist>
+		</list_content_noscroll_top>
 	</template>
 </root>

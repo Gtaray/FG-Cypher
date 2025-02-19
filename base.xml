@@ -6,7 +6,7 @@
 -->
 
 <root version="3.0" release="4.1" logo="logo.png">
-	<announcement text="Cypher System ruleset (2025-01-14) for Fantasy Grounds\rCopyright 2024 Smiteworks USA, LLC\rLink to Wiki: https://publish.obsidian.md/fantasygrounds-cypher-wiki/Home" font="emotefont" icon="rulesetlogo_CoreRPG" />	
+	<announcement text="Cypher System ruleset (2025-02-11) for Fantasy Grounds\rCopyright 2024 Smiteworks USA, LLC\rLink to Wiki: https://publish.obsidian.md/fantasygrounds-cypher-wiki/Home" font="emotefont" icon="rulesetlogo_CoreRPG" />	
 	<!-- Attributes -->
 	<description>
 		<displayname>Cypher System</displayname>
@@ -23,6 +23,7 @@
 	<!-- Graphics -->
 	<includefile source="graphics/graphics_fonts.xml" />
 	<includefile source="graphics/graphics_icons.xml" />
+	<includefile source="graphics/graphics_buttons.xml" />
 
 	<!-- Strings -->
 	<includefile source="strings/strings_cyphersystem.xml" />
@@ -41,7 +42,7 @@
 	<includefile source="campaign/record_char_arcs.xml" />
 	<includefile source="campaign/record_char_notes.xml" />
 	<includefile source="campaign/record_char_actions.xml" />
-	<includefile source="campaign/record_char_actions_attack.xml" />
+	<includefile source="campaign/record_char_actions_weapon.xml" />
 	<includefile source="campaign/record_char_actions_power.xml" />
 	<includefile source="campaign/record_char_modification.xml" />
 	<includefile source="campaign/record_char_tracker.xml" />
@@ -51,12 +52,16 @@
 	<includefile source="campaign/record_power_roll_heal.xml" />
 	<includefile source="campaign/record_power_roll_effect.xml" />
 	<includefile source="campaign/record_power_roll_cypher.xml" />
+	<includefile source="campaign/record_power_editor.xml" />
 	<includefile source="campaign/record_ability.xml" />
 	<includefile source="campaign/record_type.xml" />
 	<includefile source="campaign/record_descriptor.xml" />
 	<includefile source="campaign/record_focus.xml" />
 	<includefile source="campaign/record_ancestry.xml" />
 	<includefile source="campaign/record_flavor.xml" />
+
+	<includefile source="campaign/record_abilitylist.xml" />
+	<includefile source="campaign/record_featurelist.xml" />
 
 	<includefile source="campaign/record_item.xml" />
 	<includefile source="campaign/record_parcel.xml" />
@@ -91,7 +96,7 @@
 	<includefile source="utility/select_dialog_abilities.xml" />
 	<includefile source="utility/select_dialog_advancement.xml" />
 	<includefile source="utility/select_dialog_templates.xml" />
-	<includefile source="utility/prompt_arc.xml" />
+	<includefile source="utility/utility_dialog_yesno.xml" />
 
 	<!-- High-level scripts -->
 	<script name="GameSystem" file="scripts/manager_gamesystem.lua" />
@@ -107,6 +112,13 @@
 	<script name="CharFlavorManager" file="scripts/manager_char_flavor.lua" />
 	<script name="CharModManager" file="scripts/manager_char_modification.lua" />
 	<script name="CharTrackerManager" file="scripts/manager_char_tracker.lua" />
+	<script name="CharPowerManager" file="scripts/manager_char_power.lua" />
+	<script name="CharAdvancementManager" file="scripts/manager_char_advancement.lua" />
+	<script name="CharHealthManager" file="scripts/manager_char_health.lua" />
+	<script name="CharStatManager" file="scripts/manager_char_stat.lua" />
+	<script name="CharArmorManager" file="scripts/manager_char_armor.lua" />
+	<script name="CharArcManager" file="scripts/manager_char_arc.lua" />
+	<script name="CharInventoryManager" file="scripts/manager_char_inventory.lua" />
 
 	<script name="ActorManagerCypher" file="scripts/manager_actor_cypher.lua" />
 	<script name="EffectManagerCypher" file="scripts/manager_effect_cypher.lua" />
@@ -120,9 +132,12 @@
 	<script name="DamageTypeManager" file="scripts/manager_damage_types.lua" />
 	<script name="DifficultyManager" file="scripts/manager_difficulty.lua" />
 	<script name="IntrusionManager" file="scripts/manager_intrusion.lua" />
+	<script name="MigrationManager" file="scripts/manager_migration.lua" />
 	<script name="TokenManagerCypher" file="scripts/manager_token_cypher.lua" />
 	<script name="DeathMarkers" file="scripts/manager_deathmarkers.lua" />
+	<script name="TrainingManager" file="scripts/manager_training.lua" />
 
+	<script name="ActionsManagerCypher" file="scripts/manager_actions_cypher.lua" />
 	<script name="ActionStat" file="scripts/manager_action_stat.lua" />
 	<script name="ActionSkill" file="scripts/manager_action_skill.lua" />
 	<script name="ActionDefense" file="scripts/manager_action_defense.lua" />

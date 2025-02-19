@@ -17,7 +17,7 @@ function getRoll(rActor, rAction)
 	local rRoll = {};
 	rRoll.sType = "recovery";
 	rRoll.aDice = DiceRollManager.getActorDice(rAction.aDice or { "d6" }, rActor);
-	rRoll.nMod = ActorManagerCypher.getTier(rActor) + ActorManagerCypher.getRecoveryRollMod(rActor) + (rAction.nModifer or 0);
+	rRoll.nMod = CharHealthManager.getRecoveryRollTotal(rActor) + (rAction.nModifer or 0);
 	rRoll.sDesc = "[RECOVERY]";
 	return rRoll;
 end
@@ -44,7 +44,8 @@ function onRoll(rSource, rTarget, rRoll)
 
 	sFilter = nil;
 	if sNodeType == "pc" then
-		local c = DB.getValue(nodeActor, "recoveryused", 0);
+		local c = CharHealthManager.getRecoveriesUsed(rSource);
+
 		if c >= 4 then
 			rMessage.text = rMessage.text .. " [NO RECOVERIES REMAINING]";
 			sFilter= "day"
@@ -61,9 +62,8 @@ function onRoll(rSource, rTarget, rRoll)
 			rMessage.text = rMessage.text .. " [1 ACTION]";
 			sFilter = "action"
 		end
-		if c < 4 then
-			DB.setValue(nodeActor, "recoveryused", "number", c + 1);
-		end
+		
+		CharHealthManager.modifyRecoveriesUsed(rSource, 1)
 
 		if EffectManagerCypher.ignoreRecovery(rSource, sFilter) then
 			rMessage.text = rMessage.text .. " [NONE]";
@@ -85,39 +85,39 @@ end
 
 function applyRecovery(nodeChar, nMightNew, nSpeedNew, nIntellectNew, nRemainder)
     local rActor = ActorManager.resolveActor(nodeChar);
-	local nWoundTrackCurrent = ActorManagerCypher.getDamageTrack(rActor);
+	local nWoundTrackCurrent = CharHealthManager.getDamageTrack(rActor);
     local nWoundTrackAdjust = 0; -- This is tracked as a negative amount
     local rMessage = ChatManager.createBaseMessage(rActor, User.getUsername());
     rMessage.text = "[RECOVERY]";
 
-    local nMightCurrent = ActorManagerCypher.getStatPool(rActor, "might");
+    local nMightCurrent = CharStatManager.getStatPool(rActor, "might");
     if nMightCurrent < nMightNew then
         if nMightCurrent == 0 then
             nWoundTrackAdjust = nWoundTrackAdjust - 1;
         end
 
         rMessage.text = string.format("%s [APPLIED %s to MIGHT]", rMessage.text, tostring(nMightNew - nMightCurrent));
-		ActorManagerCypher.setStatPool(rActor, "might", nMightNew);
+		CharStatManager.setStatPool(rActor, "might", nMightNew);
     end
 
-    local nSpeedCurrent = ActorManagerCypher.getStatPool(rActor, "speed");
+    local nSpeedCurrent = CharStatManager.getStatPool(rActor, "speed");
     if nSpeedCurrent < nSpeedNew then
         if nSpeedCurrent == 0 then
             nWoundTrackAdjust = nWoundTrackAdjust - 1;
         end
 
 		rMessage.text = string.format("%s [APPLIED %s to SPEED]", rMessage.text, tostring(nSpeedNew - nSpeedCurrent));
-        ActorManagerCypher.setStatPool(rActor, "speed", nSpeedNew);
+        CharStatManager.setStatPool(rActor, "speed", nSpeedNew);
     end
 
-    local nIntellectCurrent = ActorManagerCypher.getStatPool(rActor, "intellect");
+    local nIntellectCurrent = CharStatManager.getStatPool(rActor, "intellect");
     if nIntellectCurrent < nIntellectNew then
         if nIntellectCurrent == 0 then
 			nWoundTrackAdjust = nWoundTrackAdjust - 1;
         end
 
 		rMessage.text = string.format("%s [APPLIED %s to INTELLECT]", rMessage.text, tostring(nIntellectNew - nIntellectCurrent));
-        ActorManagerCypher.setStatPool(rActor, "intellect", nIntellectNew);
+        CharStatManager.setStatPool(rActor, "intellect", nIntellectNew);
     end
 
     if nRemainder > 0 then
@@ -137,7 +137,7 @@ function applyRecovery(nodeChar, nMightNew, nSpeedNew, nIntellectNew, nRemainder
 
     Comm.deliverChatMessage(rMessage);
 
-	local nRecoveryUsed = DB.getValue(nodeChar, "recoveryused", 0);
+	local nRecoveryUsed = DB.getValue(nodeChar, "health.recovery.used", 0);
 
 	-- Handle recharging powers
 	for _, abilityNode in ipairs(DB.getChildList(nodeChar, "abilitylist")) do

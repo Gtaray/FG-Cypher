@@ -10,8 +10,9 @@
 		<sheetdata>
 			<frame_char name="backgroundframe">
 				<anchored position="insidetopleft" >
-					<bottom anchor="center" offset="50" />
-					<right offset="-190" />
+					<bottom anchor="center" offset="-50" />
+					<left />
+					<right />
 				</anchored>
 			</frame_char>
 			<label_frametop>
@@ -32,39 +33,9 @@
 				<target>background</target>
 			</scrollbar>
 
-			<frame_char name="languageframe">
-				<anchored position="insidetopright" width="190">
-					<bottom anchor="center" offset="50" />
-				</anchored>
-			</frame_char>
-			<label_frametop>
-				<anchored to="languageframe" />
-				<static textres="char_label_languages" />
-			</label_frametop>
-			<list_language name="languages">
-				<anchored to="languageframe">
-					<top offset="35" />
-					<left offset="15" />
-					<right offset="-20" />
-					<bottom offset="-15" />
-				</anchored>
-			</list_language>
-			<scrollbar_list>
-				<anchored to="languages" />
-				<target>languages</target>
-			</scrollbar_list>
-			<button_iedit name="languages_iedit">
-				<anchored to="languages" position="aboveright" offset="5,5" />
-				<target>languages</target>
-			</button_iedit>
-			<button_iadd name="languages_iadd">
-				<anchored to="languages" position="aboveleft" offset="10,5" />
-				<target>languages</target>
-			</button_iadd>
-
 			<frame_char name="notesframe">
 				<anchored>
-					<top anchor="center" offset="50" />
+					<top anchor="center" offset="-50" />
 					<left />
 					<right />
 					<bottom />

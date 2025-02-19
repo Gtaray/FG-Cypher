@@ -3,34 +3,81 @@
 -- attribution and copyright information.
 --
 
-local aSortTypes = { 
-		["cypher"] = 1, 
-		["artifact"] = 2, 
-		["oddity"] = 3, 
-		[""] = 4;
-};
 
 function onInit()
-	super.onInit()
+	if super and super.onInit then
+		super.onInit()
+	end
 
 	onCyphersChanged();
 
 	local node = getDatabaseNode();
 	DB.addHandler(DB.getPath(node, "*.type"), "onUpdate", onCyphersChanged);
+	DB.addHandler(DB.getPath(node, "*.count"), "onUpdate", onCyphersChanged);
+	DB.addHandler(DB.getPath(node, "*.carried"), "onUpdate", onCyphersChanged);
 	DB.addHandler(node, "onChildDeleted", onCyphersChanged);
+
+	applyFilter();
 end
 
 function onClose()
 	local node = getDatabaseNode();
 	DB.removeHandler(DB.getPath(node, "*.type"), "onUpdate", onCyphersChanged);
+	DB.removeHandler(DB.getPath(node, "*.count"), "onUpdate", onCyphersChanged);
+	DB.removeHandler(DB.getPath(node, "*.carried"), "onUpdate", onCyphersChanged);
 	DB.removeHandler(node, "onChildDeleted", onCyphersChanged);
 end
 
 function onListChanged()
-	update();
-	onCyphersChanged();
+	self.updateContainers();
+	self.onCyphersChanged();
+	
+	if self.update then
+		self.update();
+	end
+end
+function onChildWindowCreated(w)
+	w.count.setValue(1);
+end
+
+local _sortLocked = false;
+function setSortLock(isLocked)
+	_sortLocked = isLocked;
+end
+function onSortCompare(w1, w2)
+	if _sortLocked then
+		return false;
+	end
+	return ItemManager.onInventorySortCompare(w1, w2);
+end
+
+function updateContainers()
+	ItemManager.onInventorySortUpdate(self);
+end
+
+function onDrop(x, y, draginfo)
+	return ItemManager.handleAnyDrop(window.getDatabaseNode(), draginfo);
 end
 
 function onCyphersChanged()
-	CharManager.updateCyphers(window.getDatabaseNode());
+	CharInventoryManager.updateCyphers(window.getDatabaseNode());
+	applyFilter(false);
+end
+
+function onFilter(w)
+	local node = w.getDatabaseNode();
+	local sType = DB.getValue(node, "type", "");
+	local bEquipped = w.carried.getValue() == 2;
+
+	-- If this isn't the active cypher list, then all other items are displayed
+	if sType ~= "cypher" then
+		return activecyphers == nil;
+	end
+
+	-- If this list should show active cyphers, then return true if they're equipped
+	-- if this list should show inactive cyphers, then return true if they're NOT equipped
+	if activecyphers then
+		return bEquipped;
+	end
+	return not bEquipped
 end

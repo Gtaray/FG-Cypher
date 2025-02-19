@@ -26,6 +26,11 @@
 				<top />
 				<right />
 			</anchored>
+			<script>
+				function update()
+					window.onHealthChanged();
+				end
+			</script>
 			<readonly />
 		</number_ct_crosslink>
 	</template>
@@ -35,6 +40,11 @@
 				<top />
 				<right anchor="left" offset="-10" />
 			</anchored>
+			<script>
+				function update()
+					window.onHealthChanged();
+				end
+			</script>
 			<readonly />
 		</number_ct_crosslink>
 	</template>
@@ -44,6 +54,11 @@
 				<top />
 				<right anchor="left" offset="-10" />
 			</anchored>
+			<script>
+				function update()
+					window.onHealthChanged();
+				end
+			</script>
 			<readonly />
 		</number_ct_crosslink>
 	</template>
