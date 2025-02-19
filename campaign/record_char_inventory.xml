@@ -332,13 +332,6 @@
 					end
 				</script>
 			</list_content_noscroll_top>
-
-			<stringu_content_noframe_noscroll_top name="coinother">
-				<anchored>
-					<left offset="10" />
-					<right offset="-10" />
-				</anchored>
-			</stringu_content_noframe_noscroll_top>
 		</sheetdata>
 	</windowclass>
 
