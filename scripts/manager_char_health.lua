@@ -33,7 +33,7 @@ function modifyDamageTrack(rActor, nIncrement)
 	local nCur = CharHealthManager.getDamageTrack(rActor);
 	local nNewValue = math.max(math.min(nCur + nIncrement, 3), 0);
 
-	ActorHealthManager.setDamageTrack(rActor, nNewValue);
+	CharHealthManager.setDamageTrack(rActor, nNewValue);
 end
 function setDamageTrack(rActor, nValue)
 	local nodeChar;

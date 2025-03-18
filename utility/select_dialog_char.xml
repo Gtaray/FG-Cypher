@@ -12,6 +12,9 @@
 			<size width="700" height="600" />
 			<nosave />
 		</placement>
+		<sizelimits>
+			<dynamic />
+		</sizelimits>
 		<script file="utility/scripts/dialog_char.lua" />
 		<sheetdata>
 			<windowtitlebar_utilitybox name="title">
@@ -51,6 +54,7 @@
 				<class>dialog_statpools</class>
 				<anchored to="contentframe" position="over">
 					<top relation="absolute" />
+					<bottom parent="contentframe" />
 				</anchored>
 				<noscroll />
 			</subwindow_char_dialog>
@@ -59,6 +63,7 @@
 				<class>dialog_edge</class>
 				<anchored to="contentframe" position="over">
 					<top relation="absolute" />
+					<bottom parent="contentframe" />
 				</anchored>
 				<noscroll />
 			</subwindow_char_dialog>
@@ -67,6 +72,7 @@
 				<class>dialog_abilities</class>
 				<anchored to="contentframe" position="over">
 					<top relation="absolute" />
+					<bottom parent="contentframe" />
 				</anchored>
 			</subwindow_char_dialog>
 			<scrollbar>

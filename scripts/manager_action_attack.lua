@@ -44,7 +44,7 @@ function getRoll(rActor, rAction)
 	rRoll.nEffort = rAction.nEffort or 0;
 	rRoll.nEase = rAction.nEase or 0;
 	rRoll.nHinder = rAction.nHinder or 0;
-	rRoll.sWeaponType = rAction.sWeaponType;
+	rRoll.sWType = rAction.sWeaponType; -- I have no idea why, but rRoll.sWType gets nilled out by the time it hits onRoll(). Renaming it to something without "weapon" in the name makes it work
 
 	rRoll.nDamageEffort = rAction.nDamageEffort or 0
 	
@@ -85,8 +85,8 @@ function modRoll(rSource, rTarget, rRoll)
 	if (rRoll.sAttackRange or "") ~= "" then
 		table.insert(aFilter, rRoll.sAttackRange:lower());
 	end
-	if (rRoll.sWeaponType or "") ~= "" then
-		table.insert(aFilter, rRoll.sWeaponType:lower());
+	if (rRoll.sWType or "") ~= "" then
+		table.insert(aFilter, rRoll.sWType:lower());
 	end
 
 	-- Process training effects
@@ -124,7 +124,7 @@ function modRoll(rSource, rTarget, rRoll)
 	end
 	RollManager.calculateDifficultyForRoll(rSource, rTarget, rRoll);
 
-	if rRoll.sWeaponType == "light" then
+	if rRoll.sWType == "light" then
 		rRoll.sDesc = string.format("%s [LIGHT]", rRoll.sDesc)
 	end
 	if (rRoll.nConditionMod or 0) > 0 then
@@ -132,7 +132,7 @@ function modRoll(rSource, rTarget, rRoll)
 	end
 	RollManager.convertBooleansToNumbers(rRoll);
 
-	if rRoll.nDifficulty <= 0 then
+	if rRoll.nDifficulty and rRoll.nDifficulty <= 0 then
 		rRoll.aDice = {}
 	end
 end
@@ -150,9 +150,9 @@ function onRoll(rSource, rTarget, rRoll)
 
 	-- Hacky way to force the rebuilt flag to either be true or false, never an empty string
 	rRoll.bRebuilt = (rRoll.bRebuilt == true) or (rRoll.bRebuilt or "") ~= "";
-	rRoll.bLightWeapon = (rRoll.bLightWeapon == "true") or (rRoll.bLightWeapon == "light");
+	rRoll.bLightWeapon = (rRoll.sDesc:match("%[LIGHT%]") ~= nil);
+
 	rTarget = RollManager.decodeTarget(rRoll, rTarget);
-	rRoll.bLightWeapon = rRoll.sDesc:match("%[LIGHT%]") ~= nil;
 
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 	rMessage.icon = "action_attack";
@@ -165,6 +165,8 @@ function onRoll(rSource, rTarget, rRoll)
 
 	if rTarget or OptionsManagerCypher.isGlobalDifficultyEnabled() then
 		ActionAttack.applyRoll(rSource, rTarget, rRoll);
+	else
+		-- Add an icon for the difficulty that the roll hit
 	end
 
 	RollHistoryManager.setLastRoll(rSource, rTarget, rRoll)
@@ -344,8 +346,8 @@ function rebuildRoll(rSource, rTarget, rRoll)
 	if not rRoll.nTraining then
 		rRoll.nTraining = RollManager.decodeTraining(rRoll, true);
 	end
-	if rRoll.sWeaponType == nil and rRoll.sDesc:match("%[LIGHT%]") ~= nil then
-		rRoll.sWeaponType = "light";
+	if rRoll.sWType == nil and rRoll.sDesc:match("%[LIGHT%]") ~= nil then
+		rRoll.sWType = "light";
 	end
 	if rRoll.bMajorEffect == nil then
 		rRoll.bMajorEffect = rRoll.sDesc:match("%[MAJOR EFFECT%]") ~= nil;

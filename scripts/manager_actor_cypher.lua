@@ -177,8 +177,14 @@ function getArmorData(rActor, sStat, aDamageTypes)
 			end
 		end
 
+		local aResistances = {};
+		if ActorManager.isPC(rActor) then
+			aResistances = DB.getChildList(node, "defenses.resistances")
+		else
+			aResistances = DB.getChildList(node, "resistances")
+		end
 		-- Start by getting special armor values from the creature node
-		for _, resist in ipairs(DB.getChildList(node, "defenses.resistances")) do
+		for _, resist in ipairs(aResistances) do
 			local sBehavior = DB.getValue(resist, "behavior", ""):lower();
 			local sType = DB.getValue(resist, "damagetype", ""):lower();
 			local bInverted = DB.getValue(resist, "invert", "") == "yes";

@@ -369,7 +369,7 @@ function calculateDifficultyForRoll(rSource, rTarget, rRoll)
 	nMod = nMod + (tonumber(rRoll.nHinder or "0"));
 	nMod = nMod + (tonumber(rRoll.nConditionMod or "0"));
 
-	if rRoll.bLightWeapon or rRoll.sWeaponType == "light" then
+	if rRoll.bLightWeapon or rRoll.sWType == "light" then
 		nMod = nMod - 1;
 	end
 
@@ -1160,6 +1160,10 @@ function decodeLevel(vRoll, bPersist)
 end
 
 function encodeMultiTarget(rRoll)
+	if rRoll.sType == "effect" then
+		return;
+	end
+	
 	rRoll.sDesc = RollManager.addOrOverwriteText(
 		rRoll.sDesc,
 		"%[MULTI%]",

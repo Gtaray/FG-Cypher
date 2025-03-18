@@ -119,7 +119,7 @@ function modRoll(rSource, rTarget, rRoll)
 	end
 	RollManager.convertBooleansToNumbers(rRoll);
 
-	if rRoll.nDifficulty <= 0 then
+	if rRoll.nDifficulty and rRoll.nDifficulty <= 0 then
 		rRoll.aDice = {}
 	end
 end
@@ -143,6 +143,8 @@ function onRoll(rSource, rTarget, rRoll)
 
 	if rTarget or OptionsManagerCypher.isGlobalDifficultyEnabled() then
 		ActionStat.applyRoll(rSource, rTarget, rRoll)
+	else
+		-- Add an icon for the difficulty that the roll hit
 	end
 
 	RollHistoryManager.setLastRoll(rSource, rTarget, rRoll)

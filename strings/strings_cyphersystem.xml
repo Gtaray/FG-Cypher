@@ -541,6 +541,7 @@
     
 	<!-- Ability -->
 	<string name="library_recordtype_label_ability">Abilities</string>
+	<string name="library_recordtype_single_ability">Ability</string>
 	<string name="library_recordtype_empty_ability">&#171; New Ability &#187;</string>
 	<string name="library_recordtype_ref_ability">Ability</string>
 	<string name="ability_label_use_type">Use Type</string>
@@ -593,7 +594,8 @@
 	<string name="library_recordtype_ref_descriptor">Descriptor</string>
 
 	<!-- Focus -->
-	<string name="library_recordtype_label_focus">Foci</string>
+	<string name="library_recordtype_label_focus">Focuses</string>
+	<string name="library_recordtype_single_focus">Focus</string>
 	<string name="library_recordtype_empty_focus">&#171; New Focus &#187;</string>
 	<string name="library_recordtype_ref_focus">Focus</string>
 
@@ -606,6 +608,7 @@
 
 	<!-- Ancestry -->
 	<string name="library_recordtype_label_ancestry">Ancestries</string>
+	<string name="library_recordtype_single_ancestry">Ancestry</string>
 	<string name="library_recordtype_empty_ancestry">&#171; New Ancestry &#187;</string>
 	<string name="library_recordtype_ref_ancestry">Ancestry</string>
 	<string name="ancestry_header_features">Features</string>
