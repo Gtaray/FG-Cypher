@@ -13,12 +13,12 @@ function onInit()
 	local sStat = DB.getValue(node, "stat", "");
 	if sStat ~= "" then
 		DB.setValue(node, "coststat", "string", sStat);
-		DB.deleteNode(DB.getChild(node, "stat"));
+		DB.deleteChild(node, "stat");
 	end
 	local nCost = DB.getValue(node, "statcost", 0);
 	if nCost ~= 0 then
 		DB.setValue(node, "cost", "number", nCost);
-		DB.deleteNode(DB.getChild(node, "statcost"));
+		DB.deleteChild(node, "statcost");
 	end
 
 	DB.addHandler(DB.getPath(node, "period"), "onUpdate", self.onUsePeriodChanged);

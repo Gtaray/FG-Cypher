@@ -21,6 +21,27 @@ function onClose()
 	DB.removeHandler(DB.getPath(getDatabaseNode(), "attacklist.*"), "onDelete", onAttackDeleted)
 end
 
+function getWindowMenuHelpLink()
+	if tabs then
+		local sTab = tabs.getActiveTabName();
+		if sTab == "skills" then
+			return Interface.getString("help_charsheet_skills");
+		elseif sTab == "inventory" then
+			return Interface.getString("help_charsheet_inventory");
+		elseif sTab == "abilities" then
+			return Interface.getString("help_charsheet_abilities");
+		elseif sTab == "arcs" then
+			return Interface.getString("help_charsheet_arcs");
+		elseif sTab == "notes" then
+			return Interface.getString("help_charsheet_notes");
+		elseif sTab == "actions" then
+			return Interface.getString("help_charsheet_actions");
+		end
+	end
+
+	return Interface.getString("help_charsheet_main");
+end
+
 function onMenuSelection(selection, subselection)
 	if selection == 7 then
 		if subselection == 6 then

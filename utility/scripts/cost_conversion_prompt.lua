@@ -1,9 +1,6 @@
 local rActor;
 local rRoll;
 
-function onInit()
-end
-
 function setData(aStats, sDefault)
 	for _, sStat in ipairs(aStats) do
 		self[sStat .. "_label"].setVisible(true);

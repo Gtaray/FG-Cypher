@@ -96,7 +96,6 @@
 				<class>charsheet_advancements</class>
 				<activate />
 			</subwindow>
-
 		</sheetdata>
 	</windowclass>
 
@@ -728,7 +727,7 @@
 			<anchor_title_charsheethelper name="contentanchor" />
 
 			<label_charframetop name="tiertitle">
-				<anchored to="contentanchor" position="belowleft" offset="10,5" height="20" width="80" />
+				<anchored to="contentanchor" position="belowleft" offset="10,2" height="20" width="80" />
 				<static textres="char_label_tier" />
 				<icons>char_name</icons>
 			</label_charframetop>
@@ -738,77 +737,72 @@
 					<left anchor="center" offset="-20" />
 				</anchored>
 			</number_static>
-
-			<subwindow name="sub_advancements">
-				<anchored to="contentanchor" position="belowleft" offset="100,5">
-					<right offset="-10" />
+			<sub_content_top name="sub_advancements">
+				<anchored>
+					<left offset="100" />
 				</anchored>
 				<class>charsheet_advancements</class>
-				<activate />
-			</subwindow>
+			</sub_content_top>
 
-			<sub_charhseet_statement_part name="sub_type">
-				<anchored>
-					<top offset="80" />
-				</anchored>
+			<sub_charsheet_statement_part name="sub_type">
+				<header>char_label_type</header>
 				<path>type</path>
 				<recordtype>type</recordtype>
-				<header>char_label_type</header>
-			</sub_charhseet_statement_part>
+			</sub_charsheet_statement_part>
 
-			<sub_charhseet_statement_part name="sub_descriptor">
+			<sub_charsheet_statement_part name="sub_descriptor">
+				<header>char_label_descriptor</header>
 				<path>descriptor</path>
 				<recordtype>descriptor</recordtype>
-				<header>char_label_descriptor</header>
 				<option>DESCRIPTOR_COUNT</option>
 				<valuethreshold>1</valuethreshold>
-			</sub_charhseet_statement_part>
+			</sub_charsheet_statement_part>
 
-			<sub_charhseet_statement_part name="sub_descriptor">
+			<sub_charsheet_statement_part name="sub_descriptor">
+				<header>char_label_descriptor_second</header>
 				<path>descriptor2</path>
 				<recordtype>descriptor</recordtype>
-				<header>char_label_descriptor_second</header>
 				<option>DESCRIPTOR_COUNT</option>
 				<valuethreshold>2</valuethreshold>
-			</sub_charhseet_statement_part>
+			</sub_charsheet_statement_part>
 
-			<sub_charhseet_statement_part name="sub_ancestry">
+			<sub_charsheet_statement_part name="sub_ancestry">
+				<header>char_label_ancestry</header>
 				<path>ancestry</path>
 				<recordtype>ancestry</recordtype>
-				<header>char_label_ancestry</header>
 				<option>ANCESTRY_COUNT</option>
 				<valuethreshold>1</valuethreshold>
-			</sub_charhseet_statement_part>
+			</sub_charsheet_statement_part>
 
-			<sub_charhseet_statement_part name="sub_ancestry">
+			<sub_charsheet_statement_part name="sub_ancestry">
+				<header>char_label_ancestry_second</header>
 				<path>ancestry2</path>
 				<recordtype>ancestry</recordtype>
-				<header>char_label_ancestry_second</header>
 				<option>ANCESTRY_COUNT</option>
 				<valuethreshold>2</valuethreshold>
-			</sub_charhseet_statement_part>
+			</sub_charsheet_statement_part>
 
-			<sub_charhseet_statement_part name="sub_focus">
+			<sub_charsheet_statement_part name="sub_focus">
+				<header>char_label_focus</header>
 				<path>focus</path>
 				<recordtype>focus</recordtype>
-				<header>char_label_focus</header>
 				<option>FOCUS_COUNT</option>
 				<valuethreshold>1</valuethreshold>
-			</sub_charhseet_statement_part>
+			</sub_charsheet_statement_part>
 
-			<sub_charhseet_statement_part name="sub_focus">
+			<sub_charsheet_statement_part name="sub_focus">
+				<header>char_label_focus_second</header>
 				<path>focus2</path>
 				<recordtype>focus</recordtype>
-				<header>char_label_focus_second</header>
 				<option>FOCUS_COUNT</option>
 				<valuethreshold>2</valuethreshold>
-			</sub_charhseet_statement_part>
+			</sub_charsheet_statement_part>
 
-			<sub_charhseet_statement_part name="sub_flavor">
+			<sub_charsheet_statement_part name="sub_flavor">
+				<header>char_label_flavor</header>
 				<path>flavor</path>
 				<recordtype>flavor</recordtype>
-				<header>char_label_flavor</header>
-			</sub_charhseet_statement_part>
+			</sub_charsheet_statement_part>
 
 			<resize_charsheethelper />
 			<close_charsheethelper />
@@ -819,26 +813,56 @@
 	<windowclass name="charsheet_statement_part">
 		<script>
 			function onInit()
-				self.setHeader();
-			end
-			function setHeader()
 				title.setValue(Interface.getString(parentcontrol.header[1]))
-			end
-			function onLinkUpdated()
-				local sClass, sRecord = link.getValue()
-				button_iadd.setVisible((sRecord or "") == "")
-			end
-			function openRecordList()
-				RecordManager.openRecordIndex(parentcontrol.recordtype[1])
 			end
 		</script>
 		<sheetdata>
 			<anchor_content_top />
-			<title_charstatement_editor name="title" />
-			<charstatement_rightanchor name="rightanchor" />
-			<charstatement_link name="link" />
-			<button_charstatement_iadd name="button_iadd" />
-			<stringu_charstatement_editor name="name" />
+
+			<header_content_framed_metalplate name="title" />
+			<sub_content_top name="content">
+				<class>charsheet_statement_part_content</class>
+			</sub_content_top>
+		</sheetdata>
+	</windowclass>
+	<windowclass name="charsheet_statement_part_content">
+		<margins control="0,0,0,2" />
+		<script>
+			function onInit()
+				registerMenuItem(Interface.getString("char_statement_menu_delete"), "delete", 6)
+				registerMenuItem(Interface.getString("list_menu_deleteconfirm"), "delete", 6, 7)
+			end
+			function onMenuSelection(selection, subselection)
+				if selection == 6 and subselection == 7 then
+					local node = getDatabaseNode()
+					DB.setValue(node, "name", "string", "")
+					DB.setValue(node, "link", "windowreference", "", "")
+				end
+			end
+			function onLinkUpdated()
+				local _, sRecord = link.getValue();
+				iadd.setVisible((sRecord or "") == "");
+			end
+			function openRecordList()
+				RecordManager.openRecordIndex(parentcontrol.window.parentcontrol.recordtype[1])
+			end
+		</script>
+		<sheetdata>
+			<anchor_listitem_left_sm />
+			<anchor_listitem_right_sm />
+
+			<link_listitem_left name="link">
+				<hideonempty />
+			</link_listitem_left>
+			<button_listitem_iadd_left name="iadd">
+				<script>
+					function onButtonPress()
+						window.openRecordList();
+					end
+				</script>
+			</button_listitem_iadd_left>
+
+			<string_listitem_center_underline name="name" />
 		</sheetdata>
 	</windowclass>
 

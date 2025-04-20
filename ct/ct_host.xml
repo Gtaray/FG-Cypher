@@ -173,9 +173,12 @@
 				<script>
 					function action(draginfo)
 						local rActor = ActorManager.resolveActor(window.getDatabaseNode());
-						local sDesc = "[INIT]";
-						local rRoll = { sType = "init", sDesc = sDesc, nMod = 0 };
-						rRoll.aDice = DiceRollManager.getActorDice({ "d20" }, rActor);
+						local rRoll = {
+							sType = "init",
+							sDesc = string.format("[%s]", Interface.getString("action_init_tag")),
+							aDice = DiceRollManager.getActorDice({ "d20" }, rActor),
+							nMod = 0,
+						};
 						ActionsManager.performAction(draginfo, rActor, rRoll);
 					end
 					function onDoubleClick(x, y)

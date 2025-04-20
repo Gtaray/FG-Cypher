@@ -54,34 +54,27 @@
 		<margins control="0,5,0,10" />
 		<script file="utility/scripts/effect.lua" />
 		<sheetdata>
-			<genericcontrol name="rightanchor">
-				<anchored width="0" height="0">
-					<top />
-					<right />
-				</anchored>
-				<invisible />
-			</genericcontrol>
-			<button_idelete name="idelete">
-				<anchored width="20" height="20">
-					<top offset="0" />
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-2" />
-				</anchored>
+			<anchor_listitem_left_sm />
+			<anchor_listitem_right_sm />
+
+			<button_listitem_idelete_left name="idelete">
 				<editmode>conditions_iedit</editmode>
-			</button_idelete>
+			</button_listitem_idelete_left>
 			<button_condition_activate name="activate" />
 			<button_condition_icon name="icon" />
 
 			<string_labeled name="label">
-				<anchored height="20">
-					<top parent="rightanchor" />
-					<left parent="icon" anchor="right" offset="5" />
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-5" />
+				<anchored to="rightanchor" height="20">
+					<top />
+					<left parent="leftanchor" relation="current" offset="5" />
+					<right relation="current" offset="-5" />
 				</anchored>
 				<empty textres="label_condition_name_empty" />
 				<labelres>label_condition_name</labelres>
 				<gmeditonly />
 				<delaykeyupdate />
 			</string_labeled>
+
 			<string_labeled name="effect">
 				<anchored height="20">
 					<top parent="label" anchor="bottom" offset="5" />
@@ -171,12 +164,8 @@
 	</windowclass>
 
 	<template name="button_condition_activate">
-		<buttoncontrol>
+		<button_listitem_left>
 			<icon normal="button_action_effect" pressed="button_action_effect_down" />
-			<anchored width="20" height="20">
-				<top />
-				<left offset="0" />
-			</anchored>
 			<script>
 				function onDragStart(button, x, y, draginfo)
 					return window.actionDrag(draginfo);
@@ -185,11 +174,14 @@
 					return window.action();
 				end
 			</script>
-		</buttoncontrol>
+		</button_listitem_left>
 	</template>
 
 	<template name="button_condition_icon">
-		<genericcontrol>
+		<spacer_listitem_left>
+			<anchored width="20" height="20">
+				<left offset="2" postoffset="2" />
+			</anchored>
 			<script>
 				function onInit()
 					local node = window.getDatabaseNode()
@@ -198,12 +190,12 @@
 						DB.setValue(node, "icon", "string", "cond_generic");
 					end
 
-					DB.addHandler(DB.getPath(node, "icon"), "onUpdate", update);
-					update();
+					DB.addHandler(DB.getPath(node, "icon"), "onUpdate", self.update);
+					self.update();
 				end
 				function onClose()
 					local node = window.getDatabaseNode()
-					DB.removeHandler(DB.getPath(node, "icon"), "onUpdate", update);
+					DB.removeHandler(DB.getPath(node, "icon"), "onUpdate", self.update);
 				end
 				function update()
 					local sIcon = DB.getValue(window.getDatabaseNode(), "icon", "");
@@ -213,13 +205,9 @@
 					return Session.IsHost and button == 1;
 				end
 				function onClickRelease(button, x, y)
-					Interface.openWindow("condition_icon_selector", window.getDatabaseNode().getNodeName());
+					Interface.openWindow("condition_icon_selector", window.getDatabasePath());
 				end
 			</script>
-			<anchored to="activate" width="20" height="20">
-				<top />
-				<left offset="2" anchor="right" />
-			</anchored>
-		</genericcontrol>
+		</spacer_listitem_left>
 	</template>
 </root>

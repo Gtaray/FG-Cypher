@@ -39,11 +39,10 @@ function onRoll(rSource, rTarget, rRoll)
 	local rMessage = ActionsManager.createActionMessage(rSource, rRoll);
 	rMessage.icon = "roll_heal";
 	
-	local sNodeType, nodeActor = ActorManager.getTypeAndNode(rSource);
 	local nTotal = ActionsManager.total(rRoll);
 
 	sFilter = nil;
-	if sNodeType == "pc" then
+	if ActorManager.isPC(rSource) then
 		local c = CharHealthManager.getRecoveriesUsed(rSource);
 
 		if c >= 4 then
@@ -78,7 +77,7 @@ function onRoll(rSource, rTarget, rRoll)
 
     -- Now open the dialog to assign the recovery points
 	if nTotal > 0 then
-		local wRecovery = Interface.openWindow("recovery", DB.getPath(nodeActor));
+		local wRecovery = Interface.openWindow("recovery", ActorManager.getCreatureNode(rSource));
 		wRecovery.setRecoveryAmount(nTotal);
 	end
 end

@@ -23,14 +23,6 @@ function onDrop(x, y, draginfo)
 	end
 end
 
-function VisDataCleared()
-	update();
-end
-
-function InvisDataAdded()
-	update();
-end
-
 function update()
 	local nodeRecord = getDatabaseNode();
 	local bReadOnly = WindowManager.getReadOnlyState(nodeRecord);

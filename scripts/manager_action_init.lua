@@ -35,7 +35,8 @@ function getRoll(rActor, rAction)
 	rRoll.sLabel = rAction.label;
 	rRoll.sStat = (rAction.sStat or ""):lower();
 	rRoll.sDesc = string.format(
-		"[INIT] %s", 
+		"[%s] %s",
+		Interface.getString("action_init_tag"),
 		StringManager.capitalize(rRoll.sStat)
 	);
 

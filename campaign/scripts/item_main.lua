@@ -8,14 +8,6 @@ function onInit()
 	update();
 end
 
-function VisDataCleared()
-	update();
-end
-
-function InvisDataAdded()
-	update();
-end
-
 -- This is needed to handle updating cyclers, which callSafeControlUpdate doesn't work with
 -- because cyclers don't implement the correct update function
 function updateControl(sControlName, bReadOnly, bHide)

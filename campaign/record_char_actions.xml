@@ -103,7 +103,6 @@
 				<datasource>.attacklist</datasource>
 				<class>char_weapon</class>
 				<sortby><control>name</control></sortby>
-				<allowdelete />
 				<script file="campaign/scripts/char_weaponlist.lua" />
 			</list_content_noscroll_top>
 			

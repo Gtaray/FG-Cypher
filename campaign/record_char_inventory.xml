@@ -142,8 +142,6 @@
 			<list_content_labeled_alternating_top name="list">
 				<datasource>.inventorylist</datasource>
 				<class>char_invitem</class>
-				<allowcreate />
-				<allowdelete />
 				<script file="campaign/scripts/char_invlist.lua" />
 			</list_content_labeled_alternating_top>
 
@@ -157,10 +155,10 @@
 				<editmode>sheet_iedit</editmode>
 			</spacer_list_content_idelete_label_right>
 			<spacer_list_content_link_label_right name="spacer_link" />
-			<icon_list_content_button_label_right name="label_carried">
+			<spacer_list_content_button_label_right name="label_carried">
 				<icon>char_inv_carried_header</icon>
 				<tooltip textres="char_tooltip_itemcarried" />
-			</icon_list_content_button_label_right>
+			</spacer_list_content_button_label_right>
 			<spacer_list_content_label_right name="spacer_type">
 				<anchored width="25" />
 			</spacer_list_content_label_right>
@@ -193,7 +191,6 @@
 				<class>char_activecypher</class>
 				<script file="campaign/scripts/char_invlist.lua" />
 				<activecyphers />
-				<allowdelete />
 			</list_content_labeled_alternating_top>
 
 			<anchor_list_content_label_left />
@@ -206,10 +203,10 @@
 				<editmode>sheet_iedit</editmode>
 			</spacer_list_content_idelete_label_right>
 			<spacer_list_content_link_label_right name="spacer_link" />
-			<icon_list_content_button_label_right name="label_carried">
+			<spacer_list_content_button_label_right name="label_carried">
 				<icon>char_inv_carried_header</icon>
 				<tooltip textres="char_tooltip_itemcarried" />
-			</icon_list_content_button_label_right>
+			</spacer_list_content_button_label_right>
 			<spacer_list_content_label_right name="spacer_type">
 				<anchored width="25" />
 			</spacer_list_content_label_right>
@@ -233,6 +230,12 @@
 			<anchor_listitem_left_sm />
 			<anchor_listitem_right_sm />
 
+			<button_listitem_idelete_left name="idelete">
+				<editmode>sheet_iedit</editmode>
+			</button_listitem_idelete_left>
+			<linkc_listitem_left name="shortcut">
+				<class>item</class>
+			</linkc_listitem_left>
 			<number_listitem_left name="count">
 				<anchored width="20" />
 				<tabtarget next="name" prev="location" />
@@ -241,43 +244,32 @@
 				<min>0</min>
 			</number_listitem_left>
 
-			<button_listitem_idelete name="idelete">
-				<editmode>sheet_iedit</editmode>
-			</button_listitem_idelete>
-			<linkc_listitem_right name="shortcut">
-				<class>item</class>
-			</linkc_listitem_right>
-			<button_listitem_right name="carried">
-				<state icon="button_char_inv_none" tooltipres="char_tooltip_inv_none" merge="add" />
-				<state icon="button_char_inv_carried" tooltipres="char_tooltip_inv_carried" merge="add" />
-				<state icon="button_char_inv_equipped" tooltipres="char_tooltip_inv_equipped" merge="add" />
-				<default>1</default>
-			</button_listitem_right>
+			<button_listitem_carried_right name="carried" />
 			<icon_itemtype_right name="type" />
 			<stringc_listitem_right_noframe_static name="type_na">
 				<anchored width="14" />
 				<static text="-" />
 				<center />
 			</stringc_listitem_right_noframe_static>
-			<string_listitem_right_text name="location">
+			<string_listitem_right_underline name="location">
 				<nodrop />
 				<delaykeyupdate merge="delete" />
 				<tabtarget next="count" prev="nonid_name" />
 				<script file="campaign/scripts/char_invloc.lua" />
-			</string_listitem_right_text>
+			</string_listitem_right_underline>
 
-			<string_listitem_center_text name="name">
+			<string_listitem_center_underline name="name">
 				<nodrop />
 				<tabtarget next="nonid_name" prev="count" />
 				<script file="campaign/scripts/char_invname.lua" />
-			</string_listitem_center_text>
-			<string_listitem_center_text name="nonid_name">
+			</string_listitem_center_underline>
+			<string_listitem_center_underline name="nonid_name">
 				<nodrop />
 				<empty textres="library_recordtype_empty_nonid_item" />
 				<invisible />
 				<tabtarget next="location" prev="name" />
 				<script file="campaign/scripts/char_invname.lua" />
-			</string_listitem_center_text>
+			</string_listitem_center_underline>
 		</sheetdata>
 	</windowclass>
 
@@ -318,7 +310,6 @@
 				</anchored>
 				<class>char_currencyitem</class>
 				<datasource>.coins</datasource>
-				<allowdelete />
 				<columns width="150" fillwidth="true" />
 				<script>
 					function onInit()
@@ -341,19 +332,18 @@
 			<anchor_listitem_left_sm />
 			<anchor_listitem_right_sm />
 
-			<button_listitem_idelete name="idelete">
+			<button_listitem_idelete_left name="idelete">
 				<editmode>sheet_iedit</editmode>
-			</button_listitem_idelete>
-
+			</button_listitem_idelete_left>
 			<number_dropadd_listitem_left name="amount">
 				<anchored width="50" />
 				<description field="name" />
 				<delaykeyupdate />
 			</number_dropadd_listitem_left>
 
-			<string_listitem_center_text name="name">
+			<string_listitem_center_underline name="name">
 				<nodrag />
-			</string_listitem_center_text>
+			</string_listitem_center_underline>
 		</sheetdata>
 	</windowclass>
 

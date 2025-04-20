@@ -90,7 +90,7 @@ function performRoll(draginfo, rActor, rAction)
 		-- one cost into another.
 		-- But you cannot convert XP costs
 		if rRoll.sStat ~= "xp" then
-			local aConvert = EffectManagerCypher.getConversionEffect(rActor, rRoll.sCostStat, { "cost" });
+			local aConvert = EffectManagerCypher.getConversionEffect(rTarget, rRoll.sCostStat, { "cost" });
 			if #aConvert > 0 then
 				local w = Interface.openWindow("prompt_cost_conversion", "");
 				w.setData(aConvert, rRoll.sCostStat);

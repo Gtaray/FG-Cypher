@@ -62,17 +62,12 @@ function getRoll(rActor, rAction)
 end
 
 function getRollLabel(rActor, rAction, rRoll)
-	local sLabel = string.format("[DAMAGE (%s", StringManager.capitalize(rRoll.sDamageStat));
-
+	local sLabel = string.format("[%s (%s", Interface.getString("action_damage_tag"), StringManager.capitalize(rRoll.sDamageStat));
 	if (rAction.sDamageType or "") ~= "" then
 		sLabel = string.format("%s, %s", sLabel, rAction.sDamageType)
 	end
-	sLabel = string.format(
-		"%s)] %s", 
-		sLabel, 
-		rRoll.sLabel);
-
-	return sLabel
+	sLabel = string.format("%s)] %s", sLabel, rRoll.sLabel);
+	return sLabel;
 end
 
 function getEffectFilter(rRoll)
@@ -97,7 +92,7 @@ function modRoll(rSource, rTarget, rRoll)
 	end
 
 	-- Convert damage stat
-	local sConvertedDmgStat = EffectManagerCypher.getDamageStatConversionEffect(rTarget, aFilter)
+	local sConvertedDmgStat = EffectManagerCypher.getDamageStatConversionEffect(rSource, aFilter)
 	if (sConvertedDmgStat or "") ~= "" then
 		rRoll.sDamageStat = sConvertedDmgStat;
 	end
@@ -143,7 +138,7 @@ function rebuildRoll(rSource, rTarget, rRoll)
 	local bRebuilt = false;
 
 	if not rRoll.sLabel then
-		rRoll.sLabel = StringManager.trim(rRoll.sDesc:match("%[DAMAGE.*%]([^%[]+)"));
+		rRoll.sLabel = ActionDamageCore.decodeLabelText(rRoll.sDesc);
 		bRebuilt = true;
 	end
 	if not rRoll.sDamageStat then
@@ -268,7 +263,12 @@ function applyDamage(rSource, rTarget, rRoll)
 	-- Variables for applying damage and building notifications
 	local aNotifications = {};
 
-	local sTargetNodeType, nodeTarget = ActorManager.getTypeAndNode(rTarget);
+	local nodeTarget;
+	if ActorManager.isPC(rTarget) then
+		nodeTarget = ActorManager.getCreatureNode(rTarget);
+	else
+		nodeTarget = ActorManager.getCTNode(rTarget);
+	end
 	if not nodeTarget then
 		return;
 	end
@@ -298,7 +298,7 @@ function applyDamage(rSource, rTarget, rRoll)
 		sStat = rRoll.sHealStat;
 	end
 
-	if sTargetNodeType == "pc" then
+	if ActorManager.isPC(rTarget) then
 		ActionDamage.applyDamageToPc(
 			rSource, 
 			rTarget, 
@@ -306,14 +306,12 @@ function applyDamage(rSource, rTarget, rRoll)
 			sStat,  
 			rRoll.bNoOverflow,
 			aNotifications);
-	elseif sTargetNodeType == "ct" then
+	else
 		ActionDamage.applyDamageToNpc(
 			rSource, 
 			rTarget, 
 			rRoll.nTotal, 
 			aNotifications);
-	else
-		return;
 	end
 
 	-- Check for status change
@@ -546,7 +544,7 @@ function applyArmor(rSource, rTarget, rRoll, aNotifications)
 end
 
 function applyDamageToPc(rSource, rTarget, nDamage, sStat, bNoOverflow, aNotifications)
-	local sTargetNodeType, nodePC = ActorManager.getTypeAndNode(rTarget);
+	local nodePC = ActorManager.getCreatureNode(rTarget);
 	if not nodePC then
 		return;
 	end
@@ -602,7 +600,7 @@ function applyDamageToPc(rSource, rTarget, nDamage, sStat, bNoOverflow, aNotific
 end
 
 function applyDamageToNpc(rSource, rTarget, nDamage, aNotifications)
-	local sTargetNodeType, nodeNPC = ActorManager.getTypeAndNode(rTarget);
+	local nodeNPC = ActorManager.getCreatureNode(rTarget);
 	if not nodeNPC then
 		return;
 	end

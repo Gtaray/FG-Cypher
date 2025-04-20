@@ -31,37 +31,19 @@
 	<windowclass name="list_char_mod_item">
 		<script file="campaign/scripts/char_content_mod_item.lua" />
 		<sheetdata>			
-			<genericcontrol name="rightanchor">
-				<anchored width="0" height="0">
-					<top />
-					<right />
-				</anchored>
-				<invisible />
-			</genericcontrol>
-			<button_idelete name="idelete">
-				<anchored width="20" height="20">
-					<top offset="4" />
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-2" />
-				</anchored>
+			<anchor_listitem_left_sm />
+			<anchor_listitem_right_sm />
+
+			<button_listitem_idelete_left name="idelete">
 				<editmode>features_iedit</editmode>
-			</button_idelete>
-			<linkcontrol name="shortcut">
-				<anchored width="20" height="20">
-					<top offset="2" />
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-2" />
-				</anchored>
+			</button_listitem_idelete_left>
+			<linkc_listitem_left name="shortcut">
 				<class>record_char_modification</class>
-				<readonly />
-			</linkcontrol>
-			<simplestringc name="summary">
-				<anchored height="20">
-					<top parent="rightanchor" />
-					<left anchor="left" />
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-5" />
-				</anchored>
-				<readonly />
+			</linkc_listitem_left>
+
+			<stringc_listitem_center_noframe_static name="summary">
 				<empty textres="char_mod_empty_summary" />
-			</simplestringc>
+			</stringc_listitem_center_noframe_static>
 		</sheetdata>
 	</windowclass>
 
@@ -240,7 +222,8 @@
 	</template>
 
 	<template name="combobox_edge">
-		<combobox_base>
+		<combobox_listitem_center>
+			<unsorted />
 			<script>
 				function onInit()
 					super.onInit();
@@ -254,8 +237,11 @@
 						Interface.getString("char_mod_edge_any"),
 					});
 				end
+				function onValueChanged()
+					window.update();
+				end
 			</script>
-		</combobox_base>
+		</combobox_listitem_center>
 	</template>
 
 	<template name="combobox_stat">

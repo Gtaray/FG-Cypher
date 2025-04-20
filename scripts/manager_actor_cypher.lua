@@ -131,8 +131,7 @@ end
 ---------------------------------------------------------------
 -- Returns data objects for every armor that matches stat and damage type
 function getArmorData(rActor, sStat, aDamageTypes)
-	local _, node = ActorManager.getTypeAndNode(rActor);
-
+	local node = ActorManager.getCreatureNode(rActor);
 	if not node then
 		return {};
 	end
@@ -225,8 +224,7 @@ end
 
 -- This only cares about creatures on the CT, since it's specifically for combat
 function getArmor(rActor, rTarget, sStat, sDamageType, bAmbientDamage, bPierceDamage)
-	local _, node = ActorManager.getTypeAndNode(rActor);
-
+	local node = ActorManager.getCreatureNode(rActor);
 	if not node then
 		return 0, 0;
 	end
@@ -297,8 +295,7 @@ function getArmor(rActor, rTarget, sStat, sDamageType, bAmbientDamage, bPierceDa
 end
 
 function getArmorThreshold(rActor, rTarget, sStat, sDamageType, bAmbientDamage, bPierceDamage)
-	local _, node = ActorManager.getTypeAndNode(rActor);
-
+	local node = ActorManager.getCreatureNode(rActor);
 	if not node then
 		return 0, 0;
 	end
@@ -357,8 +354,7 @@ end
 
 -- Armor Cap is a limit on how much damage can be taken from a single hit
 function getDamageLimit(rActor, rTarget, sStat, sDamageType, bAmbientDamage, bPierceDamage)
-	local _, node = ActorManager.getTypeAndNode(rActor);
-
+	local node = ActorManager.getCreatureNode(rActor);
 	if not node then
 		return 9999, 9999;
 	end
@@ -418,8 +414,7 @@ function getDamageLimit(rActor, rTarget, sStat, sDamageType, bAmbientDamage, bPi
 end
 
 function isImmune(rActor, rTarget, aDamageTypes, bAmbientDamage, bPierceDamage)
-	local _, node = ActorManager.getTypeAndNode(rActor);
-
+	local node = ActorManager.getCreatureNode(rActor);
 	if not node then
 		return 0;
 	end
