@@ -10,16 +10,17 @@
 		<margins control="0,0,0,10" />
 		<script file="campaign/scripts/char_weapon.lua" />
 		<sheetdata>
+			<hnx name="carried" />
+
 			<anchor_listitem_left />
 			<anchor_listitem_right />
 
-			<hnx name="carried" />
+			<button_listitem_idelete_left name="idelete">
+				<editmode>actions_iedit</editmode>
+			</button_listitem_idelete_left>
+			<link_listitem_left name="itemlink" />
 			<button_charweaponequipped name="equipped" />
 			
-			<button_listitem_idelete name="idelete">
-				<editmode>actions_iedit</editmode>
-			</button_listitem_idelete>
-			<link_listitem_right name="itemlink" />
 			<buttonc_listitem_right name="activatedetail">
 				<icon normal="button_details" pressed="button_details_down" />
 				<script>

@@ -114,11 +114,11 @@
 			<anchor_listitem_left_sm />
 			<anchor_listitem_right_sm />
 
+			<button_listitem_idelete_left name="idelete" />
 			<button_skill name="training">
 				<tabtarget next="name" />
 			</button_skill>
 
-			<button_listitem_idelete name="idelete" />
 			<!-- Removed until reference skills are a thing -->
 			<!-- <button_listitem_right name="shortcut">
 				<icon normal="button_link" pressed="button_link_down" />
@@ -145,9 +145,9 @@
 				<tabtarget next="asset" prev="name" />
 			</cycler_charskillability>
 
-			<string_listitem_center_text name="name">
+			<string_listitem_center_underline name="name">
 				<tabtarget next="stat" prev="training" />
-			</string_listitem_center_text>
+			</string_listitem_center_underline>
 		</sheetdata>
 	</windowclass>
 

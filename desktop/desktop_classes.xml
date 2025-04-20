@@ -243,14 +243,8 @@
 	<template name="characterlist_entry" merge="join">
 		<genericcontrol>
 			<script>
-				local fSetMenuItems
-				function onInit()
-					fSetMenuItems = super.setMenuItems;
-					super.setMenuItems = setMenuItems;
-				end
 				function setMenuItems()
-					fSetMenuItems();	
-
+					super.setMenuItems();	
 					if Session.IsHost then
 						IntrusionManager.registerIntrusionMenu(self);
 					end

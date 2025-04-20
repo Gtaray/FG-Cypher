@@ -220,30 +220,24 @@
 		<margins control="0,0,0,2" />
 		<script file="campaign/scripts/list_ref_ability_item.lua" />
 		<sheetdata>
-			<genericcontrol name="leftanchor">
-				<anchored width="0" height="0">
-					<top />
-					<left />
-				</anchored>
-				<invisible />
-			</genericcontrol>
-			<button_checkbox name="given">
-				<anchored to="leftanchor" width="12" height="12">
-					<top offset="4" />
-					<left relation="relative" />
-				</anchored>
+			<anchor_listitem_left_sm />
+			<anchor_listitem_right_sm />
+
+			<button_listitem_idelete_left name="idelete" />
+			<linkc_listitem_left name="shortcut">
+				<class>ability</class>
+			</linkc_listitem_left>
+
+			<button_listitem_checkbox_left name="given">
 				<tooltip textres="ref_ability_tooltip_ability_given" />
 				<script>
 					function onValueChanged()
 						window.windowlist.applySort()
 					end
 				</script>
-			</button_checkbox>
-			<basicnumber name="tier">
-				<anchored to="leftanchor" height="18" width="20">
-					<left relation="relative" offset="5" />
-					<top offset="1" />
-				</anchored>
+			</button_listitem_checkbox_left>
+			<number_listitem_left name="tier">
+				<anchored width="20" />
 				<min>1</min>
 				<max>6</max>
 				<default>1</default>
@@ -253,44 +247,17 @@
 						window.windowlist.applySort()
 					end
 				</script>
-			</basicnumber>
-
-			<genericcontrol name="rightanchor">
-				<anchored width="0" height="0">
-					<top />
-					<right />
-				</anchored>
-				<invisible />
-			</genericcontrol>
-			<button_idelete name="idelete">
-				<anchored width="20" height="20">
-					<top offset="2" />
-					<right parent="rightanchor" anchor="left" relation="relative" offset="0" />
-				</anchored>
-			</button_idelete>
-			<linkfield name="link">
-				<anchored width="20" height="20">
-					<top offset="2" />
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-2" />
-				</anchored>
-				<class>ability</class>
-				<readonly />
-			</linkfield>
-
-			<string_textlistitem name="name">
-				<anchored height="20">
-					<top offset="2" />
-					<left parent="leftanchor" anchor="right" relation="relative" offset="7" />
-					<right parent="rightanchor" anchor="left" relation="current" offset="-5" />
-				</anchored>
+			</number_listitem_left>
+			
+			<string_listitem_center_underline name="name">
 				<empty textres="library_recordtype_empty_ability"></empty>
+				<readonly />
 				<script>
 					function onValueChanged()
 						window.windowlist.applySort()
 					end
 				</script>
-				<readonly />
-			</string_textlistitem>
+			</string_listitem_center_underline>
 		</sheetdata>
 	</windowclass>
 
@@ -306,36 +273,24 @@
 				</script>
 			</hs>
 
-			<genericcontrol name="rightanchor">
-				<anchored position="insidetopright" offset="0,2" width="0" height="20" />
-			</genericcontrol>
-			<button_idelete name="idelete">
-				<anchored to="rightanchor">
-					<top />
-					<right anchor="left" relation="relative" offset="-5" />
-				</anchored>
+			<anchor_listitem_left_sm />
+			<anchor_listitem_right_sm />
+
+			<button_listitem_idelete_left name="idelete">
 				<editmode>actions_iedit</editmode>
-			</button_idelete>
+			</button_listitem_idelete_left>
+
 			<button_poweractioneditor name="detail">
 				<anchored to="rightanchor">
 					<top />
-					<right anchor="left" relation="relative" offset="-5" />
+					<right anchor="left" relation="relative" offset="-2" postoffset="-2" />
 				</anchored>
 			</button_poweractioneditor>
-			<button_ireorder name="ireorder">
-				<anchored to="rightanchor">
-					<top />
-					<right anchor="left" relation="relative" offset="-5" />
-				</anchored>
+			<button_listitem_ireorder_right name="ireorder">
 				<editmode>actions_iedit</editmode>
-			</button_ireorder>
+			</button_listitem_ireorder_right>
 
-			<subwindow name="contents">
-				<anchored position="insidetopleft">
-					<right parent="rightanchor" anchor="left" relation="relative" offset="-5" />
-				</anchored>
-				<activate />
-			</subwindow>
+			<sub_listitem_center name="contents" />
 		</sheetdata>
 	</windowclass>
 </root>

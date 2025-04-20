@@ -1029,7 +1029,7 @@ function encodeTarget(vTarget, rRoll)
 		-- vTarget is the rTarget table
 		sTargetNode = ActorManager.getCTNodeName(vTarget)
 	elseif type(vTarget) == "databasenode" then
-		sTargetNode = DB.getNodeName(vTarget);
+		sTargetNode = DB.getPath(vTarget);
 	elseif type(vTarget) == "string" then
 		sTargetNode = vTarget;
 	end

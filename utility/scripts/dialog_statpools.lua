@@ -3,9 +3,6 @@
 -- attribution and copyright information.
 --
 
-function onInit()
-end
-
 function setData(nMight, nSpeed, nIntellect, nFlex)
 	might_current.setValue(nMight);
 	speed_current.setValue(nSpeed);

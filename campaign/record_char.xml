@@ -47,24 +47,13 @@
 		</tab>
 		<script file="campaign/scripts/char.lua" />
 	</windowclass>
-	<windowclass name="charsheet_overview" copy="charsheet_overview_base">
+	<windowclass name="charsheet_overview" copy="charsheet_overview_base_v2">
 		<script file="campaign/scripts/char_overview.lua" />
 		<sheetdata>
-			<frame_char name="overviewframe">
-				<anchored height="50" />
-			</frame_char>		
-			<genericcontrol name="nameanchor" insertbefore="name">
-				<anchored to="overviewframe" width="0" height="0">
-					<top />
-					<right anchor="right" />
-				</anchored>
-				<invisible />
-			</genericcontrol>
-
 			<buttoncontrol name="button_pc_intrusion" insertbefore="name">
-				<anchored width="30" height="30">
-					<bottom parent="overviewframe" anchor="bottom" offset="-10" />
-					<right parent="nameanchor" anchor="left" relation="relative" offset="-10" />
+				<anchored to="rightanchor" width="30" height="30">
+					<top offset="5" />
+					<right relation="relative" offset="-5" postoffset="-5" />
 				</anchored>
 				<icon normal="playerintrusion" />
 				<tooltip textres="char_tooltip_pc_intrusion" />
@@ -76,28 +65,16 @@
 			</buttoncontrol>
 
 			<basicnumber name="hero" insertbefore="name">
-				<anchored width="30" height="20">
-					<bottom parent="overviewframe" anchor="bottom" offset="-10" />
-					<right parent="nameanchor" anchor="left" relation="relative" offset="-10" />
+				<anchored to="rightanchor" width="40" height="30">
+					<top offset="5" />
+					<right relation="relative" offset="-5" postoffset="-5" />
 				</anchored>
 				<min>0</min>
 			</basicnumber>
-			<label_fieldtop name="hero_label" insertbefore="name">
-				<anchored to="hero">
-					<left offset="-12" />
-					<right offset="12" />
-				</anchored>
+			<label_fieldbottom name="hero_label" insertbefore="name">
+				<anchored to="hero" />
 				<static textres="char_label_hero" />
-			</label_fieldtop>
-
-			<string_labeled name="name" merge="replace">
-				<anchored to="overviewframe" height="20">
-					<left offset="15" />
-					<bottom offset="-20" />
-					<right parent="nameanchor" anchor="left" relation="relative" offset="-10" />
-				</anchored>
-				<labelres>char_label_name</labelres>
-			</string_labeled>
+			</label_fieldbottom>
 		</sheetdata>
 	</windowclass>
 </root>

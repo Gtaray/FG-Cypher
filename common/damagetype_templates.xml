@@ -7,36 +7,16 @@
 		<sheetdata>
 			<hn name="armor" />
 
-			<genericcontrol name="rightanchor">
-				<anchored position="insidetopright" offset="0,2" height="0" width="0" />
-				<invisible />
-			</genericcontrol>
-			<button_idelete name="idelete">
-				<anchored to="rightanchor">
-					<top />
-					<right anchor="left" relation="relative" offset="-5" />
-				</anchored>
-			</button_idelete>
-			<button_details name="activatedetail">
-				<anchored to="rightanchor">
-					<top />
-					<right anchor="left" relation="relative" offset="-5" />
-				</anchored>
-				<script>
-					function onButtonPress()
-						window.toggleDetail();
-					end
-				</script>
-			</button_details>
-			<stringcu name="desc">
-				<anchored to="rightanchor">
-					<top />
-					<left parent="" offset="5" />
-					<right anchor="left" relation="relative" offset="-5" />
-				</anchored>
-				<multilinespacing>20</multilinespacing>
-				<readonly />
-			</stringcu>
+			<anchor_listitem_left_sm />
+			<anchor_listitem_right_sm />
+
+			<button_listitem_idelete_left name="idelete" />
+
+			<button_listitem_toggledetail_right name="activatedetail" />
+
+			<stringc_listitem_center_noframe_static name="desc">
+				<controlline />
+			</stringc_listitem_center_noframe_static>
 		</sheetdata>
 	</windowclass>
 

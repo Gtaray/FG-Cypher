@@ -392,82 +392,11 @@
 		</label_charfieldtop>
 	</template>
 
-	<template name="sub_charhseet_statement_part">
-		<subwindow>
-			<script file="campaign/scripts/char_statement_part.lua" />
-			<anchored to="contentanchor">
-				<top anchor="bottom" relation="relative" offset="15" />
-				<left />
-				<right />
-			</anchored>
+	<template name="sub_charsheet_statement_part">
+		<sub_content_top>
 			<class>charsheet_statement_part</class>
-			<activate />
-		</subwindow>
-	</template>
-	<template name="title_charstatement_editor">
-		<label_charframetop>
-			<anchored to="contentanchor" height="20">
-				<top anchor="bottom" relation="relative" />
-				<left offset="10" />
-				<right offset="-10" />
-			</anchored>
-			<icons>char_name</icons>
-		</label_charframetop>
-	</template>
-	<template name="charstatement_rightanchor">
-		<genericcontrol to="title">
-			<anchored>
-				<top parent="contentanchor" anchor="bottom" relation="relative" offset="8" />
-				<right />
-			</anchored>
-			<disabled />
-		</genericcontrol>
-	</template>
-	<template name="charstatement_link">
-		<linkfield_statich>
-			<anchored to="rightanchor" width="20" height="20">
-				<top offset="-2" />
-				<right relation="relative" offset="-2" postoffset="-2" />
-			</anchored>
-		</linkfield_statich>
-	</template>
-	<template name="button_charstatement_iadd">
-		<button_iadd_recordtype>
-			<script>
-				function onButtonPress()
-					window.openRecordList();
-				end
-			</script>
-			<anchored to="rightanchor">
-				<top offset="-2" />
-				<right relation="relative" offset="-2" postoffset="-2" />
-			</anchored>
-		</button_iadd_recordtype>
-	</template>
-	<template name="stringu_charstatement_editor">
-		<stringu>
-			<script>
-				function onInit()
-					if super and super.onInit then
-						super.onInit()
-					end
-					registerMenuItem(Interface.getString("char_statement_menu_delete"), "delete", 6)
-					registerMenuItem(Interface.getString("list_menu_deleteconfirm"), "delete", 6, 7)
-				end
-				function onMenuSelection(selection, subselection)
-					if selection == 6 and subselection == 7 then
-						local node = window.getDatabaseNode()
-						DB.setValue(node, "name", "string", "")
-						DB.setValue(node, "link", "windowreference", "", "")
-					end
-				end
-			</script>
-			<anchored to="rightanchor">
-				<top />
-				<left parent="contentanchor" offset="5" />
-				<right anchor="left" relation="relative" offset="-5" />
-			</anchored>
-		</stringu>
+			<script file="campaign/scripts/char_statement_part.lua" />
+		</sub_content_top>
 	</template>
 
 	<template name="button_advancement">
@@ -781,28 +710,25 @@
 
 	<!-- Custom Stat Pools -->
 	<template name="number_custom_stat_pool">
-		<basicnumber>
-			<anchored to="rightanchor" width="30" height="20">
-				<top />
-				<right anchor="left" relation="relative" offset="-5" />
-			</anchored>
+		<number_listitem_right>
+			<anchored width="30" />
 			<min>0</min>
-		</basicnumber>
+		</number_listitem_right>
 	</template>
 
 	<template name="button_custom_stat_pool_statroll">
 		<button_roll>
 			<anchored to="rightanchor">
 				<top />
-				<right anchor="left" relation="relative" offset="-5" />
+				<right anchor="left" relation="relative" offset="-2" postoffset="-2" />
 			</anchored>
 			<script>
-				function onDragStart(button, x, y, draginfo)
-					action(draginfo)
+				function onDragStart(_, _, _, draginfo)
+					self.action(draginfo)
 					return true;
 				end
 				function onButtonPress()
-					action()
+					self.action()
 				end
 				function action(draginfo)
 					local sStat = window.name.getValue()
@@ -827,15 +753,15 @@
 		<button_defenseroll>
 			<anchored to="rightanchor" height="20" width="20">
 				<top />
-				<right anchor="left" relation="relative" offset="-5" />
+				<right anchor="left" relation="relative" offset="-2" postoffset="-2" />
 			</anchored>
 			<script>
-				function onDragStart(button, x, y, draginfo)
-					action(draginfo)
+				function onDragStart(_, _, _, draginfo)
+					self.action(draginfo)
 					return true;
 				end
 				function onButtonPress()
-					action()
+					self.action()
 				end
 				function action(draginfo)
 					local sStat = window.name.getValue()
@@ -860,16 +786,6 @@
 				end
 			</script>
 		</button_defenseroll>
-	</template>
-
-	<template name="button_iadd_recordtype">
-		<button_iadd_base>
-			<script>
-				function onButtonPress()
-					RecordManager.openRecordIndex(recordtype[1])
-				end
-			</script>
-		</button_iadd_base>
 	</template>
 
 	<template name="button_defenseroll">

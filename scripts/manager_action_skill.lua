@@ -198,7 +198,7 @@ function rebuildRoll(rSource, rTarget, rRoll)
 	local bRebuilt = false;
 
 	if not rRoll.sLabel then
-		rRoll.sLabel = StringManager.trim(rRoll.sDesc:match("%[SKILL.*%]([^%[]+)"));
+		rRoll.sLabel = ActionCore.decodeLabelText(rRoll.sDesc, "action_skill_tag");
 		rRoll.sSkill = rRoll.sLabel
 		bRebuilt = true;
 	end

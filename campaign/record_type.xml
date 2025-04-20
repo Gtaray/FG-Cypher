@@ -213,25 +213,18 @@
 			end
 		</script>
 		<sheetdata>
-			<anchor_column name="columnanchor" />
+			<anchor_listitem_left_sm />
+			<anchor_listitem_right_sm />
 
-			<button_idelete name="idelete">
-				<anchored width="20" height="20">
-					<top />
-					<right anchor="right" offset="0" />
-				</anchored>
+			<button_listitem_idelete_left name="idelete">
 				<editmode>edge_iedit</editmode>
-			</button_idelete>
-
-			<label_column name="option_label">
+			</button_listitem_idelete_left>
+			<label_listitem_left name="option_label">
+				<anchored width="100" />
 				<static textres="char_mod_edge_label" />
-			</label_column>
-			<combobox_edge name="option">
-				<anchored>
-					<left offset="97" />
-					<right parent="idelete" anchor="left" offset="-5" />
-				</anchored>
-			</combobox_edge>
+			</label_listitem_left>
+
+			<combobox_edge name="option" />
 		</sheetdata>
 	</windowclass>
 

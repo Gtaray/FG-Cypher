@@ -53,20 +53,6 @@
 			<script file="common/scripts/cycler_stat_custom.lua" />
 		</button_coststat>
 	</template>
-	<template name="column_coststat">
-		<button_coststat>
-			<anchored>
-				<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
-				<left offset="97" />
-			</anchored>
-		</button_coststat>
-	</template>
-	<template name="column_coststat_custom">
-		<column_coststat>
-			<script file="common/scripts/cycler_stat_custom.lua" />
-			<target>coststat_custom</target>
-		</column_coststat>
-	</template>
 
 	<template name="column_custom_stat_field">
 		<string_columnh>
@@ -130,40 +116,12 @@
 		</cycler_column>
 	</template>
 
-	<template name="numberc_column">
-		<basicnumberc>
-			<anchored width="40" height="20">
-				<top parent="columnanchor" anchor="bottom" relation="relative" offset="7" />
-				<left offset="97" />
-			</anchored>
-		</basicnumberc>
-	</template>
-
 	<template name="number_pierce_amount">
 		<basicnumber name="pierceamount">
 			<anchored to="pierce" position="righthigh" offset="10,0" width="30" height="20" />
 			<min>0</min>
 			<tooltip textres="power_tooltip_pierce_armoramount" />
 		</basicnumber>
-	</template>
-
-	<template name="column_left">
-		<genericcontrol>
-			<anchored>
-				<top />
-				<left />
-				<right anchor="center" />
-			</anchored>
-		</genericcontrol>
-	</template>
-	<template name="column_right">
-		<genericcontrol>
-			<anchored>
-				<top />
-				<left anchor="center" />
-				<right />
-			</anchored>
-		</genericcontrol>
 	</template>
 
 	<template name="label_charframetop_collapsible">
@@ -256,17 +214,6 @@
 		</button_listitem_bigcheckbox_base>
 	</template>
 	
-	<template name="string_listitem_center_underline_multiline">
-		<string_listitem_underline_base>
-			<anchored to="rightanchor">
-				<top />
-				<left parent="leftanchor" relation="current" offset="5" />
-				<right relation="current" offset="-5" />
-			</anchored>
-			<multilinespacing>20</multilinespacing>
-		</string_listitem_underline_base>
-	</template>
-
 	<template name="button_text_content_right_top">
 		<button_text>
 			<anchored to="contentanchor" width="100">

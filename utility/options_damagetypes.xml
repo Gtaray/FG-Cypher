@@ -25,14 +25,14 @@
     <windowclass name="damagetype">
 		<margins control="0,0,0,5" />
 		<sheetdata>
-			<anchor_listitem_left name="leftanchor" />
+			<anchor_listitem_left />
+			<anchor_listitem_right />
 
-			<anchor_listitem_right name="rightanchor" />
-			<button_listitem_idelete name="idelete">
+			<button_listitem_idelete_left name="idelete">
 				<editmode>list_iedit</editmode>
-			</button_listitem_idelete>
+			</button_listitem_idelete_left>
 			
-			<string_listitem_center_text name="label" />
+			<string_listitem_center_underline name="label" />
 		</sheetdata>
 	</windowclass>
 </root>

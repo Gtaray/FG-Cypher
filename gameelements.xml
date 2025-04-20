@@ -6,14 +6,6 @@
 -->
 
 <root>
-	<menusettings>
-		<radial>
-			<hubcolor>B0A070</hubcolor>
-			<backgroundcolor>B0A070</backgroundcolor>
-			<iconcolor>FFFFFF</iconcolor>
-		</radial>
-	</menusettings>
-
 	<distance>
 		<base>5</base>
 		<diagmult>1.5</diagmult>

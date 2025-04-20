@@ -53,8 +53,6 @@
 			<anchor_column name="columnanchor" />
 
 			<windowlist name="modifications">
-				<script>
-				</script>
 				<class>dialog_modification_item</class>
 				<anchored>
 					<top parent="columnanchor" anchor="bottom" relation="relative" offset="5" />

@@ -51,8 +51,6 @@
 		<script file="campaign/scripts/char_arc.lua" />
 		<margin>0,0,0,2</margin>
 		<sheetdata>
-			<anchor_content_top />
-
 			<hn name="stage">
 				<default>1</default>
 				<min>1</min>
@@ -66,6 +64,8 @@
 				</script>
 				<empty textres="char_empty_arc" />
 			</hs>
+
+			<anchor_content_top />
 
 			<label_charframetop_collapsible name="header">
 				<icons>char_abilities_green</icons>
@@ -85,28 +85,24 @@
 				<target>content</target>
 			</label_charframetop_collapsible>
 
-			<genericcontrol name="rightanchor">
-				<anchored to="header" position="insidetopright" offset="-5,0" height="0" width="0" />
-			</genericcontrol>
-			<button_idelete name="idelete">
-				<anchored to="rightanchor">
-					<top />
-					<right anchor="left" relation="relative" offset="-5" />
-				</anchored>
+			<anchor_listitem_left>
+				<anchored offset="0,8" />
+			</anchor_listitem_left>
+			<anchor_listitem_right>
+				<anchored offset="0,8" />
+			</anchor_listitem_right>
+
+			<button_listitem_idelete_left name="idelete">
 				<editmode>sheet_iedit</editmode>
-			</button_idelete>
-			
-			<button_details name="details">
-				<anchored to="rightanchor">
-					<top />
-					<right anchor="left" relation="relative" offset="-5,0" />
-				</anchored>
-				<script>					
+			</button_listitem_idelete_left>
+
+			<button_listitem_toggledetail_right name="details">
+				<script>
 					function onButtonPress()
 						Interface.openWindow("char_arc_details", window.getDatabaseNode());
 					end
 				</script>
-			</button_details>
+			</button_listitem_toggledetail_right>
 
 			<subwindow name="tracker">
 				<anchored to="header" position="insidetopleft" offset="18,3" width="88" height="14" />
@@ -220,6 +216,9 @@
 				<anchored offset="10,5" />
 			</anchor_listitem_right>
 
+			<button_listitem_idelete_left>
+				<editmode>sheet_iedit</editmode>
+			</button_listitem_idelete_left>
 			<button_listitem_bigcheckbox_left name="done">
 				<script>
 					function onClickDown()
@@ -233,12 +232,8 @@
 					end
 				</script>
 			</button_listitem_bigcheckbox_left>
-			<button_listitem_idelete>
-				<editmode>sheet_iedit</editmode>
-			</button_listitem_idelete>
 
-			<string_listitem_center_underline_multiline name="description">
-			</string_listitem_center_underline_multiline>
+			<string_listitem_center_underline_multiline name="description" />
 		</sheetdata>
 	</windowclass>
 

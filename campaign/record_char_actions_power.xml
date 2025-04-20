@@ -45,7 +45,7 @@ power_item_header has all of the rest of the things you'd normally associate wit
 			</label_charframetop>
 
 			<button_idelete name="idelete">
-				<anchored position="insidetopright" offset="50,10" />
+				<anchored position="insidetopleft" offset="50,10" />
 				<script>
 					function onButtonPress()
 						if getValue() == 0 then
@@ -96,7 +96,10 @@ power_item_header has all of the rest of the things you'd normally associate wit
 		<sheetdata>
 			<hs name="group" />
 
-			<linkc_poweritem name="shortcut">
+			<button_listitem_idelete_left name="idelete">
+				<editmode>actions_iedit</editmode>
+			</button_listitem_idelete_left>
+			<linkc_listitem_left name="shortcut">
 				<script>
 					function onInit()
 						if super and super.onInit then
@@ -112,7 +115,7 @@ power_item_header has all of the rest of the things you'd normally associate wit
 						end
 					end
 				</script>
-			</linkc_poweritem>
+			</linkc_listitem_left>
 		</sheetdata>
 	</windowclass>
 
@@ -122,7 +125,8 @@ power_item_header has all of the rest of the things you'd normally associate wit
 			<hs name="coststat" />
 			<hn name="cost" />
 
-			<anchor_poweritem_header_left name="leftanchor" />
+			<anchor_listitem_left_sm />
+			<anchor_listitem_right_sm />
 
 			<genericcontrol name="leftpacer">
 				<anchored to="leftanchor" width="5" height="20">
@@ -139,7 +143,6 @@ power_item_header has all of the rest of the things you'd normally associate wit
 				<empty textres="char_empty_ability_name" />
 			</string_poweritem_header_name>
 
-			<anchor_poweritem_header_right name="rightanchor" />
 			<string_poweritem_header name="group">
 				<tooltip textres="power_tooltip_group" />
 			</string_poweritem_header>
@@ -183,26 +186,12 @@ power_item_header has all of the rest of the things you'd normally associate wit
 	<!-- Entry in a power_item's list_poweraction list -->
 	<windowclass name="pc_power_action" copy="power_action">
 		<sheetdata>
-			<button_poweractioneditor name="detail" merge="delete" />
-			<button_idelete name="idelete" merge="delete" />
-
-			<button_idelete name="idelete" insertbefore="ireorder">
-				<anchored to="rightanchor">
-					<top />
-					<right anchor="left" relation="relative" offset="-5" />
-				</anchored>
+			<button_listitem_idelete_left name="idelete">
 				<editmode>abilitylist_iedit</editmode>
-			</button_idelete>
-			<button_poweractioneditor name="detail" insertbefore="ireorder">
-				<anchored to="rightanchor">
-					<top />
-					<right anchor="left" relation="relative" offset="-5" />
-				</anchored>
-			</button_poweractioneditor>
-			
-			<button_ireorder name="ireorder" mergerule="resetandadd">
+			</button_listitem_idelete_left>
+			<button_listitem_ireorder_right name="ireorder">
 				<editmode>abilitylist_iedit</editmode>
-			</button_ireorder>
+			</button_listitem_ireorder_right>
 		</sheetdata>
 	</windowclass>
 
