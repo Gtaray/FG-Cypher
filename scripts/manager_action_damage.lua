@@ -97,7 +97,7 @@ function modRoll(rSource, rTarget, rRoll)
 	end
 
 	-- Convert damage stat
-	local sConvertedDmgStat = EffectManagerCypher.getDamageStatConversionEffect(rSource, aFilter)
+	local sConvertedDmgStat = EffectManagerCypher.getDamageStatConversionEffect(rTarget, aFilter)
 	if (sConvertedDmgStat or "") ~= "" then
 		rRoll.sDamageStat = sConvertedDmgStat;
 	end
