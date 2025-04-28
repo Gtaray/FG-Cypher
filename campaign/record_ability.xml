@@ -212,8 +212,13 @@
 	<!-- ABILITY LIST TEMPLATES -->
 	<template name="list_ref_ability">
 		<list_column name="abilities">
-			<script file="campaign/scripts/list_ref_ability.lua" />
 			<class>list_ref_ability_item</class>
+			<sortby>
+				<control>tier</control>
+				<control desc="true">given</control>
+				<control>name</control>
+			</sortby>
+			<script file="campaign/scripts/list_ref_ability.lua" />
 		</list_column>
 	</template>
 	<windowclass name="list_ref_ability_item">
@@ -224,9 +229,9 @@
 			<anchor_listitem_right_sm />
 
 			<button_listitem_idelete_left name="idelete" />
-			<linkc_listitem_left name="shortcut">
+			<link_listitem_left name="link">
 				<class>ability</class>
-			</linkc_listitem_left>
+			</link_listitem_left>
 
 			<button_listitem_checkbox_left name="given">
 				<tooltip textres="ref_ability_tooltip_ability_given" />
