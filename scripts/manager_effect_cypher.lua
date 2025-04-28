@@ -844,7 +844,7 @@ function getEffectsBonusByType(rActor, aEffectType, aFilter, bExclusiveFilters, 
 	if type(aEffectType) ~= "table" then
 		aEffectType = { aEffectType };
 	end
-	if type(aContent) ~= "table" and type(aFilter) == "string" then
+	if type(aFilter) ~= "table" and type(aFilter) == "string" then
 		aFilter = { aFilter:lower() };
 	end
 	if type(aContent) ~= "table" and type(aContent) == "string" then
