@@ -1,13 +1,9 @@
-local sLastLinkedDbRecord;
+--
+-- Please see the license.html file included with this distribution for
+-- attribution and copyright information.
+--
 
 function onInit()
-	DB.addHandler(DB.getPath(getDatabaseNode(), "link"), "onUpdate", onLinkUpdated)
-
-	local _, sRecord = link.getValue();
-	if sRecord then
-		addLinkDbHandler(sRecord);
-	end
-
 	-- Hide 'tier' and 'given' controls based on windowlist properties
 	-- If tiers are hidden, we fore the value to 0 so that it doesn't affect
 	-- future automation
@@ -19,28 +15,31 @@ function onInit()
 	if windowlist.hidegiven then
 		given.setVisible(false)
 	end
-end
 
+	self.onLinkUpdated();
+	DB.addHandler(DB.getPath(getDatabaseNode(), "link"), "onUpdate", self.onLinkUpdated)
+end
 function onClose()
-	DB.removeHandler(DB.getPath(getDatabaseNode(), "link"), "onUpdate", onLinkUpdated)
-	removeLinkDbHandler();
+	DB.removeHandler(DB.getPath(getDatabaseNode(), "link"), "onUpdate", self.onLinkUpdated)
+	self.removeLinkDbHandler();
 end
 
+local sLastLinkedDbRecord;
 function addLinkDbHandler(sRecord)
 	if sLastLinkedDbRecord then
 		removeLinkDbHandler();
 	end
 
-	DB.addHandler(DB.getPath(sRecord, "name"), "onUpdate", onLinkUpdated); 
+	DB.addHandler(DB.getPath(sRecord, "name"), "onUpdate", self.onNameUpdated); 
 	sLastLinkedDbRecord = sRecord;
+	self.onNameUpdated();
 end
-
 function removeLinkDbHandler()
 	if not sLastLinkedDbRecord then
 		return;
 	end
 	
-	DB.removeHandler(DB.getPath(sLastLinkedDbRecord, "name"), "onUpdate", onLinkUpdated);
+	DB.removeHandler(DB.getPath(sLastLinkedDbRecord, "name"), "onUpdate", self.onNameUpdated);
 	sLastLinkedDbRecord = nil;
 end
 
@@ -50,9 +49,16 @@ function onLinkUpdated()
 	if not abilitynode then
 		return;
 	end
+	self.addLinkDbHandler(sRecord);
+end
+function onNameUpdated()
+	local _, sRecord = link.getValue();
+	local abilitynode = DB.findNode(sRecord)
+	if not abilitynode then
+		return;
+	end
 
 	name.setValue(DB.getValue(abilitynode, "name", ""));
-	addLinkDbHandler(sRecord);
 end
 
 function update(bReadOnly)
