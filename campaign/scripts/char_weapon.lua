@@ -1,17 +1,15 @@
+-- 
+-- Please see the license.html file included with this distribution for 
+-- attribution and copyright information.
+--
+
 function onInit()
-	local node = getDatabaseNode();
-	DB.addHandler(node, "onChildUpdate", onDataChanged);
-
 	self.onDataChanged();
-end
 
+	DB.addHandler(getDatabaseNode(), "onChildUpdate", self.onDataChanged);
+end
 function onClose()
-	local node = getDatabaseNode();
-	DB.removeHandler(node, "onChildUpdate", onDataChanged);
-end
-
-function onModeChanged()
-	
+	DB.removeHandler(getDatabaseNode(), "onChildUpdate", self.onDataChanged);
 end
 
 function onDataChanged()
@@ -28,10 +26,30 @@ function onDataChanged()
 	ammoperattack.setVisible(bUseAmmo);
 	label_ammoperattack.setVisible(bUseAmmo);
 end
-
+function onLinkChanged()
+	local node = getDatabaseNode();
+	local itemnode = CharInventoryManager.getItemLinkedToRecord(node);
+	if itemnode then
+		carried.setLink(DB.getChild(itemnode, "carried"));
+	end
+end
 function onAttackTypeUpdated()
-	local sType = DB.getValue(getDatabaseNode(), "type", "");
-	equipped.setVisible(sType ~= "magic");
+	equipped.setVisible(DB.getValue(getDatabaseNode(), "type", "") ~= "magic");
+end
+function onAttackChanged()
+	local rAction = self.getAttackAction();
+	local sAttack = PowerManager.getPCActionAttackBase(rAction);
+	attackview.setValue(sAttack)
+end
+function onDamageChanged()
+	local rAction = self.getDamageAction();
+	local s = ""
+	if rAction.sDamageType ~= "" then
+		s = string.format("%s %s dmg", rAction.nDamage, rAction.sDamageType)
+	else
+		s = string.format("%s dmg", rAction.nDamage)
+	end
+	damageview.setValue(s)
 end
 
 function onEquippedChanged()
@@ -41,20 +59,6 @@ function onEquippedChanged()
 		local nodeActor = windowlist.window.getDatabaseNode();
 		CharInventoryManager.setEquippedWeapon(nodeActor, getDatabaseNode())
 	end
-end
-
-function onLinkChanged()
-	local node = getDatabaseNode();
-	local itemnode = CharInventoryManager.getItemLinkedToRecord(node);
-	if itemnode then
-		carried.setLink(DB.getChild(itemnode, "carried"));
-	end
-end
-
-function onAttackChanged()
-	local rAction = self.getAttackAction();
-	local sAttack = PowerManager.getPCActionAttackBase(rAction);
-	attackview.setValue(sAttack)
 end
 
 function getAttackAction()
@@ -85,7 +89,6 @@ function getAttackAction()
 
 	return rAction;
 end
-
 function onAttackAction(draginfo)
 	local nodeActor = windowlist.window.getDatabaseNode();
 	local rActor = ActorManager.resolveActor(nodeActor);
@@ -110,17 +113,6 @@ function onAttackAction(draginfo)
 	return true;
 end
 
-function onDamageChanged()
-	local rAction = self.getDamageAction();
-	local s = ""
-	if rAction.sDamageType ~= "" then
-		s = string.format("%s %s dmg", rAction.nDamage, rAction.sDamageType)
-	else
-		s = string.format("%s dmg", rAction.nDamage)
-	end
-	damageview.setValue(s)
-end
-
 function getDamageAction()
 	local nodeAction = getDatabaseNode();
 	local rAction = {};
@@ -139,7 +131,6 @@ function getDamageAction()
 
 	return rAction;
 end
-
 function onDamageAction(draginfo)
 	local nodeActor = windowlist.window.getDatabaseNode();
 	local rActor = ActorManager.resolveActor(nodeActor);
@@ -158,7 +149,6 @@ function getAmmo()
 
 	return nCur, nMax, nUsesPerAttack;
 end
-
 function hasAmmo()
 	if not self.usesAmmo() then
 		return true
@@ -167,11 +157,9 @@ function hasAmmo()
 	local nCur, nMax, nPerAttack = self.getAmmo();
 	return nCur + nPerAttack <= nMax;
 end
-
 function usesAmmo()
 	return DB.getValue(getDatabaseNode(), "useammo", "no") == "yes";
 end
-
 function useAmmo()
 	if not self.usesAmmo() then
 		return;

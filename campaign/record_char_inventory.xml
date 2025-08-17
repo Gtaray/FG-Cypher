@@ -357,7 +357,9 @@
 			<windowtitlebar_charsheethelper name="title">
 				<prefix>char_invmeta_title</prefix>
 			</windowtitlebar_charsheethelper>
-			<anchor_title_charsheethelper name="contentanchor" />
+			<windowmenubar_charsheethelper name="menubar" />
+
+			<anchor_content_charsheethelper_top />
 
 			<label name="label_cypherlimit">
 				<anchored width="100">
@@ -371,7 +373,6 @@
 			</basicnumber>
 
 			<resize_charsheethelper />
-			<close_charsheethelper />
 		</sheetdata>
 	</windowclass>
 

@@ -11,7 +11,7 @@ local hoverAbility = nil;
 local clickAbility = nil;
 
 function getActor()
-	local wTop = UtilityManager.getTopWindow(window);
+	local wTop = WindowManager.getTopWindow(window);
 	local nodeCreature = wTop.getDatabaseNode();
 	return ActorManager.resolveActor(nodeCreature);
 end

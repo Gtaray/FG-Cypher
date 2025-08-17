@@ -17,28 +17,4 @@
 			<left offset="230" />
 		</anchored>
 	</panel>
-
-	<die name="dF" merge="delete" />
-	<die name="rF" merge="delete" />
-	<die name="gF" merge="delete" />
-	<die name="bF" merge="delete" />
-	<die name="pF" merge="delete" />
-
-	<die name="d4" merge="delete" />
-	<die name="r4" merge="delete" />
-	<die name="g4" merge="delete" />
-	<die name="b4" merge="delete" />
-	<die name="p4" merge="delete" />
-
-	<die name="d8" merge="delete" />
-	<die name="r8" merge="delete" />
-	<die name="g8" merge="delete" />
-	<die name="b8" merge="delete" />
-	<die name="p8" merge="delete" />
-
-	<die name="d12" merge="delete" />
-	<die name="r12" merge="delete" />
-	<die name="g12" merge="delete" />
-	<die name="b12" merge="delete" />
-	<die name="p12" merge="delete" />
 </root>

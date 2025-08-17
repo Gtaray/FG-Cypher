@@ -119,20 +119,7 @@
 				<tabtarget next="name" />
 			</button_skill>
 
-			<!-- Removed until reference skills are a thing -->
-			<!-- <button_listitem_right name="shortcut">
-				<icon normal="button_link" pressed="button_link_down" />
-				<script>
-					function onButtonPress()
-						window.openSkillLink();
-					end
-				</script>
-			</button_listitem_right> -->
-
 			<button_skillroll />
-			<!-- <spacer_listitem_right name="spacer">
-				<anchored width="10" />
-			</spacer_listitem_right> -->
 			<number_charskill name="misc">
 				<tabtarget prev="asset" />
 			</number_charskill>

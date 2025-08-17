@@ -5,32 +5,16 @@
 
 function onInit()
 	local node = window.getDatabaseNode()
-	DB.addHandler(DB.getPath(node, "attacklist"), "onChildAdded", onChildAdded);
-	DB.addHandler(DB.getPath(node, "inventorylist.*.carried"), "onUpdate", onInventoryListUpdate);
-	DB.addHandler(DB.getPath(node, "inventorylist.*.type"), "onUpdate", onInventoryListUpdate);
-	
-	onModeChanged();
+	DB.addHandler(DB.getPath(node, "inventorylist.*.carried"), "onUpdate", self.onInventoryListUpdate);
+	DB.addHandler(DB.getPath(node, "inventorylist.*.type"), "onUpdate", self.onInventoryListUpdate);
 end
-
 function onClose()
 	local node = window.getDatabaseNode()
-	DB.removeHandler(DB.getPath(node, "attacklist"), "onChildAdded", onChildAdded);
-	DB.removeHandler(DB.getPath(node, "inventorylist.*.carried"), "onUpdate", onInventoryListUpdate);
-	DB.removeHandler(DB.getPath(node, "inventorylist.*.type"), "onUpdate", onInventoryListUpdate);
-end
-
-function onChildAdded()
-	onModeChanged();
+	DB.removeHandler(DB.getPath(node, "inventorylist.*.carried"), "onUpdate", self.onInventoryListUpdate);
+	DB.removeHandler(DB.getPath(node, "inventorylist.*.type"), "onUpdate", self.onInventoryListUpdate);
 end
 
 function onInventoryListUpdate()
-	applyFilter();
-end
-
-function onModeChanged()
-	for _,w in pairs(getWindows()) do
-		w.onModeChanged();
-	end
 	applyFilter();
 end
 
@@ -56,7 +40,6 @@ function onFilter(w)
 
 	return true;
 end
-
 function getLinkedItemNode(w)
 	local _, sRecord = w.itemlink.getValue()
 	return DB.findNode(sRecord);

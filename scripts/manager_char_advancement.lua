@@ -146,7 +146,7 @@ function increaseTier(nodeChar)
 	CharAdvancementManager.sendAdvancementMessage(
 		nodeChar, 
 		"char_message_tier_increase", 
-		tostring(nTier + 1));
+		tostring(nTier));
 end
 
 function promptAbilitiesForNextTier(nodeChar)

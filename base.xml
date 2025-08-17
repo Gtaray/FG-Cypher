@@ -6,7 +6,7 @@
 -->
 
 <root version="3.0" release="4.1" logo="logo.png">
-	<announcement text="Cypher System ruleset (2025-04-22) for Fantasy Grounds\rCopyright 2025 Smiteworks USA, LLC\rLink to Wiki: https://publish.obsidian.md/fantasygrounds-cypher-wiki/Home" font="emotefont" icon="rulesetlogo_CoreRPG" />	
+	<announcement text="Cypher System ruleset (2025-08-05) for Fantasy Grounds\rCopyright 2025 Smiteworks USA, LLC\rLink to Wiki: https://publish.obsidian.md/fantasygrounds-cypher-wiki/Home" font="emotefont" icon="rulesetlogo_CoreRPG" />	
 	<!-- Attributes -->
 	<description>
 		<displayname>Cypher System</displayname>
@@ -101,7 +101,6 @@
 	<!-- High-level scripts -->
 	<script name="GameSystem" file="scripts/manager_gamesystem.lua" />
 	<script name="OptionsManagerCypher" file="scripts/data_options_cyphersystem.lua" />
-	<script name="HelpManager" file="scripts/manager_help.lua" />
 	
 	<script name="CharManager" file="scripts/manager_char.lua" />
 	<script name="CharAbilityManager" file="scripts/manager_char_ability.lua" />

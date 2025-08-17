@@ -3,33 +3,21 @@
 -- attribution and copyright information.
 --
 
-slots = {};
-local nMaxSlotRow = 3;
-local nDefaultSpacing = 34;
-local nSpacing = nDefaultSpacing;
-
 function onInit()
 	super.onInit();
-
-	local node = window.getDatabaseNode();
-	DB.addHandler(DB.getPath(node, "health.damagetrack"), "onUpdate", onWoundsChanged);
-	onWoundsChanged();
+	self.updateStatus();
 end
-
-function onClose()
-	DB.removeHandler(DB.getPath(window.getDatabaseNode(), "health.damagetrack"), "onUpdate", onWoundsChanged);
+function onValueChanged()
+	self.updateStatus();
 end
-
-function onWoundsChanged()
-	updateSlots();
-	
+function updateStatus()
 	if window.damagestatus then
-		local c = getCurrentValue();
-		if c >= 3 then
+		local nCurr = self.getCurrentValue();
+		if nCurr >= 3 then
 			window.damagestatus.setValue(Interface.getString("status_dead"));
-		elseif c == 2 then
+		elseif nCurr == 2 then
 			window.damagestatus.setValue(Interface.getString("status_debilitated"));
-		elseif c == 1 then
+		elseif nCurr == 1 then
 			window.damagestatus.setValue(Interface.getString("status_impaired"));
 		else
 			window.damagestatus.setValue(Interface.getString("status_hale"));

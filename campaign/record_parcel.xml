@@ -8,17 +8,7 @@
 <root>
 	<windowclass name="parcel_item" merge="join">
 		<sheetdata>
-			<number_parcel name="count" merge="delete" />
-			<string_parcel name="name">
-				<anchored>
-					<left offset="5" />
-				</anchored>
-			</string_parcel>
-			<string_parcel name="nonid_name">
-				<anchored>
-					<left offset="5" />
-				</anchored>
-			</string_parcel>
+			<number_listitem_left name="count" merge="delete" />
 		</sheetdata>
 	</windowclass>
 </root>

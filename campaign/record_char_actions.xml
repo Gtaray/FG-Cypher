@@ -80,13 +80,9 @@
 		<margins control="0,0,0,2" />
 		<script>
 			function onInit()
-				self.onEditModeChanged();
 				self.onModeChanged();
 			end
-			function onEditModeChanged()
-			end
 			function onModeChanged()
-				weapons.onModeChanged();
 				actions.subwindow.onModeChanged();
 			end
 		</script>

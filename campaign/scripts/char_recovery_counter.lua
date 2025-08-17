@@ -4,30 +4,22 @@
 --
 
 function onInit()
-	super.onInit()
-
-	DB.addHandler(DB.getPath(window.getDatabaseNode(), "health.recovery.used"), "onUpdate", onRecoveryChanged);
-	onRecoveryChanged();
+	super.onInit();
+	self.updateStatus();
 end
-
-function onClose()
-	super.onClose();
-
-	DB.removeHandler(DB.getPath(window.getDatabaseNode(), "health.recovery.used"), "onUpdate", onRecoveryChanged);
+function onValueChanged()
+	self.updateStatus();
 end
-
-function onRecoveryChanged()
-	updateSlots();
-	
+function updateStatus()
 	if window.recoverystatus then
-		local c = self.getCurrentValue();
-		if c >= 4 then
+		local nCurr = self.getCurrentValue();
+		if nCurr >= 4 then
 			window.recoverystatus.setValue(Interface.getString("char_label_recoveryused"));
-		elseif c == 3 then
+		elseif nCurr == 3 then
 			window.recoverystatus.setValue(Interface.getString("char_label_recovery10hr"));
-		elseif c == 2 then
+		elseif nCurr == 2 then
 			window.recoverystatus.setValue(Interface.getString("char_label_recovery1hr"));
-		elseif c == 1 then
+		elseif nCurr == 1 then
 			window.recoverystatus.setValue(Interface.getString("char_label_recovery10min"));
 		else
 			window.recoverystatus.setValue(Interface.getString("char_label_recovery1action"));

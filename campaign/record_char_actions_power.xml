@@ -160,26 +160,23 @@ power_item_header has all of the rest of the things you'd normally associate wit
 		<script file="campaign/scripts/power_groupdetail.lua" />
 		<sheetdata>
 			<windowtitlebar_charsheethelper name="title">
-				<prefix>power_groupdeatil_title</prefix>
+				<prefix>power_groupdetail_title</prefix>
 			</windowtitlebar_charsheethelper>
-			<anchor_title_charsheethelper name="contentanchor" />
+			<windowmenubar_charsheethelper name="menubar" />
 
-			<anchor_column name="columnanchor">
-				<anchored to="contentanchor" position="below" offset="0,-5" />
-			</anchor_column>
-			
-			<label_column name="name_label">
+			<anchor_content_charsheethelper_top />
+
+			<label_content_column name="name_label">
 				<static textres="power_label_groupname" />
-			</label_column>
-			<string_column name="name">
+			</label_content_column>
+			<string_content_column name="name">
 				<anchored>
 					<right offset="-35" />
 				</anchored>
 				<delaykeyupdate />
-			</string_column>
+			</string_content_column>
 
 			<resize_charsheethelper />
-			<close_charsheethelper />
 		</sheetdata>
 	</windowclass>
 

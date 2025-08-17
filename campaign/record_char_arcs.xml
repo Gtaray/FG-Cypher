@@ -324,39 +324,35 @@
 			<windowtitlebar_charsheethelper name="title">
 				<prefix>char_title_arc_editor</prefix>
 			</windowtitlebar_charsheethelper>
-			<anchor_title_charsheethelper name="contentanchor" />
+			<windowmenubar_charsheethelper name="menubar" />
 
-			<anchor_column name="columnanchor">
-				<anchored to="contentanchor" position="below" offset="0,-5" />
-			</anchor_column>
-			
-			<label_column name="name_label">
+			<anchor_content_charsheethelper_top />
+
+			<label_content_column name="name_label">
 				<static textres="char_arc_editor_label_name" />
-			</label_column>
-			<string_column name="name">
+			</label_content_column>
+			<string_content_column name="name">
 				<anchored>
 					<right offset="-35" />
 				</anchored>
-			</string_column>
+			</string_content_column>
 
-			<label_column name="stage_label">
+			<label_content_column name="stage_label">
 				<static textres="char_arc_editor_label_stage" />
-			</label_column>
-			<comboboxc_column name="stage">
-				<listdirection>down</listdirection>
-				<unsorted />
+			</label_content_column>
+			<comboboxc_content_column name="stage">
 				<anchored>
 					<right offset="-35" />
 				</anchored>
+				<unsorted />
 				<script>
 					function onValueChanged()
 						window.onStageSelected();
 					end
 				</script>
-			</comboboxc_column>
+			</comboboxc_content_column>
 
 			<resize_charsheethelper />
-			<close_charsheethelper />
 		</sheetdata>
 	</windowclass>
 

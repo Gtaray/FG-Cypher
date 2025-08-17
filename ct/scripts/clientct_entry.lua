@@ -29,7 +29,7 @@ end
 
 function updateHealthDisplay()
 	local sOption;
-	if friendfoe.getStringValue() == "friend" then
+	if friendfoe.getValue() == "friend" then
 		sOption = OptionsManager.getOption("SHPC");
 	else
 		sOption = OptionsManager.getOption("SHNPC");

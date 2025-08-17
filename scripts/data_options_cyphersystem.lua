@@ -4,6 +4,8 @@
 --
 
 function onInit()
+	DiceManager.setDefaultDisabledDesktopDice({ "d4", "d8", "d12", });
+
 	registerOptions();
 	
 	DecalManager.setDefault("images/decals/cypher_decal.png@Cypher Assets");

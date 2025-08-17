@@ -1,6 +1,6 @@
 function onInit()
 	local node = getDatabaseNode();
-	local charnode = UtilityManager.getTopWindow(window).getDatabaseNode();
+	local charnode = WindowManager.getTopWindow(window).getDatabaseNode();
 
 	DB.addHandler(DB.getPath(node, "*"), "onChildUpdate", onAbilityDataChanged)
 	DB.addHandler(DB.getPath(charnode, "inventorylist.*.isidentified"), "onUpdate", onItemIdUpdated)
@@ -8,7 +8,7 @@ end
 
 function onClose()
 	local node = getDatabaseNode();
-	local charnode = UtilityManager.getTopWindow(window).getDatabaseNode();
+	local charnode = WindowManager.getTopWindow(window).getDatabaseNode();
 	DB.removeHandler(DB.getPath(node, "*"), "onChildUpdate", onAbilityDataChanged)
 	DB.removeHandler(DB.getPath(charnode, "inventorylist.*.isidentified"), "onUpdate", onItemIdUpdated)
 end

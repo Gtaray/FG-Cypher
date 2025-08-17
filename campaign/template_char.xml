@@ -267,19 +267,18 @@
 				<top to="columnanchor" anchor="bottom" relation="relative" offset="10" />
 				<left offset="0" />
 			</anchored>
-			<allowsinglespacing />
-			<spacing>34</spacing>
-			<maxslotperrow>3</maxslotperrow>
-			<values>
-				<maximum>3</maximum>
-			</values>
-			<sourcefields>
-				<current>health.damagetrack</current>
-			</sourcefields>
-			<stateicons merge="replaceandadd">
+			<stateicons>
 				<on>button_bigcheckon</on>
 				<off>button_bigcheckoff</off>
 			</stateicons>
+			<spacing>34</spacing>
+			<maxslotperrow>3</maxslotperrow>
+			<sourcefields>
+				<current>health.damagetrack</current>
+			</sourcefields>
+			<values>
+				<maximum>3</maximum>
+			</values>
 			<script file="campaign/scripts/char_damagetrack_counter.lua" />
 		</buttongroup_counter>
 	</template>
@@ -308,19 +307,18 @@
 				<top to="columnanchor" anchor="bottom" relation="relative" offset="10" />
 				<left offset="0" />
 			</anchored>
-			<allowsinglespacing />
-			<spacing>34</spacing>
-			<maxslotperrow>4</maxslotperrow>
-			<values>
-				<maximum>4</maximum>
-			</values>
-			<sourcefields>
-				<current>health.recovery.used</current>
-			</sourcefields>
-			<stateicons merge="replaceandadd">
+			<stateicons>
 				<on>button_bigcheckon</on>
 				<off>button_bigcheckoff</off>
 			</stateicons>
+			<spacing>34</spacing>
+			<maxslotperrow>4</maxslotperrow>
+			<sourcefields>
+				<current>health.recovery.used</current>
+			</sourcefields>
+			<values>
+				<maximum>4</maximum>
+			</values>
 			<script file="campaign/scripts/char_recovery_counter.lua" />
 		</buttongroup_counter>
 	</template>
@@ -584,9 +582,9 @@
 
 					local sVal = DB.getValue(getDatabaseNode())
 					if sVal == "Far" then
-						setStringValue("Long")
+						setValue("Long")
 					elseif sVal == "Very Far" then
-						setStringValue("Very Long")
+						setValue("Very Long")
 					end
 				end
 			</script>
@@ -672,22 +670,21 @@
 	</template>
 
 	<template name="buttongroup_counter_power">
-		<genericcontrol>
-			<anchored to="leftanchor">
+		<buttongroup_counter>
+			<anchored to="leftanchor" height="20">
 				<top offset="0" />
 				<left anchor="right" relation="relative" offset="10" />
 			</anchored>
-			<stateicons>
-				<on>button_checkon</on>
-				<off>button_checkoff</off>
-			</stateicons>
-			<spacing>12</spacing>
-			<script file="campaign/scripts/buttongroup_counter_power.lua" />
-		</genericcontrol>
+			<sourcefields>
+				<maximum>uses</maximum>
+				<current>used</current>
+			</sourcefields>
+		</buttongroup_counter>
 	</template>
 
 	<template name="state_charammocounter">
 		<buttongroup_counter>
+			<anchored height="20" />
 			<sourcefields>
 				<maximum>maxammo</maximum>
 				<current>ammo</current>
@@ -741,7 +738,7 @@
 						sStat = sStat
 					}
 					
-					local w = UtilityManager.getTopWindow(window);
+					local w = WindowManager.getTopWindow(window);
 					local rActor = ActorManager.resolveActor(w.getDatabaseNode())
 					ActionStat.payCostAndRoll(draginfo, rActor, rAction);
 				end
@@ -780,7 +777,7 @@
 						nModifier = nMod
 					}
 					
-					local w = UtilityManager.getTopWindow(window);
+					local w = WindowManager.getTopWindow(window);
 					local rActor = ActorManager.resolveActor(nodeChar)
 					ActionDefense.payCostAndRoll(draginfo, rActor, rAction);
 				end

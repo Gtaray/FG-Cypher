@@ -393,7 +393,7 @@
 	<string name="char_tracker_label_source">Source:</string>
 
 	<!-- Powers -->
-	<string name="power_groupdeatil_title">Power Group</string>
+	<string name="power_groupdetail_title">Power Group</string>
 	<string name="power_label_groupname">Group Name</string>
 
 	<string name="power_tooltip_stat">ROLL</string>
