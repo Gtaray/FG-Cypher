@@ -36,7 +36,7 @@ function onValueChanged()
 		super.onValueChanged()
 	end
 	if window and window.update then
-		window.update();
+		window.refreshDisplay();
 	end
 end
 
@@ -84,7 +84,7 @@ function updateCustomPools()
 	-- If the value exists then we don't have to do anything other than
 	-- sync the data so the control displays the right index.
 	if doesCustomValueExist(sInitialValue) then
-		super.update();
+		super.refreshDisplay();
 		return;
 	end
 
@@ -94,14 +94,14 @@ function updateCustomPools()
 	local sNewValue = getValueAtIndex(nInitialIndex);
 	if sNewValue then
 		super.setValue(sNewValue)
-		super.update();
+		super.refreshDisplay();
 		return;
 	end
 
 	-- At this point the custom pool was removed, and the index is now out of range of the array
 	-- so all we can do is reset to an empty value
 	super.setValue("");
-	super.update();
+	super.refreshDisplay();
 end
 
 -- Returns the index of the value in _tValues if it exists
