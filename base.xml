@@ -6,7 +6,7 @@
 -->
 
 <root version="3.0" release="4.1" logo="logo.png">
-	<announcement text="Cypher System ruleset (2025-08-05) for Fantasy Grounds\rCopyright 2025 Smiteworks USA, LLC\rLink to Wiki: https://publish.obsidian.md/fantasygrounds-cypher-wiki/Home" font="emotefont" icon="rulesetlogo_CoreRPG" />	
+	<announcement text="Cypher System ruleset (2025-08-26) for Fantasy Grounds\rCopyright 2025 Smiteworks USA, LLC\rLink to Wiki: https://publish.obsidian.md/fantasygrounds-cypher-wiki/Home" font="emotefont" icon="rulesetlogo_CoreRPG" />	
 	<!-- Attributes -->
 	<description>
 		<displayname>Cypher System</displayname>
