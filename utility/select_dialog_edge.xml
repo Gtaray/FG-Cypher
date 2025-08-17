@@ -41,7 +41,7 @@
 					table.concat(aValues, '|'), 
 					table.concat(aOptions, '|'),
 					sDash);
-				edge.update();
+				edge.refreshDisplay();
 			end
 			function getData()
 				return (edge.getValue() or ""):lower();
