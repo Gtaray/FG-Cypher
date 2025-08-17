@@ -8,9 +8,6 @@ local _tLabels = {};
 local _tValues = {};
 
 function onInit()
-	_fInitialize = super.initialize;
-	super.initialize = initialize;
-
 	_actorNode = getActorNode();
 
 	if _actorNode then
@@ -20,7 +17,9 @@ function onInit()
 	end
 
 	-- Do onInit so that everything gets set up correctly
-	super.onInit()
+	if super and super.onInit then
+		super.onInit()
+	end
 end
 
 function onClose()
@@ -84,7 +83,7 @@ function updateCustomPools()
 	-- If the value exists then we don't have to do anything other than
 	-- sync the data so the control displays the right index.
 	if doesCustomValueExist(sInitialValue) then
-		super.update();
+		super.refreshDisplay();
 		return;
 	end
 
@@ -94,14 +93,14 @@ function updateCustomPools()
 	local sNewValue = getValueAtIndex(nInitialIndex);
 	if sNewValue then
 		super.setStringValue(sNewValue)
-		super.update();
+		super.refreshDisplay();
 		return;
 	end
 
 	-- At this point the custom pool was removed, and the index is now out of range of the array
 	-- so all we can do is reset to an empty value
 	super.setStringValue("");
-	super.update();
+	super.refreshDisplay();
 end
 
 -- Returns the index of the value in _tValues if it exists
