@@ -29,27 +29,7 @@
 
 	<windowclass name="dialog_edge_item">
 		<margins control="0,5,0,5" />
-		<script>
-			function setOptions(aOptions)
-				local sDash = Interface.getString("dash");
-				local aValues = {};
-				for _, sOption in ipairs(aOptions) do
-					table.insert(aValues, Interface.getString(sOption))
-				end
-
-				edge.initialize(
-					table.concat(aValues, '|'), 
-					table.concat(aOptions, '|'),
-					sDash);
-				edge.refreshDisplay();
-			end
-			function getData()
-				return (edge.getValue() or ""):lower();
-			end
-			function update()
-				windowlist.window.update();
-			end
-		</script>
+		<script file="utility/scripts/dialog_edge_item.lua" />
 		<sheetdata>
 			<anchor_column name="columnanchor" />
 

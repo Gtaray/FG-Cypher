@@ -19,7 +19,7 @@ function getData()
 	}
 	for _, w in pairs(edge.getWindows()) do
 		local sStat = w.getData();
-		if (sStat or "-") ~= "-" then
+		if (sStat or "") ~= "" then
 			rEdge[sStat] = rEdge[sStat] + 1;
 		end
 	end

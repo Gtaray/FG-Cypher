@@ -41,9 +41,9 @@
 				<class>dialog_buttons_okcancel</class>
 			</sub_content_bottom>
 
-			<sub_content name="content">
+			<sub_content_framed_groupbox name="content">
 				<class>select_dialog_advancement_main</class>
-			</sub_content>
+			</sub_content_framed_groupbox>
 
 			<resize_utilitybox />
 		</sheetdata>
@@ -53,6 +53,7 @@
 		<script file="utility/scripts/dialog_advancement.lua" />
 		<sheetdata>
 			<anchor_content_utilitybox_top />
+			<anchor_content_utilitybox_bottom />
 
 			<label_content_column name="label_type">
 				<static textres="label_advancement_type" />
