@@ -49,7 +49,7 @@ function onValueChanged()
 	end
 
 	if window and window.update then
-		window.refreshDisplay();
+		window.update();
 	end
 end
 
