@@ -97,6 +97,8 @@ function addEntry()
 	if sFilterProperty then
 		DB.setValue(node, sFilterProperty, "string", sFilterValue)
 	end
+
+	return w;
 end
 
 function getLinkedItemNode(w)

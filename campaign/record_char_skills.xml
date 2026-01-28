@@ -81,9 +81,6 @@
 
 			<anchor_list_content_label_left />
 			<anchor_list_content_label_right />
-			<spacer_list_content_idelete_label_right name="idelete_header_list">
-				<editmode>sheet_iedit</editmode>
-			</spacer_list_content_idelete_label_right>
 			<!-- If skill references get added, this can get re-enabled -->
 			<!-- <spacer_list_content_link_label_right name="spacer_link" /> -->
 			<spacer_list_content_label_right name="spacer">

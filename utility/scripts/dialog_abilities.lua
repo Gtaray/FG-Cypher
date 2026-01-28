@@ -16,6 +16,13 @@ function setData(aAbilities, aFlavorAbilities, nCount)
 		abilities_remaining.setValue(nCount);
 	end
 
+	if not aAbilities then
+		aAbilities = {}
+	end
+	if not aFlavorAbilities then
+		aFlavorAbilities = {}
+	end
+
 	-- This is here to keep track of what abilities are added so that
 	-- the same ability isn't added in both the Type and Flavor sections
 	local aAbilityTracker = {};

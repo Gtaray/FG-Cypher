@@ -24,6 +24,10 @@ end
 
 -- Simple method that converts training value (0-3) to a difficulty modifier
 function getDifficultyModifier(nTraining)
+	if type(nTraining) == "string" then
+		nTraining = convertTrainingStringToNumber(nTraining)
+	end
+
 	return _tNumberToDifficulty[nTraining];
 end
 

@@ -219,7 +219,8 @@ function migrateItemToV3(item)
 end
 
 function migrateAbilityToV3(ability)
-	for _, actionnode in ipairs(DB.getChildList(item, "actions")) do
+	local sName = DB.getValue(ability, "name", "")
+	for _, actionnode in ipairs(DB.getChildList(ability, "actions")) do
 		MigrationManager.migrateTrainingStringToNumber(actionnode)
 	end
 
@@ -237,9 +238,12 @@ function migrateNpcToV3(npc)
 	DB.setValue(npc, "version", "number", 3);
 end
 
-function migrateTrainingStringToNumber(node)
+function migrateTrainingStringToNumber(node, bLog)
 	local vValue = DB.getValue(node, "training");
 	if vValue ~= nil and type(vValue) == "string" then
+		local parentnode = DB.getParent(node);
+		local sName = DB.getValue(parentnode, "name", "");
+
 		DB.deleteChild(node, "training")
 		DB.setValue(node, "training", "number", TrainingManager.convertTrainingStringToNumber(vValue))
 	end

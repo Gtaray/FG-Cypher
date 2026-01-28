@@ -147,14 +147,14 @@
 
 			<anchor_list_content_label_left />
 			<anchor_list_content_label_right />
+			<spacer_list_content_idelete_label_left name="idelete_header">
+				<editmode>sheet_iedit</editmode>
+			</spacer_list_content_idelete_label_left>
+			<spacer_list_content_link_label_left name="spacer_link" />
 			<label_list_content_number_left name="label_count">
 				<anchored width="20" />
 				<static>#</static>
 			</label_list_content_number_left>
-			<spacer_list_content_idelete_label_right name="idelete_header">
-				<editmode>sheet_iedit</editmode>
-			</spacer_list_content_idelete_label_right>
-			<spacer_list_content_link_label_right name="spacer_link" />
 			<spacer_list_content_button_label_right name="label_carried">
 				<icon>char_inv_carried_header</icon>
 				<tooltip textres="char_tooltip_itemcarried" />
@@ -163,6 +163,7 @@
 				<anchored width="25" />
 			</spacer_list_content_label_right>
 			<label_list_content_string_noframe_right name="label_location">
+				<anchored width="65" />
 				<static textres="char_label_itemlocation" />
 			</label_list_content_string_noframe_right>
 			<label_list_content_noframe name="label_name">
@@ -199,9 +200,6 @@
 				<anchored width="20" />
 				<static>#</static>
 			</label_list_content_number_left>
-			<spacer_list_content_idelete_label_right name="idelete_header">
-				<editmode>sheet_iedit</editmode>
-			</spacer_list_content_idelete_label_right>
 			<spacer_list_content_link_label_right name="spacer_link" />
 			<spacer_list_content_button_label_right name="label_carried">
 				<icon>char_inv_carried_header</icon>
