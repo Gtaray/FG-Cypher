@@ -178,7 +178,7 @@
 	</template>
 
 	<template name="button_condition_icon">
-		<spacer_listitem_left>
+		<buttonc_listitem_left>
 			<anchored width="20" height="20">
 				<left offset="2" postoffset="2" />
 			</anchored>
@@ -199,7 +199,7 @@
 				end
 				function update()
 					local sIcon = DB.getValue(window.getDatabaseNode(), "icon", "");
-					setIcon(sIcon);
+					setIcons(sIcon, sIcon);
 				end
 				function onClickDown(button, x, y)
 					return Session.IsHost and button == 1;
@@ -208,6 +208,6 @@
 					Interface.openWindow("condition_icon_selector", window.getDatabasePath());
 				end
 			</script>
-		</spacer_listitem_left>
+		</buttonc_listitem_left>
 	</template>
 </root>
